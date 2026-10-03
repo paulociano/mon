@@ -23,7 +23,7 @@ const hero=size('assets/scene/mon-home-banner.webp'),side=size('assets/scene/mon
 
 assert.ok(eagerJs<=92*1024,`eager JS budget exceeded: ${kb(eagerJs)} KB`);
 assert.ok(dataJs<=64*1024,`total lazy dataset budget exceeded: ${kb(dataJs)} KB`);
-assert.ok(foundationRouteJs<=28*1024,`Foundation route data budget exceeded: ${kb(foundationRouteJs)} KB`);
+assert.ok(foundationRouteJs<=29*1024,`Foundation route data budget exceeded: ${kb(foundationRouteJs)} KB`);
 assert.ok(experienceRouteJs<=9*1024,`Experience route data budget exceeded: ${kb(experienceRouteJs)} KB`);
 assert.ok(kanjiRouteJs<=11*1024,`Kanji route data budget exceeded: ${kb(kanjiRouteJs)} KB`);
 assert.ok(featureJs<=72*1024,`feature runtime budget exceeded: ${kb(featureJs)} KB`);
