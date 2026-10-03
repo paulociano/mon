@@ -26,6 +26,7 @@ const scriptOrder=[
  './core/state.js',
  './core/review-scheduler.js',
  './core/performance.js',
+ './core/home-coach.js',
  './app.js'
 ];
 const featureRuntime=['./core/narrative-state.js','./features/journal.js','./features/journal.css','./data/narrative.js','./features/lesson.js','./features/lesson.css','./features/practice.js','./features/practice.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
@@ -68,6 +69,9 @@ if(!app.includes('aria-current="step"'))throw new Error('Current path step lacks
 if(!html.includes('fetchpriority="high"'))throw new Error('Hero preload should be high priority')
 if(!app.includes('ensureLearningRuntime'))throw new Error('Missing lazy learning runtime loader')
 if(!app.includes('loadRuntimeStyle'))throw new Error('Missing lazy feature stylesheet loader')
+const homeCoach=read('core/home-coach.js');
+if(!homeCoach.includes('homeCoachDecision'))throw new Error('Adaptive Home policy missing')
+if(!app.includes('homeCoachDecision(state,flatPath)'))throw new Error('Home runtime is not consuming Home Coach')
 if(!html.includes('id="routeLoader"'))throw new Error('Missing route loading feedback')
 if(!html.includes('aria-live="polite"'))throw new Error('Lesson feedback should expose a polite live region')
 if(!app.includes("lesson:['./features/lesson.js']"))throw new Error('Lesson UI must stay lazy')
