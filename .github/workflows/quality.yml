@@ -40,6 +40,8 @@ jobs:
         run: node scripts/test-japan-journal.mjs
       - name: Video Library
         run: node scripts/test-video-library.mjs
+      - name: Listening and Pronunciation Lab
+        run: node scripts/test-pronunciation-lab.mjs
       - name: MON learning methods
         run: node scripts/test-learning-methods.mjs
       - name: Adaptive teaching mix
