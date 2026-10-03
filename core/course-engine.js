@@ -71,8 +71,10 @@ function lessonPlanFromPack(unit){
   const exercises=[];
   const max=Math.max(standard.length,distinctive.length);
   for(let i=0;i<max;i++){if(distinctive[i])exercises.push(distinctive[i]);if(standard[i])exercises.push(standard[i])}
+  const narrative=typeof narrativeEchoExercise==='function'?narrativeEchoExercise(unit):null;
+  if(narrative)exercises.splice(Math.min(4,exercises.length),0,narrative);
   const tagged=optimizeExerciseSequence(exercises,10).map(e=>({...e,_unitId:unit.id}));
-  return {title:unit.title,focus:unit.symbol,unitId:unit.id,objectives:unit.objectives,mastery:unit.mastery,
+  return {title:unit.title,focus:unit.symbol,unitId:unit.id,objectives:unit.objectives,mastery:unit.mastery,narrative:typeof narrativeEpisodeForUnit==='function'?narrativeEpisodeForUnit(unit):null,
     method:typeof MON_METHOD!=='undefined'?MON_METHOD:null,exercises:tagged};
 }
 
