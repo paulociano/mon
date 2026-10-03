@@ -1,4 +1,4 @@
-const CACHE='mon-japanese-os-v28';
+const CACHE='mon-japanese-os-v29';
 const CORE=['./','./index.html','./styles.css','./data/course-content.js','./data/curriculum.js','./data/experiences.js','./data/foundation.js','./data/session.js','./data/kana.js','./data/kanji.js','./data/content-packs.js','./data/narrative.js','./core/state.js','./core/review-scheduler.js','./core/performance.js','./core/home-coach.js','./core/next-best-lesson.js','./core/mistakes.js','./core/mastery-graph.js','./core/learning-methods.js','./core/course-engine.js','./core/progression-engine.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js','./features/lesson.js','./features/lesson.css','./features/performance-lab.js','./features/performance-lab.css','./features/practice.js','./features/practice.css','./core/narrative-state.js','./features/journal.js','./features/journal.css','./features/videos.js','./features/videos.css','./data/pronunciation.js','./features/pronunciation.js','./features/pronunciation.css','./data/kanji-memory.js','./features/kanji-memory.js','./features/kanji-memory.css','./data/missions-v2.js','./features/missions-v2.js','./features/missions-v2.css','./assets/readme/mon-summary.svg','./assets/readme/mon-features.svg','./app.js','./manifest.json','./icon.svg','./assets/brand/mon-mark.svg','./assets/brand/mon-lockup.svg','./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp'];
 
 self.addEventListener('install',event=>{
@@ -27,6 +27,14 @@ async function networkFirstNavigation(event){
     return (await caches.match(event.request))||(await caches.match('./index.html'));
   }
 }
+async function networkFirstAsset(event){
+  try{
+    const response=await fetch(event.request,{cache:'no-cache'});
+    return cachePut(event.request,response);
+  }catch{
+    return (await caches.match(event.request))||Response.error();
+  }
+}
 async function staleWhileRevalidate(event){
   const cached=await caches.match(event.request);
   const network=fetch(event.request).then(res=>cachePut(event.request,res)).catch(()=>null);
@@ -39,5 +47,6 @@ self.addEventListener('fetch',event=>{
   const url=new URL(event.request.url);
   if(url.origin!==self.location.origin)return;
   if(event.request.mode==='navigate'){event.respondWith(networkFirstNavigation(event));return}
+  if(event.request.destination==='script'||event.request.destination==='style'){event.respondWith(networkFirstAsset(event));return}
   event.respondWith(staleWhileRevalidate(event));
 });
