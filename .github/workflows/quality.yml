@@ -31,3 +31,5 @@ jobs:
         run: node scripts/test-mastery-graph.mjs
       - name: Mastery progression behavior
         run: node scripts/test-mastery-progression.mjs
+      - name: Practical N5 curriculum scale
+        run: node scripts/test-n5-scale.mjs
