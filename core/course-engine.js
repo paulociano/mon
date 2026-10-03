@@ -35,17 +35,44 @@ function lessonPlanFromNode(node){let day=node.day||1;if(day<=24){const p=founda
   {type:'speak',prompt:'Responda em japonês.',target:sp.target,pt:sp.pt,why:'Produção fecha o circuito.'}
  ]}}
 
+function scheduledReviewExercise(item){
+  if(!item)return null;
+  if(item.type==='error'){
+    const m=state.mistakeStats?.[item.key];
+    return m?.exercise?{...m.exercise,_mistakeKey:item.key,_reviewType:'error',_reviewKey:item.key,_remediation:true}:null;
+  }
+  if(item.type==='kana'){
+    const pools=[...kanaCourse.hira.basic,...kanaCourse.hira.voiced,...kanaCourse.hira.yoon,...kanaCourse.kata.basic,...kanaCourse.kata.voiced,...kanaCourse.kata.yoon];
+    const found=pools.find(x=>x[0]===item.key);if(!found)return null;
+    return {type:'choice',prompt:'Revisão espaçada: como se lê este kana?',jp:found[0],options:engineShuffledOptions(found[1],pools.map(x=>x[1])),answer:found[1],why:`${found[0]} → ${found[1]}`,_reviewType:'kana',_reviewKey:item.key};
+  }
+  if(item.type==='kanji'){
+    const k=kanjiData.find(x=>x.k===item.key);if(!k)return null;
+    return {type:'choice',prompt:`Revisão espaçada: qual sentido combina com ${k.k}?`,jp:k.k,options:engineShuffledOptions(k.m,kanjiData.map(x=>x.m)),answer:k.m,why:`${k.k} · ${k.m} · ${k.ex[0][1]}`,_reviewType:'kanji',_reviewKey:item.key};
+  }
+  if(item.type==='grammar'){
+    const day=Number(String(item.key).replace(/^F/,'')),p=foundationSessionPlans[day-1];if(!p)return null;
+    return {type:'choice',prompt:'Revisão espaçada: qual afirmação descreve este mecanismo?',jp:p.phrase,options:p.conceptOptions,answer:p.concept,why:p.concept,_reviewType:'grammar',_reviewKey:item.key};
+  }
+  return null;
+}
+function scheduledReviewExercises(limit=6){
+  if(typeof getReviewQueue!=='function')return [];
+  const seen=new Set(),out=[];
+  for(const item of getReviewQueue(limit*3)){
+    const e=scheduledReviewExercise(item);if(!e)continue;
+    const key=e._reviewType+':'+e._reviewKey;if(seen.has(key))continue;seen.add(key);out.push(e);
+    if(out.length>=limit)break;
+  }
+  return out;
+}
+
 function buildLesson(node,learnerState){
-  const pack=lessonPlanFromNode(node);
-  const repairs=typeof remediationExercises==='function'?remediationExercises(2):[];
-  if(!repairs.length)return pack;
-  const base=pack.exercises||[];
-  const injected=[];
-  // One correction early, one later. This keeps interleaving without turning every lesson into punishment.
-  injected.push(repairs[0]);
-  const pivot=Math.min(3,base.length);
-  const exercises=[injected[0],...base.slice(0,pivot)];
-  if(repairs[1])exercises.push(repairs[1]);
+  const pack=lessonPlanFromNode(node),base=pack.exercises||[];
+  const reviews=scheduledReviewExercises(2);
+  if(!reviews.length)return pack;
+  const pivot=Math.min(3,base.length),exercises=[reviews[0],...base.slice(0,pivot)];
+  if(reviews[1])exercises.push(reviews[1]);
   exercises.push(...base.slice(pivot));
-  return {...pack,exercises:exercises.slice(0,10),adaptive:true,repairCount:repairs.length};
+  return {...pack,exercises:exercises.slice(0,10),adaptive:true,reviewCount:reviews.length};
 }
