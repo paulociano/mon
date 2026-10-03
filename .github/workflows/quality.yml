@@ -58,6 +58,8 @@ jobs:
         run: node scripts/test-mastery-progression.mjs
       - name: Practical N5 curriculum scale
         run: node scripts/test-n5-scale.mjs
+      - name: Deep N5 curriculum audit
+        run: node scripts/test-n5-depth.mjs
       - name: Home polish contracts
         run: node scripts/test-home-polish.mjs
       - name: Adaptive Home Coach
