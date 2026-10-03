@@ -455,3 +455,10 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
   .learning-runtime-loading #practice::before{animation:runtimePulse 1.15s ease-in-out infinite}
 }
 @keyframes runtimePulse{50%{opacity:.55}}
+
+/* V16 · route loading feedback */
+.route-loader{position:fixed;top:0;left:0;right:0;height:3px;z-index:10000;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent,rgba(244,169,187,.9),rgba(230,77,61,.95),transparent);transform:translateX(-60%);transition:opacity .12s}
+.route-busy .route-loader{opacity:1;animation:routeLoad 1.05s ease-in-out infinite}
+.route-busy main{cursor:progress}
+@keyframes routeLoad{to{transform:translateX(60%)}}
+@media(prefers-reduced-motion:reduce){.route-busy .route-loader{animation:none;transform:none;background:#e64d3d}}
