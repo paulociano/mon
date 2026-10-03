@@ -28,7 +28,7 @@ const scriptOrder=[
  './core/performance.js',
  './app.js'
 ];
-const featureRuntime=['./features/lesson.js','./features/lesson.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
+const featureRuntime=['./features/lesson.js','./features/lesson.css','./features/practice.js','./features/practice.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
 const debugRuntime=['./features/performance-lab.js','./features/performance-lab.css'];
 const lazyRuntime=[
  './data/content-packs.js',
@@ -71,6 +71,8 @@ if(!app.includes('loadRuntimeStyle'))throw new Error('Missing lazy feature style
 if(!html.includes('id="routeLoader"'))throw new Error('Missing route loading feedback')
 if(!html.includes('aria-live="polite"'))throw new Error('Lesson feedback should expose a polite live region')
 if(!app.includes("lesson:['./features/lesson.js']"))throw new Error('Lesson UI must stay lazy')
+if(!app.includes("practice:['./features/practice.js']"))throw new Error('Practice Hub must stay lazy')
+if(!html.includes('id="practiceCoach"'))throw new Error('Practice recommendation surface missing')
 const perfModule=read('core/performance.js');
 for(const src of debugRuntime){
  if(!fs.existsSync(path.join(root,src.slice(2))))throw new Error('Debug runtime file missing '+src);
