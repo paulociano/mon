@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('app.js','utf8');
+const practice=fs.readFileSync('features/practice.js','utf8');
+const css=fs.readFileSync('features/practice.css','utf8');
+const html=fs.readFileSync('index.html','utf8');
+assert.ok(!app.includes('function renderMasteryMap('));
+assert.ok(!app.includes('function renderMistakeNotebook('));
+assert.ok(practice.includes('function renderMasteryMap('));
+assert.ok(practice.includes('function renderPracticeCoach('));
+assert.ok(practice.includes('function practiceRecommendation('));
+assert.ok(app.includes("practice:['./features/practice.js']"));
+assert.ok(app.includes("practice:['./features/practice.css']"));
+assert.ok(html.includes('id="practiceCoach"'));
+assert.ok(css.includes('.practice-coach'));
+console.log('MON lazy Practice Hub contracts passed');
