@@ -15,7 +15,41 @@ function engineShuffledOptions(correct,pool,count=4){
 }
 
 function catalogDistractors(id,field='pt'){
-  return Object.entries(vocabularyCatalog).filter(([key])=>key!==id).map(([,v])=>v[field]).filter(Boolean);
+  const base=vocabularyCatalog[id]||{},tags=new Set(base.tags||[]);
+  const rows=Object.entries(vocabularyCatalog).filter(([key])=>key!==id).map(([key,v])=>({
+    key,v,shared:(v.tags||[]).reduce((n,t)=>n+(tags.has(t)?1:0),0),
+    lengthGap:Math.abs(String(v[field]||'').length-String(base[field]||'').length)
+  })).filter(x=>x.v[field]);
+  rows.sort((a,b)=>b.shared-a.shared||a.lengthGap-b.lengthGap||a.key.localeCompare(b.key));
+  return [...new Set(rows.map(x=>x.v[field]))];
+}
+
+function exerciseFamily(e={}){
+  if(['listen','dictation','minimalPair'].includes(e.type))return 'listen';
+  if(['recall','transfer','speak','roleplay','wordbank','cloze'].includes(e.type))return 'produce';
+  if(e.type==='match')return 'match';
+  return 'recognize';
+}
+function exerciseSignature(e={}){
+  return [e.type,e._reviewType||'',e._reviewKey||'',e.prompt||'',e.target||e.answer||e.jp||''].join('|');
+}
+function optimizeExerciseSequence(exercises=[],limit=10){
+  const unique=[],seen=new Set();
+  for(const e of exercises){const sig=exerciseSignature(e);if(seen.has(sig))continue;seen.add(sig);unique.push(e)}
+  const pools={recognize:[],listen:[],produce:[],match:[]};
+  for(const e of unique)pools[exerciseFamily(e)].push(e);
+  const out=[],order=['recognize','listen','produce','match'],last=[];
+  while(out.length<limit&&Object.values(pools).some(x=>x.length)){
+    let pick=order.find(f=>pools[f].length&&!(last.length>=2&&last.at(-1)===f&&last.at(-2)===f));
+    if(!pick)pick=order.find(f=>pools[f].length);
+    const e=pools[pick].shift();out.push(e);last.push(pick);
+    order.push(order.shift());
+  }
+  if(out.length&&out.every(e=>exerciseFamily(e)!=='produce')){
+    const p=unique.find(e=>exerciseFamily(e)==='produce');
+    if(p)out[Math.min(out.length-1,limit-1)]=p;
+  }
+  return out.slice(0,limit);
 }
 function compilePackExercise(unit,template,index){
   const vocabIds=unit.vocabulary||[],vocabId=vocabIds[index%Math.max(1,vocabIds.length)],v=vocabularyCatalog[vocabId];
@@ -37,7 +71,7 @@ function lessonPlanFromPack(unit){
   const exercises=[];
   const max=Math.max(standard.length,distinctive.length);
   for(let i=0;i<max;i++){if(distinctive[i])exercises.push(distinctive[i]);if(standard[i])exercises.push(standard[i])}
-  const tagged=exercises.slice(0,10).map(e=>({...e,_unitId:unit.id}));
+  const tagged=optimizeExerciseSequence(exercises,10).map(e=>({...e,_unitId:unit.id}));
   return {title:unit.title,focus:unit.symbol,unitId:unit.id,objectives:unit.objectives,mastery:unit.mastery,
     method:typeof MON_METHOD!=='undefined'?MON_METHOD:null,exercises:tagged};
 }
@@ -110,5 +144,5 @@ function buildLesson(node,learnerState){
   const pivot=Math.min(3,base.length),exercises=[reviews[0],...base.slice(0,pivot)];
   if(reviews[1])exercises.push(reviews[1]);
   exercises.push(...base.slice(pivot));
-  return {...pack,exercises:exercises.slice(0,10),adaptive:true,reviewCount:reviews.length};
+  return {...pack,exercises:optimizeExerciseSequence(exercises,10),adaptive:true,reviewCount:reviews.length};
 }
