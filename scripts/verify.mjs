@@ -23,6 +23,7 @@ const scriptOrder=[
  './core/mastery-graph.js',
  './core/learning-methods.js',
  './core/course-engine.js',
+ './core/progression-engine.js',
  './app.js'
 ];
 let cursor=-1;
