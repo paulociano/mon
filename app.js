@@ -10,6 +10,7 @@ const LEARNING_RUNTIME_SCRIPTS=[
  './data/kana.js',
  './data/experiences.js',
  './data/foundation.js',
+ './data/session.js',
  './data/content-packs.js',
  './core/mistakes.js',
  './core/mastery-graph.js',
@@ -19,7 +20,7 @@ const LEARNING_RUNTIME_SCRIPTS=[
 ];
 const FEATURE_RUNTIME_SCRIPTS={
  foundation:['./data/kana.js','./data/foundation.js','./features/foundation.js'],
- session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./features/foundation.js','./features/session.js'],
+ session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./features/foundation.js','./features/session.js'],
  kanji:['./data/kanji.js','./features/kanji.js'],
  reading:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
  missions:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
