@@ -64,9 +64,9 @@
 
       <section id="lesson" class="view">
         <div class="quick-shell">
-          <div class="quick-top"><button class="quick-exit" onclick="exitQuickLesson()">×</button><div class="quick-progress"><i id="quickProgress"></i></div><div class="quick-energy">⚡ <span id="quickEnergy">20</span></div></div>
+          <div class="quick-top"><button class="quick-exit" onclick="exitQuickLesson()">×</button><div class="quick-progress" role="progressbar" aria-label="Progresso da lição" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="quickProgress"></i></div><div class="quick-energy">⚡ <span id="quickEnergy">20</span></div></div>
           <div class="quick-main" id="quickMain"></div>
-          <div class="quick-bottom"><div class="quick-bottom-inner"><div class="quick-feedback" id="quickFeedback">Escolha uma resposta.</div><button class="quick-check" id="quickCheck" onclick="quickCheck()" disabled>VERIFICAR</button></div></div>
+          <div class="quick-bottom"><div class="quick-bottom-inner"><div class="quick-feedback" id="quickFeedback" role="status" aria-live="polite">Escolha uma resposta.</div><button class="quick-check" id="quickCheck" onclick="quickCheck()" disabled>VERIFICAR</button></div></div>
         </div>
       </section>
 
@@ -301,7 +301,7 @@
   </main>
 </div>
 <nav class="mobile-nav" id="mobileNav"><button class="active" data-view="home"><i>道</i>Aprender</button><button data-view="practice"><i>練</i>Praticar</button><button data-view="foundation"><i>あ</i>Kana</button><button data-view="league"><i>冠</i>Liga</button><button data-view="shop"><i>店</i>Loja</button></nav>
-<div id="toast" class="toast">Salvo</div>
+<div id="routeLoader" class="route-loader" aria-hidden="true" aria-live="polite"></div><div id="toast" class="toast">Salvo</div>
 <script src="./data/course-content.js"></script>
 <script src="./core/state.js"></script>
 <script src="./core/review-scheduler.js"></script>
