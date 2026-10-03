@@ -29,3 +29,5 @@ jobs:
         run: node scripts/test-adaptive-methods.mjs
       - name: Mastery graph behavior
         run: node scripts/test-mastery-graph.mjs
+      - name: Mastery progression behavior
+        run: node scripts/test-mastery-progression.mjs
