@@ -62,6 +62,7 @@ const coursePacks={
         prerequisites:['ZERO:24'],vocabulary:['eki','deguchi','iriguchi','doko','migi','hidari','massugu','sumimasen','mouichido'],
         grammar:['locationWaDoko','locationNi'],kanji:['駅','口'],
         scenarios:[{npc:'駅はどこですか。',pt:'Onde fica a estação?',reply:'すみません。駅はどこですか。',replyPt:'Com licença. Onde fica a estação?'}],
+        methods:['discover','minimalPair','freeRecall','dictation','transfer','roleplay'],
         templates:['meaning','reading','listenMeaning','sentenceBuild','speak'],
         mastery:{minAccuracy:80,minRetrievals:2,required:['eki','doko','locationWaDoko']}
       },
@@ -71,6 +72,7 @@ const coursePacks={
         prerequisites:['n5-station'],vocabulary:['konbini','ikura','kore','sore','kudasai','fukuro','genkin','kaado'],
         grammar:['questionKa','objectO','requestKudasai'],kanji:['店','金'],
         scenarios:[{npc:'袋はご利用ですか。',pt:'Vai precisar de sacola?',reply:'いいえ、袋はいりません。',replyPt:'Não, não preciso de sacola.'}],
+        methods:['discover','freeRecall','cloze','dictation','transfer','roleplay'],
         templates:['meaning','listenMeaning','reverseMeaning','sentenceBuild','speak'],
         mastery:{minAccuracy:80,minRetrievals:2,required:['ikura','kore','requestKudasai']}
       },
@@ -80,6 +82,7 @@ const coursePacks={
         prerequisites:['n5-shopping'],vocabulary:['mizu','tabemono','nomimono','onegaishimasu','osusume','kaikei'],
         grammar:['objectO','requestOnegai'],kanji:['食','飲'],
         scenarios:[{npc:'ご注文はお決まりですか。',pt:'Já decidiu o pedido?',reply:'これをお願いします。',replyPt:'Este, por favor.'}],
+        methods:['discover','freeRecall','cloze','transfer','roleplay'],
         templates:['meaning','reading','listenMeaning','sentenceBuild','speak'],
         mastery:{minAccuracy:82,minRetrievals:2,required:['mizu','onegaishimasu','requestOnegai']}
       },
@@ -89,6 +92,7 @@ const coursePacks={
         prerequisites:['n5-restaurant'],vocabulary:['juusho','koko','kaku','doko'],
         grammar:['topicDesu','locationNi'],kanji:['住','書'],
         scenarios:[{npc:'ご住所をお願いします。',pt:'Seu endereço, por favor.',reply:'ここに書けばいいですか。',replyPt:'É só escrever aqui?'}],
+        methods:['discover','freeRecall','dictation','cloze','roleplay'],
         templates:['meaning','reading','sentenceBuild','listenMeaning','speak'],
         mastery:{minAccuracy:82,minRetrievals:2,required:['juusho','kaku']}
       },
@@ -98,6 +102,7 @@ const coursePacks={
         prerequisites:['n5-address'],vocabulary:['hataraku','kyou','yoroshiku','daijoubu'],
         grammar:['topicDesu','deAction'],kanji:['働','日'],
         scenarios:[{npc:'今日からよろしくお願いします。',pt:'Conto com você a partir de hoje.',reply:'こちらこそ、よろしくお願いします。',replyPt:'Igualmente, prazer e conto com você.'}],
+        methods:['discover','freeRecall','transfer','roleplay'],
         templates:['meaning','listenMeaning','sentenceBuild','speak','reverseMeaning'],
         mastery:{minAccuracy:82,minRetrievals:2,required:['hataraku','yoroshiku']}
       },
@@ -107,6 +112,7 @@ const coursePacks={
         prerequisites:['n5-work'],vocabulary:['itai','atama','kusuri','daijoubu','wakarimasen'],
         grammar:['gaState','questionKa'],kanji:['病','頭','薬'],
         scenarios:[{npc:'どうしましたか。',pt:'O que houve?',reply:'頭が痛いです。',replyPt:'Minha cabeça dói.'}],
+        methods:['discover','minimalPair','freeRecall','transfer','roleplay'],
         templates:['meaning','reading','listenMeaning','sentenceBuild','speak'],
         mastery:{minAccuracy:85,minRetrievals:2,required:['itai','atama','gaState']}
       },
@@ -116,6 +122,7 @@ const coursePacks={
         prerequisites:['n5-health'],vocabulary:['wakarimasen','mouichido','yukkuri','sumimasen','onegaishimasu'],
         grammar:['requestOnegai'],kanji:['分','一'],
         scenarios:[{npc:'日本語は大丈夫ですか。',pt:'Seu japonês está tudo bem?',reply:'まだよく分かりません。ゆっくりお願いします。',replyPt:'Ainda não entendo bem. Mais devagar, por favor.'}],
+        methods:['discover','dictation','freeRecall','transfer','roleplay'],
         templates:['listenMeaning','reverseMeaning','sentenceBuild','speak','meaning'],
         mastery:{minAccuracy:85,minRetrievals:3,required:['wakarimasen','mouichido','yukkuri']}
       },
@@ -125,6 +132,7 @@ const coursePacks={
         prerequisites:['n5-repair'],vocabulary:['eki','ikura','kore','mizu','juusho','hataraku','itai','wakarimasen','sumimasen'],
         grammar:['locationWaDoko','objectO','requestKudasai','requestOnegai','gaState'],kanji:['駅','店','食','働'],
         scenarios:[{npc:'すみません。大丈夫ですか。',pt:'Com licença. Está tudo bem?',reply:'はい。でも日本語がまだよく分かりません。',replyPt:'Sim. Mas ainda não entendo bem japonês.'}],
+        methods:['discover','minimalPair','dictation','freeRecall','cloze','transfer','roleplay'],
         templates:['meaning','reading','listenMeaning','reverseMeaning','sentenceBuild','speak'],
         mastery:{minAccuracy:88,minRetrievals:3,required:['eki','kore','wakarimasen','requestOnegai']}
       }
@@ -146,6 +154,7 @@ function validateCoursePacks(){
       if(!u.id||unitIds.has(u.id))errors.push('unit id inválido/duplicado: '+u.id);unitIds.add(u.id);
       if(!u.objectives?.length)errors.push(u.id+': sem objectives');
       if(!u.templates?.length)errors.push(u.id+': sem templates');
+      if(!u.methods?.length)errors.push(u.id+': sem methods MON');
       if(!u.mastery?.minAccuracy)errors.push(u.id+': sem mastery');
       (u.vocabulary||[]).forEach(v=>{if(!vocabularyCatalog[v])errors.push(u.id+': vocabulário ausente '+v)});
       (u.grammar||[]).forEach(g=>{if(!grammarCatalog[g])errors.push(u.id+': gramática ausente '+g)});
