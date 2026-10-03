@@ -19,7 +19,9 @@ function mistakeKey(exercise={}){
   return 'm'+(h>>>0).toString(36);
 }
 function safeExerciseSnapshot(exercise={}){
-  const out={type:exercise.type,prompt:exercise.prompt||'',why:exercise.why||'',jp:exercise.jp||'',audio:exercise.audio||'',answer:exercise.answer||'',target:exercise.target||'',pt:exercise.pt||''};
+  const out={type:exercise.type,prompt:exercise.prompt||'',why:exercise.why||'',bridge:exercise.bridge||'',method:exercise.method||'',jp:exercise.jp||'',audio:exercise.audio||'',answer:exercise.answer||'',target:exercise.target||'',pt:exercise.pt||'',cue:exercise.cue||'',npc:exercise.npc||'',npcPt:exercise.npcPt||''};
+  if(Array.isArray(exercise.accepted))out.accepted=exercise.accepted.slice(0,6);
+  if(Array.isArray(exercise.examples))out.examples=exercise.examples.slice(0,4);
   if(Array.isArray(exercise.options))out.options=exercise.options.slice(0,8);
   if(Array.isArray(exercise.tokens))out.tokens=exercise.tokens.slice(0,16);
   if(Array.isArray(exercise.pairs))out.pairs=exercise.pairs.slice(0,8);
