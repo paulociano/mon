@@ -19,3 +19,5 @@ jobs:
           find . -type f \( -name "*.js" -o -name "*.mjs" \) -not -path "./.git/*" -print0 | xargs -0 -n1 node --check
       - name: Static contracts
         run: node scripts/verify.mjs
+      - name: Review scheduler behavior
+        run: node scripts/test-review-scheduler.mjs
