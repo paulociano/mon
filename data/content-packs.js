@@ -92,7 +92,7 @@ const coursePacks={
         prerequisites:['n5-restaurant'],vocabulary:['juusho','koko','kaku','doko'],
         grammar:['topicDesu','locationNi'],kanji:['住','書'],
         scenarios:[{npc:'ご住所をお願いします。',pt:'Seu endereço, por favor.',reply:'ここに書けばいいですか。',replyPt:'É só escrever aqui?'}],
-        methods:['discover','freeRecall','dictation','cloze','roleplay'],
+        methods:['discover','freeRecall','dictation','cloze','transfer','roleplay'],
         templates:['meaning','reading','sentenceBuild','listenMeaning','speak'],
         mastery:{minAccuracy:82,minRetrievals:2,required:['juusho','kaku']}
       },
