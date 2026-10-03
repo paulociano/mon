@@ -255,7 +255,7 @@ function renderGameHome(){
  const goal=Math.min(100,Math.round((q.xp||0)/30*100)),ring=document.getElementById('dailyRing');if(ring)ring.style.setProperty('--goal',goal+'%');el('dailyGoalPct',goal+'%');
  renderQuests();renderHomeJournalSummary();const adaptive=renderAdaptiveHome();
  const g=flatPath[Math.min(progress,total-1)];
- if(g&& !['repair','review','recover','mistake'].includes(adaptive?.kind)){
+ if(g&& !['repair','review','recover','mistake','story'].includes(adaptive?.kind)){
    const repair=state.remediation?.idx===progress,guide=document.querySelector('.guide-card');
    if(guide){guide.dataset.state=repair?'repair':g.type==='checkpoint'?'checkpoint':g.type==='story'?'story':'learn'}
    el('guideTitle',repair?'Fortaleça a aresta fraca.':g.type==='checkpoint'?'Prepare-se para provar domínio.':g.type==='story'?'Leia para integrar o que aprendeu.':g.day<=12?'Automatize o kana.':g.day<=24?'Monte frases, não traduções.':'Use japonês em contexto.');
