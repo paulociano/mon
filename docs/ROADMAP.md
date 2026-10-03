@@ -161,8 +161,10 @@ Cada missão deve exigir:
 - reparar quando não entende;
 - completar uma tarefa observável.
 
-### 7. Auditoria profunda do N5 — próximo
+### 7. Auditoria profunda do N5 — em andamento
 **Dependência:** engines e modalidades estabilizados.
+
+**Primeiro gate implementado:** cobertura funcional, densidade lexical por unidade, reaparição mínima, recall + transfer + roleplay e capacidades gramaticais essenciais agora têm contrato executável no CI.
 
 Antes de ampliar o volume:
 - revisar cobertura funcional;
