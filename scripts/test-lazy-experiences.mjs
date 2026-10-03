@@ -13,7 +13,7 @@ assert.ok(!app.includes('function missionOpen('));
 assert.ok(exp.includes('function missionOpen('));
 assert.ok(exp.includes('function hydrateMissionGrid('));
 assert.ok(exp.includes('function hydrateSurvivalPhrases('));
-assert.ok(app.includes("kanji:['./data/kanji.js','./features/kanji.js']"));
+assert.ok(app.includes("kanji:['./data/kanji.js','./data/kanji-memory.js','./features/kanji.js','./features/kanji-memory.js']"));
 assert.ok(app.includes("reading:['./data/kana.js','./data/experiences.js','./features/experiences.js']"));
 assert.ok(app.includes('SHELL_KANJI_COUNT'),'home metrics need only shell Kanji count');
 assert.ok(!app.includes('kanjiData.filter('),'home metrics must not need Kanji catalog');
