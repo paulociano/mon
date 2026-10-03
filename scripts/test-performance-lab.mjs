@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const core=fs.readFileSync('core/performance.js','utf8');
+const lab=fs.readFileSync('features/performance-lab.js','utf8');
+assert.ok(core.includes("has('debug')"));
+assert.ok(core.includes('performanceResourceSnapshot'));
+assert.ok(lab.includes('performanceSnapshot()'));
+assert.ok(lab.includes('navigator.serviceWorker'));
+assert.ok(!lab.includes('fetch('));
+assert.ok(!lab.includes('sendBeacon'));
+console.log('MON Performance Lab contracts passed');
