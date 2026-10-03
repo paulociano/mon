@@ -26,7 +26,8 @@ const FEATURE_RUNTIME_SCRIPTS={
  missions:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
  speaking:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
  curriculum:['./data/curriculum.js'],
- lesson:['./features/lesson.js']
+ lesson:['./features/lesson.js'],
+ practice:['./features/practice.js']
 };
 const featureRuntimePromises={};
 async function ensureFeatureRuntime(name){
@@ -53,7 +54,7 @@ function loadRuntimeStyle(href){
    link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>reject(new Error('Falha ao carregar '+href));document.head.appendChild(link);
  });
 }
-const FEATURE_RUNTIME_STYLES={foundation:['./features/foundation.css'],lesson:['./features/lesson.css']};
+const FEATURE_RUNTIME_STYLES={foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css']};
 function ensureLearningRuntime(){
  if(learningRuntimePromise)return learningRuntimePromise;
  const started=typeof perfStart==='function'?perfStart('runtime:learning'):null;
@@ -77,7 +78,7 @@ async function go(id){
    if(id==='curriculum')await ensureFeatureRuntime('curriculum');
    if(id==='kanji')await ensureFeatureRuntime('kanji');
    if(id==='reading'||id==='missions'||id==='speaking')await ensureFeatureRuntime(id);
-   if(id==='practice')await ensureLearningRuntime();
+   if(id==='practice'){await ensureLearningRuntime();await ensureFeatureRuntime('practice');}
 
    document.body.classList.toggle('focus-session',id==='session');
    document.body.classList.toggle('quick-focus',id==='lesson');
@@ -95,7 +96,7 @@ async function go(id){
    else if(id==='speaking')hydrateSurvivalPhrases();
    else if(id==='league')renderLeague();
    else if(id==='shop')renderShop();
-   else if(id==='practice'){renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}
+   else if(id==='practice'){renderPracticeCoach();renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}
 
    keepActiveNavVisible(id);
    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
@@ -230,48 +231,6 @@ let quickRun=null;
 async function startQuickLesson(idx){if(idx>state.pathProgress)return toast('Complete o círculo anterior primeiro');const node=flatPath[idx];if(!node)return;if(node.type==='chest')return claimPathChest(idx);await ensureLearningRuntime();await ensureFeatureRuntime('lesson');if(state.remediation?.idx===idx)return startMasteryRepair(idx);if((state.energy||0)<=0){go('practice');toast('Energia vazia · pratique para recarregar ou use a Loja');return}const pack=buildLesson(node,state);quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false};go('lesson');renderQuickExercise();updateMetrics()}
 async function startMasteryRepair(idx){await ensureLearningRuntime();await ensureFeatureRuntime('lesson');if(idx!==state.pathProgress)return toast('O reforço pertence ao nó atual');const node=flatPath[idx];if(!node)return;const pack=buildMasteryRemediation(node);if(!pack.exercises.length)return toast('Sem lacunas observáveis para reforçar agora');quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false,practiceOnly:true,masteryRepair:true};go('lesson');renderQuickExercise();updateMetrics()}
 function updateGameStreak(){const today=localDateKey(),last=state.lastStudyDate;if(last===today)return;if(last){const y=new Date();y.setDate(y.getDate()-1);if(last===localDateKey(y))state.streak=(state.streak||0)+1;else if((state.streakFreeze||0)>0){state.streakFreeze--;state.streak=(state.streak||1)+1}else state.streak=1}else state.streak=Math.max(1,state.streak||1);state.lastStudyDate=today}
-function masteryLabel(concept){
-  const [type,key]=concept.split(':',2);
-  if(type==='vocabulary'){const v=vocabularyCatalog?.[key];return v?`${v.jp} · ${v.pt}`:key}
-  if(type==='grammar'){const id=concept.replace('grammar:P:',''),g=grammarCatalog?.[id];return g?g.form:id}
-  return key||concept;
-}
-function renderMasteryMap(){
- const wrap=document.getElementById('masteryMap');if(!wrap||typeof masterySummary!=='function')return;
- const s=masterySummary(),labels={recognize:'reconhecer',recall:'recuperar',listen:'ouvir',transfer:'transferir',produce:'produzir'};
- const weak=s.weak||[];
- wrap.innerHTML=`<div class="mastery-copy"><span class="eyebrow">Mastery Graph · 習得</span><h3>${s.concepts?s.average+'% de domínio observado':'O mapa nasce das suas respostas.'}</h3><p>O MON separa reconhecer, recuperar, ouvir, transferir e produzir. Saber uma palavra no quiz não significa ainda conseguir usá-la numa conversa.</p><div class="mastery-summary"><span><b>${s.strong}</b> fortes</span><span><b>${s.developing}</b> em construção</span><span><b>${s.fragile}</b> frágeis</span></div></div><div class="mastery-edges">${weak.map(x=>`<article><div><b>${masteryLabel(x.concept)}</b><span>${labels[x.dimension]||x.dimension}</span></div><div class="mastery-meter"><i style="width:${x.score}%"></i></div><strong>${x.score}%</strong></article>`).join('')||'<div class="mastery-empty">Faça algumas lições. As primeiras arestas aparecem depois das respostas reais.</div>'}</div>`;
-}
-function renderReviewDeck(){
- const wrap=document.getElementById('reviewDeck');if(!wrap)return;
- const s=reviewSummary(),labels={kana:'Kana',kanji:'Kanji',grammar:'Gramática',error:'Erros',vocabulary:'Vocabulário'};
- const due=Object.entries(s.by).sort((a,b)=>b[1]-a[1]);
- const next=s.next?Math.max(1,Math.round((s.next.due-Date.now())/3600000)):null;
- wrap.innerHTML=`<div class="review-deck-copy"><span class="eyebrow">Fila Inteligente · 復習</span><h3>${s.due?s.due+' itens pedem retorno agora.':'Memória em dia.'}</h3><p>Um único scheduler organiza kana, kanji, gramática e correções. A fila considera atraso, lapsos e maturidade, enquanto cada domínio mantém seu próprio tipo de exercício.</p><div class="review-pills">${due.map(([k,v])=>`<span>${labels[k]||k} <b>${v}</b></span>`).join('')||`<span>próxima revisão <b>${next?'~'+next+'h':'quando novos itens entrarem'}</b></span>`}</div></div><div class="review-deck-stats"><div><b>${s.due}</b><span>vencendo</span></div><div><b>${s.mature}</b><span>maduros 7d+</span></div><button class="primary" ${s.due?'':'disabled'} onclick="startSmartReview()">Revisar agora →</button></div>`;
-}
-async function startSmartReview(){
- const exercises=scheduledReviewExercises(8);
- if(!exercises.length)return toast('Sua fila de memória está em dia');
- await ensureFeatureRuntime('lesson');
- quickRun={idx:null,node:{label:'Fila Inteligente',day:0},pack:{title:'Fila Inteligente',focus:'復',exercises,adaptive:true},step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false,practiceOnly:true};
- go('lesson');renderQuickExercise();updateMetrics();
-}
-function renderMistakeNotebook(){
- const wrap=document.getElementById('mistakeNotebook');if(!wrap)return;
- const s=mistakeSummary(),labels={'escuta':'Escuta','fala':'Fala','kana':'Kana','kanji':'Kanji','gramática':'Gramática','vocabulário':'Vocabulário','ordem da frase':'Ordem'};
- const cats=Object.entries(s.by).sort((a,b)=>b[1]-a[1]);
- wrap.innerHTML=`<div class="mistake-head"><div><span class="eyebrow">Caderno de Erros · 間違い帳</span><h3>${s.open?'Seu erro vira a próxima pista.':'Nenhum erro aberto agora.'}</h3><p>${s.open?'O MON agrupa padrões que ainda não foram recuperados com sucesso. Acertar novamente reduz a prioridade do erro.':'Erros futuros aparecerão aqui por categoria, frequência e recência.'}</p></div><button class="primary" ${s.open?'':'disabled'} onclick="startMistakePractice()">Praticar ${Math.min(6,s.open)} erros →</button></div>
- <div class="mistake-stats"><div><b>${s.open}</b><span>padrões abertos</span></div><div><b>${s.events}</b><span>eventos registrados</span></div><div><b>${cats[0]?labels[cats[0][0]]||cats[0][0]:'—'}</b><span>maior foco</span></div></div>
- <div class="mistake-categories">${cats.map(([k,v])=>`<span>${labels[k]||k} <b>${v}</b></span>`).join('')}</div>
- <div class="mistake-list">${s.top.map(x=>`<article><div class="mistake-tag">${labels[x.category]||x.category}</div><div><b>${x.title}</b><p>${x.why||'Revise o mecanismo e recupere sem pista.'}</p></div><strong>×${x.count}</strong></article>`).join('')||'<div class="mistake-empty">Continue a trilha. O caderno será alimentado pelos erros reais das lições.</div>'}</div>`;
-}
-async function startMistakePractice(){
- const exercises=remediationExercises(6);
- if(!exercises.length)return toast('Nenhum erro aberto para revisar');
- await ensureFeatureRuntime('lesson');
- quickRun={idx:null,node:{label:'Caderno de Erros',day:0},pack:{title:'Caderno de Erros',focus:'復',exercises,adaptive:true},step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false,practiceOnly:true};
- go('lesson');renderQuickExercise();updateMetrics();
-}
 function renderLeague(){const base=[['Aiko','2.480'],['Kenji','2.130'],['Mina','1.860'],['Rui','1.420'],['Sora','980'],['Emi','720'],['Tomo','510']].map(x=>({name:x[0],xp:Number(x[1].replace('.','')),demo:true}));base.push({name:'Você',xp:state.leagueXp||0,you:true});base.sort((a,b)=>b.xp-a.xp);const w=document.getElementById('leagueBoard');if(w)w.innerHTML=base.map((x,i)=>`<div class="league-row ${x.you?'you':''}"><div class="league-rank">${i+1}</div><div class="league-user"><b>${x.name}</b><small>${x.you?'seu progresso local':'avatar demonstrativo'}</small></div><div class="league-xp">${x.xp.toLocaleString('pt-BR')} XP</div></div>`).join('')}
 function renderShop(){updateMetrics()}
 function buyItem(type){const costs={freeze:100,energy:60,boost:180},cost=costs[type];if(state.gems<cost)return toast('Cristais insuficientes');state.gems-=cost;if(type==='freeze'){state.streakFreeze=(state.streakFreeze||0)+1;toast('Amuleto equipado')}if(type==='energy'){state.energy=state.maxEnergy;toast('Energia recarregada')}if(type==='boost'){state.xpBoostUntil=Date.now()+15*60*1000;toast('2× XP ativo por 15 min')}save()}
