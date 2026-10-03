@@ -28,7 +28,8 @@ const scriptOrder=[
  './core/performance.js',
  './app.js'
 ];
-const featureRuntime=['./features/lesson.js','./features/lesson.css','./features/performance-lab.js','./features/performance-lab.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
+const featureRuntime=['./features/lesson.js','./features/lesson.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
+const debugRuntime=['./features/performance-lab.js','./features/performance-lab.css'];
 const lazyRuntime=[
  './data/content-packs.js',
  './core/mistakes.js',
@@ -45,7 +46,7 @@ for(const src of scriptOrder){
  cursor=p;
 }
 
-for(const asset of [...scriptOrder,...lazyRuntime,...featureRuntime]){
+for(const asset of [...scriptOrder,...lazyRuntime,...featureRuntime,...debugRuntime]){
  if(!sw.includes(`'${asset}'`))throw new Error('PWA cache missing '+asset);
 }
 for(const src of [...lazyRuntime,...featureRuntime]){
@@ -70,10 +71,15 @@ if(!app.includes('loadRuntimeStyle'))throw new Error('Missing lazy feature style
 if(!html.includes('id="routeLoader"'))throw new Error('Missing route loading feedback')
 if(!html.includes('aria-live="polite"'))throw new Error('Lesson feedback should expose a polite live region')
 if(!app.includes("lesson:['./features/lesson.js']"))throw new Error('Lesson UI must stay lazy')
+const perfModule=read('core/performance.js');
+for(const src of debugRuntime){
+ if(!fs.existsSync(path.join(root,src.slice(2))))throw new Error('Debug runtime file missing '+src);
+ if(!perfModule.includes(src))throw new Error('Debug runtime loader missing '+src);
+}
 if(!shellContent.includes('SHELL_FOUNDATION_TOTAL'))throw new Error('Shell content outline missing')
 if(shellContent.includes('const kanjiData'))throw new Error('Kanji catalog leaked into eager shell content')
 if(shellContent.includes('const grammarData'))throw new Error('Grammar catalog leaked into eager shell content')
-const perfModule=read('core/performance.js');
+
 if(!perfModule.includes('performanceSnapshot'))throw new Error('Missing local performance telemetry snapshot')
 if(perfModule.includes('fetch(')||perfModule.includes('sendBeacon'))throw new Error('Performance telemetry must remain local-only')
 if(!perfModule.includes('performanceResourceSnapshot'))throw new Error('Resource performance snapshot missing')
