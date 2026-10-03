@@ -243,3 +243,109 @@
 .path-node.reinforcing small{color:#f0ca88!important}
 .quick-result.needs-mastery{border:1px solid rgba(215,181,109,.2);background:linear-gradient(145deg,rgba(215,181,109,.07),rgba(255,255,255,.015));border-radius:24px;padding:24px}
 .quick-result.needs-mastery .result-seal{color:#efc77e}
+
+/* V13 · generated cinematic artwork + modern sidebar navigation */
+.sidebar{
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto auto;
+  gap:12px;
+  overflow:hidden;
+  isolation:isolate;
+  background:
+    linear-gradient(180deg,rgba(5,10,17,.94) 0%,rgba(6,12,21,.86) 42%,rgba(5,10,16,.97) 100%),
+    url('./assets/scene/mon-sidebar-bg.webp') center right/cover no-repeat;
+}
+.sidebar::before{
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(5,10,17,.98) 0%,rgba(5,10,17,.85) 52%,rgba(5,10,17,.32) 100%),
+    linear-gradient(180deg,rgba(5,10,17,.46) 0%,transparent 28%,rgba(5,10,17,.95) 100%);
+  opacity:1;
+}
+.brand{padding-bottom:10px}
+#desktopNav{
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(244,169,187,.44) transparent;
+  padding:6px 7px 18px 0;
+  margin-right:-7px;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 12px,#000 calc(100% - 15px),transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,#000 12px,#000 calc(100% - 15px),transparent 100%);
+  scroll-behavior:smooth;
+}
+#desktopNav::-webkit-scrollbar{width:6px}
+#desktopNav::-webkit-scrollbar-track{background:transparent}
+#desktopNav::-webkit-scrollbar-thumb{
+  border-radius:999px;
+  background:linear-gradient(180deg,rgba(244,169,187,.62),rgba(230,77,61,.68));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+}
+#desktopNav::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg,rgba(255,211,222,.88),rgba(255,108,91,.9));
+}
+#desktopNav .game-nav-label{
+  position:sticky;
+  top:0;
+  z-index:3;
+  margin:5px 0 4px;
+  padding:8px 12px 7px;
+  background:linear-gradient(180deg,rgba(7,13,22,.98),rgba(7,13,22,.86) 72%,transparent);
+  backdrop-filter:blur(10px);
+}
+.nav-btn:focus-visible{outline:2px solid rgba(244,169,187,.66);outline-offset:2px}
+.side-culture{
+  position:relative;
+  left:auto;right:auto;bottom:auto;
+  height:132px;
+  margin:0;
+  flex:none;
+  background:
+    linear-gradient(0deg,rgba(5,9,15,.94),rgba(5,9,15,.12) 76%),
+    url('./assets/scene/mon-sidebar-bg.webp') center 72%/cover no-repeat;
+  box-shadow:0 18px 46px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.sidebar-foot{
+  position:relative;
+  left:auto;right:auto;bottom:auto;
+  margin:0;
+}
+.course-banner{
+  min-height:230px;
+  background-image:
+    linear-gradient(90deg,rgba(5,10,18,.96) 0%,rgba(5,10,18,.78) 42%,rgba(5,10,18,.30) 68%,rgba(5,10,18,.06) 100%),
+    linear-gradient(0deg,rgba(5,10,18,.28),transparent 62%),
+    url('./assets/scene/mon-home-banner.webp');
+  background-position:center center;
+  background-size:cover;
+  box-shadow:0 26px 76px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.course-banner::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 83% 21%,rgba(255,194,135,.13),transparent 25%),
+    linear-gradient(115deg,transparent 52%,rgba(244,169,187,.035));
+}
+.course-banner > *{position:relative;z-index:1}
+.course-banner::after{opacity:.62}
+.course-banner h2{text-wrap:balance;text-shadow:0 3px 22px rgba(0,0,0,.5)}
+.course-banner p{text-shadow:0 2px 18px rgba(0,0,0,.42)}
+.course-badge{box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+@media(max-width:1100px){
+  .sidebar{grid-template-rows:auto minmax(0,1fr);padding:18px 10px}
+  .side-culture,.sidebar-foot{display:none}
+  #desktopNav{padding-right:0;margin-right:0}
+  #desktopNav .game-nav-label{font-size:0;height:8px;padding:0;margin:4px 0;background:transparent;backdrop-filter:none}
+}
+@media(max-width:800px){
+  .course-banner{min-height:245px;padding:23px 20px;background-position:60% center}
+}
+@media(prefers-reduced-motion:reduce){
+  #desktopNav{scroll-behavior:auto}
+}
