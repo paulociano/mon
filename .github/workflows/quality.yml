@@ -38,6 +38,8 @@ jobs:
         run: node scripts/test-narrative-state.mjs
       - name: Japan Journal
         run: node scripts/test-japan-journal.mjs
+      - name: Video Library
+        run: node scripts/test-video-library.mjs
       - name: MON learning methods
         run: node scripts/test-learning-methods.mjs
       - name: Adaptive teaching mix
@@ -52,6 +54,10 @@ jobs:
         run: node scripts/test-home-polish.mjs
       - name: Adaptive Home Coach
         run: node scripts/test-home-coach.mjs
+      - name: Next Best Lesson Engine
+        run: node scripts/test-next-best-lesson.mjs
+      - name: Adaptive Daily Loop
+        run: node scripts/test-daily-loop.mjs
       - name: Performance budgets
         run: node scripts/test-performance-budget.mjs
       - name: Lazy feature split
