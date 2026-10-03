@@ -20,15 +20,17 @@ if(duplicateIds.length)throw new Error('Duplicate HTML ids: '+duplicateIds.join(
 
 const scriptOrder=[
  './data/course-content.js',
- './data/content-packs.js',
  './core/state.js',
  './core/review-scheduler.js',
+ './app.js'
+];
+const lazyRuntime=[
+ './data/content-packs.js',
  './core/mistakes.js',
  './core/mastery-graph.js',
  './core/learning-methods.js',
  './core/course-engine.js',
- './core/progression-engine.js',
- './app.js'
+ './core/progression-engine.js'
 ];
 let cursor=-1;
 for(const src of scriptOrder){
@@ -38,8 +40,13 @@ for(const src of scriptOrder){
  cursor=p;
 }
 
-for(const asset of scriptOrder){
+for(const asset of [...scriptOrder,...lazyRuntime]){
  if(!sw.includes(`'${asset}'`))throw new Error('PWA cache missing '+asset);
+}
+for(const src of lazyRuntime){
+ if(html.includes(`src="${src}"`))throw new Error('Lazy runtime leaked into critical HTML: '+src);
+ if(!app.includes(`'${src}'`))throw new Error('Lazy runtime loader missing '+src);
+ if(!fs.existsSync(path.join(root,src.slice(2))))throw new Error('Lazy runtime file missing '+src);
 }
 
 const requiredIds=['learningPath','quickMain','quickFeedback','quickCheck','masteryMap','reviewDeck','mistakeNotebook','toast'];
@@ -52,4 +59,6 @@ for(const asset of ['./assets/scene/mon-home-banner.webp','./assets/scene/mon-si
 for(const cls of ['unit-progress','unit-status','node-halo','rail-card-label','home-reveal']){if(!css.includes('.'+cls)&&!html.includes('class="'+cls))throw new Error('Missing home polish contract '+cls)}
 if(!app.includes('queueHomePolish'))throw new Error('Missing progressive home reveal runtime')
 if(!app.includes('aria-current="step"'))throw new Error('Current path step lacks aria-current')
+if(!html.includes('fetchpriority="high"'))throw new Error('Hero preload should be high priority')
+if(!app.includes('ensureLearningRuntime'))throw new Error('Missing lazy learning runtime loader')
 console.log(`Checked ${localRefs.length} local refs, ${ids.length} ids and ${scriptOrder.length} runtime modules.`);
