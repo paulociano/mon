@@ -17,6 +17,7 @@ if(duplicateIds.length)throw new Error('Duplicate HTML ids: '+duplicateIds.join(
 const scriptOrder=[
  './data/course-content.js',
  './core/state.js',
+ './core/review-scheduler.js',
  './core/mistakes.js',
  './core/course-engine.js',
  './app.js'
@@ -33,7 +34,7 @@ for(const asset of scriptOrder){
  if(!sw.includes(`'${asset}'`))throw new Error('PWA cache missing '+asset);
 }
 
-const requiredIds=['learningPath','quickMain','quickFeedback','quickCheck','mistakeNotebook','toast'];
+const requiredIds=['learningPath','quickMain','quickFeedback','quickCheck','reviewDeck','mistakeNotebook','toast'];
 for(const id of requiredIds){
  if(!html.includes(`id="${id}"`))throw new Error('Required UI id missing: '+id);
 }
