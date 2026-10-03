@@ -27,3 +27,5 @@ jobs:
         run: node scripts/test-learning-methods.mjs
       - name: Adaptive teaching mix
         run: node scripts/test-adaptive-methods.mjs
+      - name: Mastery graph behavior
+        run: node scripts/test-mastery-graph.mjs
