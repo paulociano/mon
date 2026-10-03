@@ -90,3 +90,45 @@ function compileMONSequence(unit){
   const methods=unit.methods||['discover','freeRecall','transfer','roleplay'];
   return methods.map((m,i)=>compileMONMethod(unit,m,i)).filter(Boolean);
 }
+
+function methodStatKey(exercise={}){
+  return exercise.method||exercise.type||'standard';
+}
+function recordMethodOutcome(exercise={},ok=false,meta={}){
+  state.methodStats=state.methodStats||{};
+  const key=methodStatKey(exercise),old=state.methodStats[key]||{attempts:0,correct:0,hints:0};
+  state.methodStats[key]={
+    attempts:old.attempts+1,
+    correct:old.correct+(ok?1:0),
+    hints:old.hints+(meta.hintUsed?1:0),
+    lastAt:Date.now()
+  };
+}
+function methodAccuracy(key){
+  const x=state.methodStats?.[key];return x?.attempts?x.correct/x.attempts:null;
+}
+function adaptiveMethodSequence(unit){
+  const declared=[...(unit.methods||['discover','freeRecall','transfer','roleplay'])];
+  const recall=methodAccuracy('recall'),transfer=methodAccuracy('transfer'),produce=methodAccuracy('produce');
+  const weakRecall=recall!==null&&recall<.65;
+  const strongRecall=recall!==null&&recall>=.82;
+  const weakTransfer=transfer!==null&&transfer<.65;
+  const strongProduce=produce!==null&&produce>=.8;
+  let ordered=[...declared];
+  if(weakRecall){
+    ordered=['discover','cloze','dictation','freeRecall',...ordered];
+  }else if(strongRecall){
+    ordered=['freeRecall','transfer','roleplay','dictation',...ordered.filter(x=>x!=='discover')];
+  }
+  if(weakTransfer)ordered=['cloze','transfer',...ordered];
+  if(strongProduce)ordered=ordered.filter((x,i)=>x!=='discover'||i===0);
+  return [...new Set(ordered)].slice(0,6);
+}
+function compileAdaptiveMONSequence(unit){
+  return adaptiveMethodSequence(unit).map((m,i)=>compileMONMethod(unit,m,i)).filter(Boolean);
+}
+function methodPerformanceSummary(){
+  const out={};
+  for(const [k,v] of Object.entries(state.methodStats||{}))out[k]={...v,accuracy:v.attempts?Math.round(v.correct/v.attempts*100):0};
+  return out;
+}
