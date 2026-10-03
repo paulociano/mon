@@ -23,6 +23,17 @@ assert.ok(app.includes('function showProfileSummary()'),'profile action handler 
 
 assert.ok(app.includes("catch(err){\n   console.error('MON route failed',id,err);"),'route failures must be surfaced');
 assert.ok(app.includes("toast('Não consegui abrir '+(viewNames[id]||id)+'. Tente novamente.')"),'route failure needs user feedback');
+for(const token of [
+  'let routeRequestId=0',
+  'const requestId=++routeRequestId',
+  "const previous=document.querySelector('.view.active')?.id||'home'",
+  'if(requestId!==routeRequestId)return false',
+  "v.classList.toggle('active',v.id===previous)",
+  "b.classList.toggle('active',b.dataset.view===previous)",
+  'if(requestId===routeRequestId)setRouteBusy(false)'
+]){
+  assert.ok(app.includes(token),'missing resilient routing contract '+token);
+}
 
 assert.ok(sw.includes("const CACHE='mon-japanese-os-v29'"),'service worker cache version must advance with routing fix');
 assert.ok(sw.includes("event.request.destination==='script'||event.request.destination==='style'"),'runtime JS/CSS must avoid stale-first skew');
