@@ -7,6 +7,22 @@ const MON_METHOD={
   principle:'Ajuda aparece depois da tentativa sempre que o conteúdo já foi apresentado.'
 };
 
+const grammarBridgeNotes={
+  topicDesu:'は organiza o tópico. Não pense nele como um sinal de “=”: primeiro diga sobre o que você fala, depois complete a informação.',
+  questionKa:'か marca a pergunta no fim. Em fala casual a entonação também ajuda, mas aqui o padrão polido deixa a intenção explícita.',
+  locationNi:'に marca o destino de movimento. Compare com で: に aponta para onde você vai; で marca onde uma ação acontece.',
+  locationWaDoko:'O molde X は どこですか separa tópico e pergunta. Evite traduzir palavra por palavra; recupere o bloco inteiro.',
+  objectO:'を marca o objeto da ação. Em português a ordem costuma carregar esse papel; em japonês a partícula é a pista mais confiável.',
+  requestKudasai:'ください funciona bem para pedir algo concreto. Pense em “X を ください” como um bloco funcional, não como tradução literal de “dar”.',
+  requestOnegai:'お願いします pede item, serviço ou ação com mais flexibilidade. É especialmente útil em atendimento e situações formais.',
+  deAction:'で marca o palco da ação. Lugar + で responde “onde a ação acontece?”, diferente de に com destino/existência.',
+  gaState:'が frequentemente destaca aquilo que está em certo estado ou foco perceptivo. Não tente substituir mecanicamente por “o/a” do português.',
+  karaMade:'から e まで formam limites: origem/início → fim. O mesmo mapa mental serve para tempo e deslocamento.'
+};
+function grammarBridge(id,g={}){
+  return grammarBridgeNotes[id]||`Observe a função de ${g.form||'este padrão'} dentro da frase antes de procurar uma tradução fixa em português.`;
+}
+
 const pronunciationContrasts=[
   {a:'おばさん',aPt:'tia',b:'おばあさん',bPt:'avó',focus:'vogal longa'},
   {a:'ビル',aPt:'prédio',b:'ビール',bPt:'cerveja',focus:'duração vocálica'},
@@ -44,7 +60,7 @@ function compileMONMethod(unit,method,index=0){
     return {type:'discovery',prompt:'Descubra a regra antes da explicação.',examples,
       options:methodOptions(g.item.function,Object.values(grammarCatalog).map(x=>x.function)),
       answer:g.item.function,why:`${g.item.form} · ${g.item.pt}`,
-      bridge:`PT/EN dão muito peso à posição da palavra. Aqui, observe a partícula e o predicado final: a função vem da estrutura, não de traduzir bloco por bloco.`,
+      bridge:grammarBridge(g.id,g.item),
       _reviewType:'grammar',_reviewKey:'P:'+g.id,method:'discover'};
   }
   if(method==='freeRecall'&&v.item){
