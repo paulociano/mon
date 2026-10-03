@@ -49,7 +49,7 @@ The app now stores structured mistakes and exposes a corrective practice queue g
 ### 4. Adaptive SRS ✅ unified scheduler implemented
 One scheduler now handles kana, kanji, vocabulary, grammar and corrective errors while keeping domain-specific exercise rendering.
 
-### 5. Rich lesson types
+### 5. Rich lesson types ✅ Gate Loop foundation implemented
 Add:
 
 - dictation
@@ -75,3 +75,8 @@ Keep content, learner state, lesson generation and UI rendering as separate seam
 ## Quality gate
 
 GitHub Actions now checks JavaScript syntax, local asset references, duplicate HTML IDs, runtime script order and PWA cache coverage on pushes and pull requests.
+
+
+## MON Gate Loop
+
+The differentiated teaching loop is: Discover → Recall → Transfer → Produce → Reflect. It deliberately delays hints and model answers when the learner has already encountered the content. N5 packs can now generate free recall, blind dictation, contextual cloze, pronunciation contrasts, transfer prompts and hidden-answer roleplay alongside standard exercises.
