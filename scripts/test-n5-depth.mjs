@@ -71,7 +71,7 @@ for(const key of ['wakarimasen','mouichido']){
   assert.ok((vocabUse.get(key)||[]).length>=3,key+' must reappear across contexts for repair fluency');
 }
 
-const survivalReappearance=['migi','hidari','fukuro','genkin','denwa'];
+const survivalReappearance=['migi','hidari','fukuro','genkin','basu','oriru','tenki','kasa','toire','kaku','denwa'];
 for(const key of survivalReappearance){
   const days=vocabUse.get(key)||[];
   assert.ok(days.length>=2,key+' must reappear after first exposure');
