@@ -6,6 +6,10 @@ let currentKanji=0;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600)}
 function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${id}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 const LEARNING_RUNTIME_SCRIPTS=[
+ './data/kanji.js',
+ './data/kana.js',
+ './data/experiences.js',
+ './data/foundation.js',
  './data/content-packs.js',
  './core/mistakes.js',
  './core/mastery-graph.js',
@@ -14,12 +18,13 @@ const LEARNING_RUNTIME_SCRIPTS=[
  './core/progression-engine.js'
 ];
 const FEATURE_RUNTIME_SCRIPTS={
- foundation:['./features/foundation.js'],
- session:['./features/foundation.js','./features/session.js'],
- kanji:['./features/kanji.js'],
- reading:['./features/experiences.js'],
- missions:['./features/experiences.js'],
- speaking:['./features/experiences.js']
+ foundation:['./data/kana.js','./data/foundation.js','./features/foundation.js'],
+ session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./features/foundation.js','./features/session.js'],
+ kanji:['./data/kanji.js','./features/kanji.js'],
+ reading:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
+ missions:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
+ speaking:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
+ curriculum:['./data/curriculum.js']
 };
 const featureRuntimePromises={};
 async function ensureFeatureRuntime(name){
@@ -60,6 +65,7 @@ const hydratedViews=new Set(['home']);
 async function go(id){
  const viewStart=typeof perfStart==='function'?perfStart('view:'+id):null;
  if(id==='foundation')await ensureFeatureRuntime('foundation');
+ if(id==='curriculum')await ensureFeatureRuntime('curriculum');
  if(id==='kanji')await ensureFeatureRuntime('kanji');
  if(id==='reading'||id==='missions'||id==='speaking')await ensureFeatureRuntime(id);
  if(id==='practice')await ensureLearningRuntime();
@@ -82,16 +88,19 @@ async function go(id){
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
 function currentPlan(){const d=Number(state.day||1);if(d<=30)return{level:'N5',localDay:d,total:30,label:'sobrevivência',start:1};if(d<=90)return{level:'N4',localDay:d-30,total:60,label:'autonomia',start:31};return{level:'N3',localDay:Math.min(90,d-90),total:90,label:'integração',start:91}}
 function updateMetrics(){
- const mastered=Object.values(state.reviews).filter(r=>(r.interval||0)>=7&&(r.reps||0)>=3).length;const due=kanjiData.filter(x=>reviewIsDue('kanji',x.k,true)).length;
+ const mastered=Object.values(state.reviews).filter(r=>(r.interval||0)>=7&&(r.reps||0)>=3).length;
+ const reviewedKanji=new Set(Object.keys(state.reviews||{}));
+ const dueReviewed=Object.values(state.reviewItems||{}).filter(r=>r?.type==='kanji'&&(r.due||0)<=Date.now()).length;
+ const due=Math.max(0,SHELL_KANJI_COUNT-reviewedKanji.size)+dueReviewed;
  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v}, width=(id,v)=>{const e=document.getElementById(id);if(e)e.style.width=v};
- set('masteredMetric',mastered);set('dueMetric',due);width('masteredBar',Math.min(100,mastered/Math.max(1,kanjiData.length)*100)+'%');set('xpTop',state.xp);set('streakSidebar',state.streak);set('streakTop',state.streak);set('energyTop',Math.max(0,state.energy));set('quickEnergy',Math.max(0,state.energy));set('gemsTop',state.gems);set('speechMetric',(state.speech||0)+'%');width('speechBar',(state.speech||0)+'%');
- const p=currentPlan(),zeroPending=!state.foundationComplete;const plan=document.getElementById('planTop');if(plan)plan.textContent=zeroPending?`ZERO · sessão ${Math.min(FOUNDATION_TOTAL,state.foundationDay||1)}/${FOUNDATION_TOTAL}`:`${p.level} · dia ${p.localDay}/${p.total}`;const hero=document.getElementById('sessionDayHero');if(hero)hero.textContent=zeroPending?`fundação ${Math.min(FOUNDATION_TOTAL,state.foundationDay||1)}/${FOUNDATION_TOTAL}`:`dia ${state.day}`;const dd=document.getElementById('dailyDueCount');if(dd)dd.textContent=zeroPending?(typeof countKanaInTraining==='function'?countKanaInTraining():0):due;const pc=document.getElementById('pathCurrentLevel');if(pc)pc.textContent=zeroPending?'ZERO':p.level;const pd=document.getElementById('pathCurrentDay');if(pd)pd.textContent=zeroPending?`sessão ${Math.min(FOUNDATION_TOTAL,state.foundationDay||1)} · base sonora, escrita e gramática`:`dia ${p.localDay} · ${p.label}`;const pr=document.getElementById('pathRingFill');if(pr)pr.style.width=zeroPending?Math.min(100,((state.foundationDay||1)-1)/FOUNDATION_TOTAL*100)+'%':Math.min(100,p.localDay/p.total*100)+'%';updateDailyCommand();if(typeof renderFoundationProgress==='function')renderFoundationProgress();renderGameHome();
+ set('masteredMetric',mastered);set('dueMetric',due);width('masteredBar',Math.min(100,mastered/Math.max(1,SHELL_KANJI_COUNT)*100)+'%');set('xpTop',state.xp);set('streakSidebar',state.streak);set('streakTop',state.streak);set('energyTop',Math.max(0,state.energy));set('quickEnergy',Math.max(0,state.energy));set('gemsTop',state.gems);set('speechMetric',(state.speech||0)+'%');width('speechBar',(state.speech||0)+'%');
+ const p=currentPlan(),zeroPending=!state.foundationComplete;const plan=document.getElementById('planTop');if(plan)plan.textContent=zeroPending?`ZERO · sessão ${Math.min(SHELL_FOUNDATION_TOTAL,state.foundationDay||1)}/${SHELL_FOUNDATION_TOTAL}`:`${p.level} · dia ${p.localDay}/${p.total}`;const hero=document.getElementById('sessionDayHero');if(hero)hero.textContent=zeroPending?`fundação ${Math.min(SHELL_FOUNDATION_TOTAL,state.foundationDay||1)}/${SHELL_FOUNDATION_TOTAL}`:`dia ${state.day}`;const dd=document.getElementById('dailyDueCount');if(dd)dd.textContent=zeroPending?(typeof countKanaInTraining==='function'?countKanaInTraining():0):due;const pc=document.getElementById('pathCurrentLevel');if(pc)pc.textContent=zeroPending?'ZERO':p.level;const pd=document.getElementById('pathCurrentDay');if(pd)pd.textContent=zeroPending?`sessão ${Math.min(SHELL_FOUNDATION_TOTAL,state.foundationDay||1)} · base sonora, escrita e gramática`:`dia ${p.localDay} · ${p.label}`;const pr=document.getElementById('pathRingFill');if(pr)pr.style.width=zeroPending?Math.min(100,((state.foundationDay||1)-1)/SHELL_FOUNDATION_TOTAL*100)+'%':Math.min(100,p.localDay/p.total*100)+'%';updateDailyCommand();if(typeof renderFoundationProgress==='function')renderFoundationProgress();renderGameHome();
 }
 
 let curriculumLevel='N5';
 function renderCurriculum(level=curriculumLevel){curriculumLevel=level;document.querySelectorAll('[data-level]').forEach(b=>b.classList.toggle('active',b.dataset.level===level));const data=curriculumData.find(x=>x.level===level)||curriculumData[0];const p=currentPlan();const same=p.level===level;document.getElementById('curriculumSummary').innerHTML=`<div class="curriculum-stat"><span>promessa</span><b>${data.promise}</b></div><div class="curriculum-stat"><span>kanji alvo</span><b>${data.kanji}</b></div><div class="curriculum-stat"><span>gramática funcional</span><b>${data.grammar}</b></div><div class="curriculum-stat"><span>missões</span><b>${data.missions}</b></div>`;const levelStart=level==='N5'?1:level==='N4'?31:91;document.getElementById('curriculumGrid').innerHTML=data.units.map((u,i)=>{const span=u.days.split('–').map(Number),absStart=levelStart+(span[0]-1),absEnd=levelStart+(span[1]-1);const done=state.day>absEnd, current=same&&state.day>=absStart&&state.day<=absEnd, locked=state.day<absStart&&level!=='N5';return `<article class="unit-card ${done?'done':''} ${current?'current':''} ${locked?'locked':''}" data-kanji="${u.kanji}"><div class="unit-index"><span>${data.level} · dias ${u.days}</span><i></i></div><h4>${u.title}</h4><p>${u.desc}</p><div class="unit-meta">${u.meta.map(m=>`<span>${m}</span>`).join('')}</div><button class="unit-action" onclick="${current||done?`startSession()`:`toast('Este bloco abre conforme você demonstra domínio')`}">${current?'continuar daqui →':done?'revisar bloco →':'prévia bloqueada'}</button></article>`}).join('')}
 document.querySelectorAll('[data-level]').forEach(b=>b.addEventListener('click',()=>renderCurriculum(b.dataset.level)));
-function updateDailyCommand(){if(!document.getElementById('dailyMissionTitle'))return;if(!state.foundationComplete){const u=foundationUnits[Math.max(0,Math.min(FOUNDATION_TOTAL-1,(state.foundationDay||1)-1))];document.getElementById('dailyMissionTitle').textContent='Fundação Zero: '+u.title.toLowerCase();document.getElementById('dailyMissionCopy').textContent=`Sessão ${u.n}/${FOUNDATION_TOTAL} · ${u.desc}. O objetivo é automatizar leitura e som antes de acelerar no N5.`;const c=document.getElementById('dailyStepCount');if(c)c.textContent=6;return}const i=Math.min(missions.length-1,Math.floor(((state.day||1)-1)%30/5));document.getElementById('dailyMissionTitle').textContent='Hoje: '+missions[i].title.toLowerCase();document.getElementById('dailyMissionCopy').textContent=`Missão ${i+1}/6 · ${missions[i].desc}. O bloco começa pelo que está vencendo na sua memória.`}
+function updateDailyCommand(){if(!document.getElementById('dailyMissionTitle'))return;if(!state.foundationComplete){const u=shellFoundationOutline[Math.max(0,Math.min(SHELL_FOUNDATION_TOTAL-1,(state.foundationDay||1)-1))];document.getElementById('dailyMissionTitle').textContent='Fundação Zero: '+u.title.toLowerCase();document.getElementById('dailyMissionCopy').textContent=`Sessão ${u.n}/${SHELL_FOUNDATION_TOTAL} · ${u.desc}. O objetivo é automatizar leitura e som antes de acelerar no N5.`;const c=document.getElementById('dailyStepCount');if(c)c.textContent=6;return}const i=Math.min(shellMissionOutline.length-1,Math.floor(((state.day||1)-1)%30/5));document.getElementById('dailyMissionTitle').textContent='Hoje: '+shellMissionOutline[i].title.toLowerCase();document.getElementById('dailyMissionCopy').textContent=`Missão ${i+1}/6 · ${shellMissionOutline[i].desc}. O bloco começa pelo que está vencendo na sua memória.`}
 function normalizeJP(s){return(s||'').replace(/[\s。、！？,.!?]/g,'').replace(/とうきょう/g,'東京').replace(/えき/g,'駅').toLowerCase()}
 function similarity(a,b){a=normalizeJP(a);b=normalizeJP(b);if(!a||!b)return 0;let same=0;for(const ch of new Set(a)){same+=Math.min(a.split(ch).length-1,b.split(ch).length-1)}return Math.max(0,Math.min(100,Math.round((same/Math.max(a.length,b.length))*115)))}
 function shuffledOptions(correct, pool, count=4){const vals=[correct,...pool.filter(x=>x!==correct)].filter((x,i,a)=>a.indexOf(x)===i);for(let i=vals.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[vals[i],vals[j]]=[vals[j],vals[i]]}const sliced=vals.slice(0,count);if(!sliced.includes(correct))sliced[Math.floor(Math.random()*sliced.length)]=correct;return sliced}
@@ -293,7 +302,7 @@ function renderQuickComplete(outOfEnergy=false){
      state.remediation={idx:quickRun.idx,unitId:quickRun.pack.unitId||null,reason:decision.reason,gaps:(decision.gaps||[]).slice(0,6),updatedAt:Date.now()};
    }else if(quickRun.idx===state.pathProgress){
      state.remediation=null;state.pathProgress++;
-     const node=quickRun.node;if(node.day&&node.day<=24){state.foundationDay=Math.max(state.foundationDay||1,Math.min(FOUNDATION_TOTAL,node.day+1));if(node.day>=24)state.foundationComplete=true}else if(node.day>24){state.foundationComplete=true;state.day=Math.max(state.day||1,node.day-24)}
+     const node=quickRun.node;if(node.day&&node.day<=24){state.foundationDay=Math.max(state.foundationDay||1,Math.min(SHELL_FOUNDATION_TOTAL,node.day+1));if(node.day>=24)state.foundationComplete=true}else if(node.day>24){state.foundationComplete=true;state.day=Math.max(state.day||1,node.day-24)}
    }
  }
  if(!practice){const q=todayQuestState();q.lessons=(q.lessons||0)+1;q.xp=(q.xp||0)+xp;if(acc>=80)q.accuracy=true;if(!outOfEnergy&&decision.action==='advance'&&quickRun.idx!==state.pathProgress-1&&quickRun.idx===state.pathProgress){state.pathProgress++}updateGameStreak()}
@@ -354,7 +363,7 @@ function buyItem(type){const costs={freeze:100,energy:60,boost:180},cost=costs[t
 
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 updateMetrics();renderGameHome();
-for(const name of ['kanji','reading','missions','speaking']){
+for(const name of ['kanji','reading','missions','speaking','curriculum']){
  const nav=document.querySelector(`[data-view="${name}"]`);
  if(nav)nav.addEventListener('pointerover',()=>ensureFeatureRuntime(name).catch(()=>{}),{passive:true,once:true});
 }
