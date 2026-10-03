@@ -12,6 +12,6 @@ assert.ok(foundation.includes('function gradeKana('));
 assert.ok(session.includes('function renderSession('));
 assert.ok(session.includes('function renderSessionComplete('));
 assert.ok(app.includes("foundation:['./data/kana.js','./data/foundation.js','./features/foundation.js']"));
-assert.ok(app.includes("session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./features/foundation.js','./features/session.js']"));
+assert.ok(app.includes("session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./data/narrative.js','./features/foundation.js','./features/session.js']"));
 assert.ok(app.includes("typeof renderFoundationProgress==='function'"));
 console.log('MON feature split contracts passed');
