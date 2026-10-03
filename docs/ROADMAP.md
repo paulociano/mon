@@ -37,8 +37,8 @@ A vantagem do MON não deve ser “mais exercícios”. Ela deve vir da combina�
 
 ## Sequência de melhorias
 
-### 1. Home adaptativa — próxima melhor ação
-**Status:** em implementação.
+### 1. Home adaptativa — próxima melhor ação ✅
+**Status:** implementada e coberta pelo Quality Gate.
 
 **Objetivo:** a Home escolhe uma prioridade principal em vez de apresentar vários sistemas concorrentes.
 
@@ -60,7 +60,7 @@ Política inicial:
 
 **Critério de aceite:** sempre existe uma ação principal explicável e acionável, sem carregar features pesadas para decidir.
 
-### 2. Next Best Lesson Engine
+### 2. Next Best Lesson Engine — próximo
 **Dependência:** Home adaptativa estável.
 
 **Objetivo:** evoluir de uma decisão de Home para um motor capaz de montar a próxima sessão a partir da evidência real do aluno.
