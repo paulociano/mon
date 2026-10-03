@@ -218,10 +218,67 @@ const pathUnits=[
 ];
 const flatPath=[];pathUnits.forEach((u,ui)=>u.nodes.forEach((n,ni)=>flatPath.push({unit:ui,local:ni,type:n[0],label:n[1],icon:n[2],day:n[3]})));
 function todayQuestState(){const d=localDateKey();if(state.quests.date!==d)state.quests={date:d,lessons:0,xp:0,accuracy:false};return state.quests}
-function renderGameHome(){const wrap=document.getElementById('learningPath');if(!wrap)return;const q=todayQuestState();const total=flatPath.length,progress=Math.max(0,Math.min(total,state.pathProgress||0));let gi=0;wrap.innerHTML=pathUnits.map((u,ui)=>{const html=u.nodes.map((n,ni)=>{const idx=gi++,type=n[0],done=idx<progress,current=idx===progress,locked=idx>progress,repairing=current&&state.remediation?.idx===idx,cls=`${type} ${done?'done':''} ${current?'current':''} ${repairing?'reinforcing':''} ${locked?'locked':''}`;const click=locked?`toast('Complete o círculo anterior primeiro')`:repairing?`startMasteryRepair(${idx})`:type==='chest'?`claimPathChest(${idx})`:`startQuickLesson(${idx})`;const label=repairing?`↻ reforçar · ${n[1]}`:n[1];return `<div class="path-node-wrap"><button class="path-node ${cls}" onclick="${click}" aria-label="${label}"><span class="node-icon">${done?'✓':repairing?'復':n[2]}</span><small>${label}</small></button></div>`}).join('');return `<section class="path-unit"><div class="path-unit-head"><span>unidade ${ui+1}</span><b>${u.title}</b><small>${u.sub}</small></div><div class="lesson-path">${html}</div></section>`}).join('');
- const pct=Math.round(progress/total*100);const unit=(flatPath[Math.min(progress,total-1)]||{unit:0}).unit;const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};el('courseSectionLabel',`Seção ${unit+1}`);el('courseScore',Math.round((state.xp||0)/10));el('coursePct',pct+'%');el('leagueMiniText',`${state.leagueXp||0} XP esta semana`);const goal=Math.min(100,Math.round((q.xp||0)/30*100)),ring=document.getElementById('dailyRing');if(ring)ring.style.setProperty('--goal',goal+'%');el('dailyGoalPct',goal+'%');renderQuests();
- const g=flatPath[Math.min(progress,total-1)];if(g){const repair=state.remediation?.idx===progress;el('guideTitle',repair?'Fortaleça a aresta fraca.':g.day<=12?'Automatize o kana.':g.day<=24?'Monte frases, não traduções.':'Use japonês em contexto.');el('guideCopy',repair?'Você concluiu a atividade, mas o Mastery Graph ainda encontrou uma habilidade crítica instável. O reforço é curto, direcionado e não consome Energia.':g.day<=12?'Leia, ouça e recupere a forma. O romaji some conforme seu cérebro para de precisar dele.':g.day<=24?'Partículas mostram o papel dos blocos. Espere o predicado antes de fechar o sentido.':'Agora o curso mistura kana, gramática, kanji, áudio e situações reais no mesmo circuito.')}}
-function renderQuests(){const q=todayQuestState(),items=[{icon:'道',name:'Complete 1 lição',now:q.lessons||0,max:1},{icon:'✦',name:'Ganhe 30 XP',now:q.xp||0,max:30},{icon:'正',name:'Faça uma lição com 80%+',now:q.accuracy?1:0,max:1}];const w=document.getElementById('questList');if(!w)return;w.innerHTML=items.map(x=>{const pct=Math.min(100,Math.round(x.now/x.max*100)),done=x.now>=x.max;return `<div class="quest-row"><div class="quest-icon">${x.icon}</div><div><b>${x.name}</b><span>${Math.min(x.now,x.max)}/${x.max}</span><div class="quest-progress"><i style="width:${pct}%"></i></div></div><div class="quest-check">${done?'✓':'◆ 10'}</div></div>`}).join('')}
+function renderGameHome(){
+ const wrap=document.getElementById('learningPath');if(!wrap)return;
+ const q=todayQuestState(),total=flatPath.length,progress=Math.max(0,Math.min(total,state.pathProgress||0));
+ let gi=0;
+ wrap.innerHTML=pathUnits.map((u,ui)=>{
+   const startIndex=gi;
+   const html=u.nodes.map((n,ni)=>{
+     const idx=gi++,type=n[0],done=idx<progress,current=idx===progress,locked=idx>progress,repairing=current&&state.remediation?.idx===idx;
+     const cls=`${type} ${done?'done':''} ${current?'current':''} ${repairing?'reinforcing':''} ${locked?'locked':''}`;
+     const click=locked?`toast('Complete o círculo anterior primeiro')`:repairing?`startMasteryRepair(${idx})`:type==='chest'?`claimPathChest(${idx})`:`startQuickLesson(${idx})`;
+     const label=repairing?`↻ reforçar · ${n[1]}`:n[1];
+     const typeLabel={lesson:'lição',story:'história',checkpoint:'checkpoint',chest:'recompensa'}[type]||type;
+     return `<div class="path-node-wrap ${current?'is-current':''} ${done?'is-done':''}" data-node-index="${idx}">
+       <button class="path-node ${cls}" onclick="${click}" aria-label="${label}" ${current?'aria-current="step"':''}>
+         <span class="node-halo" aria-hidden="true"></span>
+         <span class="node-icon">${done?'✓':repairing?'復':n[2]}</span>
+         <span class="node-type">${typeLabel}</span>
+         <small>${label}</small>
+       </button>
+     </div>`;
+   }).join('');
+   const count=u.nodes.length,endIndex=gi-1,doneCount=Math.max(0,Math.min(count,progress-startIndex));
+   const unitPct=Math.round(doneCount/count*100);
+   const currentUnit=progress>=startIndex&&progress<=endIndex;
+   const unitDone=progress>endIndex;
+   const unitLocked=progress<startIndex;
+   const status=unitDone?'concluída':currentUnit?'em curso':'bloqueada';
+   return `<section class="path-unit ${currentUnit?'current-unit':''} ${unitDone?'done-unit':''} ${unitLocked?'locked-unit':''}" data-unit-index="${ui}">
+     <div class="path-unit-head">
+       <div class="unit-heading"><span>unidade ${String(ui+1).padStart(2,'0')}</span><b>${u.title}</b><small>${u.sub}</small></div>
+       <div class="unit-status"><strong>${status}</strong><span>${doneCount}/${count} etapas</span></div>
+       <div class="unit-progress" aria-label="${unitPct}% concluído"><i style="width:${unitPct}%"></i></div>
+     </div>
+     <div class="lesson-path">${html}</div>
+   </section>`;
+ }).join('');
+ const pct=Math.round(progress/total*100),unit=(flatPath[Math.min(progress,total-1)]||{unit:0}).unit;
+ const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+ el('courseSectionLabel',`Seção ${unit+1}`);el('courseScore',Math.round((state.xp||0)/10));el('coursePct',pct+'%');el('leagueMiniText',`${state.leagueXp||0} XP esta semana`);
+ const goal=Math.min(100,Math.round((q.xp||0)/30*100)),ring=document.getElementById('dailyRing');if(ring)ring.style.setProperty('--goal',goal+'%');el('dailyGoalPct',goal+'%');
+ renderQuests();
+ const g=flatPath[Math.min(progress,total-1)];
+ if(g){
+   const repair=state.remediation?.idx===progress,guide=document.querySelector('.guide-card');
+   if(guide){guide.dataset.state=repair?'repair':g.type==='checkpoint'?'checkpoint':g.type==='story'?'story':'learn'}
+   el('guideTitle',repair?'Fortaleça a aresta fraca.':g.type==='checkpoint'?'Prepare-se para provar domínio.':g.type==='story'?'Leia para integrar o que aprendeu.':g.day<=12?'Automatize o kana.':g.day<=24?'Monte frases, não traduções.':'Use japonês em contexto.');
+   el('guideCopy',repair?'Você concluiu a atividade, mas o Mastery Graph ainda encontrou uma habilidade crítica instável. O reforço é curto, direcionado e não consome Energia.':g.type==='checkpoint'?'O checkpoint mistura competências da unidade. Ele não mede velocidade, mede se você consegue recuperar e transferir sem pista.':g.type==='story'?'Histórias conectam vocabulário e gramática em contexto contínuo. Leia primeiro pelo sentido geral, depois volte aos detalhes.':g.day<=12?'Leia, ouça e recupere a forma. O romaji some conforme seu cérebro para de precisar dele.':g.day<=24?'Partículas mostram o papel dos blocos. Espere o predicado antes de fechar o sentido.':'Agora o curso mistura kana, gramática, kanji, áudio e situações reais no mesmo circuito.');
+ }
+ queueHomePolish();
+}
+function queueHomePolish(){
+ const home=document.getElementById('home');if(!home||!home.classList.contains('active'))return;
+ const items=[...home.querySelectorAll('.course-banner,.path-toolbar,.path-unit,.learn-rail>.rail-card')];
+ items.forEach((el,i)=>{el.classList.add('home-reveal');el.style.setProperty('--reveal-delay',Math.min(i,7)*35+'ms')});
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){items.forEach(el=>el.classList.add('is-visible'));return}
+ if(!('IntersectionObserver' in window)){items.forEach(el=>el.classList.add('is-visible'));return}
+ window.__homeObserver?.disconnect?.();
+ window.__homeObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');window.__homeObserver.unobserve(entry.target)}}),{threshold:.08,rootMargin:'40px 0px -30px'});
+ items.forEach(el=>window.__homeObserver.observe(el));
+}
+function renderQuests(){const q=todayQuestState(),items=[{icon:'道',name:'Complete 1 lição',now:q.lessons||0,max:1},{icon:'✦',name:'Ganhe 30 XP',now:q.xp||0,max:30},{icon:'正',name:'Faça uma lição com 80%+',now:q.accuracy?1:0,max:1}];const w=document.getElementById('questList');if(!w)return;w.innerHTML=items.map(x=>{const pct=Math.min(100,Math.round(x.now/x.max*100)),done=x.now>=x.max;return `<div class="quest-row ${done?'done':''}"><div class="quest-icon">${x.icon}</div><div><b>${x.name}</b><span>${Math.min(x.now,x.max)}/${x.max}</span><div class="quest-progress"><i style="width:${pct}%"></i></div></div><div class="quest-check">${done?'✓':'◆ 10'}</div></div>`}).join('')}
 function claimPathChest(idx){if(idx>state.pathProgress)return toast('Este baú ainda está bloqueado');if(state.chests[idx])return toast('Baú já aberto');state.chests[idx]=true;state.gems+=40;state.energy=Math.min(state.maxEnergy,state.energy+4);if(idx===state.pathProgress)state.pathProgress++;save();toast('Baú aberto · +40 cristais · +4 energia');renderGameHome()}
 let quickRun=null;
 function startQuickLesson(idx){if(idx>state.pathProgress)return toast('Complete o círculo anterior primeiro');const node=flatPath[idx];if(!node)return;if(state.remediation?.idx===idx)return startMasteryRepair(idx);if(node.type==='chest')return claimPathChest(idx);if((state.energy||0)<=0){go('practice');toast('Energia vazia · pratique para recarregar ou use a Loja');return}const pack=buildLesson(node,state);quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false};go('lesson');renderQuickExercise();updateMetrics()}
