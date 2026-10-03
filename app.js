@@ -49,6 +49,7 @@ async function go(id){
  else if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);
  else if(id==='foundation')renderFoundation();
  else if(id==='kanji'){ensureDrawingCanvases();renderKanjiList();selectKanji(currentKanji)}
+ else if(id==='writing'){ensureDrawingCanvases()}
  else if(id==='missions')hydrateMissionGrid();
  else if(id==='speaking')hydrateSurvivalPhrases();
  else if(id==='league')renderLeague();
