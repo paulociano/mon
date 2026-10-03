@@ -83,3 +83,8 @@ GitHub Actions now checks JavaScript syntax, local asset references, duplicate H
 ## MON Gate Loop
 
 The differentiated teaching loop is: Discover → Recall → Transfer → Produce → Reflect. It deliberately delays hints and model answers when the learner has already encountered the content. N5 packs can now generate free recall, blind dictation, contextual cloze, pronunciation contrasts, transfer prompts and hidden-answer roleplay alongside standard exercises.
+
+
+## Progression by mastery
+
+Structured N5 nodes no longer advance on completion alone. The progression engine evaluates lesson accuracy plus unit mastery evidence. When critical edges are weak or unseen, the node enters a reinforcement state and generates a free micro-lesson targeted to those gaps. Successful reinforcement can unlock the next node directly.
