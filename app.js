@@ -224,7 +224,7 @@ function renderQuickExercise(){
  if(!quickRun)return;
  const total=quickRun.pack.exercises.length;if(quickRun.step>=total)return renderQuickComplete();
  const e=quickRun.pack.exercises[quickRun.step],main=document.getElementById('quickMain'),prog=document.getElementById('quickProgress'),btn=document.getElementById('quickCheck');
- prog.style.width=`${quickRun.step/total*100}%`;quickRun.selected=null;quickRun.built=[];quickRun.matchPick=null;quickRun.matches=[];quickRun.typed='';quickRun.checked=false;
+ prog.style.width=`${quickRun.step/total*100}%`;quickRun.selected=null;quickRun.built=[];quickRun.matchPick=null;quickRun.matches=[];quickRun.typed='';quickRun.hintUsed=false;quickRun.checked=false;
  btn.style.display='';btn.disabled=true;btn.textContent='VERIFICAR';btn.classList.remove('continue');btn.onclick=quickCheck;
  const methodLabel=e.method?` · ${({discover:'descobrir',recall:'recuperar',transfer:'transferir',produce:'produzir'}[e.method]||e.method)}`:'';
  setQuickFeedback(e.method?'Gate Loop'+methodLabel:'Escolha uma resposta.');
@@ -291,6 +291,7 @@ function quickCheck(){
    recordMistake(e,{node:quickRun.idx,chosen});
    if(e._reviewType&&e._reviewKey&&e._reviewType!=='error')gradeReview(e._reviewType,e._reviewKey,'hard');
  }
+ if(e.method&&typeof recordMethodOutcome==='function')recordMethodOutcome(e,ok,{hintUsed:!!quickRun.hintUsed});
  if(!quickRun.practiceOnly)energyTick(ok);
  const bridge=e.bridge?`<span class="feedback-bridge"><strong>Lente MON</strong>${e.bridge}</span>`:'';
  setQuickFeedback(ok?(e._remediation?'Erro recuperado!':e.method?'Recuperação válida.':'Correto!'):'Boa correção.',(e.why||'')+bridge,ok);
