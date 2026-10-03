@@ -33,6 +33,7 @@ const featureRuntime=['./features/videos.js','./features/videos.css','./core/nar
 const debugRuntime=['./features/performance-lab.js','./features/performance-lab.css'];
 const lazyRuntime=[
  './data/content-packs.js',
+ './core/next-best-lesson.js',
  './core/mistakes.js',
  './core/mastery-graph.js',
  './core/learning-methods.js',
