@@ -107,7 +107,7 @@ Objetivo:
 - priorizar fontes confiáveis;
 - nunca transformar vídeo em substituto de recuperação ativa.
 
-### 4. Listening & Pronunciation Lab
+### 4. Listening & Pronunciation Lab ✅
 **Dependência:** engine capaz de solicitar blocos específicos de listening/fala.
 
 Adicionar:
@@ -124,7 +124,7 @@ Adicionar:
 
 **Métrica:** recuperação correta após espaçamento e transferência para roleplay.
 
-### 5. Kanji Memory Lab 2.0
+### 5. Kanji Memory Lab 2.0 — próximo
 **Dependência:** motor adaptativo e SRS consolidados.
 
 Adicionar:
@@ -263,7 +263,7 @@ Regras:
 1. Home adaptativa concluída.
 2. Next Best Lesson Engine concluído.
 3. Daily Loop adaptativo concluído.
-4. Construir Listening & Pronunciation Lab.
+4. Listening & Pronunciation Lab concluído.
 5. Evoluir Kanji Memory Lab.
 6. Transformar Survival Missions em tarefas ramificadas.
 7. Auditar N5 completo.
