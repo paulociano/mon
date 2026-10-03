@@ -32,13 +32,13 @@ function compilePackExercise(unit,template,index){
   return null;
 }
 function lessonPlanFromPack(unit){
-  const exercises=(unit.templates||[]).map((t,i)=>compilePackExercise(unit,t,i)).filter(Boolean);
-  const grammar=(unit.grammar||[]).map(id=>grammarCatalog[id]).filter(Boolean);
-  if(grammar.length){
-    const g=grammar[0];
-    exercises.splice(Math.min(2,exercises.length),0,{type:'choice',prompt:'Qual mecanismo serve melhor ao objetivo desta unidade?',options:engineShuffledOptions(g.function,Object.values(grammarCatalog).map(x=>x.function)),answer:g.function,why:`${g.form} · ${g.pt}`,_reviewType:'grammar',_reviewKey:'P:'+g.id});
-  }
-  return {title:unit.title,focus:unit.symbol,unitId:unit.id,objectives:unit.objectives,mastery:unit.mastery,exercises:exercises.slice(0,8)};
+  const standard=(unit.templates||[]).map((t,i)=>compilePackExercise(unit,t,i)).filter(Boolean);
+  const distinctive=typeof compileMONSequence==='function'?compileMONSequence(unit):[];
+  const exercises=[];
+  const max=Math.max(standard.length,distinctive.length);
+  for(let i=0;i<max;i++){if(distinctive[i])exercises.push(distinctive[i]);if(standard[i])exercises.push(standard[i])}
+  return {title:unit.title,focus:unit.symbol,unitId:unit.id,objectives:unit.objectives,mastery:unit.mastery,
+    method:typeof MON_METHOD!=='undefined'?MON_METHOD:null,exercises:exercises.slice(0,10)};
 }
 
 function lessonPlanFromNode(node){let day=node.day||1;const structured=typeof coursePackForDay==='function'?coursePackForDay(day):null;if(structured)return lessonPlanFromPack(structured);if(day<=24){const p=foundationSessionPlans[Math.max(0,Math.min(23,day-1))];const basic=day<=7?kanaCourse.hira.basic:day<=12?kanaCourse.kata.basic:kanaCourse.hira.basic;const sample=basic.slice(Math.max(0,(day*3)%Math.max(1,basic.length-4)),Math.max(0,(day*3)%Math.max(1,basic.length-4))+4);const pairs=sample.length>=3?sample.slice(0,3):kanaCourse.hira.basic.slice(0,3);const wordChars=[...p.word].filter(x=>x.trim());const grammarTokens=(p.phrase.replace('。','').match(/.{1,2}/g)||[p.phrase.replace('。','')]);return {title:node.label,focus:p.kana,exercises:[
