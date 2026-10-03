@@ -473,3 +473,19 @@ button.rail-card:focus-visible{outline:2px solid rgba(244,169,187,.58);outline-o
   .home-reveal{opacity:1;transform:none;transition:none}
   .unit-progress i,.quest-progress i,.guide-face{transition:none}
 }
+
+/* V15 · runtime performance and perceived latency */
+button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{touch-action:manipulation}
+.view:not(.active){content-visibility:hidden}
+.learning-runtime-loading #practice::before{
+  content:"Preparando prática adaptativa…";
+  display:block;margin:8px 0 18px;padding:12px 15px;border-radius:13px;
+  border:1px solid rgba(215,181,109,.14);background:rgba(215,181,109,.045);
+  color:#b7a786;font-size:8px;letter-spacing:.04em;
+}
+.quick-main{contain:layout style}
+.match-grid,.quick-options,.word-bank{contain:layout style}
+@media(prefers-reduced-motion:no-preference){
+  .learning-runtime-loading #practice::before{animation:runtimePulse 1.15s ease-in-out infinite}
+}
+@keyframes runtimePulse{50%{opacity:.55}}
