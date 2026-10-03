@@ -170,34 +170,6 @@ const pathUnits=[
 ];
 const flatPath=[];pathUnits.forEach((u,ui)=>u.nodes.forEach((n,ni)=>flatPath.push({unit:ui,local:ni,type:n[0],label:n[1],icon:n[2],day:n[3]})));
 function todayQuestState(){const d=localDateKey();if(state.quests.date!==d)state.quests={date:d,lessons:0,xp:0,accuracy:false};return state.quests}
-function shellDueReviews(){
- const now=Date.now();return Object.values(state.reviewItems||{}).filter(x=>(x?.due||0)<=now).length;
-}
-function shellOpenMistakes(){
- return Object.values(state.mistakeStats||{}).filter(x=>(x?.count||0)>(x?.recovered||0)).length;
-}
-function adaptiveHomeDecision(){
- const total=flatPath.length,idx=Math.max(0,Math.min(total-1,state.pathProgress||0)),node=flatPath[idx]||null;
- const due=shellDueReviews(),mistakes=shellOpenMistakes(),energy=Math.max(0,state.energy||0);
- const unresolvedNarrative=Object.values(state.narrative?.episodes||{}).filter(x=>!x.resolved).length;
- if(state.remediation?.idx===idx){
-   return {kind:'repair',eyebrow:'prioridade · domínio',title:'Fortaleça antes de abrir o próximo portão.',copy:'Você concluiu a atividade, mas a evidência ainda está frágil em uma habilidade crítica. O reforço é curto e direcionado.',cta:'fortalecer agora →',secondary:'ver prática adaptativa',action:'repair',secondaryAction:'practice',signal:'Mastery Graph',node};
- }
- if(due>=4){
-   return {kind:'review',eyebrow:'prioridade · memória',title:`${due} revisões chegaram ao ponto certo.`,copy:'Recupere agora antes de empilhar conteúdo novo. O intervalo já amadureceu e a prática será curta.',cta:'revisar memória →',secondary:'continuar trilha mesmo assim',action:'practice',secondaryAction:'lesson',signal:`${due} itens vencendo`,node};
- }
- if(energy<=0){
-   return {kind:'recover',eyebrow:'prioridade · ritmo',title:'Sua energia de lição acabou. Sua memória, não.',copy:'Use a prática livre para recuperar itens, corrigir erros e preparar o próximo nó sem gastar Energia.',cta:'abrir prática livre →',secondary:'ver Diário no Japão',action:'practice',secondaryAction:'journal',signal:'0 energia',node};
- }
- if(mistakes>=3){
-   return {kind:'mistake',eyebrow:'prioridade · correção',title:`${mistakes} padrões recorrentes merecem uma correção curta.`,copy:'Repetir a unidade inteira seria desperdício. O Caderno de Erros consegue atacar exatamente o padrão que voltou a aparecer.',cta:'corrigir erros →',secondary:'continuar trilha',action:'practice',secondaryAction:'lesson',signal:`${mistakes} erros abertos`,node};
- }
- const last=state.narrative?.lastEpisode;
- if(last&&!last.resolved&&unresolvedNarrative>0){
-   return {kind:'story',eyebrow:'prioridade · transferência',title:`${last.characterName} ainda está esperando você resolver a situação.`,copy:`${last.placeName} virou um ponto de memória. Continue a trilha para transformar esse encontro em autonomia demonstrada.`,cta:'continuar episódio →',secondary:'abrir Diário',action:'lesson',secondaryAction:'journal',signal:`${unresolvedNarrative} situação${unresolvedNarrative===1?'':'ões'} em construção`,node};
- }
- return {kind:'advance',eyebrow:'próxima ação · avanço',title:node?`Continue por ${node.label.toLowerCase()}.`:'Continue sua trilha.',copy:node?.type==='checkpoint'?'Você chegou a um checkpoint. Agora o foco é recuperar e transferir sem depender de pistas.':'Sua memória não tem nenhuma urgência maior agora. É um bom momento para avançar um passo.',cta:node?.type==='chest'?'abrir recompensa →':'continuar trilha →',secondary:last?'ver Diário no Japão':'abrir prática',action:node?.type==='chest'?'chest':'lesson',secondaryAction:last?'journal':'practice',signal:node?.type==='checkpoint'?'checkpoint pronto':'ritmo saudável',node};
-}
 function runAdaptiveHomeAction(action){
  const idx=Math.max(0,Math.min(flatPath.length-1,state.pathProgress||0));
  if(action==='repair')return startMasteryRepair(idx);
@@ -207,7 +179,7 @@ function runAdaptiveHomeAction(action){
  return startQuickLesson(idx);
 }
 function renderAdaptiveHome(){
- const d=adaptiveHomeDecision(),banner=document.querySelector('.course-banner');
+ const d=homeCoachDecision(state,flatPath),banner=document.querySelector('.course-banner');
  if(banner)banner.dataset.adaptive=d.kind;
  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
  set('homeAdaptiveEyebrow',d.eyebrow);set('homeAdaptiveTitle',d.title);set('homeAdaptiveCopy',d.copy);set('homeAdaptiveSignal',d.signal);
