@@ -18,5 +18,6 @@ assert.ok(app.includes("prefers-reduced-motion"),'motion must respect reduced-mo
 for(const token of ['guideMascotState','renderGuideMascot',"'repair','mistake'","'review','recover'","decision?.kind==='story'","decision?.node?.type==='checkpoint'"]){
   assert.ok(app.includes(token),'missing adaptive mascot contract '+token);
 }
+assert.ok(app.includes("!['repair','review','recover','mistake','story'].includes(adaptive?.kind)"),'story coach copy must not be overwritten by generic path guidance');
 assert.ok(css.includes('@media(prefers-reduced-motion:reduce){.guide-mascot{animation:none}'),'mascot motion must respect reduced motion');
 console.log('MON home polish contracts passed');
