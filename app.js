@@ -1,7 +1,7 @@
 // MON application runtime
 // Course datasets live in data/course-content.js.
 
-const viewNames={home:'Aprender',lesson:'Lição',practice:'Praticar',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Trilha acadêmica',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita'};
+const viewNames={home:'Aprender',lesson:'Lição',practice:'Praticar',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Trilha acadêmica',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão'};
 let currentKanji=0;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600)}
 function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${id}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
@@ -13,6 +13,7 @@ const LEARNING_RUNTIME_SCRIPTS=[
  './data/session.js',
  './data/content-packs.js',
  './data/narrative.js',
+ './core/narrative-state.js',
  './core/mistakes.js',
  './core/mastery-graph.js',
  './core/learning-methods.js',
@@ -28,7 +29,8 @@ const FEATURE_RUNTIME_SCRIPTS={
  speaking:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
  curriculum:['./data/curriculum.js'],
  lesson:['./features/lesson.js'],
- practice:['./features/practice.js']
+ practice:['./features/practice.js'],
+ journal:['./data/narrative.js','./core/narrative-state.js','./features/journal.js']
 };
 const featureRuntimePromises={};
 async function ensureFeatureRuntime(name){
@@ -55,7 +57,7 @@ function loadRuntimeStyle(href){
    link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>reject(new Error('Falha ao carregar '+href));document.head.appendChild(link);
  });
 }
-const FEATURE_RUNTIME_STYLES={foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css']};
+const FEATURE_RUNTIME_STYLES={foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css']};
 function ensureLearningRuntime(){
  if(learningRuntimePromise)return learningRuntimePromise;
  const started=typeof perfStart==='function'?perfStart('runtime:learning'):null;
@@ -80,6 +82,7 @@ async function go(id){
    if(id==='kanji')await ensureFeatureRuntime('kanji');
    if(id==='reading'||id==='missions'||id==='speaking')await ensureFeatureRuntime(id);
    if(id==='practice'){await ensureLearningRuntime();await ensureFeatureRuntime('practice');}
+   if(id==='journal')await ensureFeatureRuntime('journal');
 
    document.body.classList.toggle('focus-session',id==='session');
    document.body.classList.toggle('quick-focus',id==='lesson');
@@ -98,6 +101,7 @@ async function go(id){
    else if(id==='league')renderLeague();
    else if(id==='shop')renderShop();
    else if(id==='practice'){renderPracticeCoach();renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}
+   else if(id==='journal')renderJournal();
 
    keepActiveNavVisible(id);
    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
@@ -206,7 +210,7 @@ function renderGameHome(){
  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
  el('courseSectionLabel',`Seção ${unit+1}`);el('courseScore',Math.round((state.xp||0)/10));el('coursePct',pct+'%');el('leagueMiniText',`${state.leagueXp||0} XP esta semana`);
  const goal=Math.min(100,Math.round((q.xp||0)/30*100)),ring=document.getElementById('dailyRing');if(ring)ring.style.setProperty('--goal',goal+'%');el('dailyGoalPct',goal+'%');
- renderQuests();
+ renderQuests();renderHomeJournalSummary();
  const g=flatPath[Math.min(progress,total-1)];
  if(g){
    const repair=state.remediation?.idx===progress,guide=document.querySelector('.guide-card');
@@ -226,6 +230,13 @@ function queueHomePolish(){
  window.__homeObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');window.__homeObserver.unobserve(entry.target)}}),{threshold:.08,rootMargin:'40px 0px -30px'});
  items.forEach(el=>window.__homeObserver.observe(el));
 }
+function renderHomeJournalSummary(){
+ const ns=state.narrative||{},episodes=Object.values(ns.episodes||{}),chars=Object.values(ns.characters||{}),resolved=episodes.filter(x=>x.resolved).length,last=ns.lastEpisode;
+ const title=document.getElementById('journalMiniTitle'),meta=document.getElementById('journalMiniMeta'),stat=document.getElementById('journalMiniStat');
+ if(title)title.textContent=last?last.title:'Seu diário começa no N5';
+ if(meta)meta.textContent=last?`${last.characterName} · ${last.placeName}`:'Personagens e lugares reaparecem conforme você avança.';
+ if(stat)stat.textContent=`${resolved} resolvidas · ${chars.length} pessoas`;
+}
 function renderQuests(){const q=todayQuestState(),items=[{icon:'道',name:'Complete 1 lição',now:q.lessons||0,max:1},{icon:'✦',name:'Ganhe 30 XP',now:q.xp||0,max:30},{icon:'正',name:'Faça uma lição com 80%+',now:q.accuracy?1:0,max:1}];const w=document.getElementById('questList');if(!w)return;w.innerHTML=items.map(x=>{const pct=Math.min(100,Math.round(x.now/x.max*100)),done=x.now>=x.max;return `<div class="quest-row ${done?'done':''}"><div class="quest-icon">${x.icon}</div><div><b>${x.name}</b><span>${Math.min(x.now,x.max)}/${x.max}</span><div class="quest-progress"><i style="width:${pct}%"></i></div></div><div class="quest-check">${done?'✓':'◆ 10'}</div></div>`}).join('')}
 function claimPathChest(idx){if(idx>state.pathProgress)return toast('Este baú ainda está bloqueado');if(state.chests[idx])return toast('Baú já aberto');state.chests[idx]=true;state.gems+=40;state.energy=Math.min(state.maxEnergy,state.energy+4);if(idx===state.pathProgress)state.pathProgress++;save();toast('Baú aberto · +40 cristais · +4 energia');renderGameHome()}
 let quickRun=null;
@@ -238,7 +249,7 @@ function buyItem(type){const costs={freeze:100,energy:60,boost:180},cost=costs[t
 
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 updateMetrics();renderGameHome();
-for(const name of ['kanji','reading','missions','speaking','curriculum']){
+for(const name of ['kanji','reading','missions','speaking','curriculum','journal']){
  const nav=document.querySelector(`[data-view="${name}"]`);
  if(nav)nav.addEventListener('pointerover',()=>ensureFeatureRuntime(name).catch(()=>{}),{passive:true,once:true});
 }
