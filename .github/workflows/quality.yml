@@ -62,6 +62,8 @@ jobs:
         run: node scripts/test-home-polish.mjs
       - name: Adaptive Home Coach
         run: node scripts/test-home-coach.mjs
+      - name: Home interaction routing
+        run: node scripts/test-home-interactions.mjs
       - name: Next Best Lesson Engine
         run: node scripts/test-next-best-lesson.mjs
       - name: Adaptive Daily Loop
