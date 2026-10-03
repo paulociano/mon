@@ -24,6 +24,7 @@ const scriptOrder=[
  './core/review-scheduler.js',
  './app.js'
 ];
+const featureRuntime=['./features/foundation.js','./features/session.js'];
 const lazyRuntime=[
  './data/content-packs.js',
  './core/mistakes.js',
@@ -40,10 +41,10 @@ for(const src of scriptOrder){
  cursor=p;
 }
 
-for(const asset of [...scriptOrder,...lazyRuntime]){
+for(const asset of [...scriptOrder,...lazyRuntime,...featureRuntime]){
  if(!sw.includes(`'${asset}'`))throw new Error('PWA cache missing '+asset);
 }
-for(const src of lazyRuntime){
+for(const src of [...lazyRuntime,...featureRuntime]){
  if(html.includes(`src="${src}"`))throw new Error('Lazy runtime leaked into critical HTML: '+src);
  if(!app.includes(`'${src}'`))throw new Error('Lazy runtime loader missing '+src);
  if(!fs.existsSync(path.join(root,src.slice(2))))throw new Error('Lazy runtime file missing '+src);
