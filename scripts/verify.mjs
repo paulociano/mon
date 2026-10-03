@@ -16,6 +16,7 @@ if(duplicateIds.length)throw new Error('Duplicate HTML ids: '+duplicateIds.join(
 
 const scriptOrder=[
  './data/course-content.js',
+ './data/content-packs.js',
  './core/state.js',
  './core/review-scheduler.js',
  './core/mistakes.js',
