@@ -24,9 +24,9 @@ const LEARNING_RUNTIME_SCRIPTS=[
 const FEATURE_RUNTIME_SCRIPTS={
  foundation:['./data/kana.js','./data/foundation.js','./features/foundation.js'],
  session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./data/narrative.js','./core/next-best-lesson.js','./features/foundation.js','./features/session.js'],
- kanji:['./data/kanji.js','./features/kanji.js'],
+ kanji:['./data/kanji.js','./data/kanji-memory.js','./features/kanji.js','./features/kanji-memory.js'],
  reading:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
- missions:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
+ missions:['./data/kana.js','./data/experiences.js','./data/missions-v2.js','./features/experiences.js','./features/missions-v2.js'],
  speaking:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
  curriculum:['./data/curriculum.js'],
  lesson:['./features/lesson.js'],
@@ -60,7 +60,7 @@ function loadRuntimeStyle(href){
    link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>reject(new Error('Falha ao carregar '+href));document.head.appendChild(link);
  });
 }
-const FEATURE_RUNTIME_STYLES={foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css']};
+const FEATURE_RUNTIME_STYLES={foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
 function ensureLearningRuntime(){
  if(learningRuntimePromise)return learningRuntimePromise;
  const started=typeof perfStart==='function'?perfStart('runtime:learning'):null;
@@ -101,7 +101,7 @@ async function go(id){
    else if(id==='kanji'){ensureDrawingCanvases();renderKanjiList();selectKanji(currentKanji)}
    else if(id==='writing'){ensureDrawingCanvases()}
    else if(id==='reading'){if(typeof hydrateReading==='function')hydrateReading()}
-   else if(id==='missions')hydrateMissionGrid();
+   else if(id==='missions'){if(typeof renderMissionGridV2==='function'){renderMissionGridV2();renderMissionV2()}else hydrateMissionGrid();}
    else if(id==='speaking')hydrateSurvivalPhrases();
    else if(id==='league')renderLeague();
    else if(id==='shop')renderShop();
