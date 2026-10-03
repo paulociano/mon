@@ -8,7 +8,7 @@ const css=read('styles.css');
 const sw=read('sw.js');
 
 const refs=[...html.matchAll(/<(?:script[^>]+src|link[^>]+href)="([^"]+)"/g)].map(m=>m[1]).filter(x=>x.startsWith('./'));
-const cssRefs=[...css.matchAll(/url\\(['\"]?(\\.\\/[^'\")]+)['\"]?\\)/g)].map(m=>m[1]);
+const cssRefs=[...css.matchAll(/url\(['"]?(\.\/[^'")]+)['"]?\)/g)].map(m=>m[1]);
 const localRefs=[...new Set([...refs,...cssRefs])];
 const missing=localRefs.filter(r=>!fs.existsSync(path.join(root,r.slice(2))));
 if(missing.length)throw new Error('Missing local refs: '+missing.join(', '));
