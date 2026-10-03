@@ -31,3 +31,5 @@ function homeCoachDecision(state={},flatPath=[],now=Date.now()){
 
   return {kind:'advance',eyebrow:'próxima ação · avanço',title:node?`Continue por ${String(node.label||'sua trilha').toLowerCase()}.`:'Continue sua trilha.',copy:node?.type==='checkpoint'?'Você chegou a um checkpoint. Agora o foco é recuperar e transferir sem depender de pistas.':'Sua memória não tem nenhuma urgência maior agora. É um bom momento para avançar um passo.',cta:node?.type==='chest'?'abrir recompensa →':'continuar trilha →',secondary:last?'ver Diário no Japão':'abrir prática',action:node?.type==='chest'?'chest':'lesson',secondaryAction:last?'journal':'practice',signal:node?.type==='checkpoint'?'checkpoint pronto':'ritmo saudável',node};
 }
+
+if(typeof module!=='undefined'&&module.exports)module.exports={homeCoachDecision,homeCoachSignals};
