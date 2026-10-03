@@ -9,30 +9,34 @@ const dataScripts=['data/kanji.js','data/kana.js','data/foundation.js','data/ses
 const foundationRouteScripts=['data/kana.js','data/foundation.js'];
 const experienceRouteScripts=['data/kana.js','data/experiences.js'];
 const kanjiRouteScripts=['data/kanji.js'];
-const featureScripts=['features/foundation.js','features/session.js','features/kanji.js','features/experiences.js','features/lesson.js'];
+const featureScripts=['features/foundation.js','features/session.js','features/kanji.js','features/experiences.js','features/lesson.js','features/practice.js'];
+const practiceFeatureScripts=['features/practice.js'];
 const lessonFeatureScripts=['features/lesson.js'];
 const lazyScripts=['data/content-packs.js','core/mistakes.js','core/mastery-graph.js','core/learning-methods.js','core/course-engine.js','core/progression-engine.js'];
 const eagerJs=eagerScripts.reduce((n,p)=>n+size(p),0);
 const featureJs=featureScripts.reduce((n,p)=>n+size(p),0);
 const lessonJs=lessonFeatureScripts.reduce((n,p)=>n+size(p),0);
+const practiceJs=practiceFeatureScripts.reduce((n,p)=>n+size(p),0);
 const dataJs=dataScripts.reduce((n,p)=>n+size(p),0);
 const foundationRouteJs=foundationRouteScripts.reduce((n,p)=>n+size(p),0);
 const experienceRouteJs=experienceRouteScripts.reduce((n,p)=>n+size(p),0);
 const kanjiRouteJs=kanjiRouteScripts.reduce((n,p)=>n+size(p),0);
 const lazyJs=lazyScripts.reduce((n,p)=>n+size(p),0);
-const css=size('styles.css'),featureCss=size('features/foundation.css'),lessonCss=size('features/lesson.css'),html=size('index.html');
+const css=size('styles.css'),featureCss=size('features/foundation.css'),lessonCss=size('features/lesson.css'),practiceCss=size('features/practice.css'),html=size('index.html');
 const hero=size('assets/scene/mon-home-banner.webp'),side=size('assets/scene/mon-sidebar-bg.webp');
 
-assert.ok(eagerJs<=78*1024,`eager JS budget exceeded: ${kb(eagerJs)} KB`);
+assert.ok(eagerJs<=72*1024,`eager JS budget exceeded: ${kb(eagerJs)} KB`);
 assert.ok(dataJs<=64*1024,`total lazy dataset budget exceeded: ${kb(dataJs)} KB`);
 assert.ok(foundationRouteJs<=29*1024,`Foundation route data budget exceeded: ${kb(foundationRouteJs)} KB`);
 assert.ok(experienceRouteJs<=9*1024,`Experience route data budget exceeded: ${kb(experienceRouteJs)} KB`);
 assert.ok(kanjiRouteJs<=11*1024,`Kanji route data budget exceeded: ${kb(kanjiRouteJs)} KB`);
-assert.ok(featureJs<=90*1024,`feature runtime budget exceeded: ${kb(featureJs)} KB`);
+assert.ok(featureJs<=100*1024,`feature runtime budget exceeded: ${kb(featureJs)} KB`);
 assert.ok(lessonJs<=20*1024,`lesson UI JS budget exceeded: ${kb(lessonJs)} KB`);
 assert.ok(lessonCss<=10*1024,`lesson UI CSS budget exceeded: ${kb(lessonCss)} KB`);
+assert.ok(practiceJs<=10*1024,`Practice Hub JS budget exceeded: ${kb(practiceJs)} KB`);
+assert.ok(practiceCss<=12*1024,`Practice Hub CSS budget exceeded: ${kb(practiceCss)} KB`);
 assert.ok(lazyJs<=90*1024,`lazy learning runtime budget exceeded: ${kb(lazyJs)} KB`);
-assert.ok(css<=98*1024,`CSS budget exceeded: ${kb(css)} KB`);
+assert.ok(css<=94*1024,`CSS budget exceeded: ${kb(css)} KB`);
 assert.ok(featureCss<=30*1024,`feature CSS budget exceeded: ${kb(featureCss)} KB`);
 assert.ok(html<=48*1024,`HTML budget exceeded: ${kb(html)} KB`);
 assert.ok(size('app.js')<=55*1024,`app.js should stay below 55 KB after feature split: ${kb(size('app.js'))} KB`);
@@ -45,5 +49,5 @@ assert.ok(source.includes("const hydratedViews=new Set(['home'])"),'view hydrati
 assert.ok(source.includes('ensureDrawingCanvases'),'canvas setup should be lazy');
 
 console.log('MON performance budgets passed',JSON.stringify({
- eagerJsKB:kb(eagerJs),dataJsKB:kb(dataJs),foundationRouteKB:kb(foundationRouteJs),experienceRouteKB:kb(experienceRouteJs),kanjiRouteKB:kb(kanjiRouteJs),featureJsKB:kb(featureJs),lazyJsKB:kb(lazyJs),cssKB:kb(css),featureCssKB:kb(featureCss),lessonJsKB:kb(lessonJs),lessonCssKB:kb(lessonCss),htmlKB:kb(html),heroKB:kb(hero),sidebarKB:kb(side)
+ eagerJsKB:kb(eagerJs),dataJsKB:kb(dataJs),foundationRouteKB:kb(foundationRouteJs),experienceRouteKB:kb(experienceRouteJs),kanjiRouteKB:kb(kanjiRouteJs),featureJsKB:kb(featureJs),lazyJsKB:kb(lazyJs),cssKB:kb(css),featureCssKB:kb(featureCss),lessonJsKB:kb(lessonJs),lessonCssKB:kb(lessonCss),practiceJsKB:kb(practiceJs),practiceCssKB:kb(practiceCss),htmlKB:kb(html),heroKB:kb(hero),sidebarKB:kb(side)
 }));
