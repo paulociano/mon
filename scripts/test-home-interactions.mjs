@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 const app=fs.readFileSync('app.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
+const coach=fs.readFileSync('core/home-coach.js','utf8');
 
 for(const id of ['homeAdaptivePrimary','homeAdaptiveSecondary']){
   assert.ok(html.includes(`id="${id}"`),'missing adaptive Home button '+id);
@@ -16,6 +17,23 @@ for(const attrs of homeButtons){
   assert.ok(wired,'Home contains inert static button: '+attrs.replace(/\s+/g,' ').trim());
 }
 assert.ok(html.includes('id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"'),'toast must announce route/action feedback accessibly');
+
+
+const views=[...html.matchAll(/<section\b[^>]*id="([^"]+)"/g)].map(match=>match[1]);
+const navTargets=[...html.matchAll(/data-view="([^"]+)"/g)].map(match=>match[1]);
+for(const target of new Set(navTargets)){
+  assert.ok(views.includes(target),'navigation target has no section: '+target);
+}
+
+const coachActions=[...coach.matchAll(/(?:action|secondaryAction):'([^']+)'/g)].map(match=>match[1]);
+const supportedActions=new Set(['repair','practice','journal','chest','lesson']);
+for(const action of new Set(coachActions)){
+  assert.ok(supportedActions.has(action),'Home Coach emits unsupported action: '+action);
+  if(action!=='lesson')assert.ok(app.includes(`action==='${action}'`)||action==='chest','Home runtime missing handler for '+action);
+}
+for(const handler of ['startQuickLesson','startMasteryRepair','claimPathChest']){
+  assert.ok(new RegExp('function\\s+'+handler+'\\s*\\(').test(app),'generated Home path references missing handler '+handler);
+}
 
 for(const token of [
   "primary.onclick=()=>runAdaptiveHomeAction(d.action)",
