@@ -37,3 +37,5 @@ jobs:
         run: node scripts/test-home-polish.mjs
       - name: Performance budgets
         run: node scripts/test-performance-budget.mjs
+      - name: Lazy feature split
+        run: node scripts/test-feature-split.mjs
