@@ -141,10 +141,11 @@ function scheduledReviewExercises(limit=6){
 
 function buildLesson(node,learnerState){
   const pack=lessonPlanFromNode(node),base=pack.exercises||[];
-  const reviews=scheduledReviewExercises(2);
-  if(!reviews.length)return pack;
-  const pivot=Math.min(3,base.length),exercises=[reviews[0],...base.slice(0,pivot)];
-  if(reviews[1])exercises.push(reviews[1]);
-  exercises.push(...base.slice(pivot));
-  return {...pack,exercises:optimizeExerciseSequence(exercises,10),adaptive:true,reviewCount:reviews.length};
+  const nextBest=typeof nextBestLessonPlan==='function'?nextBestLessonPlan(learnerState||state,node):null;
+  const reviewCount=nextBest?.reviewCount??2,reviews=scheduledReviewExercises(reviewCount);
+  const exercises=[...reviews,...base];
+  const ordered=nextBest&&typeof sequenceLessonByPlan==='function'
+    ?sequenceLessonByPlan(exercises,nextBest,nextBest.targetExercises||8)
+    :optimizeExerciseSequence(exercises,10);
+  return {...pack,exercises:ordered,adaptive:true,reviewCount:reviews.length,nextBest};
 }
