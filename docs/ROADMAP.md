@@ -124,7 +124,7 @@ Adicionar:
 
 **Métrica:** recuperação correta após espaçamento e transferência para roleplay.
 
-### 5. Kanji Memory Lab 2.0 — próximo
+### 5. Kanji Memory Lab 2.0 ✅
 **Dependência:** motor adaptativo e SRS consolidados.
 
 Adicionar:
@@ -139,7 +139,7 @@ Adicionar:
 
 **Non-goal:** tratar listas não oficiais como “lista oficial JLPT” ou depender apenas de mnemônicas.
 
-### 6. Survival Missions 2.0
+### 6. Survival Missions 2.0 ✅
 **Dependência:** Listening Lab + rede narrativa.
 
 Transformar missões em tarefas com pequenas ramificações e reparo de conversa.
@@ -161,7 +161,7 @@ Cada missão deve exigir:
 - reparar quando não entende;
 - completar uma tarefa observável.
 
-### 7. Auditoria profunda do N5
+### 7. Auditoria profunda do N5 — próximo
 **Dependência:** engines e modalidades estabilizados.
 
 Antes de ampliar o volume:
@@ -264,8 +264,8 @@ Regras:
 2. Next Best Lesson Engine concluído.
 3. Daily Loop adaptativo concluído.
 4. Listening & Pronunciation Lab concluído.
-5. Evoluir Kanji Memory Lab.
-6. Transformar Survival Missions em tarefas ramificadas.
+5. Kanji Memory Lab 2.0 concluído.
+6. Survival Missions 2.0 concluído.
 7. Auditar N5 completo.
 8. Expandir para N4 somente depois dos gates anteriores.
 9. Definir budgets de latência com dados reais do Performance Lab.
