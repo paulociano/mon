@@ -20,8 +20,8 @@ The first adaptive engine is now live behind a dedicated interface:
 
 The engine will choose retrieval, listening, matching, sentence construction, writing and speaking tasks from the learner's recent errors and due reviews.
 
-### 2. Structured curriculum
-Replace large hand-authored arrays with structured content packs:
+### 2. Structured curriculum ✅ N5 foundation implemented
+Structured content packs now drive the first N5 survival slice. Remaining expansion targets:
 
 - ZERO
 - N5
@@ -46,8 +46,8 @@ The app now stores structured mistakes and exposes a corrective practice queue g
 - listening
 - speaking
 
-### 4. Adaptive SRS
-Unify kana, kanji, vocabulary and grammar review behind one review scheduler while keeping content-specific grading signals.
+### 4. Adaptive SRS ✅ unified scheduler implemented
+One scheduler now handles kana, kanji, vocabulary, grammar and corrective errors while keeping domain-specific exercise rendering.
 
 ### 5. Rich lesson types
 Add:
