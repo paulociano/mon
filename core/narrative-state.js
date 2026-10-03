@@ -16,8 +16,8 @@ function ensureNarrativeState(){
 function recordNarrativeEpisode(pack,accuracy=0,{resolved=false}={}){
   const meta=pack?.narrative;if(!pack?.unitId||!meta)return null;
   const ns=ensureNarrativeState(),now=Date.now(),unitId=pack.unitId;
-  const charId=Object.entries(narrativeCharacters||{}).find(([,v])=>v.name===meta.character?.name)?.[0]||meta.character?.name||'unknown';
-  const placeId=Object.entries(narrativePlaces||{}).find(([,v])=>v.name===meta.place?.name)?.[0]||meta.place?.name||'unknown';
+  const charId=Object.entries(typeof narrativeCharacters!=='undefined'?narrativeCharacters:{}).find(([,v])=>v.name===meta.character?.name)?.[0]||meta.character?.name||'unknown';
+  const placeId=Object.entries(typeof narrativePlaces!=='undefined'?narrativePlaces:{}).find(([,v])=>v.name===meta.place?.name)?.[0]||meta.place?.name||'unknown';
   const prev=ns.episodes[unitId]||{};
   ns.episodes[unitId]={
     unitId,title:pack.title||prev.title||unitId,arc:meta.arc||prev.arc||null,characterId:charId,placeId,
