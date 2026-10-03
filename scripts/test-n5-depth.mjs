@@ -77,7 +77,7 @@ for(const key of survivalReappearance){
   assert.ok(days.length>=2,key+' must reappear after first exposure');
   assert.ok(days.at(-1)>days[0],key+' needs temporally separated retrieval');
 }
-for(const key of ['existenceIru','countersPeople','teKudasai','teIru','phoneIdentity']){
+for(const key of ['existenceIru','countersTsu','countersPeople','teKudasai','teWaIkenai','teIru','phoneIdentity']){
   const days=grammarUse.get(key)||[];
   assert.ok(days.length>=2,key+' grammar must transfer into a later unit');
   assert.ok(days.at(-1)>days[0],key+' grammar needs temporally separated transfer');
