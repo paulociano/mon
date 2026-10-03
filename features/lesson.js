@@ -9,7 +9,11 @@ function renderQuickExercise(){
  btn.style.display='';btn.disabled=true;btn.textContent='VERIFICAR';btn.classList.remove('continue');btn.onclick=quickCheck;
  const methodLabel=e.method?` · ${({discover:'descobrir',recall:'recuperar',transfer:'transferir',produce:'produzir'}[e.method]||e.method)}`:'';
  setQuickFeedback(e.method?'Gate Loop'+methodLabel:'Escolha uma resposta.');
- let h=`<span class="quick-kicker">${quickRun.pack.title} · ${quickRun.step+1}/${total}${methodLabel}</span><h2 class="quick-question">${e.prompt}</h2>`;
+ let h=`<span class="quick-kicker">${quickRun.pack.title} · ${quickRun.step+1}/${total}${methodLabel}</span>`;
+ if(e._story){
+   h+=`<aside class="story-memory"><div class="story-memory-top"><span>${e._story.arc}</span><b>${e._story.place}</b></div><div class="story-memory-character"><strong>${e._story.character}</strong><small>${e._story.role}</small></div><p>${e._story.scenePt}</p><em lang="ja">${e._story.sceneJp}</em><div class="story-memory-tags">${(e._story.reuses||[]).map(x=>`<span>${x}</span>`).join('')}</div></aside>`;
+ }
+ h+=`<h2 class="quick-question">${e.prompt}</h2>`;
  if(e.type==='discovery'&&e.examples){
    h+=`<div class="method-examples">${e.examples.map(x=>`<article><b>${x.jp}</b><span>${x.pt}</span></article>`).join('')}</div>`;
    h+=quickOptions(e.options);
