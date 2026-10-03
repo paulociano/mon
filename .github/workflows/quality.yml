@@ -34,6 +34,10 @@ jobs:
         run: node scripts/test-content-quality.mjs
       - name: Narrative network
         run: node scripts/test-narrative-network.mjs
+      - name: Narrative persistence
+        run: node scripts/test-narrative-state.mjs
+      - name: Japan Journal
+        run: node scripts/test-japan-journal.mjs
       - name: MON learning methods
         run: node scripts/test-learning-methods.mjs
       - name: Adaptive teaching mix
