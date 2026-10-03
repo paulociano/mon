@@ -10,12 +10,15 @@ assert.ok(shell.includes('shellFoundationOutline'));
 assert.ok(shell.includes('shellMissionOutline'));
 for(const forbidden of ['const kanjiData','const kanaSets','const grammarData','const bookData','const curriculumData'])assert.ok(!shell.includes(forbidden),'eager shell contains '+forbidden);
 
-for(const p of ['data/kanji.js','data/kana.js','data/foundation.js','data/experiences.js','data/curriculum.js']){
+for(const p of ['data/kanji.js','data/kana.js','data/foundation.js','data/session.js','data/experiences.js','data/curriculum.js']){
  assert.ok(fs.existsSync(p),p+' missing');
  assert.ok(sw.includes("'./"+p+"'"),p+' missing from PWA cache');
 }
 assert.ok(app.includes("kanji:['./data/kanji.js','./features/kanji.js']"));
 assert.ok(app.includes("curriculum:['./data/curriculum.js']"));
+assert.ok(app.includes("'./data/session.js'"));
+assert.ok(!fs.readFileSync('data/foundation.js','utf8').includes('const foundationSessionPlans'));
+assert.ok(fs.readFileSync('data/session.js','utf8').includes('const foundationSessionPlans'));
 assert.ok(app.includes("SHELL_KANJI_COUNT"));
 assert.ok(!app.includes('kanjiData.filter(x=>reviewIsDue'));
 console.log('MON dataset split contracts passed');
