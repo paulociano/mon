@@ -1,0 +1,21 @@
+name: MON Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: JavaScript syntax
+        run: |
+          find . -type f \( -name "*.js" -o -name "*.mjs" \) -not -path "./.git/*" -print0 | xargs -0 -n1 node --check
+      - name: Static contracts
+        run: node scripts/verify.mjs
