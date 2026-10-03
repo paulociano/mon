@@ -76,7 +76,8 @@ function unitConcepts(unit){
   if(!unit)return[];
   return [
     ...(unit.vocabulary||[]).map(x=>'vocabulary:'+x),
-    ...(unit.grammar||[]).map(x=>'grammar:P:'+x)
+    ...(unit.grammar||[]).map(x=>'grammar:P:'+x),
+    'unit:'+unit.id
   ];
 }
 function unitMasteryStatus(unit){
@@ -101,4 +102,26 @@ function masteryMethodHints(unit){
   const concepts=new Set(unitConcepts(unit));
   const weak=masteryWeakEdges(20).filter(x=>concepts.has(x.concept));
   return [...new Set(weak.map(x=>methodForWeakDimension(x.dimension)).filter(Boolean))].slice(0,3);
+}
+
+function unitMasteryGaps(unit,limit=6){
+  if(!unit)return[];
+  const concepts=unitConcepts(unit),required=new Set((unit.mastery?.required||[]).map(key=>{
+    if((unit.vocabulary||[]).includes(key))return 'vocabulary:'+key;
+    if((unit.grammar||[]).includes(key))return 'grammar:P:'+key;
+    return null;
+  }).filter(Boolean));
+  const gaps=[];
+  for(const concept of concepts){
+    const cells=state.masteryEvidence?.[concept]||{};
+    for(const dimension of MASTERY_DIMENSIONS){
+      const cell=cells[dimension];
+      if(!cell){
+        if(required.has(concept)||concept.startsWith('unit:'))gaps.push({concept,dimension,score:0,attempts:0,priority:required.has(concept)?120:90,unseen:true});
+      }else if(cell.score<70){
+        gaps.push({concept,dimension,score:cell.score,attempts:cell.attempts||0,priority:(100-cell.score)+(required.has(concept)?25:0),unseen:false});
+      }
+    }
+  }
+  return gaps.sort((a,b)=>b.priority-a.priority||a.score-b.score).slice(0,limit);
 }
