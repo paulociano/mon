@@ -24,9 +24,10 @@ const scriptOrder=[
  './data/course-content.js',
  './core/state.js',
  './core/review-scheduler.js',
+ './core/performance.js',
  './app.js'
 ];
-const featureRuntime=['./features/foundation.js','./features/foundation.css','./features/session.js'];
+const featureRuntime=['./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
 const lazyRuntime=[
  './data/content-packs.js',
  './core/mistakes.js',
@@ -65,4 +66,7 @@ if(!app.includes('aria-current="step"'))throw new Error('Current path step lacks
 if(!html.includes('fetchpriority="high"'))throw new Error('Hero preload should be high priority')
 if(!app.includes('ensureLearningRuntime'))throw new Error('Missing lazy learning runtime loader')
 if(!app.includes('loadRuntimeStyle'))throw new Error('Missing lazy feature stylesheet loader')
+const perfModule=read('core/performance.js');
+if(!perfModule.includes('performanceSnapshot'))throw new Error('Missing local performance telemetry snapshot')
+if(perfModule.includes('fetch(')||perfModule.includes('sendBeacon'))throw new Error('Performance telemetry must remain local-only')
 console.log(`Checked ${localRefs.length} local refs, ${ids.length} ids and ${scriptOrder.length} runtime modules.`);
