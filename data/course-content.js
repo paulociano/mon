@@ -68,7 +68,7 @@ const bookData=[
 
 
 const curriculumData=[
- {level:'N5',title:'Sobrevivência',range:'dias 1–30',promise:'Resolver necessidades básicas sem depender do inglês.',kanji:100,grammar:28,missions:12,units:[
+ {level:'N5',title:'Sobrevivência prática',range:'dias 1–30',promise:'Resolver necessidades básicas e rotinas iniciais sem depender do inglês.',kanji:100,grammar:28,missions:12,units:[
   {days:'1–5',title:'Desembarque',desc:'Kana essencial, apresentação, estação, saída e pedidos de repetição.',kanji:'駅',meta:['25 kanji','5 padrões','estação']},
   {days:'6–10',title:'Comer & comprar',desc:'Preço, quantidade, konbini, restaurante, pagamento e preferências.',kanji:'食',meta:['20 kanji','6 padrões','lojas']},
   {days:'11–15',title:'Casa & bairro',desc:'Endereço, correio, lixo, mercado, vizinhança e localização.',kanji:'住',meta:['15 kanji','4 padrões','moradia']},
