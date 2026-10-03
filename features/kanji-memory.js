@@ -26,3 +26,7 @@ function answerKanjiReading(r){const x=kanjiData[currentKanji],ex=x.ex[0],ok=r==
 function startKanjiContrast(){const x=kanjiData[currentKanji],m=kanjiMemoryMeta(x.k),opts=[...new Set([x.k,...(m.contrast||[])])].slice(0,3);document.getElementById('kanjiLabChallenge').innerHTML=`<div class="km-contrast-test"><span>toque no caractere “${x.m}”</span><div>${opts.map(k=>`<button onclick="answerKanjiContrast('${k}')"><b lang="ja">${k}</b></button>`).join('')}</div></div>`}
 function answerKanjiContrast(k){const x=kanjiData[currentKanji],ok=k===x.k;recordKanjiLab(ok,'contrast');document.getElementById('kanjiLabChallenge').innerHTML=`<div class="km-feedback">${ok?'Boa discriminação.':'Observe a estrutura e tente novamente.'}</div>`}
 kanjiLabState();
+
+const monSelectKanjiBase=selectKanji;
+selectKanji=function(i){monSelectKanjiBase(i);renderKanjiMemoryLab()};
+renderKanjiMemoryLab();
