@@ -57,7 +57,6 @@ async function go(id){
  else if(id==='practice'){await ensureLearningRuntime();renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}
  keepActiveNavVisible(id);window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
 }
-document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);if(id==='foundation')renderFoundation();if(id==='home')renderGameHome();if(id==='league')renderLeague();if(id==='shop')renderShop();if(id==='practice'){renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}keepActiveNavVisible(id);window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
 function themeLabel(t){return t==='survival'?'sobrevivência':t==='city'?'cidade':'dia a dia'}
 function renderKanjiList(filter='all',query=''){
