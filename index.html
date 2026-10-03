@@ -53,11 +53,11 @@
             <div id="learningPath"></div>
           </div>
           <aside class="learn-rail">
-            <div class="rail-card guide-card"><span class="eyebrow">Seu guia · キツ</span><h4 id="guideTitle">Comece pelo som.</h4><p id="guideCopy">Você não precisa decorar tudo de uma vez. Faça o próximo círculo e deixe o SRS decidir o que volta.</p><div class="guide-face">狐</div></div>
-            <div class="rail-card"><div style="display:flex;justify-content:space-between;align-items:center"><div><span class="eyebrow">Meta diária</span><h4>30 XP</h4></div><div class="daily-ring" id="dailyRing"><b id="dailyGoalPct">0%</b></div></div><p>Uma lição já mantém sua sequência. A meta serve para criar ritmo, não culpa.</p></div>
-            <div class="rail-card"><span class="eyebrow">Missões de hoje</span><div class="quest-list" id="questList"></div></div>
+            <div class="rail-card guide-card" data-state="learn"><div class="rail-card-label"><span class="eyebrow">Seu guia · キツ</span><span class="rail-live-dot">agora</span></div><h4 id="guideTitle">Comece pelo som.</h4><p id="guideCopy">Você não precisa decorar tudo de uma vez. Faça o próximo círculo e deixe o SRS decidir o que volta.</p><div class="guide-face">狐</div></div>
+            <div class="rail-card daily-card"><div class="rail-card-label"><span class="eyebrow">Meta diária</span><span>ritmo</span></div><div class="daily-card-row"><div><h4>30 XP</h4><p>Uma lição já mantém sua sequência. A meta serve para criar ritmo, não culpa.</p></div><div class="daily-ring" id="dailyRing"><b id="dailyGoalPct">0%</b></div></div></div>
+            <div class="rail-card quest-card"><div class="rail-card-label"><span class="eyebrow">Missões de hoje</span><span>3 objetivos</span></div><div class="quest-list" id="questList"></div></div>
             <button class="rail-card league-mini" onclick="go('league')" style="color:#fff;text-align:left"><div class="league-shield">冠</div><div><strong>Liga Fuji</strong><small id="leagueMiniText">0 XP esta semana</small></div><span>→</span></button>
-            <button class="rail-card" onclick="go('practice')" style="color:#fff;text-align:left"><span class="eyebrow">Prática adaptativa</span><h4>Corrigir fraquezas</h4><p id="practiceMini">O MON escolhe kana, kanji e gramática com maior necessidade de retorno.</p></button>
+            <button class="rail-card practice-mini" onclick="go('practice')" style="color:#fff;text-align:left"><div class="rail-card-label"><span class="eyebrow">Prática adaptativa</span><span>Mastery Graph</span></div><h4>Corrigir fraquezas</h4><p id="practiceMini">O MON escolhe kana, kanji e gramática com maior necessidade de retorno.</p><span class="rail-arrow">abrir prática →</span></button>
           </aside>
         </div>
       </section>
