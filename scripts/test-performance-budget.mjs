@@ -10,13 +10,14 @@ const lazyScripts=['data/content-packs.js','core/mistakes.js','core/mastery-grap
 const eagerJs=eagerScripts.reduce((n,p)=>n+size(p),0);
 const featureJs=featureScripts.reduce((n,p)=>n+size(p),0);
 const lazyJs=lazyScripts.reduce((n,p)=>n+size(p),0);
-const css=size('styles.css'),html=size('index.html');
+const css=size('styles.css'),featureCss=size('features/foundation.css'),html=size('index.html');
 const hero=size('assets/scene/mon-home-banner.webp'),side=size('assets/scene/mon-sidebar-bg.webp');
 
 assert.ok(eagerJs<=145*1024,`eager JS budget exceeded: ${kb(eagerJs)} KB`);
 assert.ok(featureJs<=60*1024,`feature runtime budget exceeded: ${kb(featureJs)} KB`);
 assert.ok(lazyJs<=90*1024,`lazy learning runtime budget exceeded: ${kb(lazyJs)} KB`);
-assert.ok(css<=140*1024,`CSS budget exceeded: ${kb(css)} KB`);
+assert.ok(css<=105*1024,`CSS budget exceeded: ${kb(css)} KB`);
+assert.ok(featureCss<=30*1024,`feature CSS budget exceeded: ${kb(featureCss)} KB`);
 assert.ok(html<=48*1024,`HTML budget exceeded: ${kb(html)} KB`);
 assert.ok(hero<=20*1024,`hero image budget exceeded: ${kb(hero)} KB`);
 assert.ok(side<=20*1024,`sidebar image budget exceeded: ${kb(side)} KB`);
@@ -27,5 +28,5 @@ assert.ok(source.includes("const hydratedViews=new Set(['home'])"),'view hydrati
 assert.ok(source.includes('ensureDrawingCanvases'),'canvas setup should be lazy');
 
 console.log('MON performance budgets passed',JSON.stringify({
- eagerJsKB:kb(eagerJs),featureJsKB:kb(featureJs),lazyJsKB:kb(lazyJs),cssKB:kb(css),htmlKB:kb(html),heroKB:kb(hero),sidebarKB:kb(side)
+ eagerJsKB:kb(eagerJs),featureJsKB:kb(featureJs),lazyJsKB:kb(lazyJs),cssKB:kb(css),featureCssKB:kb(featureCss),htmlKB:kb(html),heroKB:kb(hero),sidebarKB:kb(side)
 }));
