@@ -5,7 +5,58 @@ const viewNames={home:'Aprender',lesson:'Lição',practice:'Praticar',league:'Li
 let currentKanji=0;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600)}
 function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${id}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
-function go(id){document.body.classList.toggle('focus-session',id==='session');document.body.classList.toggle('quick-focus',id==='lesson');document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);if(id==='foundation')renderFoundation();if(id==='home')renderGameHome();if(id==='league')renderLeague();if(id==='shop')renderShop();if(id==='practice'){renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}keepActiveNavVisible(id);window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+const LEARNING_RUNTIME_SCRIPTS=[
+ './data/content-packs.js',
+ './core/mistakes.js',
+ './core/mastery-graph.js',
+ './core/learning-methods.js',
+ './core/course-engine.js',
+ './core/progression-engine.js'
+];
+let learningRuntimePromise=null;
+function loadRuntimeScript(src){
+ return new Promise((resolve,reject)=>{
+   const existing=document.querySelector(`script[data-runtime-src="${src}"]`);
+   if(existing){if(existing.dataset.ready==='1')return resolve();existing.addEventListener('load',()=>resolve(),{once:true});existing.addEventListener('error',()=>reject(new Error('Falha ao carregar '+src)),{once:true});return}
+   const s=document.createElement('script');s.src=src;s.async=false;s.dataset.runtimeSrc=src;
+   s.onload=()=>{s.dataset.ready='1';resolve()};s.onerror=()=>reject(new Error('Falha ao carregar '+src));document.body.appendChild(s);
+ });
+}
+function ensureLearningRuntime(){
+ if(learningRuntimePromise)return learningRuntimePromise;
+ document.body.classList.add('learning-runtime-loading');
+ learningRuntimePromise=(async()=>{for(const src of LEARNING_RUNTIME_SCRIPTS)await loadRuntimeScript(src);document.body.classList.add('learning-runtime-ready')})()
+   .catch(err=>{learningRuntimePromise=null;toast('Não consegui carregar o motor de aprendizagem');throw err})
+   .finally(()=>document.body.classList.remove('learning-runtime-loading'));
+ return learningRuntimePromise;
+}
+const hydratedViews=new Set(['home']);
+function hydrateMissionGrid(){
+ if(hydratedViews.has('missions'))return;
+ const grid=document.getElementById('missionGrid');if(grid)grid.innerHTML=missions.map((m,i)=>`<button class="mission mission-${i}" onclick="missionOpen(${i})"><div class="mission-art"></div><div class="mission-body"><div class="symbol">${m.symbol}</div><b>${m.title}</b><small>${m.desc}</small></div><span class="level">${m.level}</span></button>`).join('');
+ hydratedViews.add('missions');
+}
+function hydrateSurvivalPhrases(){
+ if(hydratedViews.has('speaking'))return;
+ const wrap=document.getElementById('survivalPhrases');if(wrap)wrap.innerHTML=phrases.map(p=>`<div class="phrase"><b>${p[0]}</b><span class="romaji">${p[1]}</span><span>${p[2]}</span><button class="audio-btn" style="margin-top:9px" onclick="speak('${p[0].replaceAll("'","\\'")}')">▶ ouvir</button></div>`).join('');
+ hydratedViews.add('speaking');
+}
+async function go(id){
+ document.body.classList.toggle('focus-session',id==='session');document.body.classList.toggle('quick-focus',id==='lesson');
+ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
+ const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;
+ if(id==='home')renderGameHome();
+ else if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);
+ else if(id==='foundation')renderFoundation();
+ else if(id==='kanji'){ensureDrawingCanvases();renderKanjiList();selectKanji(currentKanji)}
+ else if(id==='missions')hydrateMissionGrid();
+ else if(id==='speaking')hydrateSurvivalPhrases();
+ else if(id==='league')renderLeague();
+ else if(id==='shop')renderShop();
+ else if(id==='practice'){await ensureLearningRuntime();renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}
+ keepActiveNavVisible(id);window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+}
+document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);if(id==='foundation')renderFoundation();if(id==='home')renderGameHome();if(id==='league')renderLeague();if(id==='shop')renderShop();if(id==='practice'){renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}keepActiveNavVisible(id);window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
 function themeLabel(t){return t==='survival'?'sobrevivência':t==='city'?'cidade':'dia a dia'}
 function renderKanjiList(filter='all',query=''){
@@ -171,10 +222,20 @@ function renderFoundation(){renderFoundationProgress();renderFoundationRunway();
 
 function setupCanvas(canvas){const ctx=canvas.getContext('2d');let drawing=false,last=null;function resize(){const r=canvas.parentElement.getBoundingClientRect();const dpr=window.devicePixelRatio||1;canvas.width=Math.floor(r.width*dpr);canvas.height=Math.floor(r.height*dpr);canvas.style.width=r.width+'px';canvas.style.height=r.height+'px';ctx.setTransform(dpr,0,0,dpr,0,0);ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#101726';ctx.lineWidth=7}function p(e){const r=canvas.getBoundingClientRect();const t=e.touches?.[0]||e;return{x:t.clientX-r.left,y:t.clientY-r.top}}function start(e){e.preventDefault();drawing=true;last=p(e)}function move(e){if(!drawing)return;e.preventDefault();const n=p(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(n.x,n.y);ctx.stroke();last=n}function end(){drawing=false;last=null}canvas.addEventListener('pointerdown',start);canvas.addEventListener('pointermove',move);window.addEventListener('pointerup',end);resize();window.addEventListener('resize',resize);return ctx}
 function clearDraw(ctx,canvas){ctx.clearRect(0,0,canvas.width,canvas.height)}
-const drawCanvas=document.getElementById('drawCanvas'),drawCtx=setupCanvas(drawCanvas),freeCanvas=document.getElementById('freeCanvas'),freeCtx=setupCanvas(freeCanvas);document.getElementById('clearCanvas').onclick=()=>clearDraw(drawCtx,drawCanvas);document.getElementById('freeClear').onclick=()=>clearDraw(freeCtx,freeCanvas);document.getElementById('toggleGuide').onclick=e=>{document.getElementById('ghostKanji').classList.toggle('hidden');e.target.textContent=document.getElementById('ghostKanji').classList.contains('hidden')?'mostrar guia':'ocultar guia'};
-document.getElementById('missionGrid').innerHTML=missions.map((m,i)=>`<button class="mission mission-${i}" onclick="missionOpen(${i})"><div class="mission-art"></div><div class="mission-body"><div class="symbol">${m.symbol}</div><b>${m.title}</b><small>${m.desc}</small></div><span class="level">${m.level}</span></button>`).join('');
+let drawCanvas=null,drawCtx=null,freeCanvas=null,freeCtx=null;
+function ensureDrawingCanvases(){
+ if(drawCtx&&freeCtx)return;
+ drawCanvas=document.getElementById('drawCanvas');freeCanvas=document.getElementById('freeCanvas');
+ if(drawCanvas&&!drawCtx)drawCtx=setupCanvas(drawCanvas);
+ if(freeCanvas&&!freeCtx)freeCtx=setupCanvas(freeCanvas);
+ const clear=document.getElementById('clearCanvas'),freeClear=document.getElementById('freeClear'),guide=document.getElementById('toggleGuide');
+ if(clear&&!clear.dataset.bound){clear.dataset.bound='1';clear.onclick=()=>clearDraw(drawCtx,drawCanvas)}
+ if(freeClear&&!freeClear.dataset.bound){freeClear.dataset.bound='1';freeClear.onclick=()=>clearDraw(freeCtx,freeCanvas)}
+ if(guide&&!guide.dataset.bound){guide.dataset.bound='1';guide.onclick=e=>{document.getElementById('ghostKanji').classList.toggle('hidden');e.target.textContent=document.getElementById('ghostKanji').classList.contains('hidden')?'mostrar guia':'ocultar guia'}}
+}
+
 function missionOpen(i){const m=missions[i],sc=missionSpeech[i];document.getElementById('npcLine').textContent=sc.npc;document.getElementById('npcPt').textContent=sc.npcPt;document.getElementById('targetSpeech').textContent=sc.target;document.getElementById('targetPt').textContent='“'+sc.pt+'”';document.getElementById('transcript').textContent='Sua transcrição aparecerá aqui. Se o reconhecimento de voz não estiver disponível, use o áudio e faça shadowing.';document.getElementById('speechScore').textContent='0';document.getElementById('scoreRing').style.setProperty('--score',0);toast('Missão aberta: '+m.title);go('speaking')}
-document.getElementById('survivalPhrases').innerHTML=phrases.map(p=>`<div class="phrase"><b>${p[0]}</b><span class="romaji">${p[1]}</span><span>${p[2]}</span><button class="audio-btn" style="margin-top:9px" onclick="speak('${p[0].replaceAll("'","\\'")}')">▶ ouvir</button></div>`).join('');
+
 document.querySelectorAll('[data-conj-kind]').forEach(b=>b.addEventListener('click',()=>{conjKind=b.dataset.conjKind;conjIndex=0;renderConjugation()}));
 document.querySelectorAll('[data-foundation-script]').forEach(b=>b.addEventListener('click',()=>{foundationKanaScript=b.dataset.foundationScript;document.querySelectorAll('[data-conj-kind]').forEach(b=>b.addEventListener('click',()=>{conjKind=b.dataset.conjKind;conjIndex=0;renderConjugation()}));
 document.querySelectorAll('[data-foundation-script]').forEach(x=>x.classList.toggle('active',x===b));renderFoundationKana();newKanaQuiz()}));
@@ -196,7 +257,7 @@ function normalizeJP(s){return(s||'').replace(/[\s。、！？,.!?]/g,'').replac
 function similarity(a,b){a=normalizeJP(a);b=normalizeJP(b);if(!a||!b)return 0;let same=0;for(const ch of new Set(a)){same+=Math.min(a.split(ch).length-1,b.split(ch).length-1)}return Math.max(0,Math.min(100,Math.round((same/Math.max(a.length,b.length))*115)))}
 document.getElementById('micBtn').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Reconhecimento de voz indisponível');document.getElementById('transcript').textContent='Seu navegador não oferece reconhecimento de voz. Use ▶ e faça shadowing.';return}const r=new SR();r.lang='ja-JP';r.interimResults=false;r.maxAlternatives=1;const btn=document.getElementById('micBtn');btn.textContent='● Ouvindo…';r.onresult=e=>{const txt=e.results[0][0].transcript;document.getElementById('transcript').textContent=txt;const sc=similarity(txt,document.getElementById('targetSpeech').textContent);document.getElementById('speechScore').textContent=sc;document.getElementById('scoreRing').style.setProperty('--score',sc);state.speech=Math.max(state.speech,sc);state.xp+=10;save();toast('Resposta registrada • +10 XP')};r.onerror=()=>toast('Não consegui captar a fala');r.onend=()=>btn.textContent='● Falar agora';r.start()};
 const globalSearch=document.getElementById('globalSearch');
-if(globalSearch){globalSearch.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.value.trim()){go('kanji');const q=e.target.value.trim();const ks=document.getElementById('kanjiSearch');ks.value=q;renderKanjiList('all',q);setTimeout(()=>ks.focus(),220)}})}
+if(globalSearch){globalSearch.addEventListener('keydown',async e=>{if(e.key==='Enter'&&e.target.value.trim()){await go('kanji');const q=e.target.value.trim();const ks=document.getElementById('kanjiSearch');ks.value=q;renderKanjiList('all',q);setTimeout(()=>ks.focus(),220)}})}
 if(matchMedia('(pointer:fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelectorAll('.experience-card,.mission').forEach(card=>{card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.setProperty('--rx',(-y*4)+'deg');card.style.setProperty('--ry',(x*5)+'deg')});card.addEventListener('pointerleave',()=>{card.style.setProperty('--rx','0deg');card.style.setProperty('--ry','0deg')})})}
 
 // ---------- V6 GAME LOOP ----------
@@ -281,8 +342,8 @@ function queueHomePolish(){
 function renderQuests(){const q=todayQuestState(),items=[{icon:'道',name:'Complete 1 lição',now:q.lessons||0,max:1},{icon:'✦',name:'Ganhe 30 XP',now:q.xp||0,max:30},{icon:'正',name:'Faça uma lição com 80%+',now:q.accuracy?1:0,max:1}];const w=document.getElementById('questList');if(!w)return;w.innerHTML=items.map(x=>{const pct=Math.min(100,Math.round(x.now/x.max*100)),done=x.now>=x.max;return `<div class="quest-row ${done?'done':''}"><div class="quest-icon">${x.icon}</div><div><b>${x.name}</b><span>${Math.min(x.now,x.max)}/${x.max}</span><div class="quest-progress"><i style="width:${pct}%"></i></div></div><div class="quest-check">${done?'✓':'◆ 10'}</div></div>`}).join('')}
 function claimPathChest(idx){if(idx>state.pathProgress)return toast('Este baú ainda está bloqueado');if(state.chests[idx])return toast('Baú já aberto');state.chests[idx]=true;state.gems+=40;state.energy=Math.min(state.maxEnergy,state.energy+4);if(idx===state.pathProgress)state.pathProgress++;save();toast('Baú aberto · +40 cristais · +4 energia');renderGameHome()}
 let quickRun=null;
-function startQuickLesson(idx){if(idx>state.pathProgress)return toast('Complete o círculo anterior primeiro');const node=flatPath[idx];if(!node)return;if(state.remediation?.idx===idx)return startMasteryRepair(idx);if(node.type==='chest')return claimPathChest(idx);if((state.energy||0)<=0){go('practice');toast('Energia vazia · pratique para recarregar ou use a Loja');return}const pack=buildLesson(node,state);quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false};go('lesson');renderQuickExercise();updateMetrics()}
-function startMasteryRepair(idx){if(idx!==state.pathProgress)return toast('O reforço pertence ao nó atual');const node=flatPath[idx];if(!node)return;const pack=buildMasteryRemediation(node);if(!pack.exercises.length)return toast('Sem lacunas observáveis para reforçar agora');quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false,practiceOnly:true,masteryRepair:true};go('lesson');renderQuickExercise();updateMetrics()}
+async function startQuickLesson(idx){if(idx>state.pathProgress)return toast('Complete o círculo anterior primeiro');const node=flatPath[idx];if(!node)return;if(node.type==='chest')return claimPathChest(idx);await ensureLearningRuntime();if(state.remediation?.idx===idx)return startMasteryRepair(idx);if((state.energy||0)<=0){go('practice');toast('Energia vazia · pratique para recarregar ou use a Loja');return}const pack=buildLesson(node,state);quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false};go('lesson');renderQuickExercise();updateMetrics()}
+async function startMasteryRepair(idx){await ensureLearningRuntime();if(idx!==state.pathProgress)return toast('O reforço pertence ao nó atual');const node=flatPath[idx];if(!node)return;const pack=buildMasteryRemediation(node);if(!pack.exercises.length)return toast('Sem lacunas observáveis para reforçar agora');quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false,practiceOnly:true,masteryRepair:true};go('lesson');renderQuickExercise();updateMetrics()}
 function exitQuickLesson(){quickRun=null;go('home')}
 function setQuickFeedback(title,copy='',ok=null){const f=document.getElementById('quickFeedback');if(!f)return;f.innerHTML=`<b>${title}</b>${copy}`;if(ok===true)f.style.color='#79dca9';else if(ok===false)f.style.color='#ff7c89';else f.style.color='#8f9aaa'}
 function renderQuickExercise(){
@@ -436,4 +497,6 @@ function renderShop(){updateMetrics()}
 function buyItem(type){const costs={freeze:100,energy:60,boost:180},cost=costs[type];if(state.gems<cost)return toast('Cristais insuficientes');state.gems-=cost;if(type==='freeze'){state.streakFreeze=(state.streakFreeze||0)+1;toast('Amuleto equipado')}if(type==='energy'){state.energy=state.maxEnergy;toast('Energia recarregada')}if(type==='boost'){state.xpBoostUntil=Date.now()+15*60*1000;toast('2× XP ativo por 15 min')}save()}
 
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-renderKanjiList();selectKanji(0);renderCurriculum(currentPlan().level);renderFoundation();updateMetrics();renderGameHome();renderMasteryMap();renderReviewDeck();renderMistakeNotebook();renderLeague();
+updateMetrics();renderGameHome();
+const pathWarm=document.getElementById('learningPath');
+if(pathWarm)pathWarm.addEventListener('pointerover',e=>{if(e.target.closest('.path-node.current'))ensureLearningRuntime().catch(()=>{})},{passive:true});
