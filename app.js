@@ -113,12 +113,21 @@ async function go(id){
    keepActiveNavVisible(id);
    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
    if(viewStart!==null&&typeof perfEnd==='function')perfEnd('view:'+id,viewStart);
+ }catch(err){
+   console.error('MON route failed',id,err);
+   toast('Não consegui abrir '+(viewNames[id]||id)+'. Tente novamente.');
+   return false;
  }finally{
    clearTimeout(busyTimer);
    setRouteBusy(false);
  }
+ return true;
 }
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
+function showProfileSummary(){
+ const p=currentPlan();
+ toast(`Perfil local · ${p.level} dia ${p.localDay} · ${state.streak||0} dias de sequência · ${state.xp||0} XP`);
+}
 function currentPlan(){const d=Number(state.day||1);if(d<=30)return{level:'N5',localDay:d,total:30,label:'sobrevivência',start:1};if(d<=90)return{level:'N4',localDay:d-30,total:60,label:'autonomia',start:31};return{level:'N3',localDay:Math.min(90,d-90),total:90,label:'integração',start:91}}
 function updateMetrics(){
  const mastered=Object.values(state.reviews).filter(r=>(r.interval||0)>=7&&(r.reps||0)>=3).length;
