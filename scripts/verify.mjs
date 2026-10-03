@@ -29,7 +29,7 @@ const scriptOrder=[
  './core/home-coach.js',
  './app.js'
 ];
-const featureRuntime=['./core/narrative-state.js','./features/journal.js','./features/journal.css','./data/narrative.js','./features/lesson.js','./features/lesson.css','./features/practice.js','./features/practice.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
+const featureRuntime=['./features/videos.js','./features/videos.css','./core/narrative-state.js','./features/journal.js','./features/journal.css','./data/narrative.js','./features/lesson.js','./features/lesson.css','./features/practice.js','./features/practice.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
 const debugRuntime=['./features/performance-lab.js','./features/performance-lab.css'];
 const lazyRuntime=[
  './data/content-packs.js',
@@ -81,6 +81,8 @@ if(!narrative.includes('narrativeEpisodeForUnit'))throw new Error('Narrative net
 if(!narrative.includes('narrativeEchoExercise'))throw new Error('Narrative transfer exercise missing')
 if(!html.includes('id="practiceCoach"'))throw new Error('Practice recommendation surface missing')
 if(!html.includes('id="journalContent"'))throw new Error('Japan Journal view missing')
+if(!html.includes('id="videoGrid"'))throw new Error('Video Library view missing')
+if(!app.includes("videos:['./features/videos.js']"))throw new Error('Video Library must stay lazy')
 if(!html.includes('data-view="journal"'))throw new Error('Japan Journal navigation missing')
 if(!app.includes("journal:['./data/narrative.js','./core/narrative-state.js','./features/journal.js']"))throw new Error('Japan Journal must stay lazy')
 const perfModule=read('core/performance.js');
