@@ -20,6 +20,7 @@ const scriptOrder=[
  './core/state.js',
  './core/review-scheduler.js',
  './core/mistakes.js',
+ './core/mastery-graph.js',
  './core/learning-methods.js',
  './core/course-engine.js',
  './app.js'
@@ -36,7 +37,7 @@ for(const asset of scriptOrder){
  if(!sw.includes(`'${asset}'`))throw new Error('PWA cache missing '+asset);
 }
 
-const requiredIds=['learningPath','quickMain','quickFeedback','quickCheck','reviewDeck','mistakeNotebook','toast'];
+const requiredIds=['learningPath','quickMain','quickFeedback','quickCheck','masteryMap','reviewDeck','mistakeNotebook','toast'];
 for(const id of requiredIds){
  if(!html.includes(`id="${id}"`))throw new Error('Required UI id missing: '+id);
 }
