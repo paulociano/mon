@@ -60,7 +60,7 @@ Política inicial:
 
 **Critério de aceite:** sempre existe uma ação principal explicável e acionável, sem carregar features pesadas para decidir.
 
-### 2. Next Best Lesson Engine — próximo
+### 2. Next Best Lesson Engine ✅
 **Dependência:** Home adaptativa estável.
 
 **Objetivo:** evoluir de uma decisão de Home para um motor capaz de montar a próxima sessão a partir da evidência real do aluno.
@@ -83,7 +83,7 @@ Saída:
 
 **Critério de aceite:** duas pessoas no mesmo nó podem receber ordens de prática diferentes quando as evidências forem diferentes.
 
-### 3. Daily Loop adaptativo
+### 3. Daily Loop adaptativo ✅
 **Dependência:** Next Best Lesson Engine.
 
 **Objetivo:** transformar “estudar japonês” num circuito diário curto, consistente e explicável.
@@ -97,6 +97,15 @@ Modelo:
 6. registrar domínio e próxima ação.
 
 O tamanho da sessão deve responder ao estado do aluno, não a uma quantidade fixa universal de exercícios.
+
+### Vídeos de apoio ✅
+**Status:** biblioteca lazy adicionada com player externo apenas no clique.
+
+Objetivo:
+- reforçar listening, speaking, reading e writing com apoio visual;
+- manter o caminho crítico limpo;
+- priorizar fontes confiáveis;
+- nunca transformar vídeo em substituto de recuperação ativa.
 
 ### 4. Listening & Pronunciation Lab
 **Dependência:** engine capaz de solicitar blocos específicos de listening/fala.
@@ -251,9 +260,9 @@ Regras:
 
 ## Ordem operacional imediata
 
-1. Concluir Home adaptativa + testes de prioridade.
-2. Criar Next Best Lesson Engine como seam profundo.
-3. Fazer o Daily Loop consumir esse engine.
+1. Home adaptativa concluída.
+2. Next Best Lesson Engine concluído.
+3. Daily Loop adaptativo concluído.
 4. Construir Listening & Pronunciation Lab.
 5. Evoluir Kanji Memory Lab.
 6. Transformar Survival Missions em tarefas ramificadas.
