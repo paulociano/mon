@@ -4,7 +4,7 @@
 const viewNames={home:'Aprender',lesson:'Lição',practice:'Praticar',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Trilha acadêmica',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita'};
 let currentKanji=0;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600)}
-function go(id){document.body.classList.toggle('focus-session',id==='session');document.body.classList.toggle('quick-focus',id==='lesson');document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);if(id==='foundation')renderFoundation();if(id==='home')renderGameHome();if(id==='league')renderLeague();if(id==='shop')renderShop();if(id==='practice'){renderReviewDeck();renderMistakeNotebook()}window.scrollTo({top:0,behavior:'smooth'})}
+function go(id){document.body.classList.toggle('focus-session',id==='session');document.body.classList.toggle('quick-focus',id==='lesson');document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);if(id==='foundation')renderFoundation();if(id==='home')renderGameHome();if(id==='league')renderLeague();if(id==='shop')renderShop();if(id==='practice'){renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
 function themeLabel(t){return t==='survival'?'sobrevivência':t==='city'?'cidade':'dia a dia'}
 function renderKanjiList(filter='all',query=''){
@@ -292,6 +292,7 @@ function quickCheck(){
    if(e._reviewType&&e._reviewKey&&e._reviewType!=='error')gradeReview(e._reviewType,e._reviewKey,'hard');
  }
  if(e.method&&typeof recordMethodOutcome==='function')recordMethodOutcome(e,ok,{hintUsed:!!quickRun.hintUsed});
+ if(typeof recordMasteryEvidence==='function')recordMasteryEvidence(e,ok,{hintUsed:!!quickRun.hintUsed});
  if(!quickRun.practiceOnly)energyTick(ok);
  const bridge=e.bridge?`<span class="feedback-bridge"><strong>Lente MON</strong>${e.bridge}</span>`:'';
  setQuickFeedback(ok?(e._remediation?'Erro recuperado!':e.method?'Recuperação válida.':'Correto!'):'Boa correção.',(e.why||'')+bridge,ok);
@@ -303,6 +304,7 @@ function renderQuickComplete(outOfEnergy=false){
  state.xp+=xp;state.leagueXp=(state.leagueXp||0)+xp;
  if(!practice)state.gems+=acc>=80?8:4;
  state.sessions=(state.sessions||0)+1;if(acc===100)state.perfectLessons=(state.perfectLessons||0)+1;
+ if(quickRun.pack?.unitId&&typeof coursePackForDay==='function'&&typeof unitMasteryStatus==='function'){const u=coursePackForDay(quickRun.node?.day);if(u)state.unitMastery[quickRun.pack.unitId]=unitMasteryStatus(u)};
  if(!practice){const q=todayQuestState();q.lessons=(q.lessons||0)+1;q.xp=(q.xp||0)+xp;if(acc>=80)q.accuracy=true;
    const node=quickRun.node;if(!outOfEnergy&&quickRun.idx===state.pathProgress){state.pathProgress++;if(node.day&&node.day<=24){state.foundationDay=Math.max(state.foundationDay||1,Math.min(FOUNDATION_TOTAL,node.day+1));if(node.day>=24)state.foundationComplete=true}else if(node.day>24){state.foundationComplete=true;state.day=Math.max(state.day||1,node.day-24)}}updateGameStreak();}
  save();
@@ -313,6 +315,18 @@ function renderQuickComplete(outOfEnergy=false){
  document.querySelector('.quick-bottom').style.display='none';setTimeout(()=>{const b=document.querySelector('.quick-bottom');if(b)b.style.display='flex'},50);document.getElementById('quickFeedback').innerHTML='';document.getElementById('quickCheck').style.display='none';
 }
 function updateGameStreak(){const today=localDateKey(),last=state.lastStudyDate;if(last===today)return;if(last){const y=new Date();y.setDate(y.getDate()-1);if(last===localDateKey(y))state.streak=(state.streak||0)+1;else if((state.streakFreeze||0)>0){state.streakFreeze--;state.streak=(state.streak||1)+1}else state.streak=1}else state.streak=Math.max(1,state.streak||1);state.lastStudyDate=today}
+function masteryLabel(concept){
+  const [type,key]=concept.split(':',2);
+  if(type==='vocabulary'){const v=vocabularyCatalog?.[key];return v?`${v.jp} · ${v.pt}`:key}
+  if(type==='grammar'){const id=concept.replace('grammar:P:',''),g=grammarCatalog?.[id];return g?g.form:id}
+  return key||concept;
+}
+function renderMasteryMap(){
+ const wrap=document.getElementById('masteryMap');if(!wrap||typeof masterySummary!=='function')return;
+ const s=masterySummary(),labels={recognize:'reconhecer',recall:'recuperar',listen:'ouvir',transfer:'transferir',produce:'produzir'};
+ const weak=s.weak||[];
+ wrap.innerHTML=`<div class="mastery-copy"><span class="eyebrow">Mastery Graph · 習得</span><h3>${s.concepts?s.average+'% de domínio observado':'O mapa nasce das suas respostas.'}</h3><p>O MON separa reconhecer, recuperar, ouvir, transferir e produzir. Saber uma palavra no quiz não significa ainda conseguir usá-la numa conversa.</p><div class="mastery-summary"><span><b>${s.strong}</b> fortes</span><span><b>${s.developing}</b> em construção</span><span><b>${s.fragile}</b> frágeis</span></div></div><div class="mastery-edges">${weak.map(x=>`<article><div><b>${masteryLabel(x.concept)}</b><span>${labels[x.dimension]||x.dimension}</span></div><div class="mastery-meter"><i style="width:${x.score}%"></i></div><strong>${x.score}%</strong></article>`).join('')||'<div class="mastery-empty">Faça algumas lições. As primeiras arestas aparecem depois das respostas reais.</div>'}</div>`;
+}
 function renderReviewDeck(){
  const wrap=document.getElementById('reviewDeck');if(!wrap)return;
  const s=reviewSummary(),labels={kana:'Kana',kanji:'Kanji',grammar:'Gramática',error:'Erros',vocabulary:'Vocabulário'};
@@ -346,4 +360,4 @@ function renderShop(){updateMetrics()}
 function buyItem(type){const costs={freeze:100,energy:60,boost:180},cost=costs[type];if(state.gems<cost)return toast('Cristais insuficientes');state.gems-=cost;if(type==='freeze'){state.streakFreeze=(state.streakFreeze||0)+1;toast('Amuleto equipado')}if(type==='energy'){state.energy=state.maxEnergy;toast('Energia recarregada')}if(type==='boost'){state.xpBoostUntil=Date.now()+15*60*1000;toast('2× XP ativo por 15 min')}save()}
 
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-renderKanjiList();selectKanji(0);renderCurriculum(currentPlan().level);renderFoundation();updateMetrics();renderGameHome();renderReviewDeck();renderMistakeNotebook();renderLeague();
+renderKanjiList();selectKanji(0);renderCurriculum(currentPlan().level);renderFoundation();updateMetrics();renderGameHome();renderMasteryMap();renderReviewDeck();renderMistakeNotebook();renderLeague();
