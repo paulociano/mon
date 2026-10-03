@@ -13,12 +13,22 @@ const requiredDomains=['transport','shopping','food','home','time','weather','so
 const domainHits=new Map(requiredDomains.map(domain=>[domain,0]));
 const vocabUse=new Map();
 const grammarUse=new Map();
+const seenVocabulary=new Set();
+let laterUnitsWithReuse=0;
+const novelty=[];
 
 for(const unit of units){
   assert.ok(unit.objectives?.length>=2,unit.id+' needs at least two observable objectives');
   assert.ok(unit.scenarios?.length>=1,unit.id+' needs a transfer scenario');
   assert.ok(unit.vocabulary?.length>=4,unit.id+' needs enough lexical material');
   assert.ok(unit.vocabulary.length<=10,unit.id+' introduces too much vocabulary at once');
+  const fresh=unit.vocabulary.filter(key=>!seenVocabulary.has(key));
+  const reused=unit.vocabulary.filter(key=>seenVocabulary.has(key));
+  const noveltyBudget=unit===units[0]?9:8;
+  assert.ok(fresh.length<=noveltyBudget,unit.id+' exceeds new-vocabulary budget: '+fresh.length);
+  if(unit!==units[0]&&reused.length)laterUnitsWithReuse++;
+  novelty.push({id:unit.id,newVocabulary:fresh.length,reusedVocabulary:reused.length});
+  unit.vocabulary.forEach(key=>seenVocabulary.add(key));
   for(const method of ['freeRecall','transfer','roleplay']){
     assert.ok(unit.methods?.includes(method),unit.id+' missing '+method);
   }
@@ -30,6 +40,14 @@ for(const unit of units){
     }
   }
   for(const key of unit.grammar||[])grammarUse.set(key,(grammarUse.get(key)||0)+1);
+}
+
+assert.ok(laterUnitsWithReuse>=16,'too few later N5 units reuse previously seen vocabulary');
+
+for(const id of ['n5-health','n5-repair','n5-phone','n5-autonomy']){
+  const unit=units.find(item=>item.id===id);
+  assert.ok(unit?.scenarios?.length>=2,id+' needs scenario variety for real-world transfer');
+  assert.equal(new Set(unit.scenarios.map(s=>s.npc+'|'+s.reply)).size,unit.scenarios.length,id+' scenarios must be distinct');
 }
 
 for(const [domain,count] of domainHits){
@@ -58,7 +76,9 @@ const report={
   repeatedVocabulary,
   repeatedGrammar,
   maxVocabularyPerUnit:Math.max(...units.map(unit=>unit.vocabulary.length)),
-  transferReady:units.filter(unit=>['freeRecall','transfer','roleplay'].every(method=>unit.methods.includes(method))).length
+  transferReady:units.filter(unit=>['freeRecall','transfer','roleplay'].every(method=>unit.methods.includes(method))).length,
+  laterUnitsWithReuse,
+  novelty
 };
 
 console.log('MON N5 depth audit passed:',JSON.stringify(report));
