@@ -28,7 +28,7 @@ const scriptOrder=[
  './core/performance.js',
  './app.js'
 ];
-const featureRuntime=['./data/kanji.js','./data/kana.js','./data/foundation.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
+const featureRuntime=['./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
 const lazyRuntime=[
  './data/content-packs.js',
  './core/mistakes.js',
