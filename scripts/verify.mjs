@@ -20,6 +20,7 @@ const scriptOrder=[
  './core/state.js',
  './core/review-scheduler.js',
  './core/mistakes.js',
+ './core/learning-methods.js',
  './core/course-engine.js',
  './app.js'
 ];
