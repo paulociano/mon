@@ -95,7 +95,7 @@ Um pequeno personagem original construído a partir da linguagem de:
 
 A proposta evita depender de um animal japonês estereotipado e permite que o personagem pareça nativo da identidade visual do MON.
 
-**Nome de trabalho:** `Tomo` (トモ), apenas como placeholder de produto. O nome final deve ser decidido depois da direção visual, não antes.
+**Nome de trabalho preservado do produto existente:** `Kitsu` (キツ). A Home já usa `Seu guia · キツ` e uma raposa simbólica `狐`; o MVP deve evoluir essa semente em vez de introduzir um segundo personagem. A direção recomendada passa a ser um híbrido **raposa de tinta + selo**, reduzindo o risco de um kitsune genérico.
 
 ### Alternativas para exploração
 
@@ -109,13 +109,13 @@ A proposta evita depender de um animal japonês estereotipado e permite que o pe
 - ótimo para humor e situações;
 - tende a empurrar a marca para um registro mais cartunesco.
 
-**Companheiro abstrato de tinta / selo**
-- melhor aderência ao MON;
-- distintivo;
-- leve para SVG/CSS/Rive;
-- exige mais cuidado de design para criar empatia sem depender de um animal conhecido.
+**Kitsu · raposa de tinta / selo**
+- preserva o guia já insinuado na Home;
+- combina a leitura imediata de uma raposa com a linguagem editorial de tinta/selo;
+- leve para HTML/CSS/SVG;
+- evita criar um mascote desconectado da interface existente.
 
-A terceira direção é a recomendada para o primeiro estudo visual.
+Esta direção híbrida é a recomendada para o MVP.
 
 ## Character bible mínima
 
