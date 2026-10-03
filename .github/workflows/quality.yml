@@ -23,3 +23,5 @@ jobs:
         run: node scripts/test-review-scheduler.mjs
       - name: Curriculum content contracts
         run: node scripts/test-content-packs.mjs
+      - name: MON learning methods
+        run: node scripts/test-learning-methods.mjs
