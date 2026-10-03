@@ -29,3 +29,15 @@ function performanceSnapshot(){
    try{const obs=new PerformanceObserver(list=>{for(const e of list.getEntries())if(e.duration>=50)perfWrite({name:'longtask',duration:Math.round(e.duration*10)/10,at:Date.now()})});obs.observe({type:'longtask',buffered:true})}catch{}
  }
 })();
+
+function performanceResourceSnapshot(){
+ const rows=performance.getEntriesByType?.('resource')||[];
+ return rows.filter(x=>x.name.startsWith(location.origin)).map(x=>({name:x.name,duration:Math.round(x.duration*10)/10,transferSize:x.transferSize||0,decodedBodySize:x.decodedBodySize||0}));
+}
+(function loadPerformanceLabWhenRequested(){
+ try{
+  if(!new URLSearchParams(location.search).has('debug'))return;
+  const css=document.createElement('link');css.rel='stylesheet';css.href='./features/performance-lab.css';document.head.appendChild(css);
+  const js=document.createElement('script');js.src='./features/performance-lab.js';js.defer=true;document.head.appendChild(js);
+ }catch{}
+})();
