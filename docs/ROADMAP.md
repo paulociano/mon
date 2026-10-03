@@ -13,8 +13,8 @@ The product already includes:
 
 ## Next implementation slices
 
-### 1. Course engine
-Move lesson construction into a dedicated engine with a stable interface:
+### 1. Course engine ✅ foundation implemented
+The first adaptive engine is now live behind a dedicated interface:
 
 `buildLesson(nodeId, learnerState) -> lesson`
 
@@ -33,8 +33,8 @@ Replace large hand-authored arrays with structured content packs:
 
 Each lesson unit should declare objectives, prerequisites, vocabulary, grammar, kana/kanji, exercise templates and mastery requirements.
 
-### 3. Mistake notebook
-Create an explicit error model instead of storing only the latest mistakes. Errors should be grouped by:
+### 3. Mistake notebook ✅ foundation implemented
+The app now stores structured mistakes and exposes a corrective practice queue grouped by:
 
 - kana confusion
 - sound duration
@@ -70,3 +70,8 @@ Only after the local learning model is stable, add authentication and cloud sync
 ## Architecture principle
 
 Keep content, learner state, lesson generation and UI rendering as separate seams. The interface should not need to know how SRS intervals are calculated, and curriculum files should not need to know how screens are rendered.
+
+
+## Quality gate
+
+GitHub Actions now checks JavaScript syntax, local asset references, duplicate HTML IDs, runtime script order and PWA cache coverage on pushes and pull requests.
