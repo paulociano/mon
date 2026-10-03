@@ -28,7 +28,7 @@ const scriptOrder=[
  './core/performance.js',
  './app.js'
 ];
-const featureRuntime=['./data/narrative.js','./features/lesson.js','./features/lesson.css','./features/practice.js','./features/practice.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
+const featureRuntime=['./core/narrative-state.js','./features/journal.js','./features/journal.css','./data/narrative.js','./features/lesson.js','./features/lesson.css','./features/practice.js','./features/practice.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
 const debugRuntime=['./features/performance-lab.js','./features/performance-lab.css'];
 const lazyRuntime=[
  './data/content-packs.js',
@@ -76,6 +76,9 @@ const narrative=read('data/narrative.js');
 if(!narrative.includes('narrativeEpisodeForUnit'))throw new Error('Narrative network missing')
 if(!narrative.includes('narrativeEchoExercise'))throw new Error('Narrative transfer exercise missing')
 if(!html.includes('id="practiceCoach"'))throw new Error('Practice recommendation surface missing')
+if(!html.includes('id="journalContent"'))throw new Error('Japan Journal view missing')
+if(!html.includes('data-view="journal"'))throw new Error('Japan Journal navigation missing')
+if(!app.includes("journal:['./data/narrative.js','./core/narrative-state.js','./features/journal.js']"))throw new Error('Japan Journal must stay lazy')
 const perfModule=read('core/performance.js');
 for(const src of debugRuntime){
  if(!fs.existsSync(path.join(root,src.slice(2))))throw new Error('Debug runtime file missing '+src);
