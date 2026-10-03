@@ -14,11 +14,11 @@ assert.ok(d.gaps.length>0,'reinforcement needs concrete gaps');
 
 for(const key of ['eki','doko']){
   for(const dim of ['recognize','recall','listen','transfer','produce']){
-    for(let i=0;i<8;i++)vm.runInContext(`recordMasteryEvidence({_reviewType:'vocabulary',_reviewKey:'${key}',type:'${dim==='recognize'?'choice':dim==='recall'?'recall':dim==='listen'?'dictation':dim==='transfer'?'transfer':'roleplay'}},true,{hintUsed:false})`,ctx);
+    for(let i=0;i<8;i++)vm.runInContext(`recordMasteryEvidence({_reviewType:'vocabulary',_reviewKey:'${key}',type:'${dim==='recognize'?'choice':dim==='recall'?'recall':dim==='listen'?'dictation':dim==='transfer'?'transfer':'roleplay'}'},true,{hintUsed:false})`,ctx);
   }
 }
 for(const dim of ['recognize','recall','listen','transfer','produce']){
-  for(let i=0;i<8;i++)vm.runInContext(`recordMasteryEvidence({_reviewType:'grammar',_reviewKey:'P:locationWaDoko',type:'${dim==='recognize'?'choice':dim==='recall'?'recall':dim==='listen'?'dictation':dim==='transfer'?'transfer':'roleplay'}},true,{hintUsed:false})`,ctx);
+  for(let i=0;i<8;i++)vm.runInContext(`recordMasteryEvidence({_reviewType:'grammar',_reviewKey:'P:locationWaDoko',type:'${dim==='recognize'?'choice':dim==='recall'?'recall':dim==='listen'?'dictation':dim==='transfer'?'transfer':'roleplay'}'},true,{hintUsed:false})`,ctx);
 }
 // Add enough evidence for other unit concepts so coverage clears the contract.
 for(const key of ['deguchi','iriguchi','migi','hidari','massugu','sumimasen','mouichido']){
