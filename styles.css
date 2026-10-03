@@ -442,3 +442,6 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 .route-busy main{cursor:progress}
 @keyframes routeLoad{to{transform:translateX(60%)}}
 @media(prefers-reduced-motion:reduce){.route-busy .route-loader{animation:none;transform:none;background:#e64d3d}}
+
+/* V19 · compact Japan Journal entry on Home */
+.journal-mini{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start}.journal-mini-mark{width:43px;height:43px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#7a2830,#431820);border:1px solid rgba(244,169,187,.14);font:700 20px var(--jp);color:#f0d6c1;box-shadow:0 10px 28px rgba(81,23,31,.18)}.journal-mini h4{font-size:17px;margin:8px 0 5px;line-height:1.1}.journal-mini p{font-size:8px;line-height:1.55;color:#82909d}.journal-mini .rail-card-label>span:last-child{white-space:nowrap}.journal-mini:hover .journal-mini-mark{transform:rotate(-2deg) translateY(-1px)}.journal-mini-mark{transition:transform .2s ease}@media(prefers-reduced-motion:reduce){.journal-mini-mark{transition:none}}
