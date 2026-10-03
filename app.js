@@ -1,7 +1,7 @@
 // MON application runtime
 // Course datasets live in data/course-content.js.
 
-const viewNames={home:'Aprender',lesson:'Lição',practice:'Praticar',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Trilha acadêmica',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos'};
+const viewNames={home:'Aprender',lesson:'Lição',practice:'Praticar',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Trilha acadêmica',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos',pronunciation:'Pronúncia'};
 let currentKanji=0;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600)}
 function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${id}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
@@ -32,7 +32,8 @@ const FEATURE_RUNTIME_SCRIPTS={
  lesson:['./features/lesson.js'],
  practice:['./features/practice.js'],
  journal:['./data/narrative.js','./core/narrative-state.js','./features/journal.js'],
- videos:['./features/videos.js']
+ videos:['./features/videos.js'],
+ pronunciation:['./data/pronunciation.js','./features/pronunciation.js']
 };
 const featureRuntimePromises={};
 async function ensureFeatureRuntime(name){
@@ -59,7 +60,7 @@ function loadRuntimeStyle(href){
    link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>reject(new Error('Falha ao carregar '+href));document.head.appendChild(link);
  });
 }
-const FEATURE_RUNTIME_STYLES={foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css']};
+const FEATURE_RUNTIME_STYLES={foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css']};
 function ensureLearningRuntime(){
  if(learningRuntimePromise)return learningRuntimePromise;
  const started=typeof perfStart==='function'?perfStart('runtime:learning'):null;
@@ -86,6 +87,7 @@ async function go(id){
    if(id==='practice'){await ensureLearningRuntime();await ensureFeatureRuntime('practice');}
    if(id==='journal')await ensureFeatureRuntime('journal');
    if(id==='videos')await ensureFeatureRuntime('videos');
+   if(id==='pronunciation')await ensureFeatureRuntime('pronunciation');
 
    document.body.classList.toggle('focus-session',id==='session');
    document.body.classList.toggle('quick-focus',id==='lesson');
@@ -106,6 +108,7 @@ async function go(id){
    else if(id==='practice'){renderPracticeCoach();renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}
    else if(id==='journal')renderJournal();
    else if(id==='videos'&&typeof renderVideos==='function')renderVideos();
+   else if(id==='pronunciation'&&typeof renderPronunciation==='function')renderPronunciation();
 
    keepActiveNavVisible(id);
    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
@@ -276,7 +279,7 @@ function buyItem(type){const costs={freeze:100,energy:60,boost:180},cost=costs[t
 
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 updateMetrics();renderGameHome();
-for(const name of ['kanji','reading','missions','speaking','curriculum','journal','videos']){
+for(const name of ['kanji','reading','missions','speaking','curriculum','journal','videos','pronunciation']){
  const nav=document.querySelector(`[data-view="${name}"]`);
  if(nav)nav.addEventListener('pointerover',()=>ensureFeatureRuntime(name).catch(()=>{}),{passive:true,once:true});
 }
