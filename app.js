@@ -14,6 +14,7 @@ const LEARNING_RUNTIME_SCRIPTS=[
  './data/content-packs.js',
  './data/narrative.js',
  './core/narrative-state.js',
+ './core/next-best-lesson.js',
  './core/mistakes.js',
  './core/mastery-graph.js',
  './core/learning-methods.js',
@@ -22,7 +23,7 @@ const LEARNING_RUNTIME_SCRIPTS=[
 ];
 const FEATURE_RUNTIME_SCRIPTS={
  foundation:['./data/kana.js','./data/foundation.js','./features/foundation.js'],
- session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./data/narrative.js','./features/foundation.js','./features/session.js'],
+ session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./data/narrative.js','./core/next-best-lesson.js','./features/foundation.js','./features/session.js'],
  kanji:['./data/kanji.js','./features/kanji.js'],
  reading:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
  missions:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
