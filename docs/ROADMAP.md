@@ -64,7 +64,7 @@ Add:
 ### 6. Mastery Graph ✅ foundation implemented
 Track concept mastery separately across recognition, recall, listening, transfer and production. Weak edges now bias the teaching-method mix and are visible in the Practice hub.
 
-### 7. Content scale
+### 7. Content scale ✅ practical N5 graph expanded
 Expand from Foundation Zero into complete N5, then N4 and N3 paths with reusable exercise templates instead of duplicating markup.
 
 ### 8. Accounts and sync
@@ -88,3 +88,8 @@ The differentiated teaching loop is: Discover → Recall → Transfer → Produc
 ## Progression by mastery
 
 Structured N5 nodes no longer advance on completion alone. The progression engine evaluates lesson accuracy plus unit mastery evidence. When critical edges are weak or unseen, the node enters a reinforcement state and generates a free micro-lesson targeted to those gaps. Successful reinforcement can unlock the next node directly.
+
+
+## Practical N5 scale
+
+The structured N5 graph now extends through practical day 30 after Foundation Zero, covering home, time, transport, weather, invitations, preferences, descriptions, existence, counters, action requests, permission/prohibition, desires, routines, frequency, past events, sequencing, reasons, open questions, already/yet, phone and services, then an autonomy checkpoint. This is a functional N5-aligned scope, not a claim of an official exhaustive JLPT word/kanji list.
