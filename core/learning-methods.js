@@ -114,7 +114,7 @@ function adaptiveMethodSequence(unit){
   const strongRecall=recall!==null&&recall>=.82;
   const weakTransfer=transfer!==null&&transfer<.65;
   const strongProduce=produce!==null&&produce>=.8;
-  let ordered=[...declared];
+  let ordered=[...(typeof masteryMethodHints==='function'?masteryMethodHints(unit):[]),...declared];
   if(weakRecall){
     ordered=['discover','cloze','dictation','freeRecall',...ordered];
   }else if(strongRecall){
