@@ -56,3 +56,5 @@ jobs:
         run: node scripts/test-lazy-lesson-ui.mjs
       - name: Local Performance Lab
         run: node scripts/test-performance-lab.mjs
+      - name: Practice Hub
+        run: node scripts/test-practice-hub.mjs
