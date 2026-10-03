@@ -21,7 +21,7 @@ const featureRuntimePromises={};
 async function ensureFeatureRuntime(name){
  if(featureRuntimePromises[name])return featureRuntimePromises[name];
  const scripts=FEATURE_RUNTIME_SCRIPTS[name]||[];
- featureRuntimePromises[name]=(async()=>{for(const src of scripts)await loadRuntimeScript(src)})().catch(err=>{delete featureRuntimePromises[name];throw err});
+ featureRuntimePromises[name]=(async()=>{for(const href of FEATURE_RUNTIME_STYLES[name]||[])await loadRuntimeStyle(href);for(const src of scripts)await loadRuntimeScript(src)})().catch(err=>{delete featureRuntimePromises[name];throw err});
  return featureRuntimePromises[name];
 }
 let learningRuntimePromise=null;
@@ -33,6 +33,15 @@ function loadRuntimeScript(src){
    s.onload=()=>{s.dataset.ready='1';resolve()};s.onerror=()=>reject(new Error('Falha ao carregar '+src));document.body.appendChild(s);
  });
 }
+function loadRuntimeStyle(href){
+ return new Promise((resolve,reject)=>{
+   const existing=document.querySelector(`link[data-runtime-href="${href}"]`);
+   if(existing){if(existing.dataset.ready==='1')return resolve();existing.addEventListener('load',()=>resolve(),{once:true});existing.addEventListener('error',()=>reject(new Error('Falha ao carregar '+href)),{once:true});return}
+   const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.dataset.runtimeHref=href;
+   link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>reject(new Error('Falha ao carregar '+href));document.head.appendChild(link);
+ });
+}
+const FEATURE_RUNTIME_STYLES={foundation:['./features/foundation.css']};
 function ensureLearningRuntime(){
  if(learningRuntimePromise)return learningRuntimePromise;
  document.body.classList.add('learning-runtime-loading');
@@ -53,6 +62,8 @@ function hydrateSurvivalPhrases(){
  hydratedViews.add('speaking');
 }
 async function go(id){
+ if(id==='foundation')await ensureFeatureRuntime('foundation');
+ if(id==='practice')await ensureLearningRuntime();
  document.body.classList.toggle('focus-session',id==='session');document.body.classList.toggle('quick-focus',id==='lesson');
  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
  const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;
