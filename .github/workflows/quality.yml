@@ -30,6 +30,8 @@ jobs:
         run: node scripts/test-review-scheduler.mjs
       - name: Curriculum content contracts
         run: node scripts/test-content-packs.mjs
+      - name: Content quality
+        run: node scripts/test-content-quality.mjs
       - name: MON learning methods
         run: node scripts/test-learning-methods.mjs
       - name: Adaptive teaching mix
