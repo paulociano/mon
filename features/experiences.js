@@ -12,8 +12,6 @@ renderKana();
 
 document.getElementById('toggleTranslation').onclick=toggleReadingTranslation;
 document.getElementById('listenTarget').onclick=()=>speak(document.getElementById('targetSpeech').textContent);
-function normalizeJP(s){return(s||'').replace(/[\s。、！？,.!?]/g,'').replace(/とうきょう/g,'東京').replace(/えき/g,'駅').toLowerCase()}
-function similarity(a,b){a=normalizeJP(a);b=normalizeJP(b);if(!a||!b)return 0;let same=0;for(const ch of new Set(a)){same+=Math.min(a.split(ch).length-1,b.split(ch).length-1)}return Math.max(0,Math.min(100,Math.round((same/Math.max(a.length,b.length))*115)))}
 document.getElementById('micBtn').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Reconhecimento de voz indisponível');document.getElementById('transcript').textContent='Seu navegador não oferece reconhecimento de voz. Use ▶ e faça shadowing.';return}const r=new SR();r.lang='ja-JP';r.interimResults=false;r.maxAlternatives=1;const btn=document.getElementById('micBtn');btn.textContent='● Ouvindo…';r.onresult=e=>{const txt=e.results[0][0].transcript;document.getElementById('transcript').textContent=txt;const sc=similarity(txt,document.getElementById('targetSpeech').textContent);document.getElementById('speechScore').textContent=sc;document.getElementById('scoreRing').style.setProperty('--score',sc);state.speech=Math.max(state.speech,sc);state.xp+=10;save();toast('Resposta registrada • +10 XP')};r.onerror=()=>toast('Não consegui captar a fala');r.onend=()=>btn.textContent='● Falar agora';r.start()};
 
 function hydrateMissionGrid(){
