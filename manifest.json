@@ -1,0 +1,17 @@
+{
+  "name": "MON 門 Japanese OS",
+  "short_name": "MON 門",
+  "description": "Japonês do zero à vida real com kana, gramática, kanji, fala e prática adaptativa.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0A1626",
+  "theme_color": "#0A1626",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
