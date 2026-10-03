@@ -21,3 +21,5 @@ jobs:
         run: node scripts/verify.mjs
       - name: Review scheduler behavior
         run: node scripts/test-review-scheduler.mjs
+      - name: Curriculum content contracts
+        run: node scripts/test-content-packs.mjs
