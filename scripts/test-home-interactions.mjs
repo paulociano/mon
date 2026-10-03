@@ -5,6 +5,12 @@ const app=fs.readFileSync('app.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 const coach=fs.readFileSync('core/home-coach.js','utf8');
+assert.ok(app.includes('function shellLocalDateKey(date=new Date())'),'boot-critical local date helper must live in app shell');
+assert.ok(!/\blocalDateKey\s*\(/.test(app),'app shell must not depend on lazy localDateKey');
+for(const token of ["todayQuestState(){const d=shellLocalDateKey()","updateGameStreak(){const today=shellLocalDateKey()","last===shellLocalDateKey(y)"]){
+  assert.ok(app.includes(token),'Home boot date call must use shell helper '+token);
+}
+
 
 for(const id of ['homeAdaptivePrimary','homeAdaptiveSecondary']){
   assert.ok(html.includes(`id="${id}"`),'missing adaptive Home button '+id);
