@@ -4,10 +4,13 @@ import path from 'node:path';
 const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const html=read('index.html');
+const css=read('styles.css');
 const sw=read('sw.js');
 
 const refs=[...html.matchAll(/<(?:script[^>]+src|link[^>]+href)="([^"]+)"/g)].map(m=>m[1]).filter(x=>x.startsWith('./'));
-const missing=refs.filter(r=>!fs.existsSync(path.join(root,r.slice(2))));
+const cssRefs=[...css.matchAll(/url\\(['\"]?(\\.\\/[^'\")]+)['\"]?\\)/g)].map(m=>m[1]);
+const localRefs=[...new Set([...refs,...cssRefs])];
+const missing=localRefs.filter(r=>!fs.existsSync(path.join(root,r.slice(2))));
 if(missing.length)throw new Error('Missing local refs: '+missing.join(', '));
 
 const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
@@ -44,4 +47,5 @@ for(const id of requiredIds){
 }
 
 console.log('MON static verification passed');
-console.log(`Checked ${refs.length} local refs, ${ids.length} ids and ${scriptOrder.length} runtime modules.`);
+for(const asset of ['./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp']){if(!sw.includes(`'${asset}'`))throw new Error('PWA cache missing visual asset '+asset)}
+console.log(`Checked ${localRefs.length} local refs, ${ids.length} ids and ${scriptOrder.length} runtime modules.`);
