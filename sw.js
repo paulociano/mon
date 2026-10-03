@@ -1,5 +1,5 @@
-const CACHE='mon-japanese-os-v14';
-const CORE=['./','./index.html','./styles.css','./data/course-content.js','./data/content-packs.js','./core/state.js','./core/review-scheduler.js','./core/mistakes.js','./core/mastery-graph.js','./core/learning-methods.js','./core/course-engine.js','./core/progression-engine.js','./features/foundation.js','./features/session.js','./app.js','./manifest.json','./icon.svg','./assets/brand/mon-mark.svg','./assets/brand/mon-lockup.svg','./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp'];
+const CACHE='mon-japanese-os-v15';
+const CORE=['./','./index.html','./styles.css','./data/course-content.js','./data/content-packs.js','./core/state.js','./core/review-scheduler.js','./core/mistakes.js','./core/mastery-graph.js','./core/learning-methods.js','./core/course-engine.js','./core/progression-engine.js','./features/foundation.js','./features/foundation.css','./features/session.js','./app.js','./manifest.json','./icon.svg','./assets/brand/mon-mark.svg','./assets/brand/mon-lockup.svg','./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
