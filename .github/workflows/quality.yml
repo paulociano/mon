@@ -42,6 +42,12 @@ jobs:
         run: node scripts/test-video-library.mjs
       - name: Listening and Pronunciation Lab
         run: node scripts/test-pronunciation-lab.mjs
+      - name: Kanji Memory Lab 2.0
+        run: node scripts/test-kanji-memory-lab.mjs
+      - name: Survival Missions 2.0
+        run: node scripts/test-survival-missions-v2.mjs
+      - name: README showcase
+        run: node scripts/test-readme-showcase.mjs
       - name: MON learning methods
         run: node scripts/test-learning-methods.mjs
       - name: Adaptive teaching mix
