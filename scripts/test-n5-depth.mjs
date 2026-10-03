@@ -34,12 +34,18 @@ for(const unit of units){
   }
 
   for(const key of unit.vocabulary||[]){
-    vocabUse.set(key,(vocabUse.get(key)||0)+1);
+    const days=vocabUse.get(key)||[];
+    days.push(unit.day);
+    vocabUse.set(key,days);
     for(const tag of vocab[key]?.tags||[]){
       if(domainHits.has(tag))domainHits.set(tag,domainHits.get(tag)+1);
     }
   }
-  for(const key of unit.grammar||[])grammarUse.set(key,(grammarUse.get(key)||0)+1);
+  for(const key of unit.grammar||[]){
+    const days=grammarUse.get(key)||[];
+    days.push(unit.day);
+    grammarUse.set(key,days);
+  }
 }
 
 assert.ok(laterUnitsWithReuse>=16,'too few later N5 units reuse previously seen vocabulary');
@@ -62,7 +68,7 @@ const grammarCapabilities=[
 for(const id of grammarCapabilities)assert.ok(grammar[id],'N5 grammar capability missing: '+id);
 
 for(const key of ['wakarimasen','mouichido']){
-  assert.ok((vocabUse.get(key)||0)>=3,key+' must reappear across contexts for repair fluency');
+  assert.ok((vocabUse.get(key)||[]).length>=3,key+' must reappear across contexts for repair fluency');
 }
 
 const survivalReappearance=['migi','hidari','fukuro','genkin','denwa'];
@@ -76,8 +82,8 @@ for(const key of ['phoneIdentity']){
   assert.ok(days.length>=2,key+' grammar must transfer into a later unit');
 }
 
-const repeatedVocabulary=[...vocabUse.values()].filter(n=>n>=2).length;
-const repeatedGrammar=[...grammarUse.values()].filter(n=>n>=2).length;
+const repeatedVocabulary=[...vocabUse.values()].filter(days=>days.length>=2).length;
+const repeatedGrammar=[...grammarUse.values()].filter(days=>days.length>=2).length;
 assert.ok(repeatedVocabulary>=18,'too little lexical reappearance across N5');
 assert.ok(repeatedGrammar>=10,'too little grammar reappearance across N5');
 
