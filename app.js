@@ -185,6 +185,20 @@ function runAdaptiveHomeAction(action){
  if(action==='chest')return claimPathChest(idx);
  return startQuickLesson(idx);
 }
+function guideMascotState(decision){
+ if(['repair','mistake'].includes(decision?.kind))return 'repair';
+ if(['review','recover'].includes(decision?.kind))return 'review';
+ if(decision?.kind==='story')return 'transfer';
+ if(decision?.node?.type==='checkpoint')return 'checkpoint';
+ return 'learn';
+}
+function renderGuideMascot(decision){
+ const mood=guideMascotState(decision),guide=document.querySelector('.guide-card'),mascot=document.getElementById('guideMascot'),label=document.getElementById('guideStateLabel');
+ if(guide)guide.dataset.state=mood==='transfer'?'story':mood;
+ if(mascot)mascot.dataset.mood=mood;
+ if(label)label.textContent=({learn:'aprender',review:'revisar',repair:'reparar',transfer:'transferir',checkpoint:'checkpoint'})[mood]||'agora';
+ return mood;
+}
 function renderAdaptiveHome(){
  const d=homeCoachDecision(state,flatPath),banner=document.querySelector('.course-banner');
  if(banner)banner.dataset.adaptive=d.kind;
@@ -194,8 +208,7 @@ function renderAdaptiveHome(){
  if(primary){primary.textContent=d.cta;primary.onclick=()=>runAdaptiveHomeAction(d.action)}
  if(secondary){secondary.textContent=d.secondary;secondary.onclick=()=>runAdaptiveHomeAction(d.secondaryAction)}
  const guide=document.querySelector('.guide-card');
- if(guide&&['repair','review','recover','mistake'].includes(d.kind)){
-   guide.dataset.state=d.kind==='repair'?'repair':'learn';
+ if(guide&&['repair','review','recover','mistake','story'].includes(d.kind)){
    set('guideTitle',d.title);set('guideCopy',d.copy);
  }
  return d;
@@ -242,12 +255,13 @@ function renderGameHome(){
  const goal=Math.min(100,Math.round((q.xp||0)/30*100)),ring=document.getElementById('dailyRing');if(ring)ring.style.setProperty('--goal',goal+'%');el('dailyGoalPct',goal+'%');
  renderQuests();renderHomeJournalSummary();const adaptive=renderAdaptiveHome();
  const g=flatPath[Math.min(progress,total-1)];
- if(g&& !['repair','review','recover','mistake'].includes(adaptive?.kind)){
+ if(g&& !['repair','review','recover','mistake','story'].includes(adaptive?.kind)){
    const repair=state.remediation?.idx===progress,guide=document.querySelector('.guide-card');
    if(guide){guide.dataset.state=repair?'repair':g.type==='checkpoint'?'checkpoint':g.type==='story'?'story':'learn'}
    el('guideTitle',repair?'Fortaleça a aresta fraca.':g.type==='checkpoint'?'Prepare-se para provar domínio.':g.type==='story'?'Leia para integrar o que aprendeu.':g.day<=12?'Automatize o kana.':g.day<=24?'Monte frases, não traduções.':'Use japonês em contexto.');
    el('guideCopy',repair?'Você concluiu a atividade, mas o Mastery Graph ainda encontrou uma habilidade crítica instável. O reforço é curto, direcionado e não consome Energia.':g.type==='checkpoint'?'O checkpoint mistura competências da unidade. Ele não mede velocidade, mede se você consegue recuperar e transferir sem pista.':g.type==='story'?'Histórias conectam vocabulário e gramática em contexto contínuo. Leia primeiro pelo sentido geral, depois volte aos detalhes.':g.day<=12?'Leia, ouça e recupere a forma. O romaji some conforme seu cérebro para de precisar dele.':g.day<=24?'Partículas mostram o papel dos blocos. Espere o predicado antes de fechar o sentido.':'Agora o curso mistura kana, gramática, kanji, áudio e situações reais no mesmo circuito.');
  }
+ renderGuideMascot(adaptive);
  queueHomePolish();
 }
 function queueHomePolish(){
