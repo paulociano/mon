@@ -105,21 +105,6 @@ async function go(id){
    setRouteBusy(false);
  }
 }
-document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
- const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;
- if(id==='home')renderGameHome();
- else if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);
- else if(id==='foundation')renderFoundation();
- else if(id==='kanji'){ensureDrawingCanvases();renderKanjiList();selectKanji(currentKanji)}
- else if(id==='writing'){ensureDrawingCanvases()}
- else if(id==='reading'){if(typeof hydrateReading==='function')hydrateReading()}
- else if(id==='missions')hydrateMissionGrid();
- else if(id==='speaking')hydrateSurvivalPhrases();
- else if(id==='league')renderLeague();
- else if(id==='shop')renderShop();
- else if(id==='practice'){renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}
- keepActiveNavVisible(id);window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});if(viewStart!==null&&typeof perfEnd==='function')perfEnd('view:'+id,viewStart);
-}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
 function currentPlan(){const d=Number(state.day||1);if(d<=30)return{level:'N5',localDay:d,total:30,label:'sobrevivência',start:1};if(d<=90)return{level:'N4',localDay:d-30,total:60,label:'autonomia',start:31};return{level:'N3',localDay:Math.min(90,d-90),total:90,label:'integração',start:91}}
 function updateMetrics(){
