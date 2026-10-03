@@ -5,12 +5,13 @@ const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const html=read('index.html');
 const css=read('styles.css');
+const foundationCss=read('features/foundation.css');
 const sw=read('sw.js');
 const app=read('app.js');
 
 const refs=[...html.matchAll(/<(?:script[^>]+src|link[^>]+href)="([^"]+)"/g)].map(m=>m[1]).filter(x=>x.startsWith('./'));
 const cssRefs=[...css.matchAll(/url\(['"]?(\.\/[^'")]+)['"]?\)/g)].map(m=>m[1]);
-const localRefs=[...new Set([...refs,...cssRefs])];
+const localRefs=[...new Set([...refs,...cssRefs,...featureCssRefs])];
 const missing=localRefs.filter(r=>!fs.existsSync(path.join(root,r.slice(2))));
 if(missing.length)throw new Error('Missing local refs: '+missing.join(', '));
 
@@ -24,7 +25,7 @@ const scriptOrder=[
  './core/review-scheduler.js',
  './app.js'
 ];
-const featureRuntime=['./features/foundation.js','./features/session.js'];
+const featureRuntime=['./features/foundation.js','./features/foundation.css','./features/session.js'];
 const lazyRuntime=[
  './data/content-packs.js',
  './core/mistakes.js',
@@ -62,4 +63,5 @@ if(!app.includes('queueHomePolish'))throw new Error('Missing progressive home re
 if(!app.includes('aria-current="step"'))throw new Error('Current path step lacks aria-current')
 if(!html.includes('fetchpriority="high"'))throw new Error('Hero preload should be high priority')
 if(!app.includes('ensureLearningRuntime'))throw new Error('Missing lazy learning runtime loader')
+if(!app.includes('loadRuntimeStyle'))throw new Error('Missing lazy feature stylesheet loader')
 console.log(`Checked ${localRefs.length} local refs, ${ids.length} ids and ${scriptOrder.length} runtime modules.`);
