@@ -1,0 +1,21 @@
+{
+  "brand": "MON 門",
+  "concept": "A geometric gate joining a torii crown with the structural rhythm of 門 (mon, gate).",
+  "master": "mon-mark.svg",
+  "variants": {
+    "primary_lockup": "mon-lockup.svg",
+    "reversed_mark": "mon-mark-reversed.svg",
+    "mono_mark": "mon-mark-mono.svg",
+    "favicon": "../../icon.svg"
+  },
+  "colors": {
+    "sumi_indigo": "#0A1626",
+    "shu_vermilion": "#E64D3D",
+    "washi_ivory": "#F4E8D2"
+  },
+  "minimum_size": {
+    "mark_screen_px": 24,
+    "lockup_screen_px_width": 148
+  },
+  "clear_space": "Use at least 0.25× the mark width on all sides."
+}
