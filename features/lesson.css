@@ -26,3 +26,11 @@
 .quick-result.needs-mastery{max-width:620px;margin:auto}
 @media(max-width:820px){.quick-main{padding-top:20px}.quick-top{height:64px;grid-template-columns:40px 1fr auto}.match-grid{grid-template-columns:1fr 1fr}.quick-bottom-inner{align-items:stretch;flex-direction:column;padding:12px 0}.quick-bottom{min-height:126px}.quick-check{width:100%}.quick-option{min-height:58px}.quick-key{display:none}}
 @media(prefers-reduced-motion:reduce){.quick-progress i,.quick-option,.quick-check{transition:none!important}}
+
+/* V18 · episodic memory layer */
+.story-memory{margin:2px 0 19px;padding:16px 17px;border-radius:17px;border:1px solid rgba(215,181,109,.18);background:linear-gradient(135deg,rgba(215,181,109,.07),rgba(255,255,255,.02));box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
+.story-memory-top{display:flex;justify-content:space-between;gap:12px;align-items:center}.story-memory-top span{font-size:7px;text-transform:uppercase;letter-spacing:.1em;color:#d7b56d}.story-memory-top b{font-size:8px;color:#97a4b1}
+.story-memory-character{display:flex;gap:8px;align-items:baseline;margin-top:9px}.story-memory-character strong{font-size:12px;color:#f1e4cf}.story-memory-character small{font-size:7px;color:#7d8a98}
+.story-memory p{margin-top:7px;color:#b3bdc7;font-size:9px;line-height:1.55}.story-memory em{display:block;margin-top:7px;font:500 15px var(--jp);font-style:normal;color:#f1d7a7}
+.story-memory-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.story-memory-tags span{padding:4px 7px;border-radius:999px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055);font-size:6px;color:#82909f}
+@media(max-width:600px){.story-memory{padding:14px}.story-memory-top{align-items:flex-start;flex-direction:column;gap:3px}.story-memory em{font-size:14px}}
