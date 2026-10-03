@@ -35,6 +35,7 @@ function recordMistake(exercise={},context={}){
     title:exercise.prompt||'Erro de prática',why:exercise.why||'',exercise:safeExerciseSnapshot(exercise)
   };
   state.mistakeStats[key]=entry;
+  if(typeof gradeReview==='function')gradeReview('error',key,'hard',{category:entry.category});
   state.mistakes.unshift({at:now,key,category:entry.category,title:entry.title,node:entry.node});
   state.mistakes=state.mistakes.slice(0,60);
   return entry;
@@ -44,6 +45,7 @@ function markMistakeRecovered(exercise={}){
   if(!x)return;
   x.recovered=(x.recovered||0)+1;
   x.lastRecoveredAt=Date.now();
+  if(typeof gradeReview==='function')gradeReview('error',key,'good',{category:x.category});
 }
 function mistakePriority(x){
   const age=Math.min(7,(Date.now()-(x.lastAt||0))/86400000);
