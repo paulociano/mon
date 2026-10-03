@@ -71,6 +71,7 @@
 
       <section id="practice" class="view">
         <div class="section-head" style="margin-top:0"><div><span class="eyebrow">Central de prática</span><h3 style="font-size:27px;margin-top:7px">Treine onde sua memória está mais fraca.</h3><p>Prática livre não gasta Energia. É onde você recupera base, corrige erros e prepara a próxima lição.</p></div></div>
+        <section class="review-deck" id="reviewDeck"></section>
         <div class="practice-grid-v6">
           <button class="practice-tile" data-icon="あ" onclick="go('foundation')"><span>kana</span><h3>Hiragana & Katakana</h3><p>Revisão espaçada, confusões visuais, som e retirada progressiva do romaji.</p></button>
           <button class="practice-tile" data-icon="字" onclick="go('kanji')"><span>memória</span><h3>Kanji Atlas</h3><p>Recupere significado, leitura e escrita dos caracteres que estão vencendo.</p></button>
@@ -301,6 +302,7 @@
 <div id="toast" class="toast">Salvo</div>
 <script src="./data/course-content.js"></script>
 <script src="./core/state.js"></script>
+<script src="./core/review-scheduler.js"></script>
 <script src="./core/mistakes.js"></script>
 <script src="./core/course-engine.js"></script>
 <script src="./app.js"></script>
