@@ -67,7 +67,7 @@ const hydratedViews=new Set(['home']);
 function setRouteBusy(on,label='Carregando'){
  const loader=document.getElementById('routeLoader'),main=document.querySelector('main');
  document.body.classList.toggle('route-busy',on);if(main)main.setAttribute('aria-busy',on?'true':'false');
- if(loader){loader.setAttribute('aria-hidden',on?'false':'true');loader.dataset.label=label}
+ if(loader){loader.setAttribute('aria-hidden',on?'false':'true');loader.setAttribute('aria-label',label);loader.dataset.label=label}
 }
 async function go(id){
  const viewStart=typeof perfStart==='function'?perfStart('view:'+id):null;
