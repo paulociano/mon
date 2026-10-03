@@ -5,7 +5,8 @@ const size=p=>fs.statSync(p).size;
 const kb=n=>Math.round(n/1024*10)/10;
 
 const eagerScripts=['data/course-content.js','core/state.js','core/review-scheduler.js','core/performance.js','app.js'];
-const dataScripts=['data/kanji.js','data/kana.js','data/foundation.js','data/session.js','data/experiences.js','data/curriculum.js'];
+const dataScripts=['data/kanji.js','data/kana.js','data/foundation.js','data/session.js','data/experiences.js','data/curriculum.js','data/narrative.js'];
+const narrativeDataScripts=['data/narrative.js'];
 const foundationRouteScripts=['data/kana.js','data/foundation.js'];
 const experienceRouteScripts=['data/kana.js','data/experiences.js'];
 const kanjiRouteScripts=['data/kanji.js'];
@@ -18,6 +19,7 @@ const featureJs=featureScripts.reduce((n,p)=>n+size(p),0);
 const lessonJs=lessonFeatureScripts.reduce((n,p)=>n+size(p),0);
 const practiceJs=practiceFeatureScripts.reduce((n,p)=>n+size(p),0);
 const dataJs=dataScripts.reduce((n,p)=>n+size(p),0);
+const narrativeJs=narrativeDataScripts.reduce((n,p)=>n+size(p),0);
 const foundationRouteJs=foundationRouteScripts.reduce((n,p)=>n+size(p),0);
 const experienceRouteJs=experienceRouteScripts.reduce((n,p)=>n+size(p),0);
 const kanjiRouteJs=kanjiRouteScripts.reduce((n,p)=>n+size(p),0);
@@ -26,10 +28,11 @@ const css=size('styles.css'),featureCss=size('features/foundation.css'),lessonCs
 const hero=size('assets/scene/mon-home-banner.webp'),side=size('assets/scene/mon-sidebar-bg.webp');
 
 assert.ok(eagerJs<=72*1024,`eager JS budget exceeded: ${kb(eagerJs)} KB`);
-assert.ok(dataJs<=64*1024,`total lazy dataset budget exceeded: ${kb(dataJs)} KB`);
+assert.ok(dataJs<=80*1024,`total lazy dataset budget exceeded: ${kb(dataJs)} KB`);
 assert.ok(foundationRouteJs<=29*1024,`Foundation route data budget exceeded: ${kb(foundationRouteJs)} KB`);
 assert.ok(experienceRouteJs<=9*1024,`Experience route data budget exceeded: ${kb(experienceRouteJs)} KB`);
 assert.ok(kanjiRouteJs<=11*1024,`Kanji route data budget exceeded: ${kb(kanjiRouteJs)} KB`);
+assert.ok(narrativeJs<=18*1024,`narrative data budget exceeded: ${kb(narrativeJs)} KB`);
 assert.ok(featureJs<=100*1024,`feature runtime budget exceeded: ${kb(featureJs)} KB`);
 assert.ok(lessonJs<=20*1024,`lesson UI JS budget exceeded: ${kb(lessonJs)} KB`);
 assert.ok(lessonCss<=10*1024,`lesson UI CSS budget exceeded: ${kb(lessonCss)} KB`);
@@ -49,5 +52,5 @@ assert.ok(source.includes("const hydratedViews=new Set(['home'])"),'view hydrati
 assert.ok(source.includes('ensureDrawingCanvases'),'canvas setup should be lazy');
 
 console.log('MON performance budgets passed',JSON.stringify({
- eagerJsKB:kb(eagerJs),dataJsKB:kb(dataJs),foundationRouteKB:kb(foundationRouteJs),experienceRouteKB:kb(experienceRouteJs),kanjiRouteKB:kb(kanjiRouteJs),featureJsKB:kb(featureJs),lazyJsKB:kb(lazyJs),cssKB:kb(css),featureCssKB:kb(featureCss),lessonJsKB:kb(lessonJs),lessonCssKB:kb(lessonCss),practiceJsKB:kb(practiceJs),practiceCssKB:kb(practiceCss),htmlKB:kb(html),heroKB:kb(hero),sidebarKB:kb(side)
+ eagerJsKB:kb(eagerJs),dataJsKB:kb(dataJs),narrativeKB:kb(narrativeJs),foundationRouteKB:kb(foundationRouteJs),experienceRouteKB:kb(experienceRouteJs),kanjiRouteKB:kb(kanjiRouteJs),featureJsKB:kb(featureJs),lazyJsKB:kb(lazyJs),cssKB:kb(css),featureCssKB:kb(featureCss),lessonJsKB:kb(lessonJs),lessonCssKB:kb(lessonCss),practiceJsKB:kb(practiceJs),practiceCssKB:kb(practiceCss),htmlKB:kb(html),heroKB:kb(hero),sidebarKB:kb(side)
 }));
