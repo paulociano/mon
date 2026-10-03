@@ -24,8 +24,8 @@ function homeCoachDecision(state={},flatPath=[],now=Date.now()){
     return {kind:'mistake',eyebrow:'prioridade · correção',title:`${mistakes} padrões recorrentes merecem uma correção curta.`,copy:'Repetir a unidade inteira seria desperdício. O Caderno de Erros consegue atacar exatamente o padrão que voltou a aparecer.',cta:'corrigir erros →',secondary:'continuar trilha',action:'practice',secondaryAction:'lesson',signal:`${mistakes} erros abertos`,node};
   }
 
-  const last=state.narrative?.lastEpisode;
-  if(last&&!last.resolved&&unresolvedNarrative>0){
+  const last=state.narrative?.lastEpisode,lastProgress=last?.unitId?state.narrative?.episodes?.[last.unitId]:null;
+  if(last&&lastProgress&&!lastProgress.resolved&&unresolvedNarrative>0){
     return {kind:'story',eyebrow:'prioridade · transferência',title:`${last.characterName} ainda está esperando você resolver a situação.`,copy:`${last.placeName} virou um ponto de memória. Continue a trilha para transformar esse encontro em autonomia demonstrada.`,cta:'continuar episódio →',secondary:'abrir Diário',action:'lesson',secondaryAction:'journal',signal:`${unresolvedNarrative} situação${unresolvedNarrative===1?'':'ões'} em construção`,node};
   }
 
