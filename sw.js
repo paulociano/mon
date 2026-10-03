@@ -1,4 +1,4 @@
-const CACHE='mon-japanese-os-v10';
+const CACHE='mon-japanese-os-v11';
 const CORE=['./','./index.html','./styles.css','./data/course-content.js','./data/content-packs.js','./core/state.js','./core/review-scheduler.js','./core/mistakes.js','./core/mastery-graph.js','./core/learning-methods.js','./core/course-engine.js','./core/progression-engine.js','./app.js','./manifest.json','./icon.svg','./assets/brand/mon-mark.svg','./assets/brand/mon-lockup.svg','./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
