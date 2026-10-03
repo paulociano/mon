@@ -4,6 +4,7 @@ import path from 'node:path';
 const root=process.cwd();
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const html=read('index.html');
+const shellContent=read('data/course-content.js');
 const css=read('styles.css');
 const foundationCss=read('features/foundation.css');
 const sw=read('sw.js');
@@ -27,7 +28,7 @@ const scriptOrder=[
  './core/performance.js',
  './app.js'
 ];
-const featureRuntime=['./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
+const featureRuntime=['./data/kanji.js','./data/kana.js','./data/foundation.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
 const lazyRuntime=[
  './data/content-packs.js',
  './core/mistakes.js',
@@ -66,6 +67,9 @@ if(!app.includes('aria-current="step"'))throw new Error('Current path step lacks
 if(!html.includes('fetchpriority="high"'))throw new Error('Hero preload should be high priority')
 if(!app.includes('ensureLearningRuntime'))throw new Error('Missing lazy learning runtime loader')
 if(!app.includes('loadRuntimeStyle'))throw new Error('Missing lazy feature stylesheet loader')
+if(!shellContent.includes('SHELL_FOUNDATION_TOTAL'))throw new Error('Shell content outline missing')
+if(shellContent.includes('const kanjiData'))throw new Error('Kanji catalog leaked into eager shell content')
+if(shellContent.includes('const grammarData'))throw new Error('Grammar catalog leaked into eager shell content')
 const perfModule=read('core/performance.js');
 if(!perfModule.includes('performanceSnapshot'))throw new Error('Missing local performance telemetry snapshot')
 if(perfModule.includes('fetch(')||perfModule.includes('sendBeacon'))throw new Error('Performance telemetry must remain local-only')
