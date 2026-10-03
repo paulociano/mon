@@ -14,7 +14,7 @@ for(const p of ['data/kanji.js','data/kana.js','data/foundation.js','data/sessio
  assert.ok(fs.existsSync(p),p+' missing');
  assert.ok(sw.includes("'./"+p+"'"),p+' missing from PWA cache');
 }
-assert.ok(app.includes("kanji:['./data/kanji.js','./features/kanji.js']"));
+assert.ok(app.includes("kanji:['./data/kanji.js','./data/kanji-memory.js','./features/kanji.js','./features/kanji-memory.js']"));
 assert.ok(app.includes("curriculum:['./data/curriculum.js']"));
 assert.ok(app.includes("'./data/session.js'"));
 assert.ok(!fs.readFileSync('data/foundation.js','utf8').includes('const foundationSessionPlans'));
