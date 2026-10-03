@@ -26,6 +26,7 @@
       <button class="nav-btn" data-view="missions"><span class="nav-icon">旅</span><span>Missões</span></button>
       <button class="nav-btn" data-view="reading"><span class="nav-icon">本</span><span>Histórias</span></button>
       <button class="nav-btn" data-view="journal"><span class="nav-icon">記</span><span>Diário</span></button>
+      <button class="nav-btn" data-view="videos"><span class="nav-icon">映</span><span>Vídeos</span></button>
       <button class="nav-btn" data-view="speaking"><span class="nav-icon">声</span><span>Conversação</span></button>
       <button class="nav-btn" data-view="league"><span class="nav-icon">冠</span><span>Liga</span></button>
       <button class="nav-btn" data-view="shop"><span class="nav-icon">店</span><span>Loja</span></button>
@@ -66,6 +67,12 @@
       </section>
 
       <section id="journal" class="view"><div id="journalContent"></div></section>
+
+      <section id="videos" class="view">
+        <header class="video-hero"><div><span class="eyebrow">Vídeos · 映像</span><h2>Veja, escute, pause, repita.</h2><p>Uma biblioteca curta de apoio visual para listening, fala, leitura e escrita. Vídeo é reforço, não substituto da recuperação ativa.</p></div><aside class="video-note">Players externos só carregam quando você clica. Assim o restante do MON continua leve e offline.</aside></header>
+        <div class="video-filters"><button class="active" data-video-filter onclick="setVideoFilter('all',this)">todos</button><button data-video-filter onclick="setVideoFilter('course',this)">curso A1</button><button data-video-filter onclick="setVideoFilter('listen',this)">escuta</button><button data-video-filter onclick="setVideoFilter('speak',this)">fala</button><button data-video-filter onclick="setVideoFilter('read',this)">leitura</button><button data-video-filter onclick="setVideoFilter('write',this)">escrita</button></div>
+        <div id="videoGrid" class="video-grid"></div>
+      </section>
 
       <section id="lesson" class="view">
         <div class="quick-shell">
@@ -307,6 +314,7 @@
   </main>
 </div>
 <nav class="mobile-nav" id="mobileNav"><button class="active" data-view="home"><i>道</i>Aprender</button><button data-view="practice"><i>練</i>Praticar</button><button data-view="foundation"><i>あ</i>Kana</button><button data-view="league"><i>冠</i>Liga</button><button data-view="shop"><i>店</i>Loja</button></nav>
+<div id="videoModal" class="video-modal" aria-hidden="true"><div class="video-dialog" role="dialog" aria-modal="true" aria-labelledby="videoModalTitle"><div class="video-dialog-head"><div><h3 id="videoModalTitle">Vídeo</h3><p id="videoModalCopy"></p></div><button id="videoClose" class="video-close" aria-label="Fechar vídeo">×</button></div><div id="videoStage" class="video-stage"></div></div></div>
 <div id="routeLoader" class="route-loader" aria-hidden="true" aria-live="polite"></div><div id="toast" class="toast">Salvo</div>
 <script src="./data/course-content.js"></script>
 <script src="./core/state.js"></script>
