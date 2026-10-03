@@ -6,6 +6,7 @@ const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const html=read('index.html');
 const css=read('styles.css');
 const sw=read('sw.js');
+const app=read('app.js');
 
 const refs=[...html.matchAll(/<(?:script[^>]+src|link[^>]+href)="([^"]+)"/g)].map(m=>m[1]).filter(x=>x.startsWith('./'));
 const cssRefs=[...css.matchAll(/url\(['"]?(\.\/[^'")]+)['"]?\)/g)].map(m=>m[1]);
