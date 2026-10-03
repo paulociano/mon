@@ -35,3 +35,5 @@ jobs:
         run: node scripts/test-n5-scale.mjs
       - name: Home polish contracts
         run: node scripts/test-home-polish.mjs
+      - name: Performance budgets
+        run: node scripts/test-performance-budget.mjs
