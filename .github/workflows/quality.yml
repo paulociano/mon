@@ -50,6 +50,8 @@ jobs:
         run: node scripts/test-n5-scale.mjs
       - name: Home polish contracts
         run: node scripts/test-home-polish.mjs
+      - name: Adaptive Home Coach
+        run: node scripts/test-home-coach.mjs
       - name: Performance budgets
         run: node scripts/test-performance-budget.mjs
       - name: Lazy feature split
