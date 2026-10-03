@@ -29,7 +29,7 @@ const scriptOrder=[
  './core/home-coach.js',
  './app.js'
 ];
-const featureRuntime=['./data/pronunciation.js','./features/pronunciation.js','./features/pronunciation.css','./features/videos.js','./features/videos.css','./core/narrative-state.js','./features/journal.js','./features/journal.css','./data/narrative.js','./features/lesson.js','./features/lesson.css','./features/practice.js','./features/practice.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
+const featureRuntime=['./features/missions-v2.css','./features/missions-v2.js','./data/missions-v2.js','./features/kanji-memory.css','./features/kanji-memory.js','./data/kanji-memory.js','./data/pronunciation.js','./features/pronunciation.js','./features/pronunciation.css','./features/videos.js','./features/videos.css','./core/narrative-state.js','./features/journal.js','./features/journal.css','./data/narrative.js','./features/lesson.js','./features/lesson.css','./features/practice.js','./features/practice.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
 const debugRuntime=['./features/performance-lab.js','./features/performance-lab.css'];
 const lazyRuntime=[
  './data/content-packs.js',
@@ -84,6 +84,10 @@ if(!html.includes('id="practiceCoach"'))throw new Error('Practice recommendation
 if(!html.includes('id="journalContent"'))throw new Error('Japan Journal view missing')
 if(!html.includes('id="videoGrid"'))throw new Error('Video Library view missing')
 if(!html.includes('id="pronLab"'))throw new Error('Pronunciation Lab view missing')
+if(!html.includes('id="kanjiMemoryLab"'))throw new Error('Kanji Memory Lab surface missing')
+if(!html.includes('id="missionRunner"'))throw new Error('Survival Mission runner missing')
+if(!app.includes("'./data/kanji-memory.js'"))throw new Error('Kanji Memory dataset must stay lazy')
+if(!app.includes("'./data/missions-v2.js'"))throw new Error('Survival Missions dataset must stay lazy')
 if(!app.includes("pronunciation:['./data/pronunciation.js','./features/pronunciation.js']"))throw new Error('Pronunciation Lab must stay lazy')
 if(!app.includes("videos:['./features/videos.js']"))throw new Error('Video Library must stay lazy')
 if(!html.includes('data-view="journal"'))throw new Error('Japan Journal navigation missing')
