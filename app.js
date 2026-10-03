@@ -25,7 +25,8 @@ const FEATURE_RUNTIME_SCRIPTS={
  reading:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
  missions:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
  speaking:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
- curriculum:['./data/curriculum.js']
+ curriculum:['./data/curriculum.js'],
+ lesson:['./features/lesson.js']
 };
 const featureRuntimePromises={};
 async function ensureFeatureRuntime(name){
@@ -52,7 +53,7 @@ function loadRuntimeStyle(href){
    link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>reject(new Error('Falha ao carregar '+href));document.head.appendChild(link);
  });
 }
-const FEATURE_RUNTIME_STYLES={foundation:['./features/foundation.css']};
+const FEATURE_RUNTIME_STYLES={foundation:['./features/foundation.css'],lesson:['./features/lesson.css']};
 function ensureLearningRuntime(){
  if(learningRuntimePromise)return learningRuntimePromise;
  const started=typeof perfStart==='function'?perfStart('runtime:learning'):null;
@@ -63,8 +64,15 @@ function ensureLearningRuntime(){
  return learningRuntimePromise;
 }
 const hydratedViews=new Set(['home']);
+function setRouteBusy(on,label='Carregando'){
+ const loader=document.getElementById('routeLoader'),main=document.querySelector('main');
+ document.body.classList.toggle('route-busy',on);if(main)main.setAttribute('aria-busy',on?'true':'false');
+ if(loader){loader.setAttribute('aria-hidden',on?'false':'true');loader.dataset.label=label}
+}
 async function go(id){
  const viewStart=typeof perfStart==='function'?perfStart('view:'+id):null;
+ const busyTimer=setTimeout(()=>setRouteBusy(true,'Abrindo '+(viewNames[id]||id)),90);
+ try{
  if(id==='foundation')await ensureFeatureRuntime('foundation');
  if(id==='curriculum')await ensureFeatureRuntime('curriculum');
  if(id==='kanji')await ensureFeatureRuntime('kanji');
@@ -208,115 +216,8 @@ function queueHomePolish(){
 function renderQuests(){const q=todayQuestState(),items=[{icon:'道',name:'Complete 1 lição',now:q.lessons||0,max:1},{icon:'✦',name:'Ganhe 30 XP',now:q.xp||0,max:30},{icon:'正',name:'Faça uma lição com 80%+',now:q.accuracy?1:0,max:1}];const w=document.getElementById('questList');if(!w)return;w.innerHTML=items.map(x=>{const pct=Math.min(100,Math.round(x.now/x.max*100)),done=x.now>=x.max;return `<div class="quest-row ${done?'done':''}"><div class="quest-icon">${x.icon}</div><div><b>${x.name}</b><span>${Math.min(x.now,x.max)}/${x.max}</span><div class="quest-progress"><i style="width:${pct}%"></i></div></div><div class="quest-check">${done?'✓':'◆ 10'}</div></div>`}).join('')}
 function claimPathChest(idx){if(idx>state.pathProgress)return toast('Este baú ainda está bloqueado');if(state.chests[idx])return toast('Baú já aberto');state.chests[idx]=true;state.gems+=40;state.energy=Math.min(state.maxEnergy,state.energy+4);if(idx===state.pathProgress)state.pathProgress++;save();toast('Baú aberto · +40 cristais · +4 energia');renderGameHome()}
 let quickRun=null;
-async function startQuickLesson(idx){if(idx>state.pathProgress)return toast('Complete o círculo anterior primeiro');const node=flatPath[idx];if(!node)return;if(node.type==='chest')return claimPathChest(idx);await ensureLearningRuntime();if(state.remediation?.idx===idx)return startMasteryRepair(idx);if((state.energy||0)<=0){go('practice');toast('Energia vazia · pratique para recarregar ou use a Loja');return}const pack=buildLesson(node,state);quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false};go('lesson');renderQuickExercise();updateMetrics()}
-async function startMasteryRepair(idx){await ensureLearningRuntime();if(idx!==state.pathProgress)return toast('O reforço pertence ao nó atual');const node=flatPath[idx];if(!node)return;const pack=buildMasteryRemediation(node);if(!pack.exercises.length)return toast('Sem lacunas observáveis para reforçar agora');quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false,practiceOnly:true,masteryRepair:true};go('lesson');renderQuickExercise();updateMetrics()}
-function exitQuickLesson(){quickRun=null;go('home')}
-function setQuickFeedback(title,copy='',ok=null){const f=document.getElementById('quickFeedback');if(!f)return;f.innerHTML=`<b>${title}</b>${copy}`;if(ok===true)f.style.color='#79dca9';else if(ok===false)f.style.color='#ff7c89';else f.style.color='#8f9aaa'}
-function renderQuickExercise(){
- if(!quickRun)return;
- const total=quickRun.pack.exercises.length;if(quickRun.step>=total)return renderQuickComplete();
- const e=quickRun.pack.exercises[quickRun.step],main=document.getElementById('quickMain'),prog=document.getElementById('quickProgress'),btn=document.getElementById('quickCheck');
- prog.style.width=`${quickRun.step/total*100}%`;quickRun.selected=null;quickRun.built=[];quickRun.matchPick=null;quickRun.matches=[];quickRun.typed='';quickRun.hintUsed=false;quickRun.checked=false;
- btn.style.display='';btn.disabled=true;btn.textContent='VERIFICAR';btn.classList.remove('continue');btn.onclick=quickCheck;
- const methodLabel=e.method?` · ${({discover:'descobrir',recall:'recuperar',transfer:'transferir',produce:'produzir'}[e.method]||e.method)}`:'';
- setQuickFeedback(e.method?'Gate Loop'+methodLabel:'Escolha uma resposta.');
- let h=`<span class="quick-kicker">${quickRun.pack.title} · ${quickRun.step+1}/${total}${methodLabel}</span><h2 class="quick-question">${e.prompt}</h2>`;
- if(e.type==='discovery'&&e.examples){
-   h+=`<div class="method-examples">${e.examples.map(x=>`<article><b>${x.jp}</b><span>${x.pt}</span></article>`).join('')}</div>`;
-   h+=quickOptions(e.options);
- }else if(e.type==='minimalPair'){
-   h+=`<button class="quick-listen contrast" onclick="speak('${e.audio.replaceAll("'","\\'")}')">▶ ouvir contraste</button>${quickOptions(e.options)}`;
- }else{
-   if(e.jp)h+=`<div class="quick-jp">${e.jp}</div>`;
-   if(e.type==='listen'){h+=`<button class="quick-listen" onclick="speak('${e.audio.replaceAll("'","\\'")}')">▶</button>${quickOptions(e.options)}`}
-   else if(e.type==='choice'){h+=quickOptions(e.options)}
-   else if(e.type==='wordbank'){h+=`<div class="word-built" id="wordBuilt"><span style="color:#607083;font-size:9px">toque nos blocos abaixo</span></div><div class="word-bank" id="wordBank">${shuffleArray(e.tokens.map((t,i)=>({t,i}))).map(x=>`<button class="word-token" data-wb="${x.i}" onclick="wordTap(${x.i},this)">${x.t}</button>`).join('')}</div>`}
-   else if(e.type==='match'){const cards=[];e.pairs.forEach((p,i)=>{cards.push({text:p[0],id:i,side:'a'},{text:p[1],id:i,side:'b'})});h+=`<p class="quick-helper">Toque em um item de cada coluna mental. Pares corretos desaparecem.</p><div class="match-grid">${shuffleArray(cards).map(c=>`<button class="match-card" data-mid="${c.id}" data-side="${c.side}" onclick="matchTap(this)">${c.text}</button>`).join('')}</div>`}
-   else if(e.type==='speak'){h+=`<button class="quick-listen" onclick="speak('${e.target.replaceAll("'","\\'")}')">▶</button><div class="quick-jp">${e.target}</div><p class="quick-helper">${e.pt}</p><div class="quick-options"><button class="quick-option" onclick="quickShadow(this)">Fiz shadowing em voz alta</button><button class="quick-option" onclick="quickSpeech(this)">● Usar microfone</button></div>`}
-   else if(['recall','dictation','cloze','transfer'].includes(e.type)){
-     if(e.type==='dictation')h+=`<button class="quick-listen" onclick="speak('${e.audio.replaceAll("'","\\'")}')">▶ ouvir sem legenda</button>`;
-     if(e.cue)h+=`<div class="method-cue">${e.cue}</div>`;
-     h+=`<input id="quickTyped" class="quick-typed" lang="ja" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="digite em japonês…" oninput="quickTypedInput(this.value)">`;
-     h+=`<p class="quick-helper">Sem banco de palavras. Kana é aceito quando a leitura é equivalente.</p>`;
-   }else if(e.type==='roleplay'){
-     h+=`<div class="roleplay-scene"><span>店員 / interlocutor</span><b>${e.npc}</b><p>${e.npcPt||''}</p></div>`;
-     h+=`<div class="quick-options"><button class="quick-option" onclick="quickSpeech(this)">● Responder com microfone</button><button class="quick-option" onclick="quickRoleplayAttempt(this)">Respondi em voz alta</button></div><button class="method-reveal" onclick="quickRevealModel()">preciso de uma pista</button><div id="roleplayModel" class="roleplay-model"></div>`;
-   }
- }
- main.innerHTML=h;document.getElementById('quickEnergy').textContent=state.energy;
-}function quickOptions(options){return `<div class="quick-options">${options.map((o,i)=>`<button class="quick-option" data-qopt="${i}" onclick="quickSelect(${i},this)">${o}</button>`).join('')}</div>`}
-function quickSelect(i,b){if(quickRun.checked)return;document.querySelectorAll('[data-qopt]').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');quickRun.selected=i;document.getElementById('quickCheck').disabled=false}
-function quickTypedInput(value){if(!quickRun||quickRun.checked)return;quickRun.typed=value;document.getElementById('quickCheck').disabled=!value.trim()}
-function quickRoleplayAttempt(b){document.querySelectorAll('.quick-option').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');quickRun.selected=1;document.getElementById('quickCheck').disabled=false}
-function quickRevealModel(){const e=quickRun?.pack.exercises[quickRun.step],box=document.getElementById('roleplayModel');if(!e||!box)return;box.innerHTML=`<b>${e.target}</b><span>${e.pt||''}</span>`;box.classList.add('show');quickRun.hintUsed=true}
-function wordTap(i,b){if(quickRun.checked||b.classList.contains('used'))return;b.classList.add('used');quickRun.built.push(i);const e=quickRun.pack.exercises[quickRun.step],w=document.getElementById('wordBuilt');w.innerHTML=quickRun.built.map((idx,pos)=>`<button class="word-token" onclick="wordUntap(${pos})">${e.tokens[idx]}</button>`).join('');document.getElementById('quickCheck').disabled=quickRun.built.length===0}
-function wordUntap(pos){if(quickRun.checked)return;const idx=quickRun.built.splice(pos,1)[0],e=quickRun.pack.exercises[quickRun.step];document.querySelector(`[data-wb="${idx}"]`)?.classList.remove('used');const w=document.getElementById('wordBuilt');w.innerHTML=quickRun.built.length?quickRun.built.map((j,p)=>`<button class="word-token" onclick="wordUntap(${p})">${e.tokens[j]}</button>`).join(''):'<span style="color:#607083;font-size:9px">toque nos blocos abaixo</span>';document.getElementById('quickCheck').disabled=quickRun.built.length===0}
-function matchTap(b){if(quickRun.checked||b.classList.contains('matched'))return;if(!quickRun.matchPick){quickRun.matchPick=b;b.classList.add('pick');return}const a=quickRun.matchPick;if(a===b)return;if(a.dataset.mid===b.dataset.mid&&a.dataset.side!==b.dataset.side){a.classList.remove('pick');a.classList.add('matched');b.classList.add('matched');quickRun.matches.push(a.dataset.mid);quickRun.matchPick=null;if(quickRun.matches.length===quickRun.pack.exercises[quickRun.step].pairs.length){quickRun.selected=1;document.getElementById('quickCheck').disabled=false;setQuickFeedback('Pares completos.',' Verifique para continuar.',true)}}else{a.classList.remove('pick');a.classList.add('bad');b.classList.add('bad');quickRun.matchPick=null;energyTick(false);setQuickFeedback('Esses dois não formam par.',' Tente de novo.',false);setTimeout(()=>{a.classList.remove('bad');b.classList.remove('bad')},350)}}
-function quickShadow(b){document.querySelectorAll('.quick-option').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');quickRun.selected=1;document.getElementById('quickCheck').disabled=false}
-function quickSpeech(b){const e=quickRun.pack.exercises[quickRun.step],SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Microfone indisponível; use shadowing');return}const r=new SR();r.lang='ja-JP';r.interimResults=false;r.maxAlternatives=1;b.textContent='● ouvindo…';r.onresult=x=>{const txt=x.results[0][0].transcript,sc=similarity(txt,e.target);quickRun.selected=sc>=55?1:0;b.textContent=`Reconhecido: ${txt} · ${sc}%`;document.getElementById('quickCheck').disabled=false};r.onend=()=>{if(b.textContent==='● ouvindo…')b.textContent='● Usar microfone'};r.start()}
-function energyTick(correct){state.energy=Math.max(0,(state.energy||0)-1);if(correct){quickRun.streak=(quickRun.streak||0)+1;if(quickRun.streak%3===0)state.energy=Math.min(state.maxEnergy,state.energy+1)}else quickRun.streak=0;document.getElementById('quickEnergy').textContent=state.energy}
-function quickCheck(){
- if(!quickRun||quickRun.checked)return;
- const e=quickRun.pack.exercises[quickRun.step];let ok=false,chosen='';
- if(['choice','listen','discovery','minimalPair'].includes(e.type)){
-   if(quickRun.selected==null)return;
-   const opts=e.options;chosen=opts[quickRun.selected];ok=chosen===e.answer;
-   document.querySelectorAll('[data-qopt]').forEach((b,i)=>{b.disabled=true;if(opts[i]===e.answer)b.classList.add('correct');if(i===quickRun.selected&&!ok)b.classList.add('wrong')});
- }else if(e.type==='wordbank'){
-   chosen=quickRun.built.map(i=>e.tokens[i]).join('');ok=normalizeJP(chosen)===normalizeJP(e.target);
-   document.querySelectorAll('.word-token').forEach(b=>b.disabled=true);
- }else if(e.type==='match'){
-   ok=quickRun.matches.length===e.pairs.length;chosen=ok?'pares completos':'pares incompletos';
- }else if(['speak','roleplay'].includes(e.type)){
-   ok=quickRun.selected===1;chosen=ok?'produção aceita':'produção abaixo do limiar';
- }else if(['recall','dictation','cloze','transfer'].includes(e.type)){
-   chosen=(quickRun.typed||'').trim();const accepted=(e.accepted?.length?e.accepted:[e.target]).filter(Boolean);
-   ok=accepted.some(x=>normalizeJP(chosen)===normalizeJP(x));
-   const input=document.getElementById('quickTyped');if(input){input.disabled=true;input.classList.add(ok?'correct':'wrong')}
- }
- quickRun.checked=true;quickRun.answered++;
- if(ok){
-   quickRun.correct++;quickRun.xp+=quickRun.practiceOnly?5:(e.method?12:10);
-   if(e._remediation)markMistakeRecovered(e);
-   else if(e._reviewType&&e._reviewKey)gradeReview(e._reviewType,e._reviewKey,'good');
- }else{
-   recordMistake(e,{node:quickRun.idx,chosen});
-   if(e._reviewType&&e._reviewKey&&e._reviewType!=='error')gradeReview(e._reviewType,e._reviewKey,'hard');
- }
- if(e.method&&typeof recordMethodOutcome==='function')recordMethodOutcome(e,ok,{hintUsed:!!quickRun.hintUsed});
- if(typeof recordMasteryEvidence==='function')recordMasteryEvidence(e,ok,{hintUsed:!!quickRun.hintUsed});
- if(!quickRun.practiceOnly)energyTick(ok);
- const bridge=e.bridge?`<span class="feedback-bridge"><strong>Lente MON</strong>${e.bridge}</span>`:'';
- setQuickFeedback(ok?(e._remediation?'Erro recuperado!':e.method?'Recuperação válida.':'Correto!'):'Boa correção.',(e.why||'')+bridge,ok);
- const btn=document.getElementById('quickCheck');btn.disabled=false;btn.textContent='CONTINUAR';btn.classList.add('continue');btn.onclick=quickNext;save();
-}function quickNext(){if(!quickRun)return;if(!quickRun.practiceOnly&&state.energy<=0&&quickRun.step<quickRun.pack.exercises.length-1){quickRun.step=quickRun.pack.exercises.length;renderQuickComplete(true);return}quickRun.step++;renderQuickExercise()}
-function renderQuickComplete(outOfEnergy=false){
- const total=quickRun.pack.exercises.length,acc=quickRun.answered?Math.round(quickRun.correct/quickRun.answered*100):0,boost=Date.now()<(state.xpBoostUntil||0)?2:1;
- const practice=!!quickRun.practiceOnly,repair=!!quickRun.masteryRepair,xp=practice?quickRun.xp:(quickRun.xp+15)*boost;
- state.xp+=xp;state.leagueXp=(state.leagueXp||0)+xp;if(!practice)state.gems+=acc>=80?8:4;
- state.sessions=(state.sessions||0)+1;if(acc===100)state.perfectLessons=(state.perfectLessons||0)+1;
- let decision={action:'advance',reason:'practice'};
- if(quickRun.pack?.unitId&&typeof coursePackForDay==='function'&&typeof unitMasteryStatus==='function'){const u=coursePackForDay(quickRun.node?.day);if(u)state.unitMastery[quickRun.pack.unitId]=unitMasteryStatus(u)}
- if(!outOfEnergy&&(repair||(!practice&&quickRun.idx===state.pathProgress))&&typeof progressionDecision==='function'){
-   decision=progressionDecision(quickRun.node,quickRun.pack,acc);
-   if(decision.action==='reinforce'){
-     state.remediation={idx:quickRun.idx,unitId:quickRun.pack.unitId||null,reason:decision.reason,gaps:(decision.gaps||[]).slice(0,6),updatedAt:Date.now()};
-   }else if(quickRun.idx===state.pathProgress){
-     state.remediation=null;state.pathProgress++;
-     const node=quickRun.node;if(node.day&&node.day<=24){state.foundationDay=Math.max(state.foundationDay||1,Math.min(SHELL_FOUNDATION_TOTAL,node.day+1));if(node.day>=24)state.foundationComplete=true}else if(node.day>24){state.foundationComplete=true;state.day=Math.max(state.day||1,node.day-24)}
-   }
- }
- if(!practice){const q=todayQuestState();q.lessons=(q.lessons||0)+1;q.xp=(q.xp||0)+xp;if(acc>=80)q.accuracy=true;if(!outOfEnergy&&decision.action==='advance'&&quickRun.idx!==state.pathProgress-1&&quickRun.idx===state.pathProgress){state.pathProgress++}updateGameStreak()}
- save();
- const reinforcing=!outOfEnergy&&decision.action==='reinforce',main=document.getElementById('quickMain'),prog=document.getElementById('quickProgress');prog.style.width='100%';
- const status=quickRun.pack?.unitId?state.unitMastery?.[quickRun.pack.unitId]:null;
- const title=reinforcing?'Atividade concluída. Domínio ainda em construção.':repair&&decision.action==='advance'?'Portão liberado.':practice?'Revisão inteligente concluída.':outOfEnergy?'Pare no ponto certo.':'一歩ずつ · mais um passo.';
- const copy=reinforcing?`Você terminou esta rodada, mas o grafo encontrou lacunas em competências críticas. O próximo toque abre um reforço curto e direcionado. Domínio observado: ${status?.score||0}%.`:repair&&decision.action==='advance'?'As arestas críticas atingiram evidência suficiente. O próximo nó da trilha foi liberado.':practice?'Você recuperou itens sem gastar Energia. A fila e o Mastery Graph foram atualizados.':outOfEnergy?'Sua energia acabou, mas erros e evidências ficaram salvos.':'O curso registrou memória, erros e domínio. O avanço agora considera evidência, não apenas conclusão.';
- const target=reinforcing?'startMasteryRepair('+quickRun.idx+')':`quickRun=null;go('${practice||outOfEnergy?'practice':'home'}')`;
- const button=reinforcing?'fortalecer agora →':repair&&decision.action==='advance'?'seguir para o próximo nó →':practice?'voltar à prática':outOfEnergy?'ir para prática':'continuar trilha →';
- main.innerHTML=`<div class="quick-result ${reinforcing?'needs-mastery':''}"><div class="result-seal">${reinforcing?'復':repair&&decision.action==='advance'?'開':practice?'復':outOfEnergy?'⚡':'門'}</div><span class="quick-kicker">${reinforcing?'domínio incompleto':repair?'mastery repair':practice?'prática':'lição concluída'}</span><h2>${title}</h2><p>${copy}</p><div class="result-stats"><div><b>${acc}%</b><span>precisão</span></div><div><b>+${xp}</b><span>XP${!practice&&boost>1?' · 2×':''}</span></div><div><b>${status?.score??'—'}%</b><span>domínio da unidade</span></div></div><button class="quick-check continue" style="width:auto" onclick="${target}">${button}</button></div>`;
- document.querySelector('.quick-bottom').style.display='none';setTimeout(()=>{const b=document.querySelector('.quick-bottom');if(b)b.style.display='flex'},50);document.getElementById('quickFeedback').innerHTML='';document.getElementById('quickCheck').style.display='none';renderGameHome();
-}
+async function startQuickLesson(idx){if(idx>state.pathProgress)return toast('Complete o círculo anterior primeiro');const node=flatPath[idx];if(!node)return;if(node.type==='chest')return claimPathChest(idx);await ensureLearningRuntime();await ensureFeatureRuntime('lesson');if(state.remediation?.idx===idx)return startMasteryRepair(idx);if((state.energy||0)<=0){go('practice');toast('Energia vazia · pratique para recarregar ou use a Loja');return}const pack=buildLesson(node,state);quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false};go('lesson');renderQuickExercise();updateMetrics()}
+async function startMasteryRepair(idx){await ensureLearningRuntime();await ensureFeatureRuntime('lesson');if(idx!==state.pathProgress)return toast('O reforço pertence ao nó atual');const node=flatPath[idx];if(!node)return;const pack=buildMasteryRemediation(node);if(!pack.exercises.length)return toast('Sem lacunas observáveis para reforçar agora');quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false,practiceOnly:true,masteryRepair:true};go('lesson');renderQuickExercise();updateMetrics()}
 function updateGameStreak(){const today=localDateKey(),last=state.lastStudyDate;if(last===today)return;if(last){const y=new Date();y.setDate(y.getDate()-1);if(last===localDateKey(y))state.streak=(state.streak||0)+1;else if((state.streakFreeze||0)>0){state.streakFreeze--;state.streak=(state.streak||1)+1}else state.streak=1}else state.streak=Math.max(1,state.streak||1);state.lastStudyDate=today}
 function masteryLabel(concept){
   const [type,key]=concept.split(':',2);
@@ -337,9 +238,10 @@ function renderReviewDeck(){
  const next=s.next?Math.max(1,Math.round((s.next.due-Date.now())/3600000)):null;
  wrap.innerHTML=`<div class="review-deck-copy"><span class="eyebrow">Fila Inteligente · 復習</span><h3>${s.due?s.due+' itens pedem retorno agora.':'Memória em dia.'}</h3><p>Um único scheduler organiza kana, kanji, gramática e correções. A fila considera atraso, lapsos e maturidade, enquanto cada domínio mantém seu próprio tipo de exercício.</p><div class="review-pills">${due.map(([k,v])=>`<span>${labels[k]||k} <b>${v}</b></span>`).join('')||`<span>próxima revisão <b>${next?'~'+next+'h':'quando novos itens entrarem'}</b></span>`}</div></div><div class="review-deck-stats"><div><b>${s.due}</b><span>vencendo</span></div><div><b>${s.mature}</b><span>maduros 7d+</span></div><button class="primary" ${s.due?'':'disabled'} onclick="startSmartReview()">Revisar agora →</button></div>`;
 }
-function startSmartReview(){
+async function startSmartReview(){
  const exercises=scheduledReviewExercises(8);
  if(!exercises.length)return toast('Sua fila de memória está em dia');
+ await ensureFeatureRuntime('lesson');
  quickRun={idx:null,node:{label:'Fila Inteligente',day:0},pack:{title:'Fila Inteligente',focus:'復',exercises,adaptive:true},step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false,practiceOnly:true};
  go('lesson');renderQuickExercise();updateMetrics();
 }
@@ -352,9 +254,10 @@ function renderMistakeNotebook(){
  <div class="mistake-categories">${cats.map(([k,v])=>`<span>${labels[k]||k} <b>${v}</b></span>`).join('')}</div>
  <div class="mistake-list">${s.top.map(x=>`<article><div class="mistake-tag">${labels[x.category]||x.category}</div><div><b>${x.title}</b><p>${x.why||'Revise o mecanismo e recupere sem pista.'}</p></div><strong>×${x.count}</strong></article>`).join('')||'<div class="mistake-empty">Continue a trilha. O caderno será alimentado pelos erros reais das lições.</div>'}</div>`;
 }
-function startMistakePractice(){
+async function startMistakePractice(){
  const exercises=remediationExercises(6);
  if(!exercises.length)return toast('Nenhum erro aberto para revisar');
+ await ensureFeatureRuntime('lesson');
  quickRun={idx:null,node:{label:'Caderno de Erros',day:0},pack:{title:'Caderno de Erros',focus:'復',exercises,adaptive:true},step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false,practiceOnly:true};
  go('lesson');renderQuickExercise();updateMetrics();
 }
