@@ -65,6 +65,17 @@ for(const key of ['wakarimasen','mouichido']){
   assert.ok((vocabUse.get(key)||0)>=3,key+' must reappear across contexts for repair fluency');
 }
 
+const survivalReappearance=['migi','hidari','fukuro','genkin','denwa'];
+for(const key of survivalReappearance){
+  const days=vocabUse.get(key)||[];
+  assert.ok(days.length>=2,key+' must reappear after first exposure');
+  assert.ok(days.at(-1)>days[0],key+' needs temporally separated retrieval');
+}
+for(const key of ['phoneIdentity']){
+  const days=grammarUse.get(key)||[];
+  assert.ok(days.length>=2,key+' grammar must transfer into a later unit');
+}
+
 const repeatedVocabulary=[...vocabUse.values()].filter(n=>n>=2).length;
 const repeatedGrammar=[...grammarUse.values()].filter(n=>n>=2).length;
 assert.ok(repeatedVocabulary>=18,'too little lexical reappearance across N5');
