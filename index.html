@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0A1626" />
   <meta name="description" content="MON 門 Japanese OS — japonês do zero à vida real com kana, gramática, kanji, fala e prática adaptativa." />
   <link rel="manifest" href="./manifest.json" />
-  <link rel="preload" as="image" href="./assets/scene/mon-home-banner.webp" type="image/webp" />
+  <link rel="preload" as="image" href="./assets/scene/mon-home-banner.webp" type="image/webp" fetchpriority="high" />
   <link rel="icon" href="./icon.svg" type="image/svg+xml" />
   <title>MON 門 Japanese OS — Japonês do zero à vida real</title>
     <link rel="stylesheet" href="./styles.css" />
@@ -303,14 +303,8 @@
 <nav class="mobile-nav" id="mobileNav"><button class="active" data-view="home"><i>道</i>Aprender</button><button data-view="practice"><i>練</i>Praticar</button><button data-view="foundation"><i>あ</i>Kana</button><button data-view="league"><i>冠</i>Liga</button><button data-view="shop"><i>店</i>Loja</button></nav>
 <div id="toast" class="toast">Salvo</div>
 <script src="./data/course-content.js"></script>
-<script src="./data/content-packs.js"></script>
 <script src="./core/state.js"></script>
 <script src="./core/review-scheduler.js"></script>
-<script src="./core/mistakes.js"></script>
-<script src="./core/mastery-graph.js"></script>
-<script src="./core/learning-methods.js"></script>
-<script src="./core/course-engine.js"></script>
-<script src="./core/progression-engine.js"></script>
 <script src="./app.js"></script>
 </body>
 </html>
