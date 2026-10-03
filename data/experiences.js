@@ -1,0 +1,27 @@
+// MON experience datasets · loaded with reading/missions/speaking
+const missions = [
+ {symbol:'駅',title:'Chegar à estação certa',desc:'perguntar direção, reconhecer saída e destino',level:'primeiras 24h'},
+ {symbol:'店',title:'Comprar no konbini',desc:'preço, saco, pagamento e perguntas rápidas',level:'dia 1'},
+ {symbol:'食',title:'Pedir comida',desc:'pedido, recomendação, água e conta',level:'dia 2'},
+ {symbol:'住',title:'Resolver endereço',desc:'endereço, formulário e onde você mora',level:'semana 1'},
+ {symbol:'働',title:'Primeiro dia de trabalho',desc:'apresentação, pedidos simples e etiqueta básica',level:'semana 1'},
+ {symbol:'病',title:'Pedir ajuda em saúde',desc:'descrever sintomas simples e entender instruções',level:'essencial'}
+];
+const phrases = [
+ ['すみません。','sumimasen','Com licença / desculpe.'],['もう一度お願いします。','mou ichido onegaishimasu','Mais uma vez, por favor.'],['ゆっくりお願いします。','yukkuri onegaishimasu','Mais devagar, por favor.'],['日本語がまだよく分かりません。','nihongo ga mada yoku wakarimasen','Ainda não entendo bem japonês.'],['これはいくらですか。','kore wa ikura desu ka','Quanto custa isto?'],['これをください。','kore o kudasai','Quero isto / isto, por favor.'],['駅はどこですか。','eki wa doko desu ka','Onde fica a estação?'],['大丈夫です。','daijoubu desu','Está tudo bem / não preciso.']
+];
+const missionSpeech = [
+ {npc:'どこまで行きますか。',npcPt:'Até onde você vai?',target:'東京駅までお願いします。',pt:'Até a Estação de Tóquio, por favor.'},
+ {npc:'袋はご利用ですか。',npcPt:'Vai precisar de sacola?',target:'いいえ、袋はいりません。',pt:'Não, não preciso de sacola.'},
+ {npc:'ご注文はお決まりですか。',npcPt:'Já decidiu o pedido?',target:'これをお願いします。',pt:'Este, por favor.'},
+ {npc:'ご住所をお願いします。',npcPt:'Seu endereço, por favor.',target:'ここに書けばいいですか。',pt:'É só escrever aqui?'},
+ {npc:'今日からよろしくお願いします。',npcPt:'Conto com você a partir de hoje.',target:'こちらこそ、よろしくお願いします。',pt:'Igualmente, prazer e conto com você.'},
+ {npc:'どうしましたか。',npcPt:'O que houve?',target:'頭が痛いです。',pt:'Minha cabeça dói.'}
+];
+
+const bookData=[
+ null,
+ `<div class="kicker">volume 02 • capítulo 01</div><h2>Konbini: ler para decidir em segundos.</h2><p class="lead">No cotidiano, leitura útil é localizar informação rapidamente. Preço, quantidade, aquecimento, sacola e forma de pagamento aparecem antes de qualquer romance.</p><div class="lesson-section"><h3>Microleitura</h3><p class="ruby-line">この おにぎりは <ruby>百五十円<rt>ひゃくごじゅうえん</rt></ruby>です。<ruby>水<rt>みず</rt></ruby>も <ruby>買<rt>か</rt></ruby>います。</p><p class="lead">Este onigiri custa 150 ienes. Também vou comprar água.</p></div><div class="lesson-section"><h3>Diálogo</h3><div class="dialogue"><div class="bubble jp">袋はご利用ですか。<span class="translation">Vai precisar de sacola?</span></div><div class="bubble jp">いいえ、袋はいりません。<span class="translation">Não, não preciso de sacola.</span></div><div class="bubble jp">カードでお願いします。<span class="translation">No cartão, por favor.</span></div></div></div><div class="lesson-section"><h3>Padrões que resolvem</h3><span class="grammar-chip">X は Y円です · preço</span><span class="grammar-chip">X も · também</span><span class="grammar-chip">X でお願いします · meio/forma</span></div>`,
+ `<div class="kicker">volume 03 • capítulo 01</div><h2>Cidade & trabalho: pedir sem travar.</h2><p class="lead">A autonomia cresce quando você sabe pedir repetição, confirmar instruções e preencher lacunas sem fingir que entendeu.</p><div class="lesson-section"><h3>Frases de segurança comunicativa</h3><div class="dialogue"><div class="bubble jp">もう一度お願いします。<span class="translation">Mais uma vez, por favor.</span></div><div class="bubble jp">ゆっくりお願いします。<span class="translation">Mais devagar, por favor.</span></div><div class="bubble jp">ここに書けばいいですか。<span class="translation">É só escrever aqui?</span></div></div></div><div class="lesson-section"><h3>Microleitura de rotina</h3><p class="ruby-line"><ruby>九時<rt>くじ</rt></ruby>に <ruby>会社<rt>かいしゃ</rt></ruby>へ <ruby>行<rt>い</rt></ruby>きます。<ruby>昼<rt>ひる</rt></ruby>は <ruby>同僚<rt>どうりょう</rt></ruby>と <ruby>食事<rt>しょくじ</rt></ruby>します。</p><p class="lead">Vou para a empresa às nove. No almoço, faço uma refeição com colegas.</p></div><div class="lesson-section"><h3>Gramática por função</h3><span class="grammar-chip">時間 に · horário</span><span class="grammar-chip">場所 へ · direção</span><span class="grammar-chip">人 と · com alguém</span></div>`,
+ `<div class="kicker">volume 04 • capítulo 01</div><h2>Conversas: sobreviver ao imprevisível.</h2><p class="lead">Conversa real não segue roteiro. O objetivo aqui é ganhar ferramentas de reparo: mostrar dúvida, confirmar, reformular e continuar.</p><div class="lesson-section"><h3>Loop de reparo</h3><div class="dialogue"><div class="bubble jp">すみません、よく分かりません。<span class="translation">Desculpe, não entendi bem.</span></div><div class="bubble jp">「予約」はどういう意味ですか。<span class="translation">O que significa “yoyaku”?</span></div><div class="bubble jp">つまり、明日の十時ですね。<span class="translation">Então, é amanhã às dez, certo?</span></div></div></div><div class="lesson-section"><h3>Produção</h3><p class="lead">Troque apenas um bloco por vez e fale em voz alta: <b>明日の十時</b> → 今日の三時 → 金曜日の九時. Isso treina estrutura e não uma frase congelada.</p></div><div class="lesson-section"><h3>Ferramentas</h3><span class="grammar-chip">X はどういう意味ですか · significado</span><span class="grammar-chip">つまり X ですね · confirmação</span><span class="grammar-chip">よく分かりません · reparar</span></div>`
+];
