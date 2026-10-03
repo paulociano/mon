@@ -61,10 +61,13 @@ Add:
 - handwriting recall
 - spoken roleplay
 
-### 6. Content scale
+### 6. Mastery Graph ✅ foundation implemented
+Track concept mastery separately across recognition, recall, listening, transfer and production. Weak edges now bias the teaching-method mix and are visible in the Practice hub.
+
+### 7. Content scale
 Expand from Foundation Zero into complete N5, then N4 and N3 paths with reusable exercise templates instead of duplicating markup.
 
-### 7. Accounts and sync
+### 8. Accounts and sync
 Only after the local learning model is stable, add authentication and cloud sync so progress can move across devices.
 
 ## Architecture principle
