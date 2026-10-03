@@ -39,3 +39,5 @@ jobs:
         run: node scripts/test-performance-budget.mjs
       - name: Lazy feature split
         run: node scripts/test-feature-split.mjs
+      - name: Lazy experiences and telemetry
+        run: node scripts/test-lazy-experiences.mjs
