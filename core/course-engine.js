@@ -14,7 +14,34 @@ function engineShuffledOptions(correct,pool,count=4){
   return sliced;
 }
 
-function lessonPlanFromNode(node){let day=node.day||1;if(day<=24){const p=foundationSessionPlans[Math.max(0,Math.min(23,day-1))];const basic=day<=7?kanaCourse.hira.basic:day<=12?kanaCourse.kata.basic:kanaCourse.hira.basic;const sample=basic.slice(Math.max(0,(day*3)%Math.max(1,basic.length-4)),Math.max(0,(day*3)%Math.max(1,basic.length-4))+4);const pairs=sample.length>=3?sample.slice(0,3):kanaCourse.hira.basic.slice(0,3);const wordChars=[...p.word].filter(x=>x.trim());const grammarTokens=(p.phrase.replace('。','').match(/.{1,2}/g)||[p.phrase.replace('。','')]);return {title:node.label,focus:p.kana,exercises:[
+function catalogDistractors(id,field='pt'){
+  return Object.entries(vocabularyCatalog).filter(([key])=>key!==id).map(([,v])=>v[field]).filter(Boolean);
+}
+function compilePackExercise(unit,template,index){
+  const vocabIds=unit.vocabulary||[],vocabId=vocabIds[index%Math.max(1,vocabIds.length)],v=vocabularyCatalog[vocabId];
+  const scenario=(unit.scenarios||[])[index%Math.max(1,(unit.scenarios||[]).length)];
+  if(template==='meaning'&&v)return {type:'choice',prompt:`O que “${v.jp}” significa?`,jp:v.jp,options:engineShuffledOptions(v.pt,catalogDistractors(vocabId,'pt')),answer:v.pt,why:`${v.jp} · ${v.reading} · ${v.pt}`,_reviewType:'vocabulary',_reviewKey:vocabId};
+  if(template==='reverseMeaning'&&v)return {type:'choice',prompt:`Como dizer “${v.pt}” neste bloco?`,options:engineShuffledOptions(v.jp,catalogDistractors(vocabId,'jp')),answer:v.jp,why:`${v.pt} → ${v.jp} · ${v.reading}`,_reviewType:'vocabulary',_reviewKey:vocabId};
+  if(template==='reading'&&v)return {type:'choice',prompt:`Como se lê ${v.jp}?`,jp:v.jp,options:engineShuffledOptions(v.reading,catalogDistractors(vocabId,'reading')),answer:v.reading,why:`${v.jp} → ${v.reading}`,_reviewType:'vocabulary',_reviewKey:vocabId};
+  if(template==='listenMeaning'&&v)return {type:'listen',prompt:'Ouça. Qual é o sentido?',audio:v.jp,options:engineShuffledOptions(v.pt,catalogDistractors(vocabId,'pt')),answer:v.pt,why:`${v.jp} · ${v.reading} · ${v.pt}`,_reviewType:'vocabulary',_reviewKey:vocabId};
+  if(template==='sentenceBuild'&&scenario){
+    const target=scenario.reply.replace(/[。！？!?]/g,''),tokens=target.match(/.{1,3}/g)||[target];
+    return {type:'wordbank',prompt:'Monte uma resposta natural para a situação.',target,tokens,why:`${scenario.reply} · ${scenario.replyPt}`};
+  }
+  if(template==='speak'&&scenario)return {type:'speak',prompt:`Responda: ${scenario.npc}`,target:scenario.reply,pt:scenario.replyPt,why:'Produza a resposta inteira em um único fluxo.'};
+  return null;
+}
+function lessonPlanFromPack(unit){
+  const exercises=(unit.templates||[]).map((t,i)=>compilePackExercise(unit,t,i)).filter(Boolean);
+  const grammar=(unit.grammar||[]).map(id=>grammarCatalog[id]).filter(Boolean);
+  if(grammar.length){
+    const g=grammar[0];
+    exercises.splice(Math.min(2,exercises.length),0,{type:'choice',prompt:'Qual mecanismo serve melhor ao objetivo desta unidade?',options:engineShuffledOptions(g.function,Object.values(grammarCatalog).map(x=>x.function)),answer:g.function,why:`${g.form} · ${g.pt}`,_reviewType:'grammar',_reviewKey:'P:'+g.id});
+  }
+  return {title:unit.title,focus:unit.symbol,unitId:unit.id,objectives:unit.objectives,mastery:unit.mastery,exercises:exercises.slice(0,8)};
+}
+
+function lessonPlanFromNode(node){let day=node.day||1;const structured=typeof coursePackForDay==='function'?coursePackForDay(day):null;if(structured)return lessonPlanFromPack(structured);if(day<=24){const p=foundationSessionPlans[Math.max(0,Math.min(23,day-1))];const basic=day<=7?kanaCourse.hira.basic:day<=12?kanaCourse.kata.basic:kanaCourse.hira.basic;const sample=basic.slice(Math.max(0,(day*3)%Math.max(1,basic.length-4)),Math.max(0,(day*3)%Math.max(1,basic.length-4))+4);const pairs=sample.length>=3?sample.slice(0,3):kanaCourse.hira.basic.slice(0,3);const wordChars=[...p.word].filter(x=>x.trim());const grammarTokens=(p.phrase.replace('。','').match(/.{1,2}/g)||[p.phrase.replace('。','')]);return {title:node.label,focus:p.kana,exercises:[
   {type:'listen',prompt:'Qual som ou bloco você ouviu?',audio:p.kana,options:engineShuffledOptions(p.roman,foundationSessionPlans.slice(Math.max(0,day-3),Math.min(24,day+4)).map(x=>x.roman)),answer:p.roman,why:`${p.kana} → ${p.roman}`},
   {type:'choice',prompt:`Qual forma corresponde a “${p.roman}”?`,options:engineShuffledOptions(p.kana,day<=12?[...kanaCourse.hira.basic,...kanaCourse.kata.basic].map(x=>x[0]):foundationSessionPlans.slice(12).map(x=>x.kana)),answer:p.kana,why:p.concept},
   {type:'match',prompt:'Faça os pares.',pairs:pairs},
@@ -50,7 +77,15 @@ function scheduledReviewExercise(item){
     const k=kanjiData.find(x=>x.k===item.key);if(!k)return null;
     return {type:'choice',prompt:`Revisão espaçada: qual sentido combina com ${k.k}?`,jp:k.k,options:engineShuffledOptions(k.m,kanjiData.map(x=>x.m)),answer:k.m,why:`${k.k} · ${k.m} · ${k.ex[0][1]}`,_reviewType:'kanji',_reviewKey:item.key};
   }
+  if(item.type==='vocabulary'){
+    const v=vocabularyCatalog?.[item.key];if(!v)return null;
+    return {type:'choice',prompt:'Revisão espaçada: qual é o sentido?',jp:v.jp,options:engineShuffledOptions(v.pt,catalogDistractors(item.key,'pt')),answer:v.pt,why:`${v.jp} · ${v.reading} · ${v.pt}`,_reviewType:'vocabulary',_reviewKey:item.key};
+  }
   if(item.type==='grammar'){
+    if(String(item.key).startsWith('P:')){
+      const g=grammarCatalog?.[String(item.key).slice(2)];if(!g)return null;
+      return {type:'choice',prompt:'Revisão espaçada: qual função descreve este padrão?',jp:g.form,options:engineShuffledOptions(g.function,Object.values(grammarCatalog).map(x=>x.function)),answer:g.function,why:`${g.form} · ${g.pt}`,_reviewType:'grammar',_reviewKey:item.key};
+    }
     const day=Number(String(item.key).replace(/^F/,'')),p=foundationSessionPlans[day-1];if(!p)return null;
     return {type:'choice',prompt:'Revisão espaçada: qual afirmação descreve este mecanismo?',jp:p.phrase,options:p.conceptOptions,answer:p.concept,why:p.concept,_reviewType:'grammar',_reviewKey:item.key};
   }
