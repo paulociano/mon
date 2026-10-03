@@ -33,7 +33,7 @@ function compilePackExercise(unit,template,index){
 }
 function lessonPlanFromPack(unit){
   const standard=(unit.templates||[]).map((t,i)=>compilePackExercise(unit,t,i)).filter(Boolean);
-  const distinctive=typeof compileMONSequence==='function'?compileMONSequence(unit):[];
+  const distinctive=typeof compileAdaptiveMONSequence==='function'?compileAdaptiveMONSequence(unit):typeof compileMONSequence==='function'?compileMONSequence(unit):[];
   const exercises=[];
   const max=Math.max(standard.length,distinctive.length);
   for(let i=0;i<max;i++){if(distinctive[i])exercises.push(distinctive[i]);if(standard[i])exercises.push(standard[i])}
