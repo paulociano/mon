@@ -25,3 +25,5 @@ jobs:
         run: node scripts/test-content-packs.mjs
       - name: MON learning methods
         run: node scripts/test-learning-methods.mjs
+      - name: Adaptive teaching mix
+        run: node scripts/test-adaptive-methods.mjs
