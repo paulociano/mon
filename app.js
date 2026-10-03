@@ -73,13 +73,39 @@ async function go(id){
  const viewStart=typeof perfStart==='function'?perfStart('view:'+id):null;
  const busyTimer=setTimeout(()=>setRouteBusy(true,'Abrindo '+(viewNames[id]||id)),90);
  try{
- if(id==='foundation')await ensureFeatureRuntime('foundation');
- if(id==='curriculum')await ensureFeatureRuntime('curriculum');
- if(id==='kanji')await ensureFeatureRuntime('kanji');
- if(id==='reading'||id==='missions'||id==='speaking')await ensureFeatureRuntime(id);
- if(id==='practice')await ensureLearningRuntime();
- document.body.classList.toggle('focus-session',id==='session');document.body.classList.toggle('quick-focus',id==='lesson');
- document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
+   if(id==='foundation')await ensureFeatureRuntime('foundation');
+   if(id==='curriculum')await ensureFeatureRuntime('curriculum');
+   if(id==='kanji')await ensureFeatureRuntime('kanji');
+   if(id==='reading'||id==='missions'||id==='speaking')await ensureFeatureRuntime(id);
+   if(id==='practice')await ensureLearningRuntime();
+
+   document.body.classList.toggle('focus-session',id==='session');
+   document.body.classList.toggle('quick-focus',id==='lesson');
+   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
+   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
+
+   const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;
+   if(id==='home')renderGameHome();
+   else if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);
+   else if(id==='foundation')renderFoundation();
+   else if(id==='kanji'){ensureDrawingCanvases();renderKanjiList();selectKanji(currentKanji)}
+   else if(id==='writing'){ensureDrawingCanvases()}
+   else if(id==='reading'){if(typeof hydrateReading==='function')hydrateReading()}
+   else if(id==='missions')hydrateMissionGrid();
+   else if(id==='speaking')hydrateSurvivalPhrases();
+   else if(id==='league')renderLeague();
+   else if(id==='shop')renderShop();
+   else if(id==='practice'){renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}
+
+   keepActiveNavVisible(id);
+   window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+   if(viewStart!==null&&typeof perfEnd==='function')perfEnd('view:'+id,viewStart);
+ }finally{
+   clearTimeout(busyTimer);
+   setRouteBusy(false);
+ }
+}
+document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
  const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;
  if(id==='home')renderGameHome();
  else if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);
