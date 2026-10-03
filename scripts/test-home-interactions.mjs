@@ -8,6 +8,15 @@ const sw=fs.readFileSync('sw.js','utf8');
 for(const id of ['homeAdaptivePrimary','homeAdaptiveSecondary']){
   assert.ok(html.includes(`id="${id}"`),'missing adaptive Home button '+id);
 }
+const homeMatch=html.match(/<section id="home"[\s\S]*?<\/section>/);
+assert.ok(homeMatch,'Home section missing');
+const homeButtons=[...homeMatch[0].matchAll(/<button\b([^>]*)>/g)].map(match=>match[1]);
+for(const attrs of homeButtons){
+  const wired=/\bonclick=/.test(attrs)||/\bid="homeAdaptive(?:Primary|Secondary)"/.test(attrs);
+  assert.ok(wired,'Home contains inert static button: '+attrs.replace(/\s+/g,' ').trim());
+}
+assert.ok(html.includes('id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"'),'toast must announce route/action feedback accessibly');
+
 for(const token of [
   "primary.onclick=()=>runAdaptiveHomeAction(d.action)",
   "secondary.onclick=()=>runAdaptiveHomeAction(d.secondaryAction)",
