@@ -30,6 +30,8 @@ jobs:
         run: node scripts/test-review-scheduler.mjs
       - name: State persistence and recovery
         run: node scripts/test-state-persistence.mjs
+      - name: Account and sync boundary
+        run: node scripts/test-account-boundary.mjs
       - name: Curriculum content contracts
         run: node scripts/test-content-packs.mjs
       - name: Level content pack routing
