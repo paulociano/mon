@@ -48,6 +48,39 @@ Object.assign(grammarBridgeNotes,{
   phoneIdentity:'No telefone, identificar-se cedo cria o contexto compartilhado. Xです é direto; Xと申します eleva a polidez da autoapresentação.'
 });
 
+Object.assign(grammarBridgeNotes,{
+  obligationNaito:'〜ないといけません parte da forma negativa para marcar necessidade prática: pense em “se eu não fizer, não resolve”, não em uma tradução palavra por palavra.',
+  permissionTemo:'〜ても大丈夫です enquadra a ação como aceitável. O foco é remover uma restrição: “mesmo fazendo isso, está tudo bem”.',
+  conditionTara:'〜たら cria um ponto de passagem: quando A se concretizar, B passa a valer. É útil para instruções e próximos passos.',
+  purposeYouni:'〜ように aponta para um resultado desejado que você tenta garantir, especialmente cuidado, hábito ou capacidade.',
+  givingTeMoraeru:'〜てもらえますか transforma a ação da outra pessoa em ajuda recebida por você, criando um pedido mais suave.',
+  softNdesu:'〜んですが abre contexto antes do pedido ou problema. Ele prepara o interlocutor para entender por que a próxima fala importa.',
+  experienceTaKoto:'〜たことがあります trata uma ação passada como experiência acumulada: “já tive a experiência de fazer X”.',
+  planTsumori:'〜つもりです mostra uma intenção já formada. É mais planejado do que um desejo momentâneo com 〜たい.',
+  hearsaySou:'〜そうです separa informação recebida da sua própria observação. A fonte está implícita no “ouvi dizer”.',
+  explanationToIu:'〜という意味です transforma uma expressão em objeto de explicação: “isso quer dizer...”.',
+  suggestionHouga:'〜たほうがいい compara implicitamente alternativas e recomenda a ação considerada melhor.',
+  politeDecline:'〜はちょっと… deixa a recusa parcialmente implícita. O contexto social completa o “é um pouco difícil”.',
+  reasonNode:'〜ので apresenta razão de modo mais explicativo e geralmente mais suave do que uma justificativa brusca.',
+  whileNagara:'〜ながら mantém uma ação como pano de fundo enquanto outra acontece em paralelo.',
+  tryTeMiru:'〜てみる significa experimentar uma ação para ver o resultado, não apenas “ver” literalmente.',
+  becomeYouNiNaru:'〜ようになる marca mudança de estado ou capacidade ao longo do tempo: algo passa a ser possível ou habitual.',
+  passiveRareru:'A voz passiva muda o foco para aquilo que recebe a ação. Em avisos, importa primeiro entender o que será feito ou afetado.',
+  writtenTeAru:'〜てあります descreve um estado que existe porque alguém realizou uma ação intencionalmente antes.',
+  dueMadeNi:'〜までに estabelece um limite de conclusão: a ação precisa ocorrer antes de o ponto final ser ultrapassado.',
+  ifBa:'〜ば abre uma condição lógica: quando a condição é satisfeita, a consequência se torna aplicável.',
+  mustNakereba:'〜なければなりません expressa obrigação formal por uma lógica de “se não fizer, não serve / não pode ficar assim”.',
+  nominalNoWa:'〜のは empacota uma ação como tópico. Isso permite comparar, explicar ou avaliar o próprio ato.',
+  contrastNonI:'〜のに coloca lado a lado expectativa e resultado inesperado. O contraste é parte central do sentido.',
+  seemMitai:'〜みたいです marca impressão baseada no que parece ser verdade, sem afirmar certeza total.',
+  reportedTte:'〜って pode introduzir fala citada ou um tópico em registro informal. O contexto indica qual função está ativa.',
+  opinionToOmou:'〜と思います embala uma proposição como opinião sua, diminuindo a força de uma afirmação absoluta.',
+  compareYori:'AよりBのほうが organiza comparação por referência: A é o ponto de comparação e B recebe o destaque.',
+  sequenceTara:'〜たら、そのあと usa a conclusão de uma ação como gatilho para a próxima etapa da sequência.',
+  uncertaintyKamo:'〜かもしれません mantém uma hipótese aberta. É possibilidade, não previsão certa.',
+  askNdeshouka:'〜んでしょうか transforma dúvida em pedido de explicação, soando menos como uma pergunta seca de sim/não.'
+});
+
 function grammarStudyNote(id,g={}){
   const mentalModel=grammarBridge(id,g);
   return {
@@ -239,10 +272,12 @@ function japaneseLearningContract(unit={}){
   const situation=unit.context||`${unit.title||'Situação prática'}: ${scenario.pt||canDo[0]||'use japonês para concluir a tarefa comunicativa.'}`;
   const repair={jp:'すみません、もう一度ゆっくりお願いします。',pt:'Desculpe, mais uma vez devagar, por favor.'};
   if(study){
-    study.canDo=canDo;
-    study.situation=situation;
-    study.kanjiPreview=kanji;
-    study.repair=repair;
+    const kanjiExamples=kanji.slice(0,2).map(x=>({jp:x.word,pt:x.meaning,note:`Kanji em contexto: ${x.k} · ${x.context}`}));
+    study.canDo=canDo;study.situation=situation;study.kanjiPreview=kanji;study.repair=repair;
+    study.title=`${canDo[0]||unit.title||'Missão'} · ${study.title}`;
+    study.explanation=`Situação: ${situation} ${study.explanation}`;
+    study.examples=[...(study.examples||[]),...kanjiExamples].slice(0,4);
+    study.realWorldUse=`${study.realWorldUse||''} Estratégia de reparo: ${repair.jp} · ${repair.pt}`;
   }
   return {
     unitId:unit.id||null,
