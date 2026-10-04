@@ -21,9 +21,9 @@ function migrateState(raw){
  if(version>MON_SAVE_VERSION)throw new Error('future MON save version');
  let next={...raw},v=version;
  while(v<MON_SAVE_VERSION){
-  const migrate=MON_STATE_MIGRATIONS[v];if(typeof migrate!=='function')throw new Error('missing MON migration '+v);
+  const from=v,migrate=MON_STATE_MIGRATIONS[from];if(typeof migrate!=='function')throw new Error('missing MON migration '+from);
   next=migrate(next);v=Number(next.saveVersion);
-  if(!Number.isInteger(v)||v<=version)throw new Error('invalid MON migration result');
+  if(!Number.isInteger(v)||v<=from)throw new Error('invalid MON migration result');
  }
  return normalizeState(next);
 }
