@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 
 const state={masteryEvidence:{},unitMastery:{},remediation:null};
 const ctx=vm.createContext({state,console,Object,Set,Number,String,Math,Date});
-vm.runInContext(fs.readFileSync('data/content-packs.js','utf8'),ctx);
+vm.runInContext(fs.readFileSync('data/content-packs-n5.js','utf8'),ctx);
 vm.runInContext(fs.readFileSync('core/mastery-graph.js','utf8'),ctx);
 vm.runInContext(fs.readFileSync('core/progression-engine.js','utf8'),ctx);
 
