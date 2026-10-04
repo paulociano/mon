@@ -53,19 +53,19 @@ function autonomyValidation(events=[]){
  return {value:avg(rows),samples:rows.length,status:validationEvidenceStatus(rows.length),trend:validationTrend(rows,avg)};
 }
 function recurrentErrorValidation(events=[]){
+ const mistakeEvents=events.filter(x=>(x.kind==='mistake'||x.kind==='mistake_recovery')&&x.concept);
+ if(mistakeEvents.length){
+  const counts={};mistakeEvents.forEach(x=>{if(x.kind==='mistake')counts[x.concept]=(counts[x.concept]||0)+1});
+  const recurrent=new Set(Object.entries(counts).filter(([,n])=>n>=2).map(([k])=>k));
+  const relevant=mistakeEvents.filter(x=>recurrent.has(x.concept));
+  const errorRate=x=>x.length?Math.round(x.filter(r=>r.kind==='mistake').length/x.length*100):null;
+  return {concepts:recurrent.size,value:errorRate(relevant),samples:relevant.length,status:validationEvidenceStatus(relevant.length),trend:validationTrend(relevant,errorRate),source:'mistake-events'};
+ }
  const rows=events.filter(x=>x.kind==='attempt'&&typeof x.ok==='boolean'&&x.concept);
- const wrongBy={};
- rows.forEach(x=>{if(!x.ok)(wrongBy[x.concept]??=[]).push(x)});
+ const wrongBy={};rows.forEach(x=>{if(!x.ok)(wrongBy[x.concept]??=[]).push(x)});
  const recurrent=new Set(Object.entries(wrongBy).filter(([,v])=>v.length>=2).map(([k])=>k));
- const relevant=rows.filter(x=>recurrent.has(x.concept));
- const errorRate=x=>x.length?100-validationPct(x):null;
- return {
-  concepts:recurrent.size,
-  value:errorRate(relevant),
-  samples:relevant.length,
-  status:validationEvidenceStatus(relevant.length),
-  trend:validationTrend(relevant,errorRate)
- };
+ const relevant=rows.filter(x=>recurrent.has(x.concept)),errorRate=x=>x.length?100-validationPct(x):null;
+ return {concepts:recurrent.size,value:errorRate(relevant),samples:relevant.length,status:validationEvidenceStatus(relevant.length),trend:validationTrend(relevant,errorRate),source:'attempt-fallback'};
 }
 function learningValidationReport(state={},events=null,now=Date.now()){
  const rows=events||((typeof learningEvidenceState==='function'?learningEvidenceState().events:[])||[]);
