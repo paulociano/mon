@@ -64,6 +64,10 @@ jobs:
         run: node scripts/test-readme-showcase.mjs
       - name: MON learning methods
         run: node scripts/test-learning-methods.mjs
+      - name: Foundation lesson variety
+        run: node scripts/test-foundation-variety.mjs
+      - name: Energy policy
+        run: node scripts/test-energy-policy.mjs
       - name: Adaptive teaching mix
         run: node scripts/test-adaptive-methods.mjs
       - name: Mastery graph behavior
@@ -144,6 +148,8 @@ jobs:
         run: node scripts/test-browser-smoke.mjs
       - name: Latency baseline
         run: node scripts/measure-latency-baseline.mjs
+      - name: Responsive smoke
+        run: node scripts/test-responsive-smoke.mjs
       - name: Offline PWA smoke
         run: node scripts/test-offline-smoke.mjs
 

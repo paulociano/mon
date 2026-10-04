@@ -84,16 +84,25 @@ function lessonPlanFromPack(unit){
     method:typeof MON_METHOD!=='undefined'?MON_METHOD:null,exercises:tagged};
 }
 
-function lessonPlanFromNode(node){let day=node.day||1;const structured=typeof coursePackForDay==='function'?coursePackForDay(day):null;if(structured)return lessonPlanFromPack(structured);if(day<=24){const p=foundationSessionPlans[Math.max(0,Math.min(23,day-1))];const basic=day<=7?kanaCourse.hira.basic:day<=12?kanaCourse.kata.basic:kanaCourse.hira.basic;const sample=basic.slice(Math.max(0,(day*3)%Math.max(1,basic.length-4)),Math.max(0,(day*3)%Math.max(1,basic.length-4))+4);const pairs=sample.length>=3?sample.slice(0,3):kanaCourse.hira.basic.slice(0,3);const wordChars=[...p.word].filter(x=>x.trim());const grammarTokens=(p.phrase.replace('。','').match(/.{1,2}/g)||[p.phrase.replace('。','')]);return {title:node.label,focus:p.kana,exercises:[
-  {type:'listen',prompt:'Qual som ou bloco você ouviu?',audio:p.kana,options:engineShuffledOptions(p.roman,foundationSessionPlans.slice(Math.max(0,day-3),Math.min(24,day+4)).map(x=>x.roman)),answer:p.roman,why:`${p.kana} → ${p.roman}`},
-  {type:'choice',prompt:`Qual forma corresponde a “${p.roman}”?`,options:engineShuffledOptions(p.kana,day<=12?[...kanaCourse.hira.basic,...kanaCourse.kata.basic].map(x=>x[0]):foundationSessionPlans.slice(12).map(x=>x.kana)),answer:p.kana,why:p.concept},
-  {type:'match',prompt:'Faça os pares.',pairs:pairs},
-  {type:'choice',prompt:`O que “${p.word}” significa?`,jp:p.word,options:engineShuffledOptions(p.pt,foundationSessionPlans.map(x=>x.pt)),answer:p.pt,why:`${p.word} · ${p.wordReading} · ${p.pt}`},
-  {type:'wordbank',prompt:day<=12?'Reconstrua a palavra em japonês.':'Reconstrua o bloco em japonês.',target:day<=12?p.word:p.phrase.replace('。',''),tokens:day<=12?wordChars:grammarTokens,why:day<=12?'Leia em unidades de mora, não em letras portuguesas.':'Monte o japonês pela função dos blocos.'},
-  {type:'choice',prompt:'Qual afirmação está correta?',options:p.conceptOptions,answer:p.concept,why:p.concept},
-  {type:'listen',prompt:'Qual sentido corresponde à frase?',audio:p.phrase,options:engineShuffledOptions(p.phrasePt,foundationSessionPlans.map(x=>x.phrasePt)),answer:p.phrasePt,why:`${p.phrase} · ${p.phrasePt}`},
-  {type:'speak',prompt:'Feche repetindo a frase inteira.',target:p.phrase,pt:p.phrasePt,why:'Faça shadowing: ouça, espere meio segundo e repita em um único ritmo.'}
- ]}}
+const FOUNDATION_PROMPTS=[
+ ['Escute sem olhar. Qual som você identifica?','Qual kana representa','Conecte kana e leitura.','Que sentido tem','Monte a forma japonesa sem copiar.','Qual explicação descreve o mecanismo?','Qual é a intenção da frase?','Produza a frase completa.'],
+ ['Ouça primeiro. Qual bloco apareceu?','Encontre a forma de','Associe símbolo e leitura.','Neste contexto, o que significa','Reconstrua em japonês.','Escolha a regra deste exemplo.','Recupere o sentido global.','Produza em um único ritmo.'],
+ ['Sem ler a tela, reconheça o som.','Do som, encontre','Forme os pares corretos.','Leia e escolha o significado de','Recupere a forma-alvo.','Qual leitura funcional está correta?','Ouça e escolha o sentido.','Feche com shadowing completo.']
+];
+function foundationVariedExercises(day,p,pairs,wordChars,grammarTokens){
+ const q=FOUNDATION_PROMPTS[(day-1)%FOUNDATION_PROMPTS.length],items=[
+  {type:'listen',prompt:q[0],audio:p.kana,options:engineShuffledOptions(p.roman,foundationSessionPlans.slice(Math.max(0,day-3),Math.min(24,day+4)).map(x=>x.roman)),answer:p.roman,why:`${p.kana} → ${p.roman}`},
+  {type:'choice',prompt:`${q[1]} “${p.roman}”?`,options:engineShuffledOptions(p.kana,day<=12?[...kanaCourse.hira.basic,...kanaCourse.kata.basic].map(x=>x[0]):foundationSessionPlans.slice(12).map(x=>x.kana)),answer:p.kana,why:p.concept},
+  {type:'match',prompt:q[2],pairs},
+  {type:'choice',prompt:`${q[3]} “${p.word}”?`,jp:p.word,options:engineShuffledOptions(p.pt,foundationSessionPlans.map(x=>x.pt)),answer:p.pt,why:`${p.word} · ${p.wordReading} · ${p.pt}`},
+  {type:'wordbank',prompt:q[4],target:day<=12?p.word:p.phrase.replace('。',''),tokens:day<=12?wordChars:grammarTokens,why:day<=12?'Leia em unidades de mora, não em letras portuguesas.':'Monte o japonês pela função dos blocos.'},
+  {type:'choice',prompt:q[5],options:p.conceptOptions,answer:p.concept,why:p.concept},
+  {type:'listen',prompt:q[6],audio:p.phrase,options:engineShuffledOptions(p.phrasePt,foundationSessionPlans.map(x=>x.phrasePt)),answer:p.phrasePt,why:`${p.phrase} · ${p.phrasePt}`},
+  {type:'speak',prompt:q[7],target:p.phrase,pt:p.phrasePt,why:'Faça shadowing: ouça, espere meio segundo e repita em um único ritmo.'}
+ ],middle=items.slice(1,-1),shift=(day-1)%middle.length;
+ return [items[0],...middle.slice(shift),...middle.slice(0,shift),items.at(-1)];
+}
+function lessonPlanFromNode(node){let day=node.day||1;const structured=typeof coursePackForDay==='function'?coursePackForDay(day):null;if(structured)return lessonPlanFromPack(structured);if(day<=24){const p=foundationSessionPlans[Math.max(0,Math.min(23,day-1))];const basic=day<=7?kanaCourse.hira.basic:day<=12?kanaCourse.kata.basic:kanaCourse.hira.basic;const sample=basic.slice(Math.max(0,(day*3)%Math.max(1,basic.length-4)),Math.max(0,(day*3)%Math.max(1,basic.length-4))+4);const pairs=sample.length>=3?sample.slice(0,3):kanaCourse.hira.basic.slice(0,3);const wordChars=[...p.word].filter(x=>x.trim());const grammarTokens=(p.phrase.replace('。','').match(/.{1,2}/g)||[p.phrase.replace('。','')]);return {title:node.label,focus:p.kana,exercises:foundationVariedExercises(day,p,pairs,wordChars,grammarTokens)}}
  const mi=Math.max(0,Math.min(missions.length-1,(day-25)%missions.length)),m=missions[mi],sp=missionSpeech[mi],rd=microReadings[mi],k=kanjiData[(day-25)%kanjiData.length],ex=k.ex[0];return {title:node.label,focus:m.symbol,exercises:[
   {type:'listen',prompt:'O que a pessoa quis dizer?',audio:sp.npc,options:engineShuffledOptions(sp.npcPt,missionSpeech.map(x=>x.npcPt)),answer:sp.npcPt,why:'Capture primeiro a intenção geral.'},
   {type:'choice',prompt:`Qual kanji significa “${k.m.toLowerCase()}”?`,options:engineShuffledOptions(k.k,kanjiData.map(x=>x.k)),answer:k.k,why:`${k.k} · ${k.m}`},

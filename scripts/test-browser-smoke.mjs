@@ -115,7 +115,7 @@ try{
 
  await page.evaluate(async()=>await go('home'));
  await waitVisible('#home.active');
- await page.evaluate(()=>localStorage.setItem('mon-state',JSON.stringify({saveVersion:2,xp:321,foundationDay:4})));
+ await page.evaluate(()=>localStorage.setItem('mon-state',JSON.stringify({saveVersion:3,xp:321,foundationDay:4,energy:30,maxEnergy:30})));
  await page.reload({waitUntil:'networkidle'});
  await waitVisible('#home.active');
  assert.equal(await page.evaluate(()=>state.xp),321,'valid persisted state must survive reload');
@@ -123,7 +123,7 @@ try{
  await page.evaluate(()=>localStorage.setItem('mon-state','{broken'));
  await page.reload({waitUntil:'networkidle'});
  await waitVisible('#home.active');
- assert.equal(await page.evaluate(()=>state.saveVersion),2,'corrupt state must recover to a valid schema');
+ assert.equal(await page.evaluate(()=>state.saveVersion),3,'corrupt state must recover to a valid schema');
  assert.equal(await page.evaluate(()=>localStorage.getItem('mon-state-corrupt-last')),'{broken','corrupt primary payload must be preserved');
  assert.equal(pageErrors.length,0,'recovery reload emitted page errors: '+pageErrors.join('\n'));
 

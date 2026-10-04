@@ -23,17 +23,17 @@ function boot(seed={}){
  const {context}=boot({'mon-profile':JSON.stringify({name:'Antes',dailyGoal:10,studyMode:'revisao'})});
  const payload={syncVersion:1,profile:{name:'Paulo',dailyGoal:30,studyMode:'desafio'},learningState:{saveVersion:1,xp:999,foundationDay:9,learningEvidence:{events:[{at:1,kind:'attempt',ok:true}]}}};
  const out=context.__import(JSON.stringify(payload));
- assert.equal(out.learningState.saveVersion,2);
+ assert.equal(out.learningState.saveVersion,3);
  assert.equal(context.__getState().xp,999);
- assert.equal(JSON.parse(context.localStorage.getItem('mon-state')).saveVersion,2);
+ assert.equal(JSON.parse(context.localStorage.getItem('mon-state')).saveVersion,3);
  assert.equal(JSON.parse(context.localStorage.getItem('mon-state-backup')).xp,120);
  assert.equal(JSON.parse(context.localStorage.getItem('mon-profile')).name,'Paulo');
 }
 
 {
- const {context,store}=boot({'mon-state':JSON.stringify({saveVersion:2,xp:555}),'mon-profile':JSON.stringify({name:'Seguro',dailyGoal:20,studyMode:'equilibrado'})});
+ const {context,store}=boot({'mon-state':JSON.stringify({saveVersion:3,xp:555}),'mon-profile':JSON.stringify({name:'Seguro',dailyGoal:20,studyMode:'equilibrado'})});
  const beforeState=store.get('mon-state'),beforeProfile=store.get('mon-profile');
- assert.throws(()=>context.__import(JSON.stringify({syncVersion:99,learningState:{saveVersion:2,xp:1}})),/Versão de backup não suportada/);
+ assert.throws(()=>context.__import(JSON.stringify({syncVersion:99,learningState:{saveVersion:3,xp:1}})),/Versão de backup não suportada/);
  assert.equal(store.get('mon-state'),beforeState,'invalid import must not overwrite state');
  assert.equal(store.get('mon-profile'),beforeProfile,'invalid import must not overwrite profile');
 }
@@ -42,7 +42,7 @@ function boot(seed={}){
  const {context}=boot();
  assert.throws(()=>context.__validate({syncVersion:1,learningState:{saveVersion:99}}),/future MON save version/);
  const payload=context.__payload({name:'Backup',dailyGoal:20,studyMode:'equilibrado'});
- assert.equal(payload.learningState.saveVersion,2);
+ assert.equal(payload.learningState.saveVersion,3);
  assert.equal(payload.syncVersion,1);
 }
 

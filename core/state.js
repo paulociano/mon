@@ -1,8 +1,8 @@
 const MON_STATE_KEY='mon-state';
 const MON_STATE_BACKUP_KEY='mon-state-backup';
 const MON_STATE_CORRUPT_KEY='mon-state-corrupt-last';
-const MON_SAVE_VERSION=2;
-const defaultState={saveVersion:MON_SAVE_VERSION,xp:120,streak:1,reviews:{},kanaMastery:{},kanaReviews:{},speech:0,day:1,sessions:0,foundationDay:1,foundationComplete:false,foundationSessions:0,romajiMode:'auto',grammarOpened:{},grammarRecall:{},sentenceSolved:0,soundWins:0,lastStudyDate:null,history:[],diagnostic:null,energy:20,maxEnergy:20,gems:350,pathProgress:null,quests:{date:null,lessons:0,xp:0,accuracy:false},streakFreeze:0,xpBoostUntil:0,chests:{},leagueXp:0,perfectLessons:0,mistakes:[],mistakeStats:{},reviewItems:{},methodStats:{},masteryEvidence:{},unitMastery:{},remediation:null,narrative:{episodes:{},characters:{},arcs:{},lastEpisode:null},pronunciation:{sessions:0,plays:0,shadowAttempts:0,selfRatings:[],tracks:{}},kanjiLab:{attempts:0,correct:0,modes:{},last:null},survivalMissions:{completed:{},attempts:{},repairs:0},videoLearning:{opened:{},practice:{},last:null},productionGaps:{},functionalMastery:{}};
+const MON_SAVE_VERSION=3;
+const defaultState={saveVersion:MON_SAVE_VERSION,xp:120,streak:1,reviews:{},kanaMastery:{},kanaReviews:{},speech:0,day:1,sessions:0,foundationDay:1,foundationComplete:false,foundationSessions:0,romajiMode:'auto',grammarOpened:{},grammarRecall:{},sentenceSolved:0,soundWins:0,lastStudyDate:null,history:[],diagnostic:null,energy:30,maxEnergy:30,gems:350,pathProgress:null,quests:{date:null,lessons:0,xp:0,accuracy:false},streakFreeze:0,xpBoostUntil:0,chests:{},leagueXp:0,perfectLessons:0,mistakes:[],mistakeStats:{},reviewItems:{},methodStats:{},masteryEvidence:{},unitMastery:{},remediation:null,narrative:{episodes:{},characters:{},arcs:{},lastEpisode:null},pronunciation:{sessions:0,plays:0,shadowAttempts:0,selfRatings:[],tracks:{}},kanjiLab:{attempts:0,correct:0,modes:{},last:null},survivalMissions:{completed:{},attempts:{},repairs:0},videoLearning:{opened:{},practice:{},last:null},productionGaps:{},functionalMastery:{}};
 
 function normalizeState(raw={}){
  const source=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{};
@@ -12,7 +12,8 @@ function normalizeState(raw={}){
 }
 const MON_STATE_MIGRATIONS={
  0:s=>({...s,saveVersion:1}),
- 1:s=>({...s,saveVersion:2,learningEvidence:{events:[...((s.learningEvidence?.events)||[])].slice(-600)}})
+ 1:s=>({...s,saveVersion:2,learningEvidence:{events:[...((s.learningEvidence?.events)||[])].slice(-600)}}),
+ 2:s=>({...s,saveVersion:3,energy:Math.max(30,Number(s.energy||0)),maxEnergy:Math.max(30,Number(s.maxEnergy||0))})
 };
 function migrateState(raw){
  if(!raw||typeof raw!=='object'||Array.isArray(raw))throw new Error('invalid MON save');
