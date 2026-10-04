@@ -31,6 +31,8 @@ function renderQuickExercise(){
      if(e.cue)h+=`<div class="method-cue">${e.cue}</div>`;
      h+=`<input id="quickTyped" class="quick-typed" lang="ja" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="digite em japonês…" oninput="quickTypedInput(this.value)">`;
      h+=`<p class="quick-helper">Sem banco de palavras. Kana é aceito quando a leitura é equivalente.</p>`;
+   }else if(e.type==='openResponse'){
+     h+=`<div class="roleplay-scene"><span>interlocutor</span><b>${e.npc}</b><p>${e.npcPt||''}</p></div><textarea id="quickTyped" class="quick-typed quick-open" lang="ja" rows="4" spellcheck="false" placeholder="responda em japonês com suas próprias palavras…" oninput="quickTypedInput(this.value)"></textarea><div class="quick-open-actions"><button class="quick-option" onclick="quickOpenSpeech(this)">● ditar resposta</button><button class="method-reveal" onclick="quickRevealModel()">ver modelo depois da tentativa</button></div><div id="roleplayModel" class="roleplay-model"></div><p class="quick-helper">O checkpoint procura intenção e elementos essenciais. Não exige a frase-modelo exata.</p>`;
    }else if(e.type==='roleplay'){
      h+=`<div class="roleplay-scene"><span>店員 / interlocutor</span><b>${e.npc}</b><p>${e.npcPt||''}</p></div>`;
      h+=`<div class="quick-options"><button class="quick-option" onclick="quickSpeech(this)">● Responder com microfone</button><button class="quick-option" onclick="quickRoleplayAttempt(this)">Respondi em voz alta</button></div><button class="method-reveal" onclick="quickRevealModel()">preciso de uma pista</button><div id="roleplayModel" class="roleplay-model"></div>`;
@@ -41,6 +43,12 @@ function renderQuickExercise(){
 function quickSelect(i,b){if(quickRun.checked)return;document.querySelectorAll('[data-qopt]').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');quickRun.selected=i;document.getElementById('quickCheck').disabled=false}
 function quickTypedInput(value){if(!quickRun||quickRun.checked)return;quickRun.typed=value;document.getElementById('quickCheck').disabled=!value.trim()}
 function quickRoleplayAttempt(b){document.querySelectorAll('.quick-option').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');quickRun.selected=1;document.getElementById('quickCheck').disabled=false}
+function evaluateOpenProduction(text,assessment={}){
+ const normalized=normalizeJP(String(text||'')),groups=assessment.groups||[],labels=assessment.labels||[];
+ const hits=groups.map(g=>(g||[]).some(t=>normalized.includes(normalizeJP(t)))),score=groups.length?hits.filter(Boolean).length/groups.length:0,min=Number(assessment.min||.66);
+ return {ok:score>=min,score:Math.round(score*100),hits,missing:labels.filter((_,i)=>!hits[i]),covered:labels.filter((_,i)=>hits[i])};
+}
+function quickOpenSpeech(b){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Ditado por voz indisponível neste navegador');return}const r=new SR();r.lang='ja-JP';r.interimResults=false;r.maxAlternatives=1;b.textContent='● ouvindo…';r.onresult=x=>{const txt=x.results[0][0].transcript,input=document.getElementById('quickTyped');if(input){input.value=txt;quickTypedInput(txt)}b.textContent='● resposta capturada'};r.onend=()=>{if(b.textContent==='● ouvindo…')b.textContent='● ditar resposta'};r.start()}
 function quickRevealModel(){const e=quickRun?.pack.exercises[quickRun.step],box=document.getElementById('roleplayModel');if(!e||!box)return;box.innerHTML=`<b>${e.target}</b><span>${e.pt||''}</span>`;box.classList.add('show');quickRun.hintUsed=true}
 function wordTap(i,b){if(quickRun.checked||b.classList.contains('used'))return;b.classList.add('used');quickRun.built.push(i);const e=quickRun.pack.exercises[quickRun.step],w=document.getElementById('wordBuilt');w.innerHTML=quickRun.built.map((idx,pos)=>`<button class="word-token" onclick="wordUntap(${pos})">${e.tokens[idx]}</button>`).join('');document.getElementById('quickCheck').disabled=quickRun.built.length===0}
 function wordUntap(pos){if(quickRun.checked)return;const idx=quickRun.built.splice(pos,1)[0],e=quickRun.pack.exercises[quickRun.step];document.querySelector(`[data-wb="${idx}"]`)?.classList.remove('used');const w=document.getElementById('wordBuilt');w.innerHTML=quickRun.built.length?quickRun.built.map((j,p)=>`<button class="word-token" onclick="wordUntap(${p})">${e.tokens[j]}</button>`).join(''):'<span style="color:#607083;font-size:9px">toque nos blocos abaixo</span>';document.getElementById('quickCheck').disabled=quickRun.built.length===0}
@@ -50,7 +58,7 @@ function quickSpeech(b){const e=quickRun.pack.exercises[quickRun.step],SR=window
 function energyTick(correct){state.energy=Math.max(0,(state.energy||0)-1);if(correct){quickRun.streak=(quickRun.streak||0)+1;if(quickRun.streak%3===0)state.energy=Math.min(state.maxEnergy,state.energy+1)}else quickRun.streak=0;document.getElementById('quickEnergy').textContent=state.energy}
 function quickCheck(){
  if(!quickRun||quickRun.checked)return;
- const e=quickRun.pack.exercises[quickRun.step];let ok=false,chosen='';
+ const e=quickRun.pack.exercises[quickRun.step];let ok=false,chosen='',detail='';
  if(['choice','listen','discovery','minimalPair'].includes(e.type)){
    if(quickRun.selected==null)return;
    const opts=e.options;chosen=opts[quickRun.selected];ok=chosen===e.answer;
@@ -62,6 +70,8 @@ function quickCheck(){
    ok=quickRun.matches.length===e.pairs.length;chosen=ok?'pares completos':'pares incompletos';
  }else if(['speak','roleplay'].includes(e.type)){
    ok=quickRun.selected===1;chosen=ok?'produção aceita':'produção abaixo do limiar';
+ }else if(e.type==='openResponse'){
+   chosen=(quickRun.typed||'').trim();const result=evaluateOpenProduction(chosen,e.assessment);ok=result.ok;detail=`<span class="open-assessment"><strong>${result.score}% dos elementos funcionais</strong>${result.covered.length?`Cobriu: ${result.covered.join(' · ')}.`:''}${result.missing.length?` Falta: ${result.missing.join(' · ')}.`:''}</span>`;const input=document.getElementById('quickTyped');if(input){input.disabled=true;input.classList.add(ok?'correct':'wrong')}
  }else if(['recall','dictation','cloze','transfer'].includes(e.type)){
    chosen=(quickRun.typed||'').trim();const accepted=(e.accepted?.length?e.accepted:[e.target]).filter(Boolean);
    ok=accepted.some(x=>normalizeJP(chosen)===normalizeJP(x));
@@ -80,7 +90,7 @@ function quickCheck(){
  if(typeof recordMasteryEvidence==='function')recordMasteryEvidence(e,ok,{hintUsed:!!quickRun.hintUsed});
  if(!quickRun.practiceOnly)energyTick(ok);
  const bridge=e.bridge?`<span class="feedback-bridge"><strong>Lente MON</strong>${e.bridge}</span>`:'';
- setQuickFeedback(ok?(e._remediation?'Erro recuperado!':e.method?'Recuperação válida.':'Correto!'):'Boa correção.',(e.why||'')+bridge,ok);
+ setQuickFeedback(ok?(e.type==='openResponse'?'Intenção preservada.':e._remediation?'Erro recuperado!':e.method?'Recuperação válida.':'Correto!'):(e.type==='openResponse'?'Resposta ainda incompleta.':'Boa correção.'),(e.why||'')+detail+bridge,ok);
  const btn=document.getElementById('quickCheck');btn.disabled=false;btn.textContent='CONTINUAR';btn.classList.add('continue');btn.onclick=quickNext;save();
 }function quickNext(){if(!quickRun)return;if(!quickRun.practiceOnly&&state.energy<=0&&quickRun.step<quickRun.pack.exercises.length-1){quickRun.step=quickRun.pack.exercises.length;renderQuickComplete(true);return}quickRun.step++;renderQuickExercise()}
 function renderQuickComplete(outOfEnergy=false){

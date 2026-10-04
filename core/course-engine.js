@@ -26,7 +26,7 @@ function catalogDistractors(id,field='pt'){
 
 function exerciseFamily(e={}){
   if(['listen','dictation','minimalPair'].includes(e.type))return 'listen';
-  if(['recall','transfer','speak','roleplay','wordbank','cloze'].includes(e.type))return 'produce';
+  if(['recall','transfer','speak','roleplay','openResponse','wordbank','cloze'].includes(e.type))return 'produce';
   if(e.type==='match')return 'match';
   return 'recognize';
 }
@@ -62,8 +62,13 @@ function compilePackExercise(unit,template,index){
     const target=scenario.reply.replace(/[。！？!?]/g,''),tokens=target.match(/.{1,3}/g)||[target];
     return {type:'wordbank',prompt:'Monte uma resposta natural para a situação.',target,tokens,why:`${scenario.reply} · ${scenario.replyPt}`};
   }
-  if(template==='speak'&&scenario)return {type:'speak',prompt:`Responda: ${scenario.npc}`,target:scenario.reply,pt:scenario.replyPt,why:'Produza a resposta inteira em um único fluxo.'};
+  if(template==='speak'&&scenario){if(unit.openProduction&&scenario.assessment)return {type:'openResponse',prompt:'Responda com suas próprias palavras.',npc:scenario.npc,npcPt:scenario.pt,target:scenario.reply,pt:scenario.replyPt,assessment:scenario.assessment,why:'O checkpoint avalia intenção e elementos essenciais, não cópia da frase-modelo.',method:'produce'};return {type:'speak',prompt:`Responda: ${scenario.npc}`,target:scenario.reply,pt:scenario.replyPt,why:'Produza a resposta inteira em um único fluxo.'}};
   return null;
+}
+function compileOpenProduction(unit,index=0){
+  const scenarios=unit.scenarios||[],scenario=scenarios[index%Math.max(1,scenarios.length)];
+  if(!unit.openProduction||!scenario?.assessment)return null;
+  return {type:'openResponse',prompt:'Responda com suas próprias palavras.',npc:scenario.npc,npcPt:scenario.pt,target:scenario.reply,pt:scenario.replyPt,assessment:scenario.assessment,why:'O checkpoint avalia intenção e elementos essenciais, não cópia da frase-modelo.',method:'produce'};
 }
 function lessonPlanFromPack(unit){
   const standard=(unit.templates||[]).map((t,i)=>compilePackExercise(unit,t,i)).filter(Boolean);
@@ -73,7 +78,8 @@ function lessonPlanFromPack(unit){
   for(let i=0;i<max;i++){if(distinctive[i])exercises.push(distinctive[i]);if(standard[i])exercises.push(standard[i])}
   const narrative=typeof narrativeEchoExercise==='function'?narrativeEchoExercise(unit):null;
   if(narrative)exercises.splice(Math.min(4,exercises.length),0,narrative);
-  const tagged=optimizeExerciseSequence(exercises,10).map(e=>({...e,_unitId:unit.id}));
+  let tagged=optimizeExerciseSequence(exercises,10).map(e=>({...e,_unitId:unit.id}));
+  if(unit.openProduction&&!tagged.some(e=>e.type==='openResponse')){const open=compileOpenProduction(unit,Math.max(1,(unit.scenarios||[]).length-1));if(open)tagged=[...tagged.slice(0,9),{...open,_unitId:unit.id}]}
   return {title:unit.title,focus:unit.symbol,unitId:unit.id,objectives:unit.objectives,mastery:unit.mastery,narrative:typeof narrativeEpisodeForUnit==='function'?narrativeEpisodeForUnit(unit):null,
     method:typeof MON_METHOD!=='undefined'?MON_METHOD:null,exercises:tagged};
 }
