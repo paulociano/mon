@@ -45,3 +45,18 @@
   .ka-focus-copy h1{font-size:32px}
   .ka-stepper button{min-width:112px}
 }
+
+/* P8 · Kanji Atlas mobile polish */
+.ka-library-toggle,.ka-stepper button,.ka-options button,.ka-word button,.ka-examples button,.ka-kanji{min-height:44px}
+@media(max-width:560px){
+ .ka-head{flex-direction:column;align-items:stretch}.ka-library-toggle{width:100%}
+ .ka-focus{gap:16px;border-radius:20px}.ka-glyph-card{min-height:155px}.ka-glyph{font-size:72px}
+ .ka-focus-copy h1{font-size:30px}.ka-word{align-items:flex-start;flex-wrap:wrap}.ka-word button{width:100%}
+ .ka-mastery ul{grid-template-columns:1fr}.ka-next{padding:17px}.ka-next .secondary{width:100%}
+ .ka-stepper{margin:0 -1px}.ka-stepper button{min-width:118px}
+ .ka-challenge,.ka-writing{padding:18px}.ka-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ka-options button{min-width:0}.ka-options button b{font-size:28px}
+ .ka-context{padding:17px}.ka-examples article{display:grid;grid-template-columns:auto minmax(0,1fr) auto}
+ .ka-library.open{padding:14px}.ka-status-filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:380px){.ka-options{grid-template-columns:1fr}.ka-stepper button{min-width:105px}}
