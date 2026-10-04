@@ -19,7 +19,7 @@ const homeMatch=html.match(/<section id="home"[\s\S]*?<\/section>/);
 assert.ok(homeMatch,'Home section missing');
 const homeButtons=[...homeMatch[0].matchAll(/<button\b([^>]*)>/g)].map(match=>match[1]);
 for(const attrs of homeButtons){
-  const wired=/\bonclick=/.test(attrs)||/\bid="homeAdaptive(?:Primary|Secondary)"/.test(attrs);
+  const wired=/\bonclick=/.test(attrs)||/\bid="homeAdaptive(?:Primary|Secondary)"/.test(attrs)||/\bid="todayReasonToggle"/.test(attrs);
   assert.ok(wired,'Home contains inert static button: '+attrs.replace(/\s+/g,' ').trim());
 }
 assert.ok(html.includes('id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"'),'toast must announce route/action feedback accessibly');
@@ -51,6 +51,7 @@ for(const token of [
 }
 
 assert.ok(html.includes('id="todayReason"'),'Home needs an explainable-session rationale surface');
+assert.ok(app.includes("reasonToggle.addEventListener('click'"),'session rationale toggle must be wired by runtime');
 assert.ok(app.includes("const NAV_PARENT="),'nested views need a primary navigation parent');
 assert.ok(html.includes('onclick="showProfileSummary()"'),'profile control must have an action');
 assert.ok(app.includes('function showProfileSummary()'),'profile action handler missing');
