@@ -1,4 +1,4 @@
-const CACHE='mon-japanese-os-v31';
+const CACHE='mon-japanese-os-v32';
 const CORE=['./','./index.html','./styles.css','./data/course-content.js','./core/state.js','./core/review-scheduler.js','./core/performance.js','./core/home-coach.js','./app.js','./manifest.json','./icon.svg','./assets/brand/mon-mark.svg','./assets/brand/mon-lockup.svg','./assets/brand/kitsu-mascot.webp','./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp'];
 
 self.addEventListener('install',event=>{
@@ -28,7 +28,8 @@ async function networkFirstNavigation(event){
     const response=preload||await fetch(event.request);
     return cachePut(event.request,response);
   }catch{
-    return (await caches.match(event.request))||(await caches.match('./index.html'));
+    const shell=(await caches.match('./index.html'))||(await caches.match('./'));
+    return shell||Response.error();
   }
 }
 async function networkFirstAsset(event){
