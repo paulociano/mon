@@ -203,8 +203,10 @@ Separar:
 
 A Home e o Next Best Lesson devem otimizar aprendizagem, não atividade.
 
-### 10. Performance por latência observada
+### 10. Performance por latência observada — instrumentação implementada ✅
 **Dependência:** Performance Lab existente.
+
+**Decisão:** o MON passa a registrar distribuições p50/p95 para boot, features, views e tempo até lição interativa, com baseline reproduzível em CI. Fonte de verdade: [Latency Observability](LATENCY-OBSERVABILITY.md).
 
 Além dos budgets de bytes:
 - boot p50/p95;
@@ -270,7 +272,7 @@ Regras:
 7. Gate estrutural N5 concluído; manter validação longitudinal de retenção e transferência.
 8. N4 por capacidades formalizado; manter calibração longitudinal dos gates funcionais.
 9. Métricas de aprendizagem implementadas; acumular evidência longitudinal antes de recalibrar decisões adaptativas.
-10. Definir budgets de latência com dados reais do Performance Lab.
+10. Latência observada implementada; acumular baselines equivalentes antes de transformar números em gates.
 11. Hardening de estado, PWA/runtime, acessibilidade e política de microfone concluídos; seguir para performance por latência observada.
 
 ## Guardrails permanentes
