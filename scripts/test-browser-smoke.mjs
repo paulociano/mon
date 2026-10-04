@@ -68,6 +68,18 @@ try{
  await page.waitForSelector('#wordBank .word-token');
  await page.evaluate(()=>speak('こんにちは'));
  assert.equal(pageErrors.length,0,'lesson helpers emitted page errors: '+pageErrors.join('\n'));
+ await page.evaluate(async()=>await go('missions'));
+ await waitVisible('#missions.active');
+ await page.evaluate(()=>startMissionV2('phone'));
+ await page.locator('#missionRunner .mission-choices button').first().click();
+ await page.locator('#missionRunner .mission-choices button').first().click();
+ await page.waitForSelector('#missionFreeText',{state:'visible'});
+ await page.fill('#missionFreeText','五時でお願いします');
+ await page.click('.mission-free .primary');
+ assert.equal(await page.locator('#missionFreeText').count(),0,'successful free response must advance the dialogue');
+ assert.match(await page.locator('#missionRunner').innerText(),/今日の五時|五時に変更/);
+ assert.equal(pageErrors.length,0,'multi-turn free mission emitted page errors: '+pageErrors.join('\n'));
+
  await page.evaluate(async()=>await go('practice'));
 
  await waitVisible('#practice.active');
