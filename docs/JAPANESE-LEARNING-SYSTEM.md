@@ -108,6 +108,22 @@ O volume de teoria depende da evidência:
 
 A adaptação usa evidência de mastery; conclusão de atividade, sozinha, não reduz explicação.
 
+## Gramática canônica · P2
+
+O `grammarCatalog` é a fonte pedagógica canônica de cada estrutura gramatical. Cada entrada precisa carregar, diretamente ou por hidratação canônica:
+
+- `mentalModel`;
+- `explanation`;
+- `examples`;
+- `contrast`;
+- `commonMistakes`;
+- `realWorldUse`;
+- `sources`.
+
+Study Blocks, discovery, remediation e futuras superfícies de consulta devem ler esses campos do mesmo catálogo. Não criar uma segunda coleção de explicações paralela em engines ou UI.
+
+O arquivo `data/grammar-pedagogy.js` enriquece o catálogo em runtime e reaplica a hidratação quando novos chunks N4 são carregados. Essa operação é idempotente.
+
 ## Gramática
 
 A gramática é ensinada como função comunicativa.
