@@ -86,7 +86,9 @@ if(!html.includes('id="practiceCoach"'))throw new Error('Practice recommendation
 if(!html.includes('id="journalContent"'))throw new Error('Japan Journal view missing')
 if(!html.includes('id="videoGrid"'))throw new Error('Video Library view missing')
 if(!html.includes('id="pronLab"'))throw new Error('Pronunciation Lab view missing')
-if(!html.includes('id="kanjiMemoryLab"'))throw new Error('Kanji Memory Lab surface missing')
+if(!html.includes('<section id="kanji" class="view"></section>'))throw new Error('Lazy Kanji Atlas shell missing')
+const kanjiAtlas=read('features/kanji.js');
+if(!kanjiAtlas.includes('ensureKanjiAtlas')||!kanjiAtlas.includes('renderKanjiStudy'))throw new Error('Guided Kanji Atlas runtime missing')
 if(!html.includes('id="missionRunner"'))throw new Error('Survival Mission runner missing')
 if(!app.includes("'./data/kanji-memory.js'"))throw new Error('Kanji Memory dataset must stay lazy')
 if(!app.includes("'./data/missions-v2.js'"))throw new Error('Survival Missions dataset must stay lazy')
