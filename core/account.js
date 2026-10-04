@@ -2,6 +2,7 @@
 const MON_ACCOUNT_KEY='mon-account';
 const MON_SYNC_VERSION=1;
 const MON_CLOUD_LINK_KEY='mon-cloud-linked';
+const MON_SYNC_DIRTY_KEY='mon-sync-dirty-at';
 const MON_CLOUD_CONFLICT_KEY='mon-cloud-conflict-last';
 
 function createMonLocalId(){
