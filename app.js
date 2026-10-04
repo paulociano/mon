@@ -29,12 +29,12 @@ const LEARNING_RUNTIME_SCRIPTS=[
  './core/progression-engine.js'
 ];
 const N4_CAP='./data/n4-capabilities.js';
-const CONTENT_PACK_SCRIPTS={N5:['./data/content-packs-n5.js'],N4A:['./data/content-packs-n5.js','./data/content-packs-n4.js',N4_CAP],N4B:['./data/content-packs-n5.js','./data/content-packs-n4.js','./data/content-packs-n4-61-70.js',N4_CAP],N4C:['./data/content-packs-n5.js','./data/content-packs-n4.js','./data/content-packs-n4-61-70.js','./data/content-packs-n4-71-80.js',N4_CAP],N4D:['./data/content-packs-n5.js','./data/content-packs-n4.js','./data/content-packs-n4-61-70.js','./data/content-packs-n4-71-80.js','./data/content-packs-n4-81-90.js',N4_CAP]};
+const CONTENT_PACK_SCRIPTS={N5:['./data/content-packs-n5.js'],N4A:['./data/content-packs-n5.js','./data/content-packs-n4.js'],N4B:['./data/content-packs-n5.js','./data/content-packs-n4.js','./data/content-packs-n4-61-70.js'],N4C:['./data/content-packs-n5.js','./data/content-packs-n4.js','./data/content-packs-n4-61-70.js','./data/content-packs-n4-71-80.js'],N4D:['./data/content-packs-n5.js','./data/content-packs-n4.js','./data/content-packs-n4-61-70.js','./data/content-packs-n4-71-80.js','./data/content-packs-n4-81-90.js']};
 const contentPackPromises={};
 function ensureContentPack(level='N5'){
  const resolved=CONTENT_PACK_SCRIPTS[level]?level:'N5';
  if(contentPackPromises[resolved])return contentPackPromises[resolved];
- const sources=CONTENT_PACK_SCRIPTS[resolved];
+ const sources=resolved==='N5'?CONTENT_PACK_SCRIPTS.N5:[...CONTENT_PACK_SCRIPTS[resolved],N4_CAP];
  contentPackPromises[resolved]=(async()=>{for(const src of sources)await loadRuntimeScript(src);if(resolved!=='N5'&&typeof applyN4CapabilityContracts==='function')applyN4CapabilityContracts()})().catch(err=>{delete contentPackPromises[resolved];throw err});
  return contentPackPromises[resolved];
 }
