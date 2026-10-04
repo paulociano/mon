@@ -21,15 +21,10 @@ function nbOpenProductionGap(state={}){
  return Object.entries(state.productionGaps||{}).map(([label,g])=>({label,count:+(g?.count||0),recovered:+(g?.recovered||0),open:Math.max(0,+(g?.count||0)-+(g?.recovered||0)),lastAt:+(g?.lastAt||0),tokens:Array.isArray(g?.tokens)?g.tokens.filter(Boolean):[],unitId:g?.unitId||null,capability:g?.capability||null,functionalScore:g?.capability?+(state.functionalMastery?.[g.capability]?.score||0):0})).filter(x=>x.open>0).sort((a,b)=>b.open-a.open||a.functionalScore-b.functionalScore||b.lastAt-a.lastAt)[0]||null;
 }
 function nbValidationSignal(state={}){
- const e=state.learningEvidence?.events||[],pct=(r,f=x=>x.ok)=>r.length?Math.round(r.filter(f).length/r.length*100):null,trend=(r,f=x=>x.ok,avg=false)=>{if(r.length<8)return null;r=[...r].sort((a,b)=>(a.at||0)-(b.at||0));const n=Math.floor(r.length/2),a=r.slice(0,n),b=r.slice(-n),v=x=>avg?Math.round(x.reduce((s,y)=>s+Number(y.autonomy||0),0)/x.length):pct(x,f),early=v(a),recent=v(b);return{early,recent,delta:recent-early,samples:r.length}};
- const attempts=e.filter(x=>x.kind==='attempt'&&typeof x.ok==='boolean'),ret=attempts.filter(x=>Number(x.spacingMs||0)>=144*60*60*1000);
- if(ret.length>=8&&pct(ret)<70)return{intent:'retrieve',metric:'retention7d',value:pct(ret),samples:ret.length,reason:`Retenção após 7d está em ${pct(ret)}% com ${ret.length} observações.`};
- const transfer=attempts.filter(x=>x.dimension==='transfer'||x.dimension==='produce'||x.context==='transfer'||x.context==='mission'),t=trend(transfer);
- if(t&&t.recent<70&&t.delta<=0)return{intent:'transfer',metric:'transfer',...t,reason:`Transferência recente está em ${t.recent}% e não melhorou na amostra observada.`};
- const h=trend(attempts,x=>Number(x.hintLevel||0)>0);
- if(h&&h.recent>=40&&h.delta>0)return{intent:'production',metric:'hints',...h,reason:`Dependência de pistas subiu para ${h.recent}% na amostra observada.`};
- const missions=e.filter(x=>x.kind==='mission_complete'&&Number.isFinite(Number(x.autonomy))),a=trend(missions,x=>true,true);
- if(a&&a.recent<65&&a.delta<=0)return{intent:'transfer',metric:'autonomy',...a,reason:`Autonomia recente está em ${a.recent}% e não melhorou na amostra observada.`};
+ const e=state.learningEvidence?.events||[],a=e.filter(x=>x.kind==='attempt'&&typeof x.ok==='boolean'),pct=r=>Math.round(r.filter(x=>x.ok).length/r.length*100),ret=a.filter(x=>Number(x.spacingMs||0)>=144*36e5);
+ if(ret.length>=8&&pct(ret)<70)return{intent:'retrieve',metric:'retention7d',value:pct(ret),samples:ret.length,reason:`Retenção 7d+ está em ${pct(ret)}% com ${ret.length} observações.`};
+ const t=a.filter(x=>x.dimension==='transfer'||x.dimension==='produce'||x.context==='transfer'||x.context==='mission');
+ if(t.length>=8){t.sort((x,y)=>(x.at||0)-(y.at||0));const n=Math.floor(t.length/2),early=pct(t.slice(0,n)),recent=pct(t.slice(-n));if(recent<70&&recent<=early)return{intent:'transfer',metric:'transfer',early,recent,delta:recent-early,samples:t.length,reason:`Transferência recente está em ${recent}% sem melhora longitudinal.`}}
  return null;
 }
 function nextBestSignals(state={},now=Date.now()){
