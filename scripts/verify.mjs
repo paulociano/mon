@@ -69,7 +69,7 @@ if(!app.includes('queueHomePolish'))throw new Error('Missing progressive home re
 if(!app.includes('aria-current="step"'))throw new Error('Current path step lacks aria-current')
 if(!html.includes('fetchpriority="high"'))throw new Error('Hero preload should be high priority')
 if(!app.includes('ensureLearningRuntime'))throw new Error('Missing lazy learning runtime loader')
-if(!app.includes("N5:['./data/content-packs-n5.js']")||!app.includes("N4:['./data/content-packs-n5.js','./data/content-packs-n4.js']"))throw new Error('Level-specific content pack router missing')
+if(!app.includes("N5:['./data/content-packs-n5.js']")||!['N4A','N4B','N4C','N4D'].every(k=>app.includes(k+':[')))throw new Error('Level-specific content pack router missing')
 if(!app.includes('ensureContentPack(level'))throw new Error('Content pack loader seam missing')
 if(!app.includes('loadRuntimeStyle'))throw new Error('Missing lazy feature stylesheet loader')
 const homeCoach=read('core/home-coach.js');
