@@ -1,4 +1,6 @@
-const CACHE='mon-japanese-os-v33';
+const CACHE_PREFIX='mon-japanese-os-';
+const CACHE_VERSION='v34';
+const CACHE=CACHE_PREFIX+CACHE_VERSION;
 const CORE=['./','./index.html','./styles.css','./data/course-content.js','./core/state.js','./core/review-scheduler.js','./core/performance.js','./core/home-coach.js','./app.js','./manifest.json','./icon.svg','./assets/brand/mon-mark.svg','./assets/brand/mon-lockup.svg','./assets/brand/kitsu-mascot.webp','./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp'];
 
 self.addEventListener('install',event=>{
@@ -8,7 +10,7 @@ self.addEventListener('install',event=>{
 self.addEventListener('activate',event=>{
   event.waitUntil((async()=>{
     const keys=await caches.keys();
-    await Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)));
+    await Promise.all(keys.filter(k=>k.startsWith(CACHE_PREFIX)&&k!==CACHE).map(k=>caches.delete(k)));
     if(self.registration.navigationPreload)await self.registration.navigationPreload.enable();
     await self.clients.claim();
   })());
@@ -16,6 +18,7 @@ self.addEventListener('activate',event=>{
 
 self.addEventListener('message',event=>{
   if(event.data?.type==='SKIP_WAITING')self.skipWaiting();
+  if(event.data?.type==='MON_SW_STATUS')event.source?.postMessage?.({type:'MON_SW_STATUS',cache:CACHE,version:CACHE_VERSION});
 });
 
 async function cachePut(request,response){
