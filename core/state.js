@@ -1,6 +1,7 @@
 const MON_STATE_KEY='mon-state';
 const MON_STATE_BACKUP_KEY='mon-state-backup';
 const MON_STATE_CORRUPT_KEY='mon-state-corrupt-last';
+const MON_SYNC_DIRTY_KEY='mon-sync-dirty-at';
 const MON_SAVE_VERSION=3;
 const defaultState={saveVersion:MON_SAVE_VERSION,xp:120,streak:1,reviews:{},kanaMastery:{},kanaReviews:{},speech:0,day:1,sessions:0,foundationDay:1,foundationComplete:false,foundationSessions:0,romajiMode:'auto',grammarOpened:{},grammarRecall:{},sentenceSolved:0,soundWins:0,lastStudyDate:null,history:[],diagnostic:null,energy:30,maxEnergy:30,gems:350,pathProgress:null,quests:{date:null,lessons:0,xp:0,accuracy:false},streakFreeze:0,xpBoostUntil:0,chests:{},leagueXp:0,perfectLessons:0,mistakes:[],mistakeStats:{},reviewItems:{},methodStats:{},masteryEvidence:{},unitMastery:{},remediation:null,narrative:{episodes:{},characters:{},arcs:{},lastEpisode:null},pronunciation:{sessions:0,plays:0,shadowAttempts:0,selfRatings:[],tracks:{}},kanjiLab:{attempts:0,correct:0,modes:{},last:null},survivalMissions:{completed:{},attempts:{},repairs:0},videoLearning:{opened:{},practice:{},last:null},productionGaps:{},functionalMastery:{}};
 
@@ -56,6 +57,7 @@ function loadState(){
  return normalizeState(defaultState);
 }
 let state=loadState();
+function markMonSyncDirty(){try{localStorage.setItem(MON_SYNC_DIRTY_KEY,new Date().toISOString())}catch(e){};if(typeof scheduleMonCloudSync==='function')scheduleMonCloudSync()}
 function save(){
  try{
   const next=normalizeState(state);
@@ -67,6 +69,7 @@ function save(){
   }
   localStorage.setItem(MON_STATE_KEY,serialized);
   state=next;
+  markMonSyncDirty();
  }catch(e){}
  updateMetrics();
 }
