@@ -28,7 +28,7 @@ function answerMissionV2(choice){
  if(choice==='wrong'){missionRun.wrong++;f.innerHTML='<b>Frase válida, função errada.</b> Volte ao objetivo desta etapa. Você ainda pode reparar ou tentar outra formulação.';return}
  if(choice!=='target'&&choice!=='alt')return;
  missionRun.strategies.push(choice==='alt'?'reformulate':'direct');missionRun.step++;missionRun.supportShown=false;missionRun.repairNote='';
- if(missionRun.step>=2){const autonomy=missionAutonomyScore(missionRun),previous=s.completed[m.id],best=Math.max(autonomy,Number(previous?.autonomy||0));s.completed[m.id]={at:Date.now(),repairs:missionRun.repairs,wrong:missionRun.wrong,strategies:[...missionRun.strategies],attempts:s.attempts[m.id]||1,autonomy:best,label:missionAutonomyLabel(best)};state.xp+=20;save();toast('Missão concluída · autonomia '+autonomy+'% · +20 XP')}
+ if(missionRun.step>=2){const autonomy=missionAutonomyScore(missionRun),previous=s.completed[m.id],best=Math.max(autonomy,Number(previous?.autonomy||0));s.completed[m.id]={at:Date.now(),repairs:missionRun.repairs,wrong:missionRun.wrong,strategies:[...missionRun.strategies],attempts:s.attempts[m.id]||1,autonomy:best,label:missionAutonomyLabel(best)};state.xp+=20;save();renderMissionGridV2();toast('Missão concluída · autonomia '+autonomy+'% · +20 XP')}
  renderMissionV2();
 }
 function renderMissionGridV2(){
