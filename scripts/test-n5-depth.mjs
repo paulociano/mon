@@ -3,7 +3,7 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const ctx=vm.createContext({console,Object,Set,Map,Number,String,Math});
-vm.runInContext(fs.readFileSync('data/content-packs.js','utf8'),ctx,{filename:'content-packs.js'});
+vm.runInContext(fs.readFileSync('data/content-packs-n5.js','utf8'),ctx,{filename:'content-packs-n5.js'});
 
 const units=Array.from(vm.runInContext('coursePacks.N5.units',ctx));
 const vocab=vm.runInContext('vocabularyCatalog',ctx);
