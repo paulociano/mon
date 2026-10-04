@@ -26,7 +26,7 @@ function catalogDistractors(id,field='pt'){
 
 function exerciseFamily(e={}){
   if(['listen','dictation','minimalPair'].includes(e.type))return 'listen';
-  if(['recall','transfer','speak','roleplay','wordbank','cloze'].includes(e.type))return 'produce';
+  if(['recall','transfer','speak','roleplay','openResponse','wordbank','cloze'].includes(e.type))return 'produce';
   if(e.type==='match')return 'match';
   return 'recognize';
 }
@@ -62,7 +62,7 @@ function compilePackExercise(unit,template,index){
     const target=scenario.reply.replace(/[。！？!?]/g,''),tokens=target.match(/.{1,3}/g)||[target];
     return {type:'wordbank',prompt:'Monte uma resposta natural para a situação.',target,tokens,why:`${scenario.reply} · ${scenario.replyPt}`};
   }
-  if(template==='speak'&&scenario)return {type:'speak',prompt:`Responda: ${scenario.npc}`,target:scenario.reply,pt:scenario.replyPt,why:'Produza a resposta inteira em um único fluxo.'};
+  if(template==='speak'&&scenario){if(unit.openProduction&&scenario.assessment)return {type:'openResponse',prompt:'Responda com suas próprias palavras.',npc:scenario.npc,npcPt:scenario.pt,target:scenario.reply,pt:scenario.replyPt,assessment:scenario.assessment,why:'O checkpoint avalia intenção e elementos essenciais, não cópia da frase-modelo.',method:'produce'};return {type:'speak',prompt:`Responda: ${scenario.npc}`,target:scenario.reply,pt:scenario.replyPt,why:'Produza a resposta inteira em um único fluxo.'}};
   return null;
 }
 function lessonPlanFromPack(unit){
