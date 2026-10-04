@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 
 const ctx=vm.createContext({console,Object,Set,Number,String,Math});
 vm.runInContext(fs.readFileSync('data/kana.js','utf8'),ctx,{filename:'data/kana.js'});
+vm.runInContext(fs.readFileSync('data/foundation.js','utf8'),ctx,{filename:'data/foundation.js'});
 vm.runInContext(fs.readFileSync('data/session.js','utf8'),ctx,{filename:'data/session.js'});
 vm.runInContext(fs.readFileSync('data/grammar-study-foundation.js','utf8'),ctx,{filename:'data/grammar-study-foundation.js'});
 vm.runInContext(fs.readFileSync('core/course-engine.js','utf8'),ctx,{filename:'core/course-engine.js'});
