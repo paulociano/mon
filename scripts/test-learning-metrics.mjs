@@ -27,7 +27,7 @@ const state={
 const snapshot=ctx.__snapshot(state,events,now);
 const by=id=>snapshot.metrics.find(x=>x.id===id);
 
-assert.deepEqual(snapshot.metrics.map(x=>x.id),['activity','retention','mastery','transfer','repair','autonomy']);
+assert.equal(Array.from(snapshot.metrics,x=>x.id).join(','),'activity,retention,mastery,transfer,repair,autonomy');
 assert.equal(by('activity').value,4);
 assert.equal(by('retention').value,50);
 assert.equal(by('retention').samples,2);
