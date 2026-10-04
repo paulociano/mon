@@ -1,11 +1,6 @@
 const viewNames={home:'Hoje',journey:'Jornada',practice:'Praticar',explore:'Explorar',progress:'Progresso',user:'Minha área',lesson:'Lição',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Mapa acadêmico',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos',pronunciation:'Pronúncia'};
 let currentKanji=0;
-function shellLocalDateKey(date=new Date()){
- const year=date.getFullYear();
- const month=String(date.getMonth()+1).padStart(2,'0');
- const day=String(date.getDate()).padStart(2,'0');
- return `${year}-${month}-${day}`;
-}
+function shellLocalDateKey(date=new Date()){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600)}
 function shuffleArray(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function speak(text,rate=.86){if(!('speechSynthesis'in window)){toast('Áudio indisponível neste navegador');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(text||''));u.lang='ja-JP';u.rate=rate;const ja=speechSynthesis.getVoices().find(v=>String(v.lang).toLowerCase().startsWith('ja'));if(ja)u.voice=ja;speechSynthesis.speak(u)}
@@ -45,7 +40,7 @@ const FEATURE_RUNTIME_SCRIPTS={
  session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./data/narrative.js','./core/next-best-lesson.js','./features/foundation.js','./features/session.js'],
  kanji:['./data/kanji.js','./data/kanji-memory.js','./features/kanji.js','./features/kanji-memory.js'],
  reading:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
- missions:['./data/kana.js','./data/experiences.js','./data/missions-v2.js','./data/missions-dialogues.js','./features/experiences.js','./features/missions-dialogue.js','./features/missions-v2.js'],
+ missions:['./data/kana.js','./data/experiences.js','./data/missions-v2.js','./data/missions-dialogues.js','./features/experiences.js','./features/missions-reactions.js','./features/missions-dialogue.js','./features/missions-v2.js'],
  speaking:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
  progress:['./features/progress.js'],
  curriculum:['./data/curriculum.js'],
@@ -129,12 +124,10 @@ async function go(id,options={}){
    if(id==='videos')await ensureFeatureRuntime('videos');
    if(id==='pronunciation')await ensureFeatureRuntime('pronunciation');
    if(requestId!==routeRequestId)return false;
-
    document.body.classList.toggle('focus-session',id==='session');
    document.body.classList.toggle('quick-focus',id==='lesson');
    document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
    document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===navParentForView(id)));
-
    const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;
    if(id==='home')renderGameHome();
    else if(id==='journey')renderJourney();
@@ -153,7 +146,6 @@ async function go(id,options={}){
    else if(id==='journal')renderJournal();
    else if(id==='videos'&&typeof renderVideos==='function')renderVideos();
    else if(id==='pronunciation'&&typeof renderPronunciation==='function')renderPronunciation();
-
    if(options.history!==false)commitRouteUrl(id,options.replace===true);
    keepActiveNavVisible(id);
    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
@@ -231,7 +223,6 @@ function saveUserArea(){const name=(document.getElementById('userNameInput')?.va
 function exportMonBackup(){const payload=monSyncPayload(loadLocalProfile());const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mon-backup-'+shellLocalDateKey()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),0);toast('Backup do MON exportado')}
 function showProfileSummary(){ensureUserArea();go('user')}
 function currentPlan(){const d=Number(state.day||1);if(d<=30)return{level:'N5',displayLevel:'N5',phase:'n5',localDay:d,total:30,label:'sobrevivência',start:1};if(d<=54)return{level:'N4',displayLevel:'PONTE',phase:'bridge',localDay:d-30,total:24,label:'consolidação N5 → N4',start:31};if(d<=90)return{level:'N4',displayLevel:'N4',phase:'n4',localDay:d-54,total:36,label:'autonomia',start:55};return{level:'N3',displayLevel:'N3',phase:'n3',localDay:Math.min(90,d-90),total:90,label:'integração',start:91}}
-
 const JOURNEY_STAGES=[
  {name:'Abrir o portão',title:'Reconhecer sons e começar a ler.',copy:'Som, ritmo, kana e primeiras frases funcionais.'},
  {name:'Sobreviver',title:'Pedir, perguntar e se locomover.',copy:'Situações essenciais de estação, compras, comida e direção.'},
@@ -302,7 +293,6 @@ function renderProgressHub(){
    else {nextTitle.textContent='Transferir o que você já sabe.';nextCopy.textContent='O próximo avanço vem de usar linguagem conhecida em um contexto um pouco diferente.';}
  }
 }
-
 function updateMetrics(){
  const mastered=Object.values(state.reviews).filter(r=>(r.interval||0)>=7&&(r.reps||0)>=3).length;
  const reviewedKanji=new Set(Object.keys(state.reviews||{}));
@@ -312,7 +302,6 @@ function updateMetrics(){
  set('masteredMetric',mastered);set('dueMetric',due);width('masteredBar',Math.min(100,mastered/Math.max(1,SHELL_KANJI_COUNT)*100)+'%');set('xpTop',state.xp);set('streakSidebar',state.streak);set('streakTop',state.streak);set('energyTop',Math.max(0,state.energy));set('quickEnergy',Math.max(0,state.energy));set('gemsTop',state.gems);set('speechMetric',(state.speech||0)+'%');width('speechBar',(state.speech||0)+'%');
  const p=currentPlan(),zeroPending=!state.foundationComplete;const plan=document.getElementById('planTop');if(plan)plan.textContent=zeroPending?`ZERO · sessão ${Math.min(SHELL_FOUNDATION_TOTAL,state.foundationDay||1)}/${SHELL_FOUNDATION_TOTAL}`:`${p.displayLevel||p.level} · dia ${p.localDay}/${p.total}`;const hero=document.getElementById('sessionDayHero');if(hero)hero.textContent=zeroPending?`fundação ${Math.min(SHELL_FOUNDATION_TOTAL,state.foundationDay||1)}/${SHELL_FOUNDATION_TOTAL}`:`dia ${state.day}`;const dd=document.getElementById('dailyDueCount');if(dd)dd.textContent=zeroPending?(typeof countKanaInTraining==='function'?countKanaInTraining():0):due;const pc=document.getElementById('pathCurrentLevel');if(pc)pc.textContent=zeroPending?'ZERO':(p.displayLevel||p.level);const pd=document.getElementById('pathCurrentDay');if(pd)pd.textContent=zeroPending?`sessão ${Math.min(SHELL_FOUNDATION_TOTAL,state.foundationDay||1)} · base sonora, escrita e gramática`:`dia ${p.localDay} · ${p.label}`;const pr=document.getElementById('pathRingFill');if(pr)pr.style.width=zeroPending?Math.min(100,((state.foundationDay||1)-1)/SHELL_FOUNDATION_TOTAL*100)+'%':Math.min(100,p.localDay/p.total*100)+'%';updateDailyCommand();if(typeof renderFoundationProgress==='function')renderFoundationProgress();renderGameHome();
 }
-
 let curriculumLevel='N5';
 function renderCurriculum(level=curriculumLevel){curriculumLevel=level;document.querySelectorAll('[data-level]').forEach(b=>b.classList.toggle('active',b.dataset.level===level));const data=curriculumData.find(x=>x.level===level)||curriculumData[0];const p=currentPlan();const same=p.level===level;document.getElementById('curriculumSummary').innerHTML=`<div class="curriculum-stat"><span>promessa</span><b>${data.promise}</b></div><div class="curriculum-stat"><span>kanji alvo</span><b>${data.kanji}</b></div><div class="curriculum-stat"><span>gramática funcional</span><b>${data.grammar}</b></div><div class="curriculum-stat"><span>missões</span><b>${data.missions}</b></div>`;document.getElementById('curriculumGrid').innerHTML=data.units.map((u,i)=>{const span=u.days.split('–').map(Number),absStart=span[0],absEnd=span[1];const done=state.day>absEnd, current=same&&state.day>=absStart&&state.day<=absEnd, locked=state.day<absStart&&level!=='N5';return `<article class="unit-card ${done?'done':''} ${current?'current':''} ${locked?'locked':''}" data-kanji="${u.kanji}"><div class="unit-index"><span>${data.level} · dias ${u.days}</span><i></i></div><h4>${u.title}</h4><p>${u.desc}</p><div class="unit-meta">${u.meta.map(m=>`<span>${m}</span>`).join('')}</div><button class="unit-action" onclick="${current||done?`startSession()`:`toast('Este bloco abre conforme você demonstra domínio')`}">${current?'continuar daqui →':done?'revisar bloco →':'prévia bloqueada'}</button></article>`}).join('')}
 document.querySelectorAll('[data-level]').forEach(b=>b.addEventListener('click',()=>renderCurriculum(b.dataset.level)));
@@ -336,11 +325,9 @@ function ensureDrawingCanvases(){
  if(freeClear&&!freeClear.dataset.bound){freeClear.dataset.bound='1';freeClear.onclick=()=>clearDraw(freeCtx,freeCanvas)}
  if(guide&&!guide.dataset.bound){guide.dataset.bound='1';guide.onclick=e=>{document.getElementById('ghostKanji').classList.toggle('hidden');e.target.textContent=document.getElementById('ghostKanji').classList.contains('hidden')?'mostrar guia':'ocultar guia'}}
 }
-
 const globalSearch=document.getElementById('globalSearch');
 if(globalSearch){globalSearch.addEventListener('keydown',async e=>{if(e.key==='Enter'&&e.target.value.trim()){await go('kanji');const q=e.target.value.trim();const ks=document.getElementById('kanjiSearch');ks.value=q;renderKanjiList('all',q);setTimeout(()=>ks.focus(),220)}})}
 if(matchMedia('(pointer:fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelectorAll('.experience-card,.mission').forEach(card=>{card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.setProperty('--rx',(-y*4)+'deg');card.style.setProperty('--ry',(x*5)+'deg')});card.addEventListener('pointerleave',()=>{card.style.setProperty('--rx','0deg');card.style.setProperty('--ry','0deg')})})}
-
 // ---------- V6 GAME LOOP ----------
 const pathUnits=[
  {title:'Portão 1 · Sons que cabem na boca',sub:'vogais, mora e primeiro hiragana',nodes:[['lesson','Vogais','あ',1],['lesson','K + S','し',2],['story','Primeiras palavras','本',2],['chest','Baú','箱',0],['checkpoint','Checkpoint','門',3]]},
@@ -478,7 +465,6 @@ function updateGameStreak(){const today=shellLocalDateKey(),last=state.lastStudy
 function renderLeague(){const base=[['Aiko','2.480'],['Kenji','2.130'],['Mina','1.860'],['Rui','1.420'],['Sora','980'],['Emi','720'],['Tomo','510']].map(x=>({name:x[0],xp:Number(x[1].replace('.','')),demo:true}));base.push({name:'Você',xp:state.leagueXp||0,you:true});base.sort((a,b)=>b.xp-a.xp);const w=document.getElementById('leagueBoard');if(w)w.innerHTML=base.map((x,i)=>`<div class="league-row ${x.you?'you':''}"><div class="league-rank">${i+1}</div><div class="league-user"><b>${x.name}</b><small>${x.you?'seu progresso local':'avatar demonstrativo'}</small></div><div class="league-xp">${x.xp.toLocaleString('pt-BR')} XP</div></div>`).join('')}
 function renderShop(){updateMetrics()}
 function buyItem(type){const costs={freeze:100,energy:60,boost:180},cost=costs[type];if(state.gems<cost)return toast('Cristais insuficientes');state.gems-=cost;if(type==='freeze'){state.streakFreeze=(state.streakFreeze||0)+1;toast('Amuleto equipado')}if(type==='energy'){state.energy=state.maxEnergy;toast('Energia recarregada')}if(type==='boost'){state.xpBoostUntil=Date.now()+15*60*1000;toast('2× XP ativo por 15 min')}save()}
-
 let monUpdateWorker=null,monReloadForUpdate=false;
 function showMonUpdate(worker){
  monUpdateWorker=worker;

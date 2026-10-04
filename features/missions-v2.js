@@ -26,13 +26,15 @@ function answerMissionV2(choice){
   save();renderMissionV2();return
  }
  if(choice==='wrong'){missionRun.wrong++;if(typeof missionRecordFunctionalTurn==='function')missionRecordFunctionalTurn(turn,false);f.innerHTML='<b>Frase válida, função errada.</b> Volte ao objetivo desta etapa. Você ainda pode reparar ou tentar outra formulação.';return}
+ let semantic=null;
  if(choice==='free'){
   const text=document.getElementById('missionFreeText')?.value||'',result=typeof missionEvaluateFree==='function'?missionEvaluateFree(text,turn):{ok:false,score:0,missing:[]};
   if(!result.ok){missionRun.freeFailed=missionRun.freeFailed||{};if(!missionRun.freeFailed[missionRun.step]){missionRun.freeFailed[missionRun.step]=true;missionRun.wrong++;if(typeof missionRecordFunctionalTurn==='function')missionRecordFunctionalTurn(turn,false)}f.innerHTML=`<b>Intenção ainda incompleta · ${result.score}%.</b> Faltam peças funcionais deste turno. Tente reformular ou revele as opções de apoio.`;return}
+  if(typeof missionSemanticReaction==='function')semantic=missionSemanticReaction(m.id,turn.capability,text);
  }
  if(!['target','alt','free'].includes(choice))return;
- missionRun.strategies.push(choice==='free'?'free':choice==='alt'?'reformulate':'direct');if(typeof adaptiveMissionRecordTurn==='function')adaptiveMissionRecordTurn(missionRun,choice,turn);if(typeof missionRecordFunctionalTurn==='function')missionRecordFunctionalTurn(turn,true);missionRun.step++;missionRun.supportShown=false;missionRun.repairNote='';
- if(missionRun.step>=total){const autonomy=missionAutonomyScore(missionRun),previous=s.completed[m.id],best=Math.max(autonomy,Number(previous?.autonomy||0));s.completed[m.id]={at:Date.now(),repairs:missionRun.repairs,wrong:missionRun.wrong,strategies:[...missionRun.strategies],attempts:s.attempts[m.id]||1,autonomy:best,label:missionAutonomyLabel(best),turns:missionRun.history?.length||total,pressureCapability:missionRun.pressureCapability||null};state.xp+=20;save();renderMissionGridV2();toast('Missão concluída · autonomia '+autonomy+'% · +20 XP')}
+ missionRun.strategies.push(choice==='free'?'free':choice==='alt'?'reformulate':'direct');if(typeof adaptiveMissionRecordTurn==='function')adaptiveMissionRecordTurn(missionRun,choice,turn,semantic);if(typeof missionRecordFunctionalTurn==='function')missionRecordFunctionalTurn(turn,true);missionRun.step++;missionRun.supportShown=false;missionRun.repairNote='';
+ if(missionRun.step>=total){const autonomy=missionAutonomyScore(missionRun),previous=s.completed[m.id],best=Math.max(autonomy,Number(previous?.autonomy||0));s.completed[m.id]={at:Date.now(),repairs:missionRun.repairs,wrong:missionRun.wrong,strategies:[...missionRun.strategies],attempts:s.attempts[m.id]||1,autonomy:best,label:missionAutonomyLabel(best),turns:missionRun.history?.length||total,pressureCapability:missionRun.pressureCapability||null,semanticBranch:missionRun.semanticReaction?.key||null};state.xp+=20;save();renderMissionGridV2();toast('Missão concluída · autonomia '+autonomy+'% · +20 XP')}
  renderMissionV2();
 }
 function renderMissionGridV2(){

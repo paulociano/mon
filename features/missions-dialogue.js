@@ -12,12 +12,13 @@ function adaptiveMissionTurns(id,run=missionRun){
 function adaptiveMissionTurn(m,run=missionRun){
  const turns=adaptiveMissionTurns(m.id,run);if(!turns)return null;const t={...turns[run.step]};
  if(run.lastChoice==='alt'&&t.npcAlt)t.npc=t.npcAlt;
+ if(run.semanticReaction&&run.step===turns.length-1){t.npc=run.semanticReaction.npc+' '+t.npc;t.pt=run.semanticReaction.pt+' '+(t.pt||'')}
  return t;
 }
 function adaptiveMissionTurnCount(m,run=missionRun){return adaptiveMissionTurns(m.id,run)?.length||2}
 function adaptiveMissionStart(id,run){const d=missionDialogue(id);if(!d)return run;run.pressureCapability=missionPressureCapability(id);run.multiTurn=true;return run}
-function adaptiveMissionRecordTurn(run,choice,turn){
- run.history=run.history||[];run.history.push({step:run.step,choice,capability:turn?.capability||null,at:Date.now()});run.lastChoice=choice;
+function adaptiveMissionRecordTurn(run,choice,turn,meta=null){
+ run.history=run.history||[];run.history.push({step:run.step,choice,capability:turn?.capability||null,branch:meta?.key||null,at:Date.now()});run.lastChoice=choice;if(meta)run.semanticReaction=meta;
 }
 function missionUpdateFunctional(cap,ok,label=''){
  if(!cap)return;state.functionalMastery=state.functionalMastery||{};const old=state.functionalMastery[cap]||{attempts:0,successes:0,score:35},a=old.attempts<2?.42:.28,score=Math.round(old.score*(1-a)+(ok?100:0)*a);
