@@ -1,0 +1,10 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';
+const app=fs.readFileSync('app.js','utf8');
+const start=app.indexOf('async function go(id,options={})'),end=app.indexOf("document.querySelectorAll('[data-view]')",start);
+assert.ok(start>=0&&end>start,'router function must exist before nav listeners');
+const route=app.slice(start,end);
+for(const token of ['try{','catch(err)','finally{','return requestId===routeRequestId','commitRouteUrl(id','keepActiveNavVisible(id)'])assert.ok(route.includes(token),'router truncated or missing '+token);
+assert.ok(route.trimEnd().endsWith('}'),'router must close before listeners are registered');
+assert.ok(app.includes("addEventListener('click',()=>go(b.dataset.view))"),'primary navigation listeners missing');
+assert.ok(app.includes("addEventListener('popstate'"),'browser history listener missing');
+console.log('MON router structural integrity passed');
