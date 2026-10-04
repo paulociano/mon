@@ -80,6 +80,8 @@ jobs:
         run: node scripts/test-router-integrity.mjs
       - name: JavaScript parser check
         run: node --check app.js
+      - name: Lazy runtime dependencies
+        run: node scripts/test-lazy-runtime-deps.mjs
       - name: Generated section banners
         run: node scripts/test-section-banners.mjs
       - name: Adaptive Home Coach
