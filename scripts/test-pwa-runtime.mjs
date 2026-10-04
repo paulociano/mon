@@ -17,6 +17,10 @@ for(const lazy of ['./data/content-packs.js','./features/session.js','./features
 const installBlock=sw.match(/self\.addEventListener\('install'[\s\S]*?\n}\);/)?.[0]||'';
 assert.ok(!installBlock.includes('skipWaiting'),'updates must not activate silently during install');
 assert.ok(sw.includes("event.data?.type==='SKIP_WAITING'"),'service worker needs explicit update activation message');
+assert.ok(sw.includes("const CACHE_PREFIX='mon-japanese-os-'"),'service worker cache namespace missing');
+assert.ok(sw.includes("k.startsWith(CACHE_PREFIX)&&k!==CACHE"),'service worker must only delete MON-owned caches');
+assert.ok(!sw.includes("keys.filter(k=>k!==CACHE)"),'service worker must not delete unrelated origin caches');
+assert.ok(sw.includes("event.data?.type==='MON_SW_STATUS'"),'service worker status probe missing');
 assert.ok(sw.includes('staleWhileRevalidate(event)'),'runtime assets should still be cached on demand');
 for(const token of ['showMonUpdate','applyMonUpdate','watchMonUpdate','reg.waiting','updatefound','controllerchange']){
   assert.ok(app.includes(token),'missing controlled PWA update contract '+token);
