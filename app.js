@@ -1,7 +1,7 @@
 // MON application runtime
 // Course datasets live in data/course-content.js.
 
-const viewNames={home:'Hoje',journey:'Jornada',practice:'Praticar',explore:'Explorar',progress:'Progresso',lesson:'Lição',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Mapa acadêmico',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos',pronunciation:'Pronúncia'};
+const viewNames={home:'Hoje',journey:'Jornada',practice:'Praticar',explore:'Explorar',progress:'Progresso',user:'Minha área',lesson:'Lição',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Mapa acadêmico',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos',pronunciation:'Pronúncia'};
 let currentKanji=0;
 function shellLocalDateKey(date=new Date()){
  const year=date.getFullYear();
@@ -10,7 +10,7 @@ function shellLocalDateKey(date=new Date()){
  return `${year}-${month}-${day}`;
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600)}
-const NAV_PARENT={lesson:'home',session:'home',curriculum:'journey',foundation:'explore',kanji:'explore',missions:'explore',reading:'explore',speaking:'explore',culture:'explore',writing:'explore',journal:'explore',videos:'explore',pronunciation:'explore',league:'explore',shop:'explore'};
+const NAV_PARENT={lesson:'home',session:'home',curriculum:'journey',foundation:'explore',kanji:'explore',missions:'explore',reading:'explore',speaking:'explore',culture:'explore',writing:'explore',journal:'explore',videos:'explore',pronunciation:'explore',league:'explore',shop:'explore',user:'user'};
 function navParentForView(id){return NAV_PARENT[id]||id}
 function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${navParentForView(id)}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 const LEARNING_RUNTIME_SCRIPTS=[
@@ -76,7 +76,7 @@ function loadRuntimeStyle(href){
    link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>reject(new Error('Falha ao carregar '+href));document.head.appendChild(link);
  });
 }
-const FEATURE_RUNTIME_STYLES={journey:['./features/journey.css'],explore:['./features/journey.css'],progress:['./features/journey.css'],foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
+const FEATURE_RUNTIME_STYLES={journey:['./features/journey.css'],explore:['./features/journey.css'],progress:['./features/journey.css'],user:['./features/user.css'],foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
 function ensureLearningRuntime(){
  if(learningRuntimePromise)return learningRuntimePromise;
  const started=typeof perfStart==='function'?perfStart('runtime:learning'):null;
@@ -99,7 +99,7 @@ async function go(id){
  const viewStart=typeof perfStart==='function'?perfStart('view:'+id):null;
  const busyTimer=setTimeout(()=>{if(requestId===routeRequestId)setRouteBusy(true,'Abrindo '+(viewNames[id]||id))},90);
  try{
-   if(['journey','explore','progress'].includes(id))await ensureFeatureRuntime(id);
+   if(['journey','explore','progress','user'].includes(id))await ensureFeatureRuntime(id);
    if(id==='foundation')await ensureFeatureRuntime('foundation');
    if(id==='curriculum')await ensureFeatureRuntime('curriculum');
    if(id==='kanji')await ensureFeatureRuntime('kanji');
@@ -119,6 +119,7 @@ async function go(id){
    if(id==='home')renderGameHome();
    else if(id==='journey')renderJourney();
    else if(id==='progress')renderProgressHub();
+   else if(id==='user')renderUserArea();
    else if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);
    else if(id==='foundation')renderFoundation();
    else if(id==='kanji'){ensureDrawingCanvases();renderKanjiList();selectKanji(currentKanji)}
@@ -152,10 +153,20 @@ async function go(id){
  return requestId===routeRequestId;
 }
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
-function showProfileSummary(){
- const p=currentPlan();
- toast(`Perfil local · ${p.level} dia ${p.localDay} · ${state.streak||0} dias de sequência · ${state.xp||0} XP`);
+const MON_PROFILE_KEY='mon-profile';
+function loadLocalProfile(){try{return {...{name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'},...JSON.parse(localStorage.getItem(MON_PROFILE_KEY)||'{}')}}catch(e){return {name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'}}}
+function saveLocalProfile(profile){localStorage.setItem(MON_PROFILE_KEY,JSON.stringify(profile))}
+function userAreaMarkup(){
+ return '<div class="user-shell"><div class="user-hero"><div class="user-identity"><div class="user-avatar" id="userAvatar">門</div><div><span class="eyebrow">Minha área · 私</span><h2 id="userNameHero">Estudante MON</h2><p id="userPlanHero">Seu progresso e suas preferências neste dispositivo.</p></div></div><span class="user-local-badge">perfil local</span></div><div class="user-grid"><section class="user-card"><h3>Seu aprendizado</h3><p>Uma leitura rápida do seu momento, sem transformar estudo em painel de vaidade.</p><div class="user-stats"><div class="user-stat"><span>nível</span><b id="userLevel">N5</b></div><div class="user-stat"><span>sequência</span><b id="userStreak">1 dia</b></div><div class="user-stat"><span>XP</span><b id="userXp">0</b></div></div><div class="user-progress-line"><i id="userJourneyBar"></i></div><div class="user-data-note" id="userJourneyText"></div><div class="user-actions"><button class="user-secondary" onclick="go(\'progress\')">ver progresso</button><button class="user-secondary" onclick="go(\'journey\')">abrir jornada</button></div></section><section class="user-card"><h3>Perfil e rotina</h3><p>Preferências simples para o MON adaptar a experiência sem exigir uma conta.</p><label class="user-field"><span>Como quer ser chamado</span><input id="userNameInput" maxlength="32" autocomplete="nickname"></label><label class="user-field"><span>Meta diária</span><select id="userGoalInput"><option value="10">10 min · leve</option><option value="20">20 min · consistente</option><option value="30">30 min · intenso</option></select></label><label class="user-field"><span>Ritmo preferido</span><select id="userModeInput"><option value="equilibrado">Equilibrado</option><option value="revisao">Mais revisão</option><option value="desafio">Mais desafio</option></select></label><div class="user-actions"><button class="user-save" onclick="saveUserArea()">salvar preferências</button><button class="user-secondary" onclick="exportMonBackup()">exportar backup</button></div><div class="user-data-note">Seus dados ficam salvos localmente neste navegador. Exportar um backup protege seu progresso antes de trocar de dispositivo ou limpar os dados do site.</div></section></div></div>';
 }
+function ensureUserArea(){let view=document.getElementById('user');if(view)return view;view=document.createElement('section');view.id='user';view.className='view';view.innerHTML=userAreaMarkup();document.querySelector('.content')?.appendChild(view);return view}
+function renderUserArea(){
+ ensureUserArea();const profile=loadLocalProfile(),p=currentPlan(),stage=JOURNEY_STAGES[journeyStageIndex()],pct=Math.round(journeyStageProgress()*100);
+ const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};set('userNameHero',profile.name);set('userLevel',p.level+' · dia '+p.localDay);set('userStreak',(state.streak||0)+' '+((state.streak||0)===1?'dia':'dias'));set('userXp',state.xp||0);set('userJourneyText',stage.name+' · '+stage.title+' · '+pct+'% da etapa');const bar=document.getElementById('userJourneyBar');if(bar)bar.style.width=pct+'%';const name=document.getElementById('userNameInput'),goal=document.getElementById('userGoalInput'),mode=document.getElementById('userModeInput');if(name)name.value=profile.name;if(goal)goal.value=String(profile.dailyGoal);if(mode)mode.value=profile.studyMode;const avatar=document.getElementById('userAvatar');if(avatar)avatar.textContent=(profile.name.trim()[0]||'門').toUpperCase();
+}
+function saveUserArea(){const name=(document.getElementById('userNameInput')?.value||'Estudante MON').trim().slice(0,32)||'Estudante MON',dailyGoal=Number(document.getElementById('userGoalInput')?.value||20),studyMode=document.getElementById('userModeInput')?.value||'equilibrado';saveLocalProfile({name,dailyGoal,studyMode});renderUserArea();toast('Preferências salvas neste dispositivo')}
+function exportMonBackup(){const payload={exportedAt:new Date().toISOString(),state,profile:loadLocalProfile()};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mon-backup-'+shellLocalDateKey()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),0);toast('Backup do MON exportado')}
+function showProfileSummary(){ensureUserArea();go('user')}
 function currentPlan(){const d=Number(state.day||1);if(d<=30)return{level:'N5',localDay:d,total:30,label:'sobrevivência',start:1};if(d<=90)return{level:'N4',localDay:d-30,total:60,label:'autonomia',start:31};return{level:'N3',localDay:Math.min(90,d-90),total:90,label:'integração',start:91}}
 
 const JOURNEY_STAGES=[
