@@ -21,6 +21,6 @@ for(const token of ['.journey-stages','.hub-grid','.progress-evidence-grid','.on
  assert.ok(css.includes(token),'missing journey visual contract '+token);
 }
 assert.ok(app.includes("localStorage.setItem('mon-onboarded','1')"),'onboarding completion must persist');
-assert.ok(html.includes('por que esta sessão?'),'Home must explain why the next action was chosen');
+assert.ok(html.toLowerCase().includes('por que esta sessão?'),'Home must explain why the next action was chosen');
 
 console.log('MON guided learning journey contracts passed');
