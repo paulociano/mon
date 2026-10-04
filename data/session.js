@@ -151,6 +151,24 @@ const foundationStudyNotes={
 };
 
 function foundationStudyBlock(day){
-  const note=foundationStudyNotes[day];
-  return note?{type:'study',...note}:null;
+  const p=foundationSessionPlans[day-1],note=foundationStudyNotes[day];
+  if(!p)return null;
+  const base=note||{
+    title:`Som, escrita e uso · ${p.kana}`,
+    mentalModel:p.concept,
+    explanation:`Antes de testar memória, observe como ${p.kana} funciona como unidade de som e escrita. O romaji “${p.roman}” é apenas uma ponte temporária. Leia ${p.word} como um bloco japonês, associe a forma ao som e depois reconheça a mesma lógica dentro de uma expressão funcional.`,
+    examples:[
+      {jp:p.word,pt:p.pt,note:`Leia ${p.wordReading} em unidades sonoras, sem soletrar como português.`},
+      {jp:p.phrase,pt:p.phrasePt,note:'A frase mostra o conteúdo dentro de uma situação comunicativa desde o início.'}
+    ],
+    contrast:`Evite esta hipótese: “${p.conceptOptions?.[1]||'romaji substitui a escrita japonesa'}”. O objetivo é perceber a forma japonesa diretamente e reduzir a dependência de transliteração.`,
+    realWorldUse:'Reconhecer escrita, som e uma expressão curta que pode aparecer desde os primeiros contatos no Japão.'
+  };
+  return {
+    type:'study',...base,
+    canDo:[`reconhecer ${p.kana} sem depender de romaji`,`ler ${p.word} em contexto`,`usar ou compreender “${p.phrasePt}”`],
+    situation:`Fundação Zero · dia ${day}: conecte forma, som e uso antes de responder aos exercícios.`,
+    repair:{jp:'すみません、もう一度ゆっくりお願いします。',pt:'Desculpe, mais uma vez devagar, por favor.'},
+    sources:day<=12?['Irodori','Meu Amigo Kanji']:['Irodori','Desvendando']
+  };
 }

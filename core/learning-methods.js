@@ -1,7 +1,7 @@
 const MON_METHOD={
-  name:'Gate Loop',
-  stages:['discover','recall','transfer','produce','reflect'],
-  principle:'Ajuda aparece depois da tentativa sempre que o conteúdo já foi apresentado.'
+  name:'Japanese Learning Cycle',
+  stages:['input','study','retrieve','transfer','produce','reflect'],
+  principle:'Primeiro compreenda a missão e o mecanismo; depois recupere, transfira e produza com apoio decrescente.'
 };
 
 const grammarBridgeNotes={
@@ -46,6 +46,39 @@ Object.assign(grammarBridgeNotes,{
   questionWords:'Palavras interrogativas deixam aberta a informação procurada. A partícula ao redor delas ainda mostra qual papel aquela resposta terá.',
   alreadyYet:'もう indica que uma mudança ou conclusão já ocorreu; まだ mantém a situação antes da conclusão ou em continuidade.',
   phoneIdentity:'No telefone, identificar-se cedo cria o contexto compartilhado. Xです é direto; Xと申します eleva a polidez da autoapresentação.'
+});
+
+Object.assign(grammarBridgeNotes,{
+  obligationNaito:'〜ないといけません parte da forma negativa para marcar necessidade prática: pense em “se eu não fizer, não resolve”, não em uma tradução palavra por palavra.',
+  permissionTemo:'〜ても大丈夫です enquadra a ação como aceitável. O foco é remover uma restrição: “mesmo fazendo isso, está tudo bem”.',
+  conditionTara:'〜たら cria um ponto de passagem: quando A se concretizar, B passa a valer. É útil para instruções e próximos passos.',
+  purposeYouni:'〜ように aponta para um resultado desejado que você tenta garantir, especialmente cuidado, hábito ou capacidade.',
+  givingTeMoraeru:'〜てもらえますか transforma a ação da outra pessoa em ajuda recebida por você, criando um pedido mais suave.',
+  softNdesu:'〜んですが abre contexto antes do pedido ou problema. Ele prepara o interlocutor para entender por que a próxima fala importa.',
+  experienceTaKoto:'〜たことがあります trata uma ação passada como experiência acumulada: “já tive a experiência de fazer X”.',
+  planTsumori:'〜つもりです mostra uma intenção já formada. É mais planejado do que um desejo momentâneo com 〜たい.',
+  hearsaySou:'〜そうです separa informação recebida da sua própria observação. A fonte está implícita no “ouvi dizer”.',
+  explanationToIu:'〜という意味です transforma uma expressão em objeto de explicação: “isso quer dizer...”.',
+  suggestionHouga:'〜たほうがいい compara implicitamente alternativas e recomenda a ação considerada melhor.',
+  politeDecline:'〜はちょっと… deixa a recusa parcialmente implícita. O contexto social completa o “é um pouco difícil”.',
+  reasonNode:'〜ので apresenta razão de modo mais explicativo e geralmente mais suave do que uma justificativa brusca.',
+  whileNagara:'〜ながら mantém uma ação como pano de fundo enquanto outra acontece em paralelo.',
+  tryTeMiru:'〜てみる significa experimentar uma ação para ver o resultado, não apenas “ver” literalmente.',
+  becomeYouNiNaru:'〜ようになる marca mudança de estado ou capacidade ao longo do tempo: algo passa a ser possível ou habitual.',
+  passiveRareru:'A voz passiva muda o foco para aquilo que recebe a ação. Em avisos, importa primeiro entender o que será feito ou afetado.',
+  writtenTeAru:'〜てあります descreve um estado que existe porque alguém realizou uma ação intencionalmente antes.',
+  dueMadeNi:'〜までに estabelece um limite de conclusão: a ação precisa ocorrer antes de o ponto final ser ultrapassado.',
+  ifBa:'〜ば abre uma condição lógica: quando a condição é satisfeita, a consequência se torna aplicável.',
+  mustNakereba:'〜なければなりません expressa obrigação formal por uma lógica de “se não fizer, não serve / não pode ficar assim”.',
+  nominalNoWa:'〜のは empacota uma ação como tópico. Isso permite comparar, explicar ou avaliar o próprio ato.',
+  contrastNonI:'〜のに coloca lado a lado expectativa e resultado inesperado. O contraste é parte central do sentido.',
+  seemMitai:'〜みたいです marca impressão baseada no que parece ser verdade, sem afirmar certeza total.',
+  reportedTte:'〜って pode introduzir fala citada ou um tópico em registro informal. O contexto indica qual função está ativa.',
+  opinionToOmou:'〜と思います embala uma proposição como opinião sua, diminuindo a força de uma afirmação absoluta.',
+  compareYori:'AよりBのほうが organiza comparação por referência: A é o ponto de comparação e B recebe o destaque.',
+  sequenceTara:'〜たら、そのあと usa a conclusão de uma ação como gatilho para a próxima etapa da sequência.',
+  uncertaintyKamo:'〜かもしれません mantém uma hipótese aberta. É possibilidade, não previsão certa.',
+  askNdeshouka:'〜んでしょうか transforma dúvida em pedido de explicação, soando menos como uma pergunta seca de sim/não.'
 });
 
 function grammarStudyNote(id,g={}){
@@ -114,7 +147,7 @@ function compileMONMethod(unit,method,index=0){
       s?{jp:s.reply,pt:s.replyPt}:null,
       {jp:g.item.form,pt:g.item.pt}
     ].filter(Boolean);
-    return {type:'discovery',prompt:'Descubra a regra antes da explicação.',examples,
+    return {type:'discovery',prompt:'Observe os exemplos e identifique a função que acabou de estudar.',examples,
       options:methodOptions(g.item.function,Object.values(grammarCatalog).map(x=>x.function)),
       answer:g.item.function,why:`${g.item.form} · ${g.item.pt}`,
       bridge:grammarBridge(g.id,g.item),
@@ -205,3 +238,86 @@ function methodPerformanceSummary(){
   for(const [k,v] of Object.entries(state.methodStats||{}))out[k]={...v,accuracy:v.attempts?Math.round(v.correct/v.attempts*100):0};
   return out;
 }
+
+const JAPANESE_LEARNING_SOURCES={
+  functional:'Irodori',
+  grammar:'Desvendando',
+  kanji:'Meu Amigo Kanji'
+};
+function unitKanjiMeaning(k,unit={}){
+  const known=typeof kanjiData!=='undefined'?kanjiData.find(x=>x.k===k):null;
+  if(known)return known.m;
+  for(const id of unit.vocabulary||[]){
+    const v=vocabularyCatalog?.[id];
+    if(v?.kanji?.includes(k))return v.pt;
+  }
+  return 'kanji da situação';
+}
+function kanjiStudyForUnit(unit={}){
+  const scenario=(unit.scenarios||[])[0]||{};
+  return (unit.kanji||[]).slice(0,5).map(k=>{
+    const known=typeof kanjiData!=='undefined'?kanjiData.find(x=>x.k===k):null;
+    const vocab=(unit.vocabulary||[]).map(id=>vocabularyCatalog?.[id]).find(v=>v?.kanji?.includes(k));
+    const word=vocab?.jp||known?.ex?.[0]?.[0]||k;
+    const reading=vocab?.reading||known?.ex?.[0]?.[1]||'';
+    const context=[scenario.npc,scenario.reply].find(x=>String(x||'').includes(k))||`${word} aparece no vocabulário funcional desta unidade.`;
+    return {k,meaning:unitKanjiMeaning(k,unit),word,reading,context};
+  });
+}
+function japaneseLearningContract(unit={}){
+  const scenario=(unit.scenarios||[])[0]||{};
+  const study=grammarStudyBlock(unit);
+  const kanji=kanjiStudyForUnit(unit);
+  const canDo=(unit.objectives||[]).filter(Boolean);
+  const situation=unit.context||`${unit.title||'Situação prática'}: ${scenario.pt||canDo[0]||'use japonês para concluir a tarefa comunicativa.'}`;
+  const repair={jp:'すみません、もう一度ゆっくりお願いします。',pt:'Desculpe, mais uma vez devagar, por favor.'};
+  if(study){
+    const kanjiExamples=kanji.slice(0,2).map(x=>({jp:x.word,pt:x.meaning,note:`Kanji em contexto: ${x.k} · ${x.context}`}));
+    study.canDo=canDo;study.situation=situation;study.kanjiPreview=kanji;study.repair=repair;
+    study.title=`${canDo[0]||unit.title||'Missão'} · ${study.title}`;
+    study.explanation=`Situação: ${situation} ${study.explanation}`;
+    study.examples=[...(study.examples||[]),...kanjiExamples].slice(0,4);
+    study.realWorldUse=`${study.realWorldUse||''} Estratégia de reparo: ${repair.jp} · ${repair.pt}`;
+  }
+  return {
+    unitId:unit.id||null,
+    canDo,
+    situation,
+    input:{jp:scenario.npc||scenario.reply||'',pt:scenario.pt||scenario.replyPt||''},
+    study,
+    kanji,
+    repair,
+    practice:['understand','notice','retrieve','transfer','produce'],
+    sources:[JAPANESE_LEARNING_SOURCES.functional,JAPANESE_LEARNING_SOURCES.grammar,...(kanji.length?[JAPANESE_LEARNING_SOURCES.kanji]:[])]
+  };
+}
+function grammarEvidenceScore(id,learnerState={}){
+  const cells=learnerState.masteryEvidence?.['grammar:P:'+id]||{};
+  const rows=['recognize','recall','transfer','produce'].map(d=>cells[d]).filter(x=>Number.isFinite(x?.score));
+  if(!rows.length)return null;
+  return Math.round(rows.reduce((n,x)=>n+x.score,0)/rows.length);
+}
+function adaptStudyForLearner(contract={},learnerState={}){
+  const study=contract.study;if(!study)return null;
+  const unit=typeof coursePacks!=='undefined'
+    ?[...(coursePacks.N5?.units||[]),...(coursePacks.N4?.units||[])].find(x=>x.id===contract.unitId)
+    :null;
+  const scores=(unit?.grammar||[]).map(id=>grammarEvidenceScore(id,learnerState)).filter(Number.isFinite);
+  const average=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):null;
+  const mode=average===null?'full':average>=85?'practice':average>=65?'compact':'full';
+  if(mode==='compact')return {...study,mode,explanation:study.explanation.split('. ').slice(0,2).join('. '),examples:(study.examples||[]).slice(0,2)};
+  if(mode==='practice')return {...study,mode,explanation:'Reative o modelo mental e confirme o contraste antes de aplicar sem apoio.',examples:(study.examples||[]).slice(0,1)};
+  return {...study,mode:'full'};
+}
+function missionLearningContract(mission={}){
+  return {
+    canDo:mission.objective||mission.title||'concluir a missão',
+    situation:mission.context||mission.title||'situação funcional',
+    input:{jp:mission.npc||'',pt:mission.npcPt||''},
+    repair:typeof missionRepairPhrase==='function'?missionRepairPhrase():{jp:'すみません、もう一度お願いします。',pt:'Mais uma vez, por favor.'},
+    transfer:{jp:mission.altReply||mission.reply||'',pt:mission.altReplyPt||mission.replyPt||''},
+    criterion:'concluir a tarefa preservando intenção e recuperar a conversa se faltar compreensão',
+    source:JAPANESE_LEARNING_SOURCES.functional
+  };
+}
+

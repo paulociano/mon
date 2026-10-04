@@ -32,6 +32,7 @@ assert.ok(js.includes('supportShown=true'));
 assert.ok(js.includes("missionAutonomyLabel"));
 assert.ok(js.includes('completed[m.id]'));
 assert.ok(js.includes('objective'));
+assert.ok(js.includes('<span>Can-do</span>'),'mission UI must surface Can-do explicitly');
 for(const id of ['work','phone','cityhall','disaster']){const d=vm.runInContext(`missionDialoguesV4['${id}']`,ctx);assert.ok(d,id+' adaptive dialogue missing');assert.equal(d.opening.length,2);assert.ok(Object.values(d.pressure).every(x=>x.free&&x.keys?.length>=2),id+' pressure turns must be free-form');assert.ok(d.closing)}
 const runtimeCtx=vm.createContext({state:{functionalMastery:{negotiate:{attempts:3,score:28},repair:{attempts:3,score:72}}},missionRun:{id:'phone',step:0,pressureCapability:'negotiate',lastChoice:null},missionDialoguesV4:vm.runInContext('missionDialoguesV4',ctx),Date,Math,Object,Number,String,Set});
 vm.runInContext(dialogue,runtimeCtx,{filename:'missions-dialogue.js'});

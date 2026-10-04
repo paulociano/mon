@@ -15,6 +15,8 @@ A vantagem do MON não deve ser “mais exercícios”. Ela deve vir da combina�
 - transferência para situações reais;
 - leitura, escuta, produção e fala intercaladas;
 - explicações PT-first que ensinam modelos mentais, não traduções literais;
+- unidades orientadas por Can-do e situação real, com gramática, kanji e listening subordinados à missão;
+- Study Blocks adaptativos: explicação completa para novidade, compacta para conhecimento em consolidação e reativação curta para domínio forte;
 - shell rápido, features lazy e funcionamento offline.
 
 ## O que já está construído
@@ -36,6 +38,23 @@ A vantagem do MON não deve ser “mais exercícios”. Ela deve vir da combina�
 - quality gate com contratos pedagógicos, performance e PWA.
 
 ## Sequência de melhorias
+
+### 0. Sistema de aprendizagem de japonês · remodelação transversal ✅
+**Status:** contrato comum implementado da Fundação ao N4.
+
+**Modelo:** Can-do → situação → input → Study → retrieval → transfer → produce → spacing.
+
+Mudanças estruturais:
+- Fundação Zero ensina antes de testar nos 24 dias;
+- N5 e N4 expõem um contrato pedagógico comum;
+- gramática N4 recebe modelos mentais PT-first;
+- kanji da unidade é ligado a palavra e situação, em vez de aparecer como inventário isolado;
+- toda unidade traz estratégia de repair;
+- Study Block adapta profundidade pela evidência de mastery;
+- Survival Missions permanecem como teste funcional de transferência e autonomia.
+
+Fonte de verdade: [Japanese Learning System](JAPANESE-LEARNING-SYSTEM.md).
+
 
 ### 1. Home adaptativa — próxima melhor ação ✅
 **Status:** implementada e coberta pelo Quality Gate.
@@ -275,17 +294,18 @@ Regras:
 
 ## Ordem operacional imediata
 
-1. Home adaptativa concluída.
-2. Next Best Lesson Engine concluído.
-3. Daily Loop adaptativo concluído.
-4. Listening & Pronunciation Lab concluído.
-5. Kanji Memory Lab 2.0 concluído.
-6. Survival Missions 2.0 concluído.
-7. Gate estrutural N5 concluído; manter validação longitudinal de retenção e transferência.
-8. N4 por capacidades formalizado; manter calibração longitudinal dos gates funcionais.
-9. P9.2/P9.3 implementados: validar longitudinalmente e recalibrar o NBL apenas com sinais observados; manter Home fora dessa calibração por enquanto.
-10. P10.2 concluída: baseline multi-run calibrado entre engines; não transformar milissegundos absolutos em gate até existir evidência de dispositivo real.
-11. P8 avançado em Home, Lesson, Practice, Journal, Missions, Listening/Pronunciation e Kanji; seguir com validação visual publicada e refinamentos residuais sem quebrar os gates.
+1. Sistema de aprendizagem japonês unificado concluído; validar longitudinalmente compreensão, retrieval e transferência por unidade.
+2. Home adaptativa concluída.
+3. Next Best Lesson Engine concluído.
+4. Daily Loop adaptativo concluído.
+5. Listening & Pronunciation Lab concluído.
+6. Kanji Memory Lab 2.0 concluído.
+7. Survival Missions 2.0 concluído.
+8. Gate estrutural N5 concluído; manter validação longitudinal de retenção e transferência.
+9. N4 por capacidades formalizado; manter calibração longitudinal dos gates funcionais.
+10. P9.2/P9.3 implementados: validar longitudinalmente e recalibrar o NBL apenas com sinais observados; manter Home fora dessa calibração por enquanto.
+11. P10.2 concluída: baseline multi-run calibrado entre engines; não transformar milissegundos absolutos em gate até existir evidência de dispositivo real.
+12. P8 avançado em Home, Lesson, Practice, Journal, Missions, Listening/Pronunciation e Kanji; seguir com validação visual publicada e refinamentos residuais sem quebrar os gates.
 
 ## Guardrails permanentes
 

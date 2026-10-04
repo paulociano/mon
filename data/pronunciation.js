@@ -26,10 +26,10 @@ const pronunciationTracks=[
 ];
 
 const pronunciationShadowing=[
- {id:'station',jp:'すみません。駅はどこですか。',chunks:['すみません。','駅は','どこですか。'],pt:'Com licença. Onde fica a estação?',goal:'ritmo + pergunta funcional'},
- {id:'slow',jp:'もう一度ゆっくりお願いします。',chunks:['もう一度','ゆっくり','お願いします。'],pt:'Mais uma vez, devagar, por favor.',goal:'vogal longa + っ pequeno'},
- {id:'train',jp:'電車で行きます。駅で降ります。',chunks:['電車で','行きます。','駅で','降ります。'],pt:'Vou de trem. Desço na estação.',goal:'ん + fala conectada'},
- {id:'work',jp:'仕事の後で、日本語を勉強しています。',chunks:['仕事の後で、','日本語を','勉強しています。'],pt:'Depois do trabalho, estudo japonês.',goal:'segmentação em blocos'}
+ {id:'station',jp:'すみません。駅はどこですか。',chunks:['すみません。','駅は','どこですか。'],pt:'Com licença. Onde fica a estação?',goal:'ritmo + pergunta funcional',canDo:'pedir localização sem perder o ritmo',context:'estação e orientação'},
+ {id:'slow',jp:'もう一度ゆっくりお願いします。',chunks:['もう一度','ゆっくり','お願いします。'],pt:'Mais uma vez, devagar, por favor.',goal:'vogal longa + っ pequeno',canDo:'reparar a conversa quando não entende',context:'qualquer atendimento ou conversa'},
+ {id:'train',jp:'電車で行きます。駅で降ります。',chunks:['電車で','行きます。','駅で','降ります。'],pt:'Vou de trem. Desço na estação.',goal:'ん + fala conectada',canDo:'descrever deslocamento e ponto de descida',context:'transporte urbano'},
+ {id:'work',jp:'仕事の後で、日本語を勉強しています。',chunks:['仕事の後で、','日本語を','勉強しています。'],pt:'Depois do trabalho, estudo japonês.',goal:'segmentação em blocos',canDo:'falar da rotina em blocos compreensíveis',context:'trabalho e rotina'}
 ];
 
 function pronunciationTrack(id){return pronunciationTracks.find(x=>x.id===id)||pronunciationTracks[0]}
