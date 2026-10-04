@@ -3,7 +3,7 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const ctx=vm.createContext({console,Object,Set,Number,String,Math});
-vm.runInContext(fs.readFileSync('data/content-packs.js','utf8'),ctx);
+vm.runInContext(fs.readFileSync('data/content-packs-n5.js','utf8'),ctx);
 
 const stats=vm.runInContext('n5PracticalStats()',ctx);
 assert.ok(stats.units>=29,'practical N5 should expose a full multi-week graph');
