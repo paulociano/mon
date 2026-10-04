@@ -10,6 +10,8 @@ const state=fs.readFileSync('core/state.js','utf8');
 
 for(const id of ["id:'mora'","id:'long'","id:'sokuon'","id:'n'"])assert.ok(data.includes(id),'missing pronunciation track '+id);
 assert.ok(data.includes('pronunciationShadowing'));
+assert.ok(data.includes("canDo:'"),'shadowing must expose a functional Can-do');
+assert.ok(data.includes("context:'"),'shadowing must expose a situation');
 assert.ok(data.includes("moras:['と','う','きょ','う']"),'Tokyo mora segmentation should count long vowels');
 assert.ok(data.includes("compareMoras:['き','っ','て']"),'small tsu must occupy its own mora');
 
@@ -21,6 +23,7 @@ assert.ok(js.includes("u.lang='ja-JP'"));
 assert.ok(js.includes('window.SpeechRecognition||window.webkitSpeechRecognition'));
 assert.ok(js.includes('Não é avaliação fonética')||js.includes('não como nota fonética')||js.includes('não é avaliação fonética'));
 assert.ok(js.includes('selfRatings'));
+assert.ok(js.includes('Can-do:'),'pronunciation UI must surface the functional goal');
 assert.ok(js.includes('aria-describedby="pronMicPolicy"'));
 assert.ok(js.includes('role="status" aria-live="polite"'));
 assert.ok(js.includes("e?.error==='not-allowed'"),'microphone denial needs explicit recovery copy');
