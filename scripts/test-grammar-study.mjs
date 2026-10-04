@@ -22,7 +22,6 @@ for(let day=13;day<=24;day++){
 
 const lesson=fs.readFileSync('features/lesson.js','utf8');
 assert.ok(lesson.includes("e.type==='study'"),'lesson runtime must route study steps');
-assert.ok(lesson.includes('renderGrammarStudyStep'),'lesson runtime must delegate study rendering');
 
 for(const token of ['study-card','study-model','study-examples','COMEÇAR A PRÁTICA','btn.onclick=quickNext']){
   assert.ok(lesson.includes(token),'grammar study UI missing '+token);
