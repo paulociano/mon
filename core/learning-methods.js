@@ -89,6 +89,7 @@ function compileMONMethod(unit,method,index=0){
       why:`${s.reply} · ${s.replyPt}`,bridge:'A mesma estrutura precisa sobreviver fora do exercício em que foi apresentada.',method:'transfer'};
   }
   if(method==='roleplay'&&s){
+    if(unit.openProduction&&s.assessment)return {type:'openResponse',prompt:'Roleplay aberto: resolva a intenção sem copiar um modelo.',npc:s.npc,npcPt:s.pt,target:s.reply,pt:s.replyPt,assessment:s.assessment,why:'Sua formulação pode variar. O MON verifica os elementos funcionais necessários.',bridge:'Autonomia significa preservar a intenção mesmo quando a frase muda.',method:'produce'};
     return {type:'roleplay',prompt:'Roleplay sem legenda da resposta.',npc:s.npc,npcPt:s.pt,target:s.reply,pt:s.replyPt,
       why:`${s.reply} · ${s.replyPt}`,bridge:'Primeiro responda. O modelo só aparece depois da tentativa.',method:'produce'};
   }
