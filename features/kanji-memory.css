@@ -1,3 +1,47 @@
 /* Kanji Atlas guided study UI */
 .ka-shell{display:grid;gap:18px}.ka-head{display:flex;justify-content:space-between;align-items:end;gap:18px}.ka-head h2{font:500 30px/1.05 var(--serif);margin:6px 0}.ka-head p{font-size:9px;color:#7f8b98;margin:0}.ka-library-toggle{border:1px solid rgba(215,181,109,.24);background:rgba(215,181,109,.07);color:#d7b56d;border-radius:999px;padding:9px 12px;font-size:8px;font-weight:900}.ka-workspace{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:18px;align-items:start}.ka-main{display:grid;gap:14px}.ka-focus{display:grid;grid-template-columns:190px minmax(0,1fr) 190px;gap:22px;padding:24px;border-radius:26px;background:linear-gradient(135deg,#0b1726,#13283d);color:#fff}.ka-glyph-card{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:220px;border:1px solid rgba(255,255,255,.08);border-radius:22px;background:rgba(255,255,255,.025)}.ka-glyph{font:700 92px/1 var(--jp);color:#f4e8d2}.ka-due{margin-top:12px;color:#d7b56d;font-size:8px;font-weight:800}.ka-focus-copy{align-self:center}.ka-focus-copy h1{font:500 34px/1 var(--serif);margin:8px 0}.ka-focus-copy>p{max-width:470px;color:#a9b5c1;font-size:9px;line-height:1.65}.ka-word{display:flex;align-items:center;gap:10px;margin:18px 0;padding:12px;border-radius:14px;background:rgba(255,255,255,.045)}.ka-word>b{font:700 22px var(--jp)}.ka-word span{flex:1;color:#b8c1ca;font-size:8px}.ka-word button,.ka-examples button{border:0;background:transparent;color:#d7b56d;font-size:8px;font-weight:900}.ka-mastery{position:relative;padding:8px 0}.ka-mastery>strong{display:block;font:600 28px var(--serif);color:#d7b56d;margin-top:7px}.ka-ring{height:5px;border-radius:9px;background:linear-gradient(90deg,#d7b56d calc(var(--p)*1%),rgba(255,255,255,.08) 0);margin:9px 0 13px}.ka-mastery ul{list-style:none;padding:0;margin:0;display:grid;gap:7px}.ka-mastery li{display:flex;justify-content:space-between;gap:8px;font-size:7px;color:#8794a2}.ka-mastery li b{color:#d7b56d}.ka-next,.ka-study,.ka-context{border:1px solid rgba(10,22,38,.08);border-radius:22px;background:#fff}.ka-next{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px}.ka-next h3,.ka-context h3,.ka-challenge h3,.ka-writing h3{font:600 21px/1.2 var(--serif);margin:5px 0}.ka-next p,.ka-challenge p,.ka-writing p,.ka-context p{font-size:8px;line-height:1.6;color:#788492}.ka-study{overflow:hidden}.ka-stepper{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid #edf0f2}.ka-stepper button{border:0;background:#faf9f6;padding:12px 7px;color:#8a949e;font-size:7px;font-weight:900}.ka-stepper button.active{background:#172334;color:#f2dba9}.ka-challenge,.ka-writing{padding:24px}.ka-options{display:flex;gap:9px;flex-wrap:wrap;margin-top:17px}.ka-options button{min-width:78px;padding:14px;border:1px solid #e1e5e8;border-radius:15px;background:#f8f7f4;color:#172334;font-weight:800}.ka-options button b{font:700 30px var(--jp)}.ka-options.readings button{font-family:var(--jp);font-size:14px}.ka-finish{margin-top:20px}.ka-writing{display:grid;grid-template-columns:.8fr 1.2fr;gap:22px;align-items:center}.ka-context{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;padding:22px}.ka-context aside{padding:17px;border-radius:17px;background:#f7f4ee}.ka-context blockquote{margin:12px 0 0;padding:10px 12px;border-left:2px solid #d7b56d;color:#7c6c57;font-size:8px}.ka-examples{display:grid;gap:7px;margin-top:13px}.ka-examples article{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:13px;background:#f8f9fa}.ka-examples article>b{font:700 18px var(--jp)}.ka-examples article span{flex:1;color:#75818e;font-size:8px}.ka-library{position:sticky;top:86px;padding:16px;border-radius:20px;background:#0d1825;color:#fff;max-height:calc(100vh - 110px);overflow:auto}.ka-library-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:11px}.ka-library-head strong{font:600 16px var(--serif)}.ka-library-head small{font-size:7px;color:#7f8c99}.ka-status-filters{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin:9px 0}.ka-status-filters button{border:1px solid rgba(255,255,255,.07);background:transparent;color:#81909e;border-radius:9px;padding:7px 4px;font-size:7px;font-weight:800}.ka-status-filters button.active{color:#f1d7a7;border-color:rgba(215,181,109,.3);background:rgba(215,181,109,.08)}.ka-library .filter-row{gap:4px;flex-wrap:wrap}.ka-library .filter{font-size:6px;padding:6px}.ka-list{display:grid;gap:5px;margin-top:11px}.ka-kanji{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:1px solid transparent;border-radius:12px;background:rgba(255,255,255,.025);color:#fff;padding:9px}.ka-kanji>b{width:34px;font:700 25px var(--jp);text-align:center}.ka-kanji span{display:grid;gap:2px}.ka-kanji strong{font-size:8px}.ka-kanji small{font-size:7px;color:#758493}.ka-kanji.active{border-color:rgba(215,181,109,.32);background:rgba(215,181,109,.08)}.ka-kanji.due small{color:#e7b57b}
 @media(max-width:980px){.ka-workspace{grid-template-columns:1fr}.ka-library{display:none;position:static;max-height:none}.ka-library.open{display:block}.ka-focus{grid-template-columns:150px 1fr}.ka-mastery{grid-column:1/-1}.ka-mastery ul{grid-template-columns:repeat(4,1fr)}}@media(max-width:650px){.ka-head h2{font-size:24px}.ka-focus{grid-template-columns:1fr;padding:17px}.ka-glyph-card{min-height:170px}.ka-glyph{font-size:78px}.ka-mastery{grid-column:auto}.ka-mastery ul{grid-template-columns:1fr 1fr}.ka-next{align-items:flex-start;flex-direction:column}.ka-stepper{overflow:auto;display:flex}.ka-stepper button{min-width:105px}.ka-writing,.ka-context{grid-template-columns:1fr}.ka-context{padding:15px}}
+
+/* V21 · Kanji Atlas readability refinement */
+.ka-shell{gap:20px}
+.ka-head p{font-size:11px;line-height:1.6;color:#a2adb8}
+.ka-library-toggle{min-height:38px;padding:9px 13px;font-size:9px}
+.ka-workspace{grid-template-columns:minmax(0,1fr) 292px;gap:20px}
+.ka-focus{grid-template-columns:200px minmax(0,1fr) 200px;gap:24px;padding:26px;border-radius:24px}
+.ka-glyph-card{min-height:230px}
+.ka-due{font-size:9px}
+.ka-focus-copy h1{font-size:38px;letter-spacing:-.035em}
+.ka-focus-copy>p{font-size:11px;line-height:1.65}
+.ka-word{padding:13px 14px}
+.ka-word span{font-size:10px;line-height:1.45}
+.ka-word button,.ka-examples button{font-size:9px}
+.ka-mastery li{font-size:9px}
+.ka-next,.ka-study,.ka-context{border-radius:20px}
+.ka-next{padding:21px}
+.ka-next h3,.ka-context h3,.ka-challenge h3,.ka-writing h3{font-size:22px}
+.ka-next p,.ka-challenge p,.ka-writing p,.ka-context p{font-size:10px;line-height:1.65}
+.ka-stepper button{min-height:42px;font-size:8px}
+.ka-challenge,.ka-writing{padding:25px}
+.ka-options button{min-height:48px}
+.ka-context{padding:23px}
+.ka-context blockquote{font-size:10px;line-height:1.55}
+.ka-examples article span{font-size:10px;line-height:1.45}
+.ka-library{top:82px;padding:17px;border-radius:18px}
+.ka-library-head strong{font-size:17px}
+.ka-library-head small{font-size:8px}
+.ka-status-filters button{min-height:34px;font-size:8px}
+.ka-library .filter{font-size:7px;padding:7px}
+.ka-kanji{padding:10px}
+.ka-kanji strong{font-size:9px}
+.ka-kanji small{font-size:8px;line-height:1.35}
+@media(max-width:980px){
+  .ka-workspace{grid-template-columns:1fr}
+  .ka-focus{grid-template-columns:170px 1fr}
+}
+@media(max-width:650px){
+  .ka-head{align-items:flex-start}
+  .ka-head p{font-size:10px}
+  .ka-focus{padding:18px}
+  .ka-focus-copy h1{font-size:32px}
+  .ka-stepper button{min-width:112px}
+}
