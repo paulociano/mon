@@ -7,7 +7,6 @@ const NB_METHODS={
  transfer:['cloze','transfer','roleplay','freeRecall','dictation'],
  advance:['discover','freeRecall','transfer','roleplay','dictation']
 };
-
 function nbWeakMasteryDimension(state={}){
  const sums={},counts={};
  for(const cells of Object.values(state.masteryEvidence||{}))for(const [d,cell] of Object.entries(cells||{})){
