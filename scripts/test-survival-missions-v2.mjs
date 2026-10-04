@@ -22,7 +22,7 @@ const css=fs.readFileSync('features/missions-v2.css','utf8');
 const app=fs.readFileSync('app.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
 const state=fs.readFileSync('core/state.js','utf8');
-for(const branch of ["choice.startsWith('repair:')","choice==='wrong'","choice==='target'","choice==='alt'"])assert.ok(js.includes(branch));
+for(const branch of ["choice.startsWith('repair:')","choice==='wrong'","choice!=='target'&&choice!=='alt'"])assert.ok(js.includes(branch));
 assert.ok(js.includes('missionAutonomyScore'));
 assert.ok(js.includes('supportShown=true'));
 assert.ok(js.includes("missionAutonomyLabel"));
