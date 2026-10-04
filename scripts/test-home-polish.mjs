@@ -19,6 +19,6 @@ for(const token of ['guideMascotState','renderGuideMascot',"'repair','mistake'",
   assert.ok(app.includes(token),'missing adaptive mascot contract '+token);
 }
 assert.ok(app.includes("!['repair','review','recover','mistake','story'].includes(adaptive?.kind)"),'story coach copy must not be overwritten by generic path guidance');
-assert.ok(css.includes('@media(prefers-reduced-motion:reduce){.kitsu-art,.guide-mascot::before{transition:none}'),'mascot asset must respect reduced motion');
+assert.ok(css.includes('@media(prefers-reduced-motion:reduce){.guide-mascot{animation:none}.kitsu-art{transition:none}'),'mascot asset must respect reduced motion');
 assert.ok(html.includes('width="160" height="160" decoding="async"'),'Kitsu asset needs intrinsic dimensions and async decoding');
 console.log('MON home polish contracts passed');
