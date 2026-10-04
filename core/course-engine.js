@@ -78,6 +78,7 @@ function lessonPlanFromPack(unit){
   let tagged=optimizeExerciseSequence(exercises,10).map(e=>({...e,_unitId:unit.id}));
   if(unit.openProduction&&!tagged.some(e=>e.type==='openResponse')){const open=compileOpenProduction(unit,Math.max(1,(unit.scenarios||[]).length-1));if(open)tagged=[...tagged.slice(0,9),{...open,_unitId:unit.id}]}
   return {title:unit.title,focus:unit.symbol,unitId:unit.id,objectives:unit.objectives,mastery:unit.mastery,narrative:typeof narrativeEpisodeForUnit==='function'?narrativeEpisodeForUnit(unit):null,
+    study:typeof grammarStudyBlock==='function'?grammarStudyBlock(unit):null,
     method:typeof MON_METHOD!=='undefined'?MON_METHOD:null,exercises:tagged};
 }
 

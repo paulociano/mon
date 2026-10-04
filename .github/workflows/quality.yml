@@ -70,6 +70,8 @@ jobs:
         run: node scripts/test-learning-methods.mjs
       - name: Grammar study layer
         run: node scripts/test-grammar-study.mjs
+      - name: N5 applied grammar study
+        run: node scripts/test-n5-grammar-study.mjs
       - name: Foundation lesson variety
         run: node scripts/test-foundation-variety.mjs
       - name: Energy policy
