@@ -367,6 +367,7 @@ function runAdaptiveHomeAction(action){
  if(action==='repair')return startMasteryRepair(idx);
  if(action==='practice')return go('practice');
  if(action==='journal')return go('journal');
+ if(action==='session')return startSession();
  if(action==='chest')return claimPathChest(idx);
  return startQuickLesson(idx);
 }
