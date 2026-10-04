@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 const html=fs.readFileSync('index.html','utf8');
 const app=fs.readFileSync('app.js','utf8');
 const css=fs.readFileSync('styles.css','utf8');
+const journeyCss=fs.readFileSync('features/journey.css','utf8');
 
 const nav=html.match(/<nav id="desktopNav">([\s\S]*?)<\/nav>/)?.[1]||'';
 const primary=[...nav.matchAll(/data-view="([^"]+)"/g)].map(x=>x[1]);
@@ -17,9 +18,13 @@ for(const view of ['foundation','kanji','pronunciation','writing','missions','sp
 for(const token of ['JOURNEY_STAGES','journeyStageIndex','journeyStageProgress','renderJourney','renderProgressHub','runJourneyPrimary','NAV_PARENT','navParentForView']){
  assert.ok(app.includes(token),'missing journey runtime '+token);
 }
-for(const token of ['.journey-stages','.hub-grid','.progress-evidence-grid','.onboarding-shell','.today-reason']){
- assert.ok(css.includes(token),'missing journey visual contract '+token);
+for(const token of ['.journey-stages','.hub-grid','.progress-evidence-grid']){
+ assert.ok(journeyCss.includes(token),'missing lazy journey visual contract '+token);
 }
+for(const token of ['.onboarding-shell','.today-reason']){
+ assert.ok(css.includes(token),'missing shell journey visual contract '+token);
+}
+assert.ok(app.includes("journey:['./features/journey.css']"),'Journey CSS must stay lazy');
 assert.ok(app.includes("localStorage.setItem('mon-onboarded','1')"),'onboarding completion must persist');
 assert.ok(html.toLowerCase().includes('por que esta sessão?'),'Home must explain why the next action was chosen');
 
