@@ -72,6 +72,8 @@ jobs:
         run: node scripts/test-n5-scale.mjs
       - name: Deep N5 curriculum audit
         run: node scripts/test-n5-depth.mjs
+      - name: N4 capability contracts
+        run: node scripts/test-n4-capabilities.mjs
       - name: N5 readiness governance
         run: node scripts/test-n5-readiness.mjs
       - name: Home polish contracts
