@@ -34,7 +34,7 @@ function answerMissionV2(choice){
  }
  if(!['target','alt','free'].includes(choice))return;
  missionRun.strategies.push(choice==='free'?'free':choice==='alt'?'reformulate':'direct');if(typeof adaptiveMissionRecordTurn==='function')adaptiveMissionRecordTurn(missionRun,choice,turn,semantic);if(typeof missionRecordFunctionalTurn==='function')missionRecordFunctionalTurn(turn,true);missionRun.step++;missionRun.supportShown=false;missionRun.repairNote='';
- if(missionRun.step>=total){const autonomy=missionAutonomyScore(missionRun),previous=s.completed[m.id],best=Math.max(autonomy,Number(previous?.autonomy||0));s.completed[m.id]={at:Date.now(),repairs:missionRun.repairs,wrong:missionRun.wrong,strategies:[...missionRun.strategies],attempts:s.attempts[m.id]||1,autonomy:best,label:missionAutonomyLabel(best),turns:missionRun.history?.length||total,pressureCapability:missionRun.pressureCapability||null,semanticBranch:missionRun.semanticReaction?.key||null};state.xp+=20;save();renderMissionGridV2();toast('Missão concluída · autonomia '+autonomy+'% · +20 XP')}
+ if(missionRun.step>=total){const autonomy=missionAutonomyScore(missionRun),previous=s.completed[m.id],best=Math.max(autonomy,Number(previous?.autonomy||0));s.completed[m.id]={at:Date.now(),repairs:missionRun.repairs,wrong:missionRun.wrong,strategies:[...missionRun.strategies],attempts:s.attempts[m.id]||1,autonomy:best,label:missionAutonomyLabel(best),turns:missionRun.history?.length||total,pressureCapability:missionRun.pressureCapability||null,semanticBranch:missionRun.semanticReaction?.key||null,contextMemory:{...(missionRun.contextMemory||{})}};state.xp+=20;save();renderMissionGridV2();toast('Missão concluída · autonomia '+autonomy+'% · +20 XP')}
  renderMissionV2();
 }
 function renderMissionGridV2(){
