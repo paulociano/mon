@@ -1,6 +1,15 @@
 // MON long-session runtime · loaded on demand
 let sessionRun=null,sessionTimer=null,sessionCanvasCtx=null;
 const sessionLabels=['Ouvir','Reconhecer','Ler','Escrever','Interpretar','Falar'];
+function fitDailyLoop(loop,goal=20,mode='equilibrado'){
+ goal=[10,20,30].includes(Number(goal))?Number(goal):20;
+ const base=[...loop.roles],labels=loop.labels||{};let roles=[...base];
+ if(goal===10){const core=[base[0],base[1],base.find(x=>x==='transfer'||x==='apply'),'produce'].filter(Boolean);roles=[...new Set(core)];for(const r of base)if(roles.length<4&&!roles.includes(r))roles.push(r);roles=roles.slice(0,4)}
+ if(goal===30){const extra=mode==='revisao'?'retrieve':mode==='desafio'?'produce':'transfer',last=roles.pop();roles.push(extra,last)}
+ const weight=r=>loop.minutes[base.indexOf(r)]||3,minutes=roles.map(()=>2),priority=roles.map((r,i)=>({i,w:weight(r)})).sort((a,b)=>b.w-a.w),remaining=Math.max(0,goal-minutes.reduce((a,b)=>a+b,0));
+ for(let n=0;n<remaining;n++)minutes[priority[n%priority.length].i]++;
+ return {...loop,roles,minutes,labels,goal,mode};
+}
 function buildDailySteps(){
  const missionIndex=Math.min(missions.length-1,Math.floor(((state.day||1)-1)%30/5));
  const due=kanjiData.map((x,i)=>({x,i})).filter(o=>isDue(o.x.k));
@@ -8,7 +17,8 @@ function buildDailySteps(){
  const k=target.x,ex=k.ex[0],speech=missionSpeech[missionIndex],reading=microReadings[missionIndex];
  const node={day:(state.day||1)+24,label:missions[missionIndex]?.title||'Sessão diária',type:'lesson'};
  const nextBest=typeof nextBestLessonPlan==='function'?nextBestLessonPlan(state,node):{intent:'advance',objective:'Avançar com equilíbrio.',reason:'Sessão padrão.'};
- const loop=typeof dailyLoopRecipe==='function'?dailyLoopRecipe(nextBest):{roles:['listen','retrieve','learn','apply','transfer','produce'],minutes:[2,3,3,4,3,4],labels:{}};
+ const profile=typeof loadLocalProfile==='function'?loadLocalProfile():{dailyGoal:20,studyMode:'equilibrado'},baseLoop=typeof dailyLoopRecipe==='function'?dailyLoopRecipe(nextBest):{roles:['listen','retrieve','learn','apply','transfer','produce'],minutes:[2,3,3,4,3,4],labels:{}};
+ const loop=fitDailyLoop(baseLoop,profile.dailyGoal,profile.studyMode);
  const candidates={
   listen:{type:'audio',title:'Escute antes de ler',jp:speech.npc,question:'O que a pessoa acabou de perguntar ou dizer?',options:shuffledOptions(speech.npcPt,missionSpeech.map(x=>x.npcPt)),answer:speech.npcPt,why:'Primeiro extraia a intenção geral. Detalhes vêm depois.'},
   retrieve:{type:'choice',title:'Recupere sem pista longa',question:`Qual kanji significa “${k.m.toLowerCase()}”?`,options:shuffledOptions(k.k,kanjiData.map(x=>x.k)),answer:k.k,why:`${k.k} · ${k.m}. A recuperação vem antes de rever a história mnemônica.`,jp:true},
