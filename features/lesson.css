@@ -36,3 +36,14 @@
 @media(max-width:600px){.story-memory{padding:14px}.story-memory-top{align-items:flex-start;flex-direction:column;gap:3px}.story-memory em{font-size:14px}}
 
 .quick-open{width:100%;min-height:116px;resize:vertical;line-height:1.7}.quick-open-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:10px}.open-assessment{display:block;margin-top:9px;padding:9px 11px;border-radius:10px;background:rgba(255,255,255,.035);color:#9aa7b5;font-size:8px;line-height:1.55}.open-assessment strong{display:block;color:#d8e1e8;margin-bottom:3px}
+
+/* P8 · responsive lesson polish */
+@media(max-width:560px){
+ .quick-top{padding-inline:12px;gap:10px}.quick-main{width:calc(100% - 24px);padding:18px 0 164px}
+ .quick-question{font-size:clamp(24px,8vw,32px)}.quick-jp{font-size:clamp(34px,14vw,54px)}
+ .quick-options{gap:8px}.quick-option{min-height:62px;padding:14px 13px;font-size:12px}
+ .match-grid{grid-template-columns:1fr}.word-bank{gap:7px}.word-token{padding:12px}
+ .quick-bottom-inner{width:calc(100% - 24px)}.quick-feedback{font-size:11px}.quick-feedback b{font-size:18px}
+}
+@media(max-width:380px){.quick-energy{font-size:11px}.quick-exit{font-size:24px}.quick-top{grid-template-columns:34px 1fr auto}.quick-bottom{min-height:138px}}
+@media(max-height:560px) and (orientation:landscape){.quick-top{height:52px}.quick-main{padding-top:12px;padding-bottom:116px}.quick-bottom{min-height:92px}.quick-bottom-inner{flex-direction:row;padding:8px 0}.quick-question{font-size:24px}.quick-jp{margin:10px 0;font-size:36px}}
