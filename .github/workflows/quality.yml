@@ -26,6 +26,8 @@ jobs:
         run: node scripts/test-repository-quality.mjs
       - name: Accessibility contracts
         run: node scripts/test-accessibility-contracts.mjs
+      - name: Typography contracts
+        run: node scripts/test-typography-contracts.mjs
       - name: Static contracts
         run: node scripts/verify.mjs
       - name: Review scheduler behavior
