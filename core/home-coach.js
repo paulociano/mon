@@ -5,7 +5,7 @@ function homeCoachSignals(state={},now=Date.now()){
   const dueReviews=Object.values(state.reviewItems||{}).filter(x=>(x?.due||0)<=now).length;
   const openMistakes=Object.values(state.mistakeStats||{}).filter(x=>(x?.count||0)>(x?.recovered||0)).length;
   const unresolvedNarrative=Object.values(state.narrative?.episodes||{}).filter(x=>!x.resolved).length;
-  let productionGap=null;for(const [label,g] of Object.entries(state.productionGaps||{})){const open=Math.max(0,(g?.count||0)-(g?.recovered||0));if(open>0&&(!productionGap||open>productionGap.open))productionGap={label,open}}
+  let productionGap;for(const [label,g] of Object.entries(state.productionGaps||{})){const open=(g?.count||0)-(g?.recovered||0);if(open>0&&(!productionGap||open>productionGap.open))productionGap={label,open}}
   return {dueReviews,openMistakes,unresolvedNarrative,productionGap,energy:Math.max(0,state.energy||0)};
 }
 function homeCoachDecision(state={},flatPath=[],now=Date.now()){
@@ -22,7 +22,7 @@ function homeCoachDecision(state={},flatPath=[],now=Date.now()){
     return {kind:'recover',eyebrow:'prioridade · ritmo',title:'Sua energia de lição acabou. Sua memória, não.',copy:'Use a prática livre para recuperar itens, corrigir erros e preparar o próximo nó sem gastar Energia.',cta:'abrir prática livre →',secondary:'ver Diário no Japão',action:'practice',secondaryAction:'journal',signal:'0 energia',node};
   }
   if(productionGap?.open>=2){
-    return {kind:'functional',eyebrow:'prioridade · comunicação',title:`A função “${productionGap.label}” está reaparecendo como lacuna.`,copy:'A próxima sessão vai recuperar essa função, aplicá-la em contexto e voltar à produção sem apoio.',cta:'iniciar sessão direcionada →',secondary:'continuar trilha',action:'session',secondaryAction:'lesson',signal:`${productionGap.open} falhas abertas`,node};
+    return {kind:'functional',eyebrow:'prioridade · comunicação',title:`Reforce “${productionGap.label}”.`,copy:'A próxima sessão recupera essa função e volta à produção sem apoio.',cta:'sessão direcionada →',action:'session',signal:`${productionGap.open} falhas abertas`,node};
   }
   if(mistakes>=3){
     return {kind:'mistake',eyebrow:'prioridade · correção',title:`${mistakes} padrões recorrentes merecem uma correção curta.`,copy:'Repetir a unidade inteira seria desperdício. O Caderno de Erros consegue atacar exatamente o padrão que voltou a aparecer.',cta:'corrigir erros →',secondary:'continuar trilha',action:'practice',secondaryAction:'lesson',signal:`${mistakes} erros abertos`,node};
