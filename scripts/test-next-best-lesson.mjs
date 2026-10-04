@@ -3,7 +3,7 @@ import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const {nextBestLessonPlan,sequenceLessonByPlan}=require('../core/next-best-lesson.js');
 
-const base={reviewItems:{},mistakeStats:{},masteryEvidence:{},methodStats:{},narrative:{episodes:{}},productionGaps:{},functionalMastery:{},remediation:null};
+const base={reviewItems:{},mistakeStats:{},masteryEvidence:{},methodStats:{},narrative:{episodes:{}},productionGaps:{},functionalMastery:{},learningEvidence:{events:[]},remediation:null};
 const node={day:25,label:'Estação',type:'lesson'};
 
 let p=nextBestLessonPlan({...base,remediation:{idx:1}},node,1000);
@@ -36,6 +36,37 @@ assert.equal(p.intent,'production');
 
 p=nextBestLessonPlan({...base,narrative:{episodes:{x:{resolved:false}}}},node,1000);
 assert.equal(p.intent,'transfer');
+
+const day=24*60*60*1000;
+const sparseRetention=Array.from({length:7},(_,i)=>({kind:'attempt',ok:i<3,spacingMs:7*day,at:i+1}));
+p=nextBestLessonPlan({...base,learningEvidence:{events:sparseRetention}},node,1000);
+assert.equal(p.intent,'advance','sparse longitudinal evidence must not recalibrate the lesson');
+
+const observedRetention=Array.from({length:8},(_,i)=>({kind:'attempt',ok:i<4,spacingMs:7*day,at:i+1}));
+p=nextBestLessonPlan({...base,learningEvidence:{events:observedRetention}},node,1000);
+assert.equal(p.intent,'retrieve');
+assert.equal(p.signals.validation.metric,'retention7d');
+assert.equal(p.signals.validation.samples,8);
+
+p=nextBestLessonPlan({...base,reviewItems:{a:{due:0},b:{due:0},c:{due:0},d:{due:0}},learningEvidence:{events:observedRetention}},node,1000);
+assert.equal(p.intent,'retrieve');
+assert.equal(p.reason,'4 itens chegaram ao ponto de recuperação espaçada.','direct due-review debt must outrank longitudinal calibration');
+
+const transferTrend=[
+ ...[true,true,true,false].map((ok,i)=>({kind:'attempt',ok,dimension:'transfer',at:i+1})),
+ ...[true,true,false,false].map((ok,i)=>({kind:'attempt',ok,dimension:'transfer',at:i+5}))
+];
+p=nextBestLessonPlan({...base,learningEvidence:{events:transferTrend}},node,1000);
+assert.equal(p.intent,'transfer');
+assert.equal(p.signals.validation.metric,'transfer');
+assert.equal(p.signals.validation.recent,50);
+
+const improvingTransfer=[
+ ...[true,true,false,false].map((ok,i)=>({kind:'attempt',ok,dimension:'transfer',at:i+1})),
+ ...[true,true,true,false].map((ok,i)=>({kind:'attempt',ok,dimension:'transfer',at:i+5}))
+];
+p=nextBestLessonPlan({...base,learningEvidence:{events:improvingTransfer}},node,1000);
+assert.equal(p.intent,'advance','improving observed transfer should not block advancement');
 
 p=nextBestLessonPlan(base,node,1000);
 assert.equal(p.intent,'advance');

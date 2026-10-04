@@ -1,4 +1,3 @@
-// MON mistake model
 function mistakeCategory(exercise={}){
   const prompt=(exercise.prompt||'').toLowerCase();
   if(exercise.type==='listen') return 'escuta';

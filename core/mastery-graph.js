@@ -1,6 +1,3 @@
-// MON Mastery Graph
-// Tracks what the learner can do with a concept, not only whether a lesson was completed.
-
 const MASTERY_DIMENSIONS=['recognize','recall','listen','transfer','produce'];
 
 function masteryConceptId(exercise={}){
@@ -26,7 +23,6 @@ function recordMasteryEvidence(exercise={},ok=false,meta={}){
   const conceptState=state.masteryEvidence[concept]||{};
   const old=conceptState[dimension]||{attempts:0,successes:0,hints:0,score:35};
   const clean=ok&&!meta.hintUsed;
-  // EMA rewards independent retrieval more than hinted success and keeps recent evidence meaningful.
   const observation=clean?100:ok?72:0;
   const alpha=old.attempts<2?.42:.28;
   const score=Math.round(old.score*(1-alpha)+observation*alpha);
@@ -47,7 +43,6 @@ function conceptMastery(concept){
   const cells=state.masteryEvidence?.[concept]||{};
   const scores=MASTERY_DIMENSIONS.map(d=>cells[d]?.score).filter(x=>Number.isFinite(x));
   if(!scores.length)return 0;
-  // Conservative aggregation: weak transfer/production keeps "knows it" from being overstated.
   const avg=scores.reduce((a,b)=>a+b,0)/scores.length;
   const floor=Math.min(...scores);
   return Math.round(avg*.65+floor*.35);

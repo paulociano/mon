@@ -1,7 +1,3 @@
-// MON Learning Evidence
-// Local-only behavioral evidence for retention, transfer and autonomy.
-// This layer observes outcomes; it does not change adaptive decisions.
-
 const LEARNING_EVIDENCE_LIMIT=600;
 const RETENTION_MIN_MS=20*60*60*1000;
 
