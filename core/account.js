@@ -2,6 +2,7 @@
 const MON_ACCOUNT_KEY='mon-account';
 const MON_SYNC_VERSION=1;
 const MON_CLOUD_LINK_KEY='mon-cloud-linked';
+const MON_CLOUD_CONFLICT_KEY='mon-cloud-conflict-last';
 
 function createMonLocalId(){
  const bytes=new Uint8Array(12);
@@ -38,6 +39,7 @@ function monSyncPayload(profile={}){
 function monAccountStatus(){return loadMonAccount().status}
 function monLocalSyncDirty(){try{return !!localStorage.getItem(MON_SYNC_DIRTY_KEY)}catch{return false}}
 function clearMonSyncDirty(){try{localStorage.removeItem(MON_SYNC_DIRTY_KEY)}catch{}}
+function rememberMonCloudConflict(row){try{localStorage.setItem(MON_CLOUD_CONFLICT_KEY,JSON.stringify(row))}catch{}}
 
 function validateMonBackup(payload){
  if(!payload||typeof payload!=='object'||Array.isArray(payload))throw new Error('Backup MON inválido');
