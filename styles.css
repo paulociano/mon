@@ -455,38 +455,15 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 
 
 /* MON Learning Companion · Kitsu */
-.guide-mascot{--kitsu-accent:#e64d3d;position:absolute;right:11px;top:34px;width:74px;height:78px;transform-origin:50% 80%;animation:kitsuBreathe 3.6s ease-in-out infinite;pointer-events:none;filter:drop-shadow(0 9px 10px rgba(0,0,0,.2))}
-.kitsu-head{position:absolute;right:4px;top:8px;width:58px;height:54px;border-radius:48% 48% 44% 44%;background:linear-gradient(145deg,#f2ddba,#c68a61);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 -7px 0 rgba(76,38,31,.12),0 5px 0 rgba(62,30,28,.35)}
-.kitsu-ear{position:absolute;top:0;width:25px;height:28px;background:linear-gradient(145deg,#d69a6d,#9e4b40);clip-path:polygon(50% 0,100% 100%,0 78%);z-index:-1}
-.kitsu-ear::after{content:"";position:absolute;inset:7px 7px 5px;background:rgba(72,32,35,.45);clip-path:inherit}.kitsu-ear-left{left:10px;transform:rotate(-13deg)}.kitsu-ear-right{right:5px;transform:rotate(13deg)}
-.kitsu-eye{position:absolute;top:22px;width:7px;height:8px;border-radius:50%;background:#251919;transition:.2s transform,.2s height,.2s border-radius}.kitsu-eye-left{left:15px}.kitsu-eye-right{right:15px}
-.kitsu-mouth{position:absolute;left:50%;top:35px;width:10px;height:5px;border-bottom:2px solid #61352e;border-radius:0 0 10px 10px;transform:translateX(-50%);transition:.2s transform,.2s border}
-.kitsu-seal{position:absolute;right:4px;bottom:3px;width:18px;height:18px;border-radius:5px;background:var(--kitsu-accent);color:#fff;display:grid;place-items:center;font:700 10px var(--jp);box-shadow:0 3px 0 rgba(74,26,24,.3);transition:.22s background}
-.kitsu-tail{position:absolute;right:-2px;bottom:2px;width:38px;height:28px;border:9px solid #a45c48;border-left-color:transparent;border-top-color:transparent;border-radius:0 0 32px 0;transform:rotate(-8deg);opacity:.9}
-.kitsu-ink{position:absolute;left:10px;bottom:0;width:48px;height:9px;border-radius:50%;background:radial-gradient(ellipse,rgba(5,10,17,.28),transparent 68%);filter:blur(1px)}
-.guide-card[data-state="review"]{background:linear-gradient(145deg,rgba(99,211,194,.11),rgba(255,255,255,.022));border-color:rgba(99,211,194,.18)}
-.guide-mascot[data-mood="review"]{--kitsu-accent:#71aa9a}.guide-mascot[data-mood="review"] .kitsu-eye{height:3px;border-radius:8px;transform:translateY(3px)}
-.guide-mascot[data-mood="repair"]{--kitsu-accent:#d1ad72;transform:rotate(-3deg)}.guide-mascot[data-mood="repair"] .kitsu-mouth{width:8px;border-bottom:0;border-top:2px solid #61352e;border-radius:10px 10px 0 0;transform:translateX(-50%) translateY(3px)}
-.guide-mascot[data-mood="transfer"]{--kitsu-accent:#7191b2}.guide-mascot[data-mood="transfer"] .kitsu-eye-right{transform:scaleY(.25)}.guide-mascot[data-mood="transfer"] .kitsu-tail{transform:rotate(5deg)}
-.guide-mascot[data-mood="checkpoint"]{--kitsu-accent:#8d71d9;animation:none}.guide-mascot[data-mood="checkpoint"] .kitsu-eye{height:5px;border-radius:8px}.guide-mascot[data-mood="checkpoint"] .kitsu-mouth{width:7px;height:0;border-radius:0}
-.guide-card:hover .guide-mascot[data-mood="learn"]{transform:rotate(-2deg) translateY(-2px)}
-@keyframes kitsuBreathe{0%,100%{transform:translateY(0) rotate(1deg)}50%{transform:translateY(-2px) rotate(-1deg)}}
-@media(max-width:1120px){.guide-mascot{right:13px}}
-@media(prefers-reduced-motion:reduce){.guide-mascot{animation:none}.kitsu-eye,.kitsu-mouth,.kitsu-seal{transition:none}}
-
-
-/* Kitsu generated ink asset */
-.guide-mascot{right:4px;top:22px;width:104px;height:110px;display:grid;place-items:end center;filter:none;isolation:isolate}
-.guide-mascot::before{content:"";position:absolute;inset:23px 9px 7px 18px;border-radius:50%;background:radial-gradient(circle,rgba(230,77,61,.16),transparent 68%);filter:blur(4px);z-index:-1;transition:.2s background,.2s transform}
+.guide-mascot{position:absolute;right:4px;top:22px;width:104px;height:110px;display:grid;place-items:end center;pointer-events:none;transform-origin:50% 80%;animation:kitsuBreathe 3.6s ease-in-out infinite;isolation:isolate}
+.guide-mascot::before{content:"";position:absolute;inset:23px 9px 7px 18px;border-radius:50%;background:radial-gradient(circle,rgba(230,77,61,.16),transparent 68%);filter:blur(4px);z-index:-1}
 .kitsu-art{display:block;width:100%;height:100%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 10px 10px rgba(0,0,0,.28));transition:transform .22s ease,filter .22s ease}
-.guide-mascot[data-mood="review"]::before{background:radial-gradient(circle,rgba(99,211,194,.16),transparent 68%)}
-.guide-mascot[data-mood="review"] .kitsu-art{transform:translateY(1px) scale(.97);filter:drop-shadow(0 9px 9px rgba(0,0,0,.24)) saturate(.88)}
-.guide-mascot[data-mood="repair"]::before{background:radial-gradient(circle,rgba(209,173,114,.2),transparent 68%);transform:scale(.92)}
+.guide-card[data-state="review"]{background:linear-gradient(145deg,rgba(99,211,194,.11),rgba(255,255,255,.022));border-color:rgba(99,211,194,.18)}
+.guide-mascot[data-mood="review"] .kitsu-art{transform:scale(.97);filter:drop-shadow(0 9px 9px rgba(0,0,0,.24)) saturate(.88)}
 .guide-mascot[data-mood="repair"] .kitsu-art{transform:rotate(-2deg) scale(.98)}
-.guide-mascot[data-mood="transfer"]::before{background:radial-gradient(circle,rgba(113,145,178,.18),transparent 68%)}
 .guide-mascot[data-mood="transfer"] .kitsu-art{transform:rotate(2deg) translateY(-2px)}
-.guide-mascot[data-mood="checkpoint"]::before{background:radial-gradient(circle,rgba(141,113,217,.18),transparent 68%)}
-.guide-mascot[data-mood="checkpoint"] .kitsu-art{transform:none;filter:drop-shadow(0 8px 8px rgba(0,0,0,.24)) saturate(.78)}
+.guide-mascot[data-mood="checkpoint"]{animation:none}.guide-mascot[data-mood="checkpoint"] .kitsu-art{filter:drop-shadow(0 8px 8px rgba(0,0,0,.24)) saturate(.78)}
 .guide-card:hover .guide-mascot[data-mood="learn"] .kitsu-art{transform:translateY(-2px) rotate(-1deg)}
+@keyframes kitsuBreathe{50%{transform:translateY(-2px) rotate(-1deg)}}
 @media(max-width:1120px){.guide-mascot{right:6px}}
-@media(prefers-reduced-motion:reduce){.kitsu-art,.guide-mascot::before{transition:none}.guide-card:hover .guide-mascot[data-mood="learn"] .kitsu-art{transform:none}}
+@media(prefers-reduced-motion:reduce){.guide-mascot{animation:none}.kitsu-art{transition:none}.guide-card:hover .guide-mascot[data-mood="learn"] .kitsu-art{transform:none}}
