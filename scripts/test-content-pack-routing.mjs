@@ -7,7 +7,7 @@ assert.ok(!fs.existsSync('data/content-packs.js'),'generic monolithic content pa
 assert.ok(fs.existsSync('data/content-packs-n5.js'),'N5 level pack missing');
 assert.ok(fs.existsSync('data/content-packs-n4.js'),'N4 level pack missing');
 assert.ok(fs.existsSync('data/n4-capabilities.js'),'N4 capability contract missing');
-assert.ok(app.includes("N5:['./data/content-packs-n5.js']"),'N5 pack registry missing');
+assert.ok(app.includes("const N5='./data/content-packs-n5.js'"),'N5 pack path missing');
 assert.ok(app.includes("const N4_CAP='./data/n4-capabilities.js'"),'N4 capability lazy path missing');
 for(const key of ['N4A','N4B','N4C','N4D'])assert.ok(app.includes(key+':['),'N4 tier '+key+' missing');
 assert.ok(app.includes("function ensureContentPack(level='N5')"),'content pack loader seam missing');
