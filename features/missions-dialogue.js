@@ -1,4 +1,3 @@
-// MON adaptive multi-turn mission engine
 function missionDialogue(id){return typeof missionDialoguesV4!=='undefined'?missionDialoguesV4[id]||null:null}
 function missionCapabilityScore(cap){const x=state.functionalMastery?.[cap];return x?.attempts?Number(x.score||0):null}
 function missionPressureCapability(id){
@@ -13,12 +12,13 @@ function adaptiveMissionTurn(m,run=missionRun){
  const turns=adaptiveMissionTurns(m.id,run);if(!turns)return null;const t={...turns[run.step]};
  if(run.lastChoice==='alt'&&t.npcAlt)t.npc=t.npcAlt;
  if(run.semanticReaction&&run.step===turns.length-1){t.npc=run.semanticReaction.npc+' '+t.npc;t.pt=run.semanticReaction.pt+' '+(t.pt||'')}
+ if(run.step===turns.length-1&&typeof missionContextualTurn==='function')return missionContextualTurn(m.id,t,run.contextMemory||{});
  return t;
 }
 function adaptiveMissionTurnCount(m,run=missionRun){return adaptiveMissionTurns(m.id,run)?.length||2}
 function adaptiveMissionStart(id,run){const d=missionDialogue(id);if(!d)return run;run.pressureCapability=missionPressureCapability(id);run.multiTurn=true;return run}
 function adaptiveMissionRecordTurn(run,choice,turn,meta=null){
- run.history=run.history||[];run.history.push({step:run.step,choice,capability:turn?.capability||null,branch:meta?.key||null,at:Date.now()});run.lastChoice=choice;if(meta)run.semanticReaction=meta;
+ run.history=run.history||[];run.history.push({step:run.step,choice,capability:turn?.capability||null,branch:meta?.key||null,slots:meta?.slots||null,at:Date.now()});run.lastChoice=choice;if(meta){run.semanticReaction=meta;if(meta.slots)run.contextMemory={...(run.contextMemory||{}),...meta.slots}};
 }
 function missionUpdateFunctional(cap,ok,label=''){
  if(!cap)return;state.functionalMastery=state.functionalMastery||{};const old=state.functionalMastery[cap]||{attempts:0,successes:0,score:35},a=old.attempts<2?.42:.28,score=Math.round(old.score*(1-a)+(ok?100:0)*a);
