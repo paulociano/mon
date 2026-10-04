@@ -78,7 +78,11 @@ try{
  await page.click('.mission-free .primary');
  assert.equal(await page.locator('#missionFreeText').count(),0,'successful free response must advance the dialogue');
  assert.match(await page.locator('#missionRunner').innerText(),/先ほど選んだ五時/,'closing turn must remember the selected time');
+ assert.match(await page.locator('#missionRunner').innerText(),/十分前/,'world state must add a consequence to the confirmed booking');
  assert.equal(await page.evaluate(()=>missionRun.contextMemory.time),'五時','mission runtime must retain the selected time');
+ assert.equal(await page.evaluate(()=>missionRun.worldState.booking),'confirmed','selected time must change booking world state');
+ await page.locator('#missionRunner .mission-choices button').first().click();
+ assert.equal(await page.evaluate(()=>state.survivalMissions.completed.phone.worldState.bookingTime),'五時','completed mission must persist world state');
  assert.equal(pageErrors.length,0,'multi-turn free mission emitted page errors: '+pageErrors.join('\n'));
 
  await page.evaluate(async()=>await go('practice'));
