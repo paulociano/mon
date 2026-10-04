@@ -36,7 +36,7 @@ for(const u of checkpoints){
  assert.equal(u.openProduction,true,u.id+' must use open production');
  assert.ok(u.scenarios.every(s=>s.assessment?.groups?.length>=3),u.id+' needs observable criteria');
  const compiled=vm.runInContext("(()=>{const unit=coursePacks.N4.units.find(x=>x.id='"+u.id+"'),direct=compilePackExercise(unit,'speak',1),p=lessonPlanFromPack(unit),e=p.exercises.find(x=>x.type==='openResponse');return {directType:direct?.type||null,directCriteria:direct?.assessment?.groups?.length||0,types:p.exercises.map(x=>x.type),exists:!!e,hasOptions:e?'options' in e:true,criteria:e?.assessment?.groups?.length||0}})()",ctx);
- if(!compiled.exists)console.error('open checkpoint debug',u.id,compiled);
+ 
  assert.equal(compiled.exists,true,u.id+' should guarantee an open response in final lesson');
  assert.equal(compiled.hasOptions,false,'open production must not expose choices');
  assert.ok(compiled.criteria>=3,u.id+' open response needs criteria');
