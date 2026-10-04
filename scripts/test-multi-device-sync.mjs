@@ -22,7 +22,6 @@ function boot({state={saveVersion:3,xp:120,sessions:0,pathProgress:0,foundationD
  };
  vm.createContext(context);
  vm.runInContext(`
-  const MON_SYNC_DIRTY_KEY='mon-sync-dirty-at';
   const MON_STATE_KEY='mon-state';
   const MON_STATE_BACKUP_KEY='mon-state-backup';
   var state=${JSON.stringify(state)};
