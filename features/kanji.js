@@ -41,3 +41,6 @@ function renderKanjiAtlas(){ensureKanjiAtlas();renderKanjiFocus();renderKanjiStu
 function selectKanji(i){currentKanji=i;kanjiStudyStep='overview';renderKanjiAtlas()}
 function speak(text){if(!('speechSynthesis'in window)){toast('Áudio indisponível neste navegador');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='ja-JP';u.rate=.82;const jp=speechSynthesis.getVoices().find(v=>v.lang?.toLowerCase().startsWith('ja'));if(jp)u.voice=jp;speechSynthesis.speak(u)}
 function gradeKanji(k,g,quiet=false){const r=gradeReview('kanji',k,g);state.reviews[k]={...r,m:reviewMastery('kanji',k)};if(!quiet)state.xp+=g==='hard'?3:g==='good'?8:12;save();renderKanjiList(activeFilter,document.getElementById('kanjiSearch')?.value||'');if(!quiet)toast('Revisão agendada • +'+(g==='hard'?3:g==='good'?8:12)+' XP')}
+
+// Explicit global exports for classic lazy-loaded scripts.
+Object.assign(window,{ensureKanjiAtlas,renderKanjiAtlas,renderKanjiList,selectKanji,toggleKanjiLibrary,startKanjiStudy,setKanjiStudyStep,speak,gradeKanji});
