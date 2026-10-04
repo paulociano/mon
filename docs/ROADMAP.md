@@ -188,8 +188,10 @@ Expandir por capacidades, não por quantidade:
 
 Reusar os mesmos motores. Não criar um segundo sistema pedagógico paralelo.
 
-### 9. Métricas de aprendizagem
+### 9. Métricas de aprendizagem — camada semântica implementada ✅
 **Dependência:** motores estáveis + telemetria local.
+
+**Decisão:** atividade, retenção, domínio, transferência, reparo e autonomia agora possuem definições operacionais, denominadores e status de qualidade da amostra. Fonte de verdade: [Learning Metrics](LEARNING-METRICS.md).
 
 Separar:
 - atividade: XP, sessões e streak;
@@ -267,7 +269,7 @@ Regras:
 6. Survival Missions 2.0 concluído.
 7. Gate estrutural N5 concluído; manter validação longitudinal de retenção e transferência.
 8. N4 por capacidades formalizado; manter calibração longitudinal dos gates funcionais.
-9. Implementar métricas de aprendizagem separando atividade, retenção, transferência, reparo e autonomia.
+9. Métricas de aprendizagem implementadas; acumular evidência longitudinal antes de recalibrar decisões adaptativas.
 10. Definir budgets de latência com dados reais do Performance Lab.
 11. Executar hardening de estado/PWA/acessibilidade antes de escala.
 
