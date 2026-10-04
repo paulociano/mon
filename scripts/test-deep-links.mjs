@@ -1,6 +1,6 @@
 import fs from 'node:fs';import assert from 'node:assert/strict';
 const app=fs.readFileSync('app.js','utf8');
-for(const token of ['ROUTABLE_VIEWS','routeFromLocation','routeUrl','commitRouteUrl','history.pushState','popstate'])assert.ok(app.includes(token),'missing deep-link contract '+token);
+for(const token of ['ROUTABLE_VIEWS','routeFromLocation','routeUrl','commitRouteUrl',"'pushState'",'popstate'])assert.ok(app.includes(token),'missing deep-link contract '+token);
 assert.ok(app.includes("searchParams.get('view')"),'route must read ?view');
 assert.ok(app.includes("searchParams.set('view',id)"),'non-home routes must write ?view');
 assert.ok(app.includes("searchParams.delete('view')"),'home route must keep canonical URL clean');
