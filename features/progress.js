@@ -28,3 +28,25 @@ function renderLearningEvidence(){
 }
 const renderProgressHubFunctional=renderProgressHub;
 renderProgressHub=function(){renderProgressHubFunctional();renderLearningEvidence()};
+
+function validationDeltaText(metric,{lowerIsBetter=false}={}){
+ const t=metric?.trend;if(!t||t.status!=='directional'||t.delta===null)return 'tendência indisponível';
+ const good=lowerIsBetter?t.delta<0:t.delta>0,bad=lowerIsBetter?t.delta>0:t.delta<0;
+ const arrow=t.delta>0?'↑':t.delta<0?'↓':'→';
+ return `${arrow} ${Math.abs(t.delta)} pp · ${good?'melhorando':bad?'piorando':'estável'}`;
+}
+function renderLearningValidation(){
+ const grid=document.getElementById('progressEvidenceGrid');if(!grid||typeof learningValidationReport!=='function')return;
+ grid.querySelectorAll('[data-learning-validation]').forEach(x=>x.remove());
+ const r=learningValidationReport(state),status={empty:'sem dados',sparse:'amostra pequena',emerging:'tendência inicial',observed:'evidência observada'};
+ const cards=[
+  ...r.retention.map(x=>({id:'ret-'+x.id,label:'Retenção '+x.label,value:x.value,samples:x.samples,note:status[x.status]})),
+  {id:'hints',label:'Dependência de pistas',value:r.hintDependence.value,samples:r.hintDependence.samples,note:validationDeltaText(r.hintDependence,{lowerIsBetter:true})},
+  {id:'transfer-trend',label:'Transferência longitudinal',value:r.transfer.value,samples:r.transfer.samples,note:validationDeltaText(r.transfer)},
+  {id:'autonomy-trend',label:'Autonomia longitudinal',value:r.autonomy.value,samples:r.autonomy.samples,note:validationDeltaText(r.autonomy)},
+  {id:'recurrent-errors',label:'Erros recorrentes',value:r.recurrentErrors.value,samples:r.recurrentErrors.samples,note:validationDeltaText(r.recurrentErrors,{lowerIsBetter:true})}
+ ];
+ grid.insertAdjacentHTML('beforeend',cards.map(x=>`<article class="progress-evidence" data-learning-validation="${x.id}"><span>Validação · ${x.label}</span><b>${x.value===null?'—':x.value+'%'}</b><small>${x.samples} observações · ${x.note}</small><i><em style="width:${x.value||0}%"></em></i></article>`).join(''));
+}
+const renderProgressHubMetrics=renderProgressHub;
+renderProgressHub=function(){renderProgressHubMetrics();renderLearningValidation()};
