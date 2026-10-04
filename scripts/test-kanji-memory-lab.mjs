@@ -12,6 +12,7 @@ assert.equal(meta.family,'movement');
 assert.ok(family.items.includes('駅')&&family.items.includes('車'));
 
 const js=fs.readFileSync('features/kanji-memory.js','utf8');
+const atlas=fs.readFileSync('features/kanji.js','utf8');
 const css=fs.readFileSync('features/kanji-memory.css','utf8');
 const app=fs.readFileSync('app.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
@@ -23,7 +24,9 @@ assert.ok(js.includes("gradeKanji(kanjiData[currentKanji].k,ok?'good':'hard',tru
 assert.ok(app.includes("'./data/kanji-memory.js'"));
 assert.ok(app.includes("'./features/kanji-memory.js'"));
 assert.ok(app.includes("kanji:['./features/kanji-memory.css']"));
-assert.ok(html.includes('id="kanjiMemoryLab"'));
+assert.ok(html.includes('id="kanji"'),'Kanji Atlas lazy host must exist in the shell');
+assert.ok(atlas.includes('function ensureKanjiAtlas()'),'Kanji Atlas must hydrate the lazy host');
+assert.ok(atlas.includes('id="kanjiStudyFlow"'),'Kanji Atlas must expose the guided study flow');
 assert.ok(state.includes('kanjiLab:{attempts:0'));
 assert.ok(css.includes('.km-contrast'));
 assert.ok(css.includes('.km-options'));
