@@ -31,7 +31,7 @@ for(const target of new Set(navTargets)){
 }
 
 const coachActions=[...coach.matchAll(/(?:action|secondaryAction):'([^']+)'/g)].map(match=>match[1]);
-const supportedActions=new Set(['repair','practice','journal','chest','lesson']);
+const supportedActions=new Set(['repair','practice','journal','chest','lesson','session']);
 for(const action of new Set(coachActions)){
   assert.ok(supportedActions.has(action),'Home Coach emits unsupported action: '+action);
   if(action!=='lesson')assert.ok(app.includes(`action==='${action}'`)||action==='chest','Home runtime missing handler for '+action);
@@ -45,6 +45,7 @@ for(const token of [
   "secondary.onclick=()=>document.getElementById('todayReason')?.classList.toggle('open')",
   "if(action==='practice')return go('practice')",
   "if(action==='journal')return go('journal')",
+  "if(action==='session')return startSession()",
   "return startQuickLesson(idx)"
 ]){
   assert.ok(app.includes(token),'missing Home action contract '+token);
