@@ -20,6 +20,15 @@ try{
   await page.goto(base,{waitUntil:'networkidle'});
   await page.waitForSelector('#home.active',{state:'visible'});
   await assertNoOverflow(page,viewport.name+' home');
+  const shellLayout=await page.evaluate(()=>({
+   sidebar:getComputedStyle(document.querySelector('.sidebar')).display,
+   app:getComputedStyle(document.querySelector('.app')).display,
+   mainWidth:document.querySelector('main').getBoundingClientRect().width,
+   viewport:document.documentElement.clientWidth
+  }));
+  assert.equal(shellLayout.sidebar,'none',viewport.name+' desktop sidebar must be hidden');
+  assert.equal(shellLayout.app,'block',viewport.name+' app shell must collapse to one column');
+  assert.ok(shellLayout.mainWidth>=shellLayout.viewport-2,viewport.name+' main content must occupy full viewport: '+JSON.stringify(shellLayout));
   await page.waitForSelector('.course-banner.home-reveal');
   const homeVisibility=await page.evaluate(()=>({
    bannerOpacity:getComputedStyle(document.querySelector('.course-banner')).opacity,
