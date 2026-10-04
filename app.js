@@ -127,7 +127,7 @@ async function go(id){
    else if(id==='user')renderUserArea();
    else if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);
    else if(id==='foundation')renderFoundation();
-   else if(id==='kanji'){ensureDrawingCanvases();renderKanjiList();selectKanji(currentKanji)}
+   else if(id==='kanji'){ensureKanjiAtlas();renderKanjiAtlas()}
    else if(id==='writing'){ensureDrawingCanvases()}
    else if(id==='reading'){if(typeof hydrateReading==='function')hydrateReading()}
    else if(id==='missions'){if(typeof renderMissionGridV2==='function'){renderMissionGridV2();renderMissionV2()}else hydrateMissionGrid();}
