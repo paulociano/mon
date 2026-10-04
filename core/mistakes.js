@@ -40,6 +40,7 @@ function recordMistake(exercise={},context={}){
   if(typeof gradeReview==='function')gradeReview('error',key,'hard',{category:entry.category});
   state.mistakes.unshift({at:now,key,category:entry.category,title:entry.title,node:entry.node});
   state.mistakes=state.mistakes.slice(0,60);
+  if(typeof recordLearningEvidence==='function')recordLearningEvidence({source:'mistake',kind:'mistake',concept:key,ok:false,context:entry.category,at:now});
   return entry;
 }
 function markMistakeRecovered(exercise={}){
@@ -47,6 +48,7 @@ function markMistakeRecovered(exercise={}){
   if(!x)return;
   x.recovered=(x.recovered||0)+1;
   x.lastRecoveredAt=Date.now();
+  if(typeof recordLearningEvidence==='function')recordLearningEvidence({source:'mistake',kind:'mistake_recovery',concept:key,ok:true,context:x.category,at:x.lastRecoveredAt});
   if(typeof gradeReview==='function')gradeReview('error',key,'good',{category:x.category});
 }
 function mistakePriority(x){
