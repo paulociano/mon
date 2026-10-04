@@ -1,0 +1,11 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';
+const adapter=fs.readFileSync('core/supabase-sync.js','utf8'),config=fs.readFileSync('config/cloud.js','utf8'),sql=fs.readFileSync('supabase/schema.sql','utf8'),app=fs.readFileSync('app.js','utf8');
+for(const token of ['monCloudConfigured','getMonSupabase','monCloudSignIn','monCloudSignOut','monCloudPush','monCloudPull'])assert.ok(adapter.includes(token),'missing Supabase adapter '+token);
+assert.ok(adapter.includes('persistSession:true'),'browser auth session must persist');
+assert.ok(adapter.includes('signInWithOtp'),'Conta MON must use passwordless email auth');
+assert.ok(!config.toLowerCase().includes('service_role'),'service role key must never appear in browser config');
+assert.ok(sql.includes('enable row level security'),'cloud state table must enable RLS');
+for(const token of ['auth.uid()) = user_id','for select to authenticated','for insert to authenticated','for update to authenticated'])assert.ok(sql.includes(token),'missing RLS contract '+token);
+assert.ok(sql.includes('revoke all on table public.mon_user_state from anon, authenticated'),'table grants must be least privilege before authenticated grants');
+assert.ok(app.includes('renderCloudAccountPanel'),'user area must render cloud account state');
+console.log('MON Supabase cloud contracts passed');
