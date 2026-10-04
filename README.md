@@ -13,7 +13,9 @@
 
 # MON 門 Japanese OS
 
-O **MON** é uma aplicação web/PWA para aprender japonês desde o zero absoluto até situações reais do cotidiano. Em vez de organizar o estudo apenas como listas de palavras ou exercícios repetidos, o produto combina **Fundação Zero, SRS, Mastery Graph, narrativa recorrente, prática adaptativa, Kanji Memory Lab, listening, fala e missões de sobrevivência**.
+O **MON** é uma aplicação web/PWA para aprender japonês desde o zero absoluto até situações reais do cotidiano. Em vez de organizar o estudo apenas como listas de palavras ou exercícios repetidos, o produto combina **Fundação Zero, SRS, Mastery Graph, narrativa recorrente, prática adaptativa, Kanji Memory Lab, listening, fala, missões de sobrevivência e validação longitudinal da aprendizagem**.
+
+O sistema adapta a próxima sessão usando evidências reais do aluno, acompanha retenção e transferência ao longo do tempo e preserva uma arquitetura local-first, offline e orientada a performance. O motor de sincronização multi-device já está implementado com revisão otimista e conflitos explícitos; a ativação cloud depende da configuração do Supabase no ambiente publicado.
 
 A interface segue uma identidade japonesa contemporânea: sumi/indigo, shu vermilion, washi, dourado, tipografia editorial, torii, sakura e padrões culturais tratados de forma discreta.
 
@@ -27,17 +29,19 @@ A interface segue uma identidade japonesa contemporânea: sumi/indigo, shu vermi
 | --- | --- |
 | **Fundação Zero** | Som, hiragana, katakana, gramática inicial e saída gradual do romaji |
 | **Home Coach** | Escolhe uma próxima ação principal usando sinais reais do aluno |
-| **Next Best Lesson Engine** | Monta a receita da próxima sessão a partir de revisão, erros, domínio e narrativa |
+| **Next Best Lesson Engine** | Monta a próxima sessão a partir de revisão, erros, domínio, narrativa e, quando há evidência suficiente, sinais longitudinais |
 | **Daily Loop adaptativo** | Alterna ouvir, recuperar, aprender, aplicar, transferir e produzir |
 | **SRS + Caderno de Erros** | Agenda memória e reapresenta padrões que continuam falhando |
 | **Mastery Graph** | Separa evidência de reconhecimento, recall, listening e produção |
+| **Learning Validation** | Mede retenção 1d+/3d+/7d+, dependência de pistas, transferência, autonomia e recuperação de erros sem inferir causalidade |
 | **Kanji Memory Lab 2.0** | Famílias visuais, contraste, sentido → forma, forma → leitura e escrita |
 | **Listening & Pronunciation Lab** | Mora, vogais longas, っ, ん, shadowing e autoavaliação |
 | **Survival Missions 2.0** | Cenários ramificados com reparo de conversa e objetivo observável |
 | **Diário no Japão** | Registra personagens, lugares, callbacks e situações resolvidas |
+| **Conta & Sync** | Estado versionado, revisão otimista, dirty tracking e resolução explícita de conflitos entre dispositivos |
 | **Vídeos** | Biblioteca de apoio visual lazy, com player externo somente no clique |
 | **PWA/offline** | Shell e features cacheados para uso resiliente |
-| **Performance Lab** | Diagnóstico local opcional via `?debug=1` |
+| **Performance Lab** | Diagnóstico local com p50/p95, long tasks, cache e tempo até lição interativa via `?debug=1` |
 
 ## Princípios pedagógicos
 
@@ -46,8 +50,10 @@ A interface segue uma identidade japonesa contemporânea: sumi/indigo, shu vermi
 - intercalar reconhecimento, listening, recall, transferência e produção;
 - ensinar gramática com modelos mentais em português, evitando equivalências literais enganosas;
 - reutilizar conteúdo em personagens, lugares e situações recorrentes;
+- calibrar adaptação apenas quando existe evidência suficiente, sem deixar amostras pequenas comandarem a sessão;
 - tratar reconhecimento de voz como **pista textual**, não como avaliação fonética clínica;
-- usar vídeo como apoio, nunca como substituto de prática ativa.
+- usar vídeo como apoio, nunca como substituto de prática ativa;
+- distinguir tendência observada de causalidade comprovada.
 
 ## Arquitetura
 
@@ -59,6 +65,8 @@ index.html
 ├── data/                 conteúdo
 ├── core/                 estado + motores pedagógicos
 ├── features/             superfícies carregadas sob demanda
+├── config/               configuração pública opcional
+├── supabase/             schema da camada cloud
 ├── assets/               marca, cenas e banners
 ├── scripts/              contratos e budgets
 └── .github/workflows/    Quality Gate
@@ -67,13 +75,29 @@ index.html
 Algumas fronteiras importantes:
 
 - `core/home-coach.js` — próxima melhor ação da Home;
-- `core/next-best-lesson.js` — receita adaptativa da próxima sessão;
+- `core/next-best-lesson.js` — receita adaptativa e calibração conservadora da próxima sessão;
 - `core/review-scheduler.js` — revisão espaçada;
 - `core/mastery-graph.js` — evidência de domínio;
 - `data/narrative.js` + `core/narrative-state.js` — memória narrativa;
 - `features/pronunciation.js` — Listening & Pronunciation Lab;
 - `features/kanji-memory.js` — Kanji Memory Lab 2.0;
 - `features/missions-v2.js` — Survival Missions 2.0.
+
+## Adaptação por evidência
+
+O Next Best Lesson prioriza dívidas pedagógicas diretas antes de qualquer calibração longitudinal: remediation, revisões vencidas, gaps funcionais, erros abertos, fragilidade de domínio e narrativa pendente continuam tendo precedência.
+
+Sinais longitudinais só interferem quando existe amostra suficiente. Hoje, retenção 7d+ e transferência observada podem frear um avanço e puxar a sessão para `retrieve` ou `transfer`; dependência de pistas e autonomia permanecem observacionais até haver evidência melhor para transformá-las em política adaptativa.
+
+A camada de validação longitudinal acompanha retenção após 1d+, 3d+ e 7d+, tendências de hints, transferência, autonomia e recuperação de erros recorrentes. Esses sinais descrevem o estado observado do aluno e **não são tratados como prova causal da eficácia de uma feature**.
+
+## Estado local, conta e sincronização
+
+O MON continua local-first. O progresso versionado funciona sem conta e possui recovery, backup e migrations.
+
+A camada multi-device adiciona revisão otimista, compare-and-set, conflito explícito quando local e nuvem mudam, escolha entre usar este dispositivo ou usar a nuvem, backup local antes de substituição e Row Level Security por usuário.
+
+O cliente de sync está implementado. Para ativá-lo em um ambiente publicado, é necessário aplicar `supabase/schema.sql` e configurar a URL pública e a publishable key em `config/cloud.js`. Credenciais privilegiadas não pertencem ao browser nem ao repositório.
 
 ## Performance
 
@@ -87,7 +111,9 @@ O `Performance Lab` pode ser ativado localmente com:
 ?debug=1
 ```
 
-Ele mostra timings locais, long tasks, recursos mais lentos e estado de cache, sem telemetria externa.
+Ele mostra distribuições p50/p95, mínimo, máximo, long tasks, recursos mais lentos, estado de cache e tempo até a lição ficar interativa, sem telemetria externa.
+
+O CI também executa baseline e calibração multi-run em Chromium, Firefox e WebKit. Milissegundos absolutos ainda não viram gate de latência enquanto não existir baseline representativo em dispositivos reais.
 
 ## Rodar localmente
 
@@ -105,13 +131,15 @@ http://localhost:8080
 
 O workflow `.github/workflows/quality.yml` verifica, entre outros:
 
-- sintaxe JavaScript;
-- contratos estáticos;
+- sintaxe JavaScript e contratos estáticos;
+- acessibilidade, foco, reduced motion e política de microfone;
+- sistema tipográfico;
 - curriculum/content quality;
 - review scheduler;
 - Gate Loop;
 - adaptive teaching;
-- Mastery Graph;
+- Mastery Graph e Learning Evidence;
+- validação longitudinal da aprendizagem;
 - narrativa e persistência;
 - Home Coach;
 - Next Best Lesson Engine;
@@ -122,13 +150,18 @@ O workflow `.github/workflows/quality.yml` verifica, entre outros:
 - lazy loading;
 - budgets de performance;
 - PWA/cache;
+- boundary de conta, RLS e sincronização multi-device;
+- baseline e calibração de latência;
+- smoke responsivo e cross-browser em Chromium, Firefox e WebKit;
 - integridade e segurança do repositório.
 
 ## Roadmap
 
 O roadmap operacional fica em [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
-A ordem é por **dependência e ganho de aprendizagem**, não por volume de funcionalidades. O **gate estrutural N5 está concluído** e documentado em [`docs/N5-READINESS.md`](docs/N5-READINESS.md); retenção, transferência e autonomia continuam em validação longitudinal. O foco seguinte é formalizar o N4 por capacidades observáveis e instrumentar métricas de aprendizagem.
+A ordem é por **dependência, risco e ganho de aprendizagem**, não por volume de funcionalidades. O **gate estrutural N5 está concluído**, o **N4 já possui contrato por capacidades**, a validação longitudinal e a calibração conservadora do NBL estão implementadas, e a camada multi-device já possui motor de conflitos explícitos.
+
+O foco atual é continuar validando retenção e transferência ao longo do tempo, calibrar gates funcionais com evidência real, avançar o refinamento P8 nas superfícies publicadas e transformar latência absoluta em gate somente quando houver baseline representativo fora do laboratório de CI.
 
 ## Marca
 
