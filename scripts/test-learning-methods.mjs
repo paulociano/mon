@@ -34,8 +34,7 @@ assert.equal(checkpoints.length,3);
 for(const u of checkpoints){
  assert.equal(u.openProduction,true,u.id+' must use open production');
  assert.ok(u.scenarios.every(s=>s.assessment?.groups?.length>=3),u.id+' needs observable criteria');
- const seq=vm.runInContext("compileMONSequence(coursePacks.N4.units.find(x=>x.id='"+u.id+"'))",ctx);
- const open=Array.from(seq).find(x=>x.type==='openResponse');
+ const open=vm.runInContext("compileMONMethod(coursePacks.N4.units.find(x=>x.id='"+u.id+"'),'roleplay',0)",ctx);
  assert.ok(open,u.id+' should compile an open response');
  assert.equal('options' in open,false,'open production must not expose choices');
  assert.ok(open.assessment.groups.length>=3);
