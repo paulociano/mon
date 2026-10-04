@@ -128,7 +128,7 @@ O workflow `.github/workflows/quality.yml` verifica, entre outros:
 
 O roadmap operacional fica em [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
-A ordem é por **dependência e ganho de aprendizagem**, não por volume de funcionalidades. O foco imediato após Kanji Memory Lab 2.0 e Survival Missions 2.0 é a **auditoria profunda do N5** antes de expandir o produto para N4.
+A ordem é por **dependência e ganho de aprendizagem**, não por volume de funcionalidades. O **gate estrutural N5 está concluído** e documentado em [`docs/N5-READINESS.md`](docs/N5-READINESS.md); retenção, transferência e autonomia continuam em validação longitudinal. O foco seguinte é formalizar o N4 por capacidades observáveis e instrumentar métricas de aprendizagem.
 
 ## Marca
 
@@ -152,6 +152,7 @@ Paleta principal:
 ## Documentação
 
 - [Roadmap](docs/ROADMAP.md)
+- [N5 Readiness Gate](docs/N5-READINESS.md)
 - [Pesquisa de Quality Engineering](docs/QUALITY-RESEARCH-2026-10-03.md)
 - [Segurança](SECURITY.md)
 - [Contribuição](CONTRIBUTING.md)
