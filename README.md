@@ -158,6 +158,7 @@ Paleta principal:
 - [State Recovery & Backup](docs/STATE-RECOVERY.md)
 - [PWA Runtime Resilience](docs/PWA-RUNTIME.md)
 - [Accessibility & Microphone Policy](docs/ACCESSIBILITY-MICROPHONE.md)
+- [Latency Observability](docs/LATENCY-OBSERVABILITY.md)
 - [Pesquisa de Quality Engineering](docs/QUALITY-RESEARCH-2026-10-03.md)
 - [Segurança](SECURITY.md)
 - [Contribuição](CONTRIBUTING.md)

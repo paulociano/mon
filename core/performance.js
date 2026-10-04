@@ -1,7 +1,7 @@
 // MON local performance telemetry
 // Never sends data anywhere. Keeps a small rolling sample in this browser only.
 const MON_PERF_KEY='mon_perf_v1';
-const MON_PERF_LIMIT=40;
+const MON_PERF_LIMIT=80;
 function perfNow(){return performance?.now?.()??Date.now()}
 function perfStart(){return perfNow()}
 function perfRead(){
@@ -15,17 +15,22 @@ function perfEnd(name,start,meta={}){
  const duration=Math.max(0,Math.round((perfNow()-start)*10)/10);
  perfWrite({name,duration,at:Date.now(),...meta});return duration;
 }
+function perfPercentile(values,p){
+ const sorted=[...values].filter(Number.isFinite).sort((a,b)=>a-b);if(!sorted.length)return 0;
+ const rank=Math.max(0,Math.min(sorted.length-1,Math.ceil(p*sorted.length)-1));return sorted[rank];
+}
 function performanceSnapshot(){
  const rows=perfRead(),by={};
- for(const r of rows){(by[r.name]??=[]).push(r.duration)}
+ for(const r of rows)if(Number.isFinite(r.duration))(by[r.name]??=[]).push(r.duration);
  const summary={};
- for(const [name,vals] of Object.entries(by)){const sorted=[...vals].sort((a,b)=>a-b);summary[name]={samples:vals.length,median:sorted[Math.floor(sorted.length/2)]||0,p95:sorted[Math.min(sorted.length-1,Math.floor(sorted.length*.95))]||0}}
+ for(const [name,vals] of Object.entries(by))summary[name]={samples:vals.length,p50:perfPercentile(vals,.5),p95:perfPercentile(vals,.95),min:Math.min(...vals),max:Math.max(...vals)};
  return summary;
 }
 (function(){
  const boot=perfStart();
  addEventListener('load',()=>perfEnd('boot:load',boot,{navType:performance.getEntriesByType?.('navigation')?.[0]?.type||'unknown'}),{once:true});
  if('PerformanceObserver'in window){
+   const nav=performance.getEntriesByType?.('navigation')?.[0];if(nav?.duration)perfWrite({name:'boot:navigation',duration:Math.round(nav.duration*10)/10,at:Date.now(),navType:nav.type||'unknown'});
    try{const obs=new PerformanceObserver(list=>{for(const e of list.getEntries())if(e.duration>=50)perfWrite({name:'longtask',duration:Math.round(e.duration*10)/10,at:Date.now()})});obs.observe({type:'longtask',buffered:true})}catch{}
  }
 })();

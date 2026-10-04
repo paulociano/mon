@@ -142,6 +142,8 @@ jobs:
           exit 1
       - name: Browser smoke
         run: node scripts/test-browser-smoke.mjs
+      - name: Latency baseline
+        run: node scripts/measure-latency-baseline.mjs
       - name: Offline PWA smoke
         run: node scripts/test-offline-smoke.mjs
 
