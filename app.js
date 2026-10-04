@@ -10,7 +10,9 @@ function shellLocalDateKey(date=new Date()){
  return `${year}-${month}-${day}`;
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600)}
-function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${id}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+const NAV_PARENT={lesson:'home',session:'home',curriculum:'journey',foundation:'explore',kanji:'explore',missions:'explore',reading:'explore',speaking:'explore',culture:'explore',writing:'explore',journal:'explore',videos:'explore',pronunciation:'explore',league:'explore',shop:'explore'};
+function navParentForView(id){return NAV_PARENT[id]||id}
+function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${navParentForView(id)}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 const LEARNING_RUNTIME_SCRIPTS=[
  './data/kanji.js',
  './data/kana.js',
@@ -110,7 +112,7 @@ async function go(id){
    document.body.classList.toggle('focus-session',id==='session');
    document.body.classList.toggle('quick-focus',id==='lesson');
    document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
-   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
+   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===navParentForView(id)));
 
    const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;
    if(id==='home')renderGameHome();
@@ -137,7 +139,7 @@ async function go(id){
    console.error('MON route failed',id,err);
    if(requestId===routeRequestId){
      document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===previous));
-     document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===previous));
+     document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===navParentForView(previous)));
      const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[previous]||previous;
      toast('Não consegui abrir '+(viewNames[id]||id)+'. Tente novamente.');
    }
@@ -205,7 +207,7 @@ function renderProgressHub(){
  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
  set('progressCapabilityTitle',meta.name+' · '+meta.title);
  set('progressCapabilityCopy',meta.copy);
- set('progressJourneyPct',pct+'%');
+ set('progressJourneyPct',pct+'%');const ring=document.querySelector('.progress-ring-large');if(ring)ring.style.setProperty('--progress',pct+'%');
  set('journeyStageMini',meta.name);
  set('journeyCapabilityMini',meta.title);
  const due=Object.values(state.reviewItems||{}).filter(x=>(x?.due||0)<=Date.now()).length;
