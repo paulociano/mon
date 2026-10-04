@@ -18,7 +18,7 @@ const videoFeatureScripts=['features/videos.js'];
 const journalFeatureScripts=['features/journal.js'];
 const practiceFeatureScripts=['features/practice.js'];
 const lessonFeatureScripts=['features/lesson.js'];
-const lazyScripts=['data/content-packs.js','core/narrative-state.js','core/next-best-lesson.js','core/mistakes.js','core/mastery-graph.js','core/learning-methods.js','core/course-engine.js','core/progression-engine.js'];
+const lazyScripts=['data/content-packs-n5.js','core/narrative-state.js','core/next-best-lesson.js','core/mistakes.js','core/mastery-graph.js','core/learning-methods.js','core/course-engine.js','core/progression-engine.js'];
 const eagerJs=eagerScripts.reduce((n,p)=>n+size(p),0);
 const featureJs=featureScripts.reduce((n,p)=>n+size(p),0);
 const lessonJs=lessonFeatureScripts.reduce((n,p)=>n+size(p),0);

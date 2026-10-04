@@ -6,7 +6,7 @@ const ctx=vm.createContext({
  console,Object,Set,Number,String,Math,Date,
  state:{narrative:{episodes:{},characters:{},arcs:{},lastEpisode:null}}
 });
-vm.runInContext(fs.readFileSync('data/content-packs.js','utf8'),ctx,{filename:'content-packs.js'});
+vm.runInContext(fs.readFileSync('data/content-packs-n5.js','utf8'),ctx,{filename:'content-packs-n5.js'});
 vm.runInContext(fs.readFileSync('data/narrative.js','utf8'),ctx,{filename:'narrative.js'});
 vm.runInContext(fs.readFileSync('core/narrative-state.js','utf8'),ctx,{filename:'narrative-state.js'});
 

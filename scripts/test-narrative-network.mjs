@@ -3,7 +3,7 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const ctx=vm.createContext({console,Object,Set,Number,String,Math,state:{methodStats:{}}});
-vm.runInContext(fs.readFileSync('data/content-packs.js','utf8'),ctx,{filename:'content-packs.js'});
+vm.runInContext(fs.readFileSync('data/content-packs-n5.js','utf8'),ctx,{filename:'content-packs-n5.js'});
 vm.runInContext(fs.readFileSync('data/narrative.js','utf8'),ctx,{filename:'narrative.js'});
 vm.runInContext(fs.readFileSync('core/learning-methods.js','utf8'),ctx,{filename:'learning-methods.js'});
 vm.runInContext(fs.readFileSync('core/course-engine.js','utf8'),ctx,{filename:'course-engine.js'});
