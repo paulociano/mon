@@ -34,7 +34,7 @@ function ensureContentPack(level='N5'){
  const resolved=CONTENT_PACK_SCRIPTS[level]?level:'N5';
  if(contentPackPromises[resolved])return contentPackPromises[resolved];
  const sources=resolved==='N5'?CONTENT_PACK_SCRIPTS.N5:[...CONTENT_PACK_SCRIPTS[resolved],N4_CAP];
- contentPackPromises[resolved]=(async()=>{for(const src of sources)await loadRuntimeScript(src);if(resolved!=='N5'&&typeof applyN4CapabilityContracts==='function')applyN4CapabilityContracts();if(typeof applyGrammarPedagogy==='function')applyGrammarPedagogy()})().catch(err=>{delete contentPackPromises[resolved];throw err});
+ contentPackPromises[resolved]=(async()=>{for(const src of sources)await loadRuntimeScript(src);if(resolved!=='N5'&&typeof applyN4CapabilityContracts==='function')applyN4CapabilityContracts()})().catch(err=>{delete contentPackPromises[resolved];throw err});
  return contentPackPromises[resolved];
 }
 const FEATURE_RUNTIME_SCRIPTS={
