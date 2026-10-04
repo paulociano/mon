@@ -7,7 +7,8 @@ function monHasMeaningfulLocalProgress(){
 }
 function monRememberSession(session){
  if(!session?.user)return loadMonAccount();
- const account=saveMonAccount({...loadMonAccount(),provider:'supabase',userId:session.user.id,email:session.user.email||null,status:'connected'});
+ const prev=loadMonAccount(),same=prev.userId===session.user.id;
+ const account=saveMonAccount({...prev,provider:'supabase',userId:session.user.id,email:session.user.email||null,status:'connected',cloudRevision:same?prev.cloudRevision:0,lastSyncedAt:same?prev.lastSyncedAt:null,lastSyncStatus:same?prev.lastSyncStatus:null});
  try{localStorage.setItem(MON_CLOUD_LINK_KEY,'1')}catch{}
  return account;
 }
