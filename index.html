@@ -17,21 +17,12 @@
   <aside class="sidebar">
     <a class="brand brand-logo-wrap" href="#" onclick="go('home');return false" aria-label="MON 門 Japanese OS"><img class="brand-logo-full" src="./assets/brand/mon-lockup.svg" alt="MON 門 Japanese OS" /><img class="brand-logo-mark" src="./assets/brand/mon-mark.svg" alt="" aria-hidden="true" /></a>
     <nav id="desktopNav">
-      <div class="game-nav-label">aprender</div>
-      <button class="nav-btn active" data-view="home"><span class="nav-icon">道</span><span>Aprender</span></button>
+      <div class="game-nav-label">seu caminho</div>
+      <button class="nav-btn active" data-view="home"><span class="nav-icon">今</span><span>Hoje</span></button>
+      <button class="nav-btn" data-view="journey"><span class="nav-icon">道</span><span>Jornada</span></button>
       <button class="nav-btn" data-view="practice"><span class="nav-icon">練</span><span>Praticar</span></button>
-      <button class="nav-btn" data-view="foundation"><span class="nav-icon">あ</span><span>Kana & gramática</span></button>
-      <button class="nav-btn" data-view="kanji"><span class="nav-icon">字</span><span>Kanji Atlas</span></button>
-      <div class="game-nav-label">explorar</div>
-      <button class="nav-btn" data-view="missions"><span class="nav-icon">旅</span><span>Missões</span></button>
-      <button class="nav-btn" data-view="reading"><span class="nav-icon">本</span><span>Histórias</span></button>
-      <button class="nav-btn" data-view="journal"><span class="nav-icon">記</span><span>Diário</span></button>
-      <button class="nav-btn" data-view="videos"><span class="nav-icon">映</span><span>Vídeos</span></button>
-      <button class="nav-btn" data-view="pronunciation"><span class="nav-icon">音</span><span>Pronúncia</span></button>
-      <button class="nav-btn" data-view="speaking"><span class="nav-icon">声</span><span>Conversação</span></button>
-      <button class="nav-btn" data-view="league"><span class="nav-icon">冠</span><span>Liga</span></button>
-      <button class="nav-btn" data-view="shop"><span class="nav-icon">店</span><span>Loja</span></button>
-      <button class="nav-btn" data-view="culture"><span class="nav-icon">祭</span><span>Cultura</span></button>
+      <button class="nav-btn" data-view="explore"><span class="nav-icon">探</span><span>Explorar</span></button>
+      <button class="nav-btn" data-view="progress"><span class="nav-icon">進</span><span>Progresso</span></button>
     </nav>
     <div class="side-culture"><div class="side-culture-copy"><b>継続は力なり</b><span>A constância se torna força.</span></div><i>門</i></div>
     <div class="sidebar-foot"><div class="tiny-label">sequência</div><div class="streak"><strong id="streakSidebar">1</strong><span>dias ativos</span></div><div class="streak-dots"><i class="on"></i><i></i><i></i><i></i><i></i></div></div>
@@ -53,17 +44,83 @@
               <div class="adaptive-home-actions"><button class="adaptive-primary" id="homeAdaptivePrimary">continuar trilha →</button><button class="adaptive-secondary" id="homeAdaptiveSecondary">abrir prática</button><span class="adaptive-signal"><i></i><b id="homeAdaptiveSignal">ritmo saudável</b></span></div>
               <div class="course-banner-row"><span class="course-badge"><b id="courseSectionLabel">Seção 1</b> · Fundação Zero</span><span class="course-badge"><b id="courseScore">0</b> score MON</span><span class="course-badge"><b id="coursePct">0%</b> concluído</span></div>
             </div>
-            <div class="path-toolbar"><div><h3>Sua trilha</h3><p>Complete o nó atual para abrir o próximo. Revisões e histórias aparecem dentro do caminho.</p></div><button onclick="go('curriculum')">visão acadêmica →</button></div>
+            <div class="today-reason" id="todayReason">
+              <button class="today-reason-toggle" id="todayReasonToggle" type="button"><span>Por que esta sessão?</span><b>+</b></button>
+              <div class="today-reason-body" id="todayReasonBody"><strong id="todayReasonTitle">O MON está usando seu progresso recente.</strong><p id="todayReasonCopy">Revisões, erros, domínio e contexto definem a prioridade de hoje.</p></div>
+            </div>
+            <div class="path-toolbar"><div><h3>Seu caminho</h3><p>Complete o nó atual para abrir o próximo. Revisões e histórias aparecem dentro do caminho.</p></div><button onclick="go('curriculum')">visão acadêmica →</button></div>
             <div id="learningPath"></div>
           </div>
           <aside class="learn-rail">
-            <div class="rail-card guide-card" data-state="learn"><div class="rail-card-label"><span class="eyebrow">Seu guia · キツ</span><span class="rail-live-dot" id="guideStateLabel">aprender</span></div><h4 id="guideTitle">Comece pelo som.</h4><p id="guideCopy">Você não precisa decorar tudo de uma vez. Faça o próximo círculo e deixe o SRS decidir o que volta.</p><div class="guide-mascot" id="guideMascot" data-mood="learn" aria-hidden="true"><img class="kitsu-art" src="./assets/brand/kitsu-mascot.webp" alt="" width="160" height="160" decoding="async" /></div></div>
-            <button class="rail-card journal-mini" onclick="go('journal')" style="color:#fff;text-align:left"><div class="journal-mini-mark">記</div><div><div class="rail-card-label"><span class="eyebrow">Diário no Japão</span><span id="journalMiniStat">0 resolvidas · 0 pessoas</span></div><h4 id="journalMiniTitle">Seu diário começa no N5</h4><p id="journalMiniMeta">Personagens e lugares reaparecem conforme você avança.</p><span class="rail-arrow">abrir diário →</span></div></button>
-            <div class="rail-card daily-card"><div class="rail-card-label"><span class="eyebrow">Meta diária</span><span>ritmo</span></div><div class="daily-card-row"><div><h4>30 XP</h4><p>Uma lição já mantém sua sequência. A meta serve para criar ritmo, não culpa.</p></div><div class="daily-ring" id="dailyRing"><b id="dailyGoalPct">0%</b></div></div></div>
-            <div class="rail-card quest-card"><div class="rail-card-label"><span class="eyebrow">Missões de hoje</span><span>3 objetivos</span></div><div class="quest-list" id="questList"></div></div>
-            <button class="rail-card league-mini" onclick="go('league')" style="color:#fff;text-align:left"><div class="league-shield">冠</div><div><strong>Liga Fuji</strong><small id="leagueMiniText">0 XP esta semana</small></div><span>→</span></button>
-            <button class="rail-card practice-mini" onclick="go('practice')" style="color:#fff;text-align:left"><div class="rail-card-label"><span class="eyebrow">Prática adaptativa</span><span>Mastery Graph</span></div><h4>Corrigir fraquezas</h4><p id="practiceMini">O MON escolhe kana, kanji e gramática com maior necessidade de retorno.</p><span class="rail-arrow">abrir prática →</span></button>
+            <div class="rail-card guide-card" data-state="learn">
+              <div class="rail-card-label"><span class="eyebrow">Seu guia · キツ</span><span class="rail-live-dot" id="guideStateLabel">aprender</span></div>
+              <h4 id="guideTitle">Comece pelo próximo passo.</h4>
+              <p id="guideCopy">O MON escolhe o que merece sua atenção agora e esconde o resto até fazer sentido.</p>
+              <div class="guide-mascot" id="guideMascot" data-mood="learn" aria-hidden="true"><img class="kitsu-art" src="./assets/brand/kitsu-mascot.webp" alt="" width="160" height="160" decoding="async" /></div>
+            </div>
+            <div class="rail-card journey-mini">
+              <div class="rail-card-label"><span class="eyebrow">Você está aqui</span><span id="journeyStageMini">Abrir o portão</span></div>
+              <h4 id="journeyCapabilityMini">Construindo a base para usar japonês de verdade.</h4>
+              <p>Veja o que já consegue fazer, o que está ficando automático e qual capacidade vem depois.</p>
+              <button class="rail-inline-action" onclick="go('progress')">ver meu progresso →</button>
+            </div>
           </aside>
+        </div>
+      </section>
+
+
+      <section id="journey" class="view">
+        <div class="journey-hero">
+          <div><span class="eyebrow">Jornada MON · 道</span><h2>Aprenda por <em>capacidades</em>, não por menus.</h2><p>Seu caminho é organizado pelo que você consegue resolver em japonês. Conteúdo, prática e ferramentas aparecem quando ajudam a abrir o próximo portão.</p></div>
+          <button class="primary" onclick="runJourneyPrimary()">continuar do meu ponto →</button>
+        </div>
+        <div class="journey-stages" id="journeyStages">
+          <article class="journey-stage" data-stage="0"><span class="journey-stage-index">01</span><div><small>Abrir o portão</small><h3>Reconhecer sons e começar a ler.</h3><p>Som, ritmo, hiragana, katakana e primeiras frases úteis.</p></div><strong class="journey-stage-status">agora</strong></article>
+          <article class="journey-stage" data-stage="1"><span class="journey-stage-index">02</span><div><small>Sobreviver</small><h3>Pedir, perguntar e se locomover.</h3><p>Estação, konbini, restaurante, números, horários e direções.</p></div><strong class="journey-stage-status">depois</strong></article>
+          <article class="journey-stage" data-stage="2"><span class="journey-stage-index">03</span><div><small>Viver</small><h3>Resolver sua rotina.</h3><p>Casa, compras, agenda, bairro, serviços e trabalho básico.</p></div><strong class="journey-stage-status">depois</strong></article>
+          <article class="journey-stage" data-stage="3"><span class="journey-stage-index">04</span><div><small>Interagir</small><h3>Manter conversas curtas e reparar falhas.</h3><p>Listening, resposta espontânea, pedidos de repetição e pequenas negociações.</p></div><strong class="journey-stage-status">depois</strong></article>
+          <article class="journey-stage" data-stage="4"><span class="journey-stage-index">05</span><div><small>Ganhar autonomia</small><h3>Resolver situações que você não ensaiou.</h3><p>Transferência, produção, leitura funcional e missões abertas.</p></div><strong class="journey-stage-status">depois</strong></article>
+        </div>
+        <div class="journey-footer-card">
+          <div><span class="eyebrow">Quer ver a estrutura completa?</span><h3>A trilha acadêmica continua disponível.</h3><p>N5, N4 e N3 ficam como mapa de referência. A jornada principal mostra capacidades e próximo passo.</p></div>
+          <button class="ghost" onclick="go('curriculum')">abrir mapa acadêmico →</button>
+        </div>
+      </section>
+
+      <section id="explore" class="view">
+        <div class="hub-hero"><span class="eyebrow">Explorar · 探</span><h2>Ferramentas quando você quiser aprofundar.</h2><p>Você não precisa usar tudo. Estes recursos ficam fora do caminho principal e entram quando ajudam uma necessidade específica.</p></div>
+        <div class="hub-groups">
+          <section><div class="hub-group-head"><span>Construir base</span><small>som, escrita e estrutura</small></div><div class="hub-grid">
+            <button class="hub-card" onclick="go('foundation')"><b>あ</b><span>Kana & gramática</span><small>Som, escrita, partículas e modelos mentais.</small></button>
+            <button class="hub-card" onclick="go('kanji')"><b>字</b><span>Kanji Atlas</span><small>Forma, leitura, escrita e memória contextual.</small></button>
+            <button class="hub-card" onclick="go('pronunciation')"><b>音</b><span>Pronúncia</span><small>Ritmo, mora, contrastes e shadowing.</small></button>
+            <button class="hub-card" onclick="go('writing')"><b>書</b><span>Escrita</span><small>Produção manual e recuperação sem modelo.</small></button>
+          </div></section>
+          <section><div class="hub-group-head"><span>Usar no mundo</span><small>transferência e contexto</small></div><div class="hub-grid">
+            <button class="hub-card" onclick="go('missions')"><b>旅</b><span>Missões</span><small>Resolva tarefas reais com reparo de conversa.</small></button>
+            <button class="hub-card" onclick="go('speaking')"><b>声</b><span>Conversação</span><small>Treino de resposta, não recital.</small></button>
+            <button class="hub-card" onclick="go('reading')"><b>本</b><span>Histórias</span><small>Leitura guiada e gramática em contexto.</small></button>
+            <button class="hub-card" onclick="go('journal')"><b>記</b><span>Diário no Japão</span><small>Personagens, lugares e situações que reaparecem.</small></button>
+          </div></section>
+          <section><div class="hub-group-head"><span>Complementar</span><small>apoio e motivação</small></div><div class="hub-grid">
+            <button class="hub-card" onclick="go('videos')"><b>映</b><span>Vídeos</span><small>Apoio visual para listening, fala e leitura.</small></button>
+            <button class="hub-card" onclick="go('culture')"><b>祭</b><span>Cultura</span><small>Contexto social ligado ao japonês que você usa.</small></button>
+            <button class="hub-card muted" onclick="go('league')"><b>冠</b><span>Liga</span><small>Ritmo e progresso semanal. Opcional.</small></button>
+            <button class="hub-card muted" onclick="go('shop')"><b>店</b><span>Loja</span><small>Recompensas locais de gamificação. Opcional.</small></button>
+          </div></section>
+        </div>
+      </section>
+
+      <section id="progress" class="view">
+        <div class="hub-hero progress-hero"><span class="eyebrow">Progresso · 進</span><h2>O que você <em>já consegue fazer</em>.</h2><p>Atividade é só uma pista. Aqui o foco é domínio: recuperar, compreender, usar e reencontrar depois de um intervalo.</p></div>
+        <div class="progress-capability-card">
+          <div><span class="eyebrow">Capacidade atual</span><h3 id="progressCapabilityTitle">Abrindo o portão</h3><p id="progressCapabilityCopy">Construindo som, kana e primeiras frases funcionais.</p></div>
+          <div class="progress-ring-large"><b id="progressJourneyPct">0%</b><span>da etapa</span></div>
+        </div>
+        <div class="progress-evidence-grid" id="progressEvidenceGrid"></div>
+        <div class="progress-next-card">
+          <div><span class="eyebrow">Próxima evidência</span><h3 id="progressNextTitle">Recuperar sem pista.</h3><p id="progressNextCopy">O próximo avanço acontece quando a habilidade aparece fora do exercício que a ensinou.</p></div>
+          <button class="primary" onclick="runJourneyPrimary()">continuar aprendendo →</button>
         </div>
       </section>
 
@@ -327,6 +384,19 @@
 <script src="./core/review-scheduler.js"></script>
 <script src="./core/performance.js"></script>
 <script src="./core/home-coach.js"></script>
+<div class="onboarding-shell" id="onboardingShell" hidden>
+  <div class="onboarding-card" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+    <span class="eyebrow">Bem-vindo ao MON · 門</span>
+    <div id="onboardingStepOne">
+      <h2 id="onboardingTitle">Onde abrimos o seu portão?</h2>
+      <p>Você não precisa conhecer as ferramentas do MON. Escolha seu ponto de partida e nós cuidamos do próximo passo.</p>
+      <div class="onboarding-actions">
+        <button class="primary" onclick="finishOnboarding('zero')">Estou começando do zero</button>
+        <button class="ghost" onclick="finishOnboarding('diagnostic')">Já sei um pouco</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script src="./app.js"></script>
 </body>
 </html>
