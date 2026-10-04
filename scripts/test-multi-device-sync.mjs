@@ -71,11 +71,12 @@ function boot({state={saveVersion:3,xp:120,sessions:0,pathProgress:0,foundationD
  assert.equal(JSON.parse(store.get('mon-state-backup')).xp,300);
 }
 {
- const {context}=boot({state:{saveVersion:3,xp:500,sessions:2,pathProgress:2,foundationDay:3},account:{localId:'m1',userId:'u1',provider:'supabase',cloudRevision:1},dirty:true,remote:row(2,900)});
+ const {context,store}=boot({state:{saveVersion:3,xp:500,sessions:2,pathProgress:2,foundationDay:3},account:{localId:'m1',userId:'u1',provider:'supabase',cloudRevision:1},dirty:true,remote:row(2,900)});
  const result=await context.__reconcile();
  assert.equal(result.status,'conflict');
  assert.equal(context.__state().xp,500);
  assert.deepEqual(context.__pushes,[]);
+ assert.equal(JSON.parse(store.get('mon-cloud-conflict-last')).revision,2,'remote conflict snapshot must be recoverable');
  const cloud=await context.__reconcile({preference:'cloud'});
  assert.equal(cloud.status,'pulled');
  assert.equal(context.__state().xp,900);
@@ -114,4 +115,11 @@ function boot({state={saveVersion:3,xp:120,sessions:0,pathProgress:0,foundationD
  assert.equal(context.__account().cloudRevision,0,'cloud revision must reset when identity changes');
 }
 
+{
+ const {context}=boot({state:{saveVersion:3,xp:300,sessions:1,pathProgress:1,foundationDay:2},account:{localId:'m5',userId:'u1',provider:'supabase',cloudRevision:3},remote:row(2,800)});
+ const result=await context.__reconcile();
+ assert.equal(result.status,'conflict');
+ assert.equal(result.reason,'revision-regressed');
+ assert.equal(context.__state().xp,300,'revision rollback must never replace newer known local state');
+}
 console.log('MON multi-device sync contracts passed');
