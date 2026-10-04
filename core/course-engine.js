@@ -84,27 +84,22 @@ function lessonPlanFromPack(unit){
     method:typeof MON_METHOD!=='undefined'?MON_METHOD:null,exercises:tagged};
 }
 
-function foundationPromptSet(day){
- const variants=[
-  {listen:'Escute sem olhar. Qual som você identifica?',form:r=>'Qual kana representa “'+r+'”?',match:'Conecte cada kana à leitura.',meaning:w=>'Que sentido “'+w+'” tem aqui?',build:'Monte a forma japonesa sem copiar.',concept:'Qual explicação descreve melhor o mecanismo?',phrase:'Escute a frase inteira. Qual é a intenção?',speak:'Feche produzindo a frase completa.'},
-  {listen:'Ouça primeiro. Qual bloco sonoro apareceu?',form:r=>'Encontre a forma de “'+r+'”.',match:'Associe símbolo e leitura.',meaning:w=>'Neste contexto, o que significa “'+w+'”?',build:'Reconstrua em japonês usando os blocos.',concept:'Escolha a regra que explica este exemplo.',phrase:'Qual sentido você recupera desta frase?',speak:'Produza a frase em um único ritmo.'},
-  {listen:'Sem ler a tela, reconheça o som.',form:r=>'Do som “'+r+'”, qual forma escrita vem à mente?',match:'Forme os pares corretos.',meaning:w=>'Leia “'+w+'”. Qual é o significado?',build:'Recupere a forma-alvo peça por peça.',concept:'Qual leitura funcional está correta?',phrase:'Ouça novamente e escolha o sentido global.',speak:'Termine com shadowing da frase inteira.'}
- ];
- return variants[(Math.max(1,day)-1)%variants.length];
-}
+const FOUNDATION_PROMPTS=[
+ ['Escute sem olhar. Qual som você identifica?','Qual kana representa','Conecte kana e leitura.','Que sentido tem','Monte a forma japonesa sem copiar.','Qual explicação descreve o mecanismo?','Qual é a intenção da frase?','Produza a frase completa.'],
+ ['Ouça primeiro. Qual bloco apareceu?','Encontre a forma de','Associe símbolo e leitura.','Neste contexto, o que significa','Reconstrua em japonês.','Escolha a regra deste exemplo.','Recupere o sentido global.','Produza em um único ritmo.'],
+ ['Sem ler a tela, reconheça o som.','Do som, encontre','Forme os pares corretos.','Leia e escolha o significado de','Recupere a forma-alvo.','Qual leitura funcional está correta?','Ouça e escolha o sentido.','Feche com shadowing completo.']
+];
 function foundationVariedExercises(day,p,pairs,wordChars,grammarTokens){
- const q=foundationPromptSet(day),grammarPhase=day>=13;
- const items=[
-  {type:'listen',prompt:q.listen,audio:p.kana,options:engineShuffledOptions(p.roman,foundationSessionPlans.slice(Math.max(0,day-3),Math.min(24,day+4)).map(x=>x.roman)),answer:p.roman,why:`${p.kana} → ${p.roman}`},
-  {type:'choice',prompt:q.form(p.roman),options:engineShuffledOptions(p.kana,day<=12?[...kanaCourse.hira.basic,...kanaCourse.kata.basic].map(x=>x[0]):foundationSessionPlans.slice(12).map(x=>x.kana)),answer:p.kana,why:p.concept},
-  {type:'match',prompt:q.match,pairs},
-  {type:'choice',prompt:q.meaning(p.word),jp:p.word,options:engineShuffledOptions(p.pt,foundationSessionPlans.map(x=>x.pt)),answer:p.pt,why:`${p.word} · ${p.wordReading} · ${p.pt}`},
-  {type:'wordbank',prompt:q.build,target:day<=12?p.word:p.phrase.replace('。',''),tokens:day<=12?wordChars:grammarTokens,why:day<=12?'Leia em unidades de mora, não em letras portuguesas.':'Monte o japonês pela função dos blocos.'},
-  {type:'choice',prompt:q.concept,options:p.conceptOptions,answer:p.concept,why:p.concept},
-  {type:'listen',prompt:q.phrase,audio:p.phrase,options:engineShuffledOptions(p.phrasePt,foundationSessionPlans.map(x=>x.phrasePt)),answer:p.phrasePt,why:`${p.phrase} · ${p.phrasePt}`},
-  {type:'speak',prompt:q.speak,target:p.phrase,pt:p.phrasePt,why:'Faça shadowing: ouça, espere meio segundo e repita em um único ritmo.'}
- ];
- const middle=items.slice(1,-1),shift=(day-1)%middle.length;
+ const q=FOUNDATION_PROMPTS[(day-1)%FOUNDATION_PROMPTS.length],items=[
+  {type:'listen',prompt:q[0],audio:p.kana,options:engineShuffledOptions(p.roman,foundationSessionPlans.slice(Math.max(0,day-3),Math.min(24,day+4)).map(x=>x.roman)),answer:p.roman,why:`${p.kana} → ${p.roman}`},
+  {type:'choice',prompt:`${q[1]} “${p.roman}”?`,options:engineShuffledOptions(p.kana,day<=12?[...kanaCourse.hira.basic,...kanaCourse.kata.basic].map(x=>x[0]):foundationSessionPlans.slice(12).map(x=>x.kana)),answer:p.kana,why:p.concept},
+  {type:'match',prompt:q[2],pairs},
+  {type:'choice',prompt:`${q[3]} “${p.word}”?`,jp:p.word,options:engineShuffledOptions(p.pt,foundationSessionPlans.map(x=>x.pt)),answer:p.pt,why:`${p.word} · ${p.wordReading} · ${p.pt}`},
+  {type:'wordbank',prompt:q[4],target:day<=12?p.word:p.phrase.replace('。',''),tokens:day<=12?wordChars:grammarTokens,why:day<=12?'Leia em unidades de mora, não em letras portuguesas.':'Monte o japonês pela função dos blocos.'},
+  {type:'choice',prompt:q[5],options:p.conceptOptions,answer:p.concept,why:p.concept},
+  {type:'listen',prompt:q[6],audio:p.phrase,options:engineShuffledOptions(p.phrasePt,foundationSessionPlans.map(x=>x.phrasePt)),answer:p.phrasePt,why:`${p.phrase} · ${p.phrasePt}`},
+  {type:'speak',prompt:q[7],target:p.phrase,pt:p.phrasePt,why:'Faça shadowing: ouça, espere meio segundo e repita em um único ritmo.'}
+ ],middle=items.slice(1,-1),shift=(day-1)%middle.length;
  return [items[0],...middle.slice(shift),...middle.slice(0,shift),items.at(-1)];
 }
 function lessonPlanFromNode(node){let day=node.day||1;const structured=typeof coursePackForDay==='function'?coursePackForDay(day):null;if(structured)return lessonPlanFromPack(structured);if(day<=24){const p=foundationSessionPlans[Math.max(0,Math.min(23,day-1))];const basic=day<=7?kanaCourse.hira.basic:day<=12?kanaCourse.kata.basic:kanaCourse.hira.basic;const sample=basic.slice(Math.max(0,(day*3)%Math.max(1,basic.length-4)),Math.max(0,(day*3)%Math.max(1,basic.length-4))+4);const pairs=sample.length>=3?sample.slice(0,3):kanaCourse.hira.basic.slice(0,3);const wordChars=[...p.word].filter(x=>x.trim());const grammarTokens=(p.phrase.replace('。','').match(/.{1,2}/g)||[p.phrase.replace('。','')]);return {title:node.label,focus:p.kana,exercises:foundationVariedExercises(day,p,pairs,wordChars,grammarTokens)}}
