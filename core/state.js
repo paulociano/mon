@@ -1,8 +1,62 @@
 // MON persistent learning state
 // Single seam for local progress, gamification and review persistence.
 
-const defaultState={xp:120,streak:1,reviews:{},kanaMastery:{},kanaReviews:{},speech:0,day:1,sessions:0,foundationDay:1,foundationComplete:false,foundationSessions:0,romajiMode:'auto',grammarOpened:{},grammarRecall:{},sentenceSolved:0,soundWins:0,lastStudyDate:null,history:[],diagnostic:null,energy:20,maxEnergy:20,gems:350,pathProgress:null,quests:{date:null,lessons:0,xp:0,accuracy:false},streakFreeze:0,xpBoostUntil:0,chests:{},leagueXp:0,perfectLessons:0,mistakes:[],mistakeStats:{},reviewItems:{},methodStats:{},masteryEvidence:{},unitMastery:{},remediation:null,narrative:{episodes:{},characters:{},arcs:{},lastEpisode:null},pronunciation:{sessions:0,plays:0,shadowAttempts:0,selfRatings:[],tracks:{}},kanjiLab:{attempts:0,correct:0,modes:{},last:null},survivalMissions:{completed:{},attempts:{},repairs:0}};
-let state=defaultState;
-try{state={...defaultState,...JSON.parse(localStorage.getItem('mon-state')||'{}')}}catch(e){state={...defaultState,reviews:{}}}
-state={...defaultState,...state,reviews:{...(state.reviews||{})},kanaMastery:{...(state.kanaMastery||{})},kanaReviews:{...(state.kanaReviews||{})},grammarOpened:{...(state.grammarOpened||{})},grammarRecall:{...(state.grammarRecall||{})},history:Array.isArray(state.history)?state.history:[],quests:{...defaultState.quests,...(state.quests||{})},chests:{...(state.chests||{})},mistakes:Array.isArray(state.mistakes)?state.mistakes:[],mistakeStats:{...(state.mistakeStats||{})},reviewItems:{...(state.reviewItems||{})},methodStats:{...(state.methodStats||{})},masteryEvidence:{...(state.masteryEvidence||{})},unitMastery:{...(state.unitMastery||{})},remediation:state.remediation||null,narrative:{...defaultState.narrative,...(state.narrative||{}),episodes:{...((state.narrative||{}).episodes||{})},characters:{...((state.narrative||{}).characters||{})},arcs:{...((state.narrative||{}).arcs||{})},lastEpisode:(state.narrative||{}).lastEpisode||null},pronunciation:{...defaultState.pronunciation,...(state.pronunciation||{}),selfRatings:[...((state.pronunciation||{}).selfRatings||[])],tracks:{...((state.pronunciation||{}).tracks||{})}},kanjiLab:{...defaultState.kanjiLab,...(state.kanjiLab||{}),modes:{...((state.kanjiLab||{}).modes||{})}},survivalMissions:{...defaultState.survivalMissions,...(state.survivalMissions||{}),completed:{...((state.survivalMissions||{}).completed||{})},attempts:{...((state.survivalMissions||{}).attempts||{})}}};if(state.pathProgress==null)state.pathProgress=state.foundationComplete?24:Math.max(0,(state.foundationDay||1)-1);
-function save(){try{localStorage.setItem('mon-state',JSON.stringify(state))}catch(e){} updateMetrics();}
+const MON_STATE_KEY='mon-state';
+const MON_STATE_BACKUP_KEY='mon-state-backup';
+const MON_STATE_CORRUPT_KEY='mon-state-corrupt-last';
+const MON_SAVE_VERSION=1;
+const defaultState={saveVersion:MON_SAVE_VERSION,xp:120,streak:1,reviews:{},kanaMastery:{},kanaReviews:{},speech:0,day:1,sessions:0,foundationDay:1,foundationComplete:false,foundationSessions:0,romajiMode:'auto',grammarOpened:{},grammarRecall:{},sentenceSolved:0,soundWins:0,lastStudyDate:null,history:[],diagnostic:null,energy:20,maxEnergy:20,gems:350,pathProgress:null,quests:{date:null,lessons:0,xp:0,accuracy:false},streakFreeze:0,xpBoostUntil:0,chests:{},leagueXp:0,perfectLessons:0,mistakes:[],mistakeStats:{},reviewItems:{},methodStats:{},masteryEvidence:{},unitMastery:{},remediation:null,narrative:{episodes:{},characters:{},arcs:{},lastEpisode:null},pronunciation:{sessions:0,plays:0,shadowAttempts:0,selfRatings:[],tracks:{}},kanjiLab:{attempts:0,correct:0,modes:{},last:null},survivalMissions:{completed:{},attempts:{},repairs:0}};
+
+function normalizeState(raw={}){
+ const source=raw&&typeof raw==='object'&&!Array.isArray(raw)?raw:{};
+ const normalized={...defaultState,...source,saveVersion:MON_SAVE_VERSION,reviews:{...(source.reviews||{})},kanaMastery:{...(source.kanaMastery||{})},kanaReviews:{...(source.kanaReviews||{})},grammarOpened:{...(source.grammarOpened||{})},grammarRecall:{...(source.grammarRecall||{})},history:Array.isArray(source.history)?source.history:[],quests:{...defaultState.quests,...(source.quests||{})},chests:{...(source.chests||{})},mistakes:Array.isArray(source.mistakes)?source.mistakes:[],mistakeStats:{...(source.mistakeStats||{})},reviewItems:{...(source.reviewItems||{})},methodStats:{...(source.methodStats||{})},masteryEvidence:{...(source.masteryEvidence||{})},unitMastery:{...(source.unitMastery||{})},remediation:source.remediation||null,narrative:{...defaultState.narrative,...(source.narrative||{}),episodes:{...((source.narrative||{}).episodes||{})},characters:{...((source.narrative||{}).characters||{})},arcs:{...((source.narrative||{}).arcs||{})},lastEpisode:(source.narrative||{}).lastEpisode||null},pronunciation:{...defaultState.pronunciation,...(source.pronunciation||{}),selfRatings:[...((source.pronunciation||{}).selfRatings||[])],tracks:{...((source.pronunciation||{}).tracks||{})}},kanjiLab:{...defaultState.kanjiLab,...(source.kanjiLab||{}),modes:{...((source.kanjiLab||{}).modes||{})}},survivalMissions:{...defaultState.survivalMissions,...(source.survivalMissions||{}),completed:{...((source.survivalMissions||{}).completed||{})},attempts:{...((source.survivalMissions||{}).attempts||{})}}};
+ if(normalized.pathProgress==null)normalized.pathProgress=normalized.foundationComplete?24:Math.max(0,(normalized.foundationDay||1)-1);
+ return normalized;
+}
+function migrateState(raw){
+ if(!raw||typeof raw!=='object'||Array.isArray(raw))throw new Error('invalid MON save');
+ const version=Number(raw.saveVersion||0);
+ if(!Number.isInteger(version)||version<0)throw new Error('invalid MON save version');
+ if(version>MON_SAVE_VERSION)throw new Error('future MON save version');
+ let next={...raw};
+ if(version===0)next={...next,saveVersion:1};
+ return normalizeState(next);
+}
+function parseStoredState(raw){
+ if(typeof raw!=='string'||!raw.trim())return null;
+ return migrateState(JSON.parse(raw));
+}
+function rememberCorruptState(raw){
+ if(typeof raw!=='string'||!raw)return;
+ try{localStorage.setItem(MON_STATE_CORRUPT_KEY,raw)}catch(e){}
+}
+function loadState(){
+ const primaryRaw=localStorage.getItem(MON_STATE_KEY);
+ if(primaryRaw){
+  try{return parseStoredState(primaryRaw)}catch(e){rememberCorruptState(primaryRaw)}
+ }
+ const backupRaw=localStorage.getItem(MON_STATE_BACKUP_KEY);
+ if(backupRaw){
+  try{
+   const recovered=parseStoredState(backupRaw);
+   try{localStorage.setItem(MON_STATE_KEY,JSON.stringify(recovered))}catch(e){}
+   return recovered;
+  }catch(e){}
+ }
+ return normalizeState(defaultState);
+}
+let state=loadState();
+function save(){
+ try{
+  const next=normalizeState(state);
+  const serialized=JSON.stringify(next);
+  parseStoredState(serialized);
+  const previous=localStorage.getItem(MON_STATE_KEY);
+  if(previous){
+   try{parseStoredState(previous);localStorage.setItem(MON_STATE_BACKUP_KEY,previous)}catch(e){rememberCorruptState(previous)}
+  }
+  localStorage.setItem(MON_STATE_KEY,serialized);
+  state=next;
+ }catch(e){}
+ updateMetrics();
+}
