@@ -49,28 +49,6 @@ function evaluateOpenProduction(text,assessment={}){
  return {ok:score>=min,score:Math.round(score*100),hits,missing:labels.filter((_,i)=>!hits[i]),covered:labels.filter((_,i)=>hits[i])};
 }
 function quickOpenSpeech(b){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Ditado por voz indisponível neste navegador');return}const r=new SR();r.lang='ja-JP';r.interimResults=false;r.maxAlternatives=1;b.textContent='● ouvindo…';r.onresult=x=>{const txt=x.results[0][0].transcript,input=document.getElementById('quickTyped');if(input){input.value=txt;quickTypedInput(txt)}b.textContent='● resposta capturada'};r.onend=()=>{if(b.textContent==='● ouvindo…')b.textContent='● ditar resposta'};r.start()}
-function recordProductionGaps(exercise,result){
- state.productionGaps=state.productionGaps||{};
- for(const label of result.missing||[]){const old=state.productionGaps[label]||{count:0,recovered:0};state.productionGaps[label]={...old,count:old.count+1,lastAt:Date.now(),unitId:exercise._unitId||null}}
-}
-function recoverProductionGaps(exercise){
- state.productionGaps=state.productionGaps||{};
- for(const label of exercise._gapLabels||[]){const old=state.productionGaps[label]||{count:0,recovered:0};state.productionGaps[label]={...old,recovered:(old.recovered||0)+1,lastRecoveredAt:Date.now()}}
-}
-function buildOpenRemediation(exercise,result){
- if(exercise._openRetry||!result.missing?.length)return [];
- const labels=exercise.assessment?.labels||[],groups=exercise.assessment?.groups||[];
- const gapIndex=labels.findIndex(x=>result.missing.includes(x));if(gapIndex<0)return [];
- const accepted=(groups[gapIndex]||[]).filter(Boolean),target=accepted[0];if(!target)return [];
- const label=labels[gapIndex]||'elemento funcional',model=exercise.target||'',normalizedTarget=normalizeJP(model),token=accepted.find(x=>normalizedTarget.includes(normalizeJP(x)))||target;
- const clozeTarget=model&&token?model.replace(token,'＿＿'):model;
- const drills=[
-  {type:'recall',prompt:`Microtreino · recupere o elemento “${label}”.`,cue:label,target,accepted,why:`Este elemento faltou na sua resposta anterior: ${label}.`,method:'recall',_openRepair:true,_gapLabels:[label],_unitId:exercise._unitId},
-  clozeTarget!==model?{type:'cloze',prompt:`Microtreino · reinsira “${label}” no contexto.`,jp:clozeTarget,target:token,accepted:[token,...accepted],why:'Recoloque a peça funcional dentro da frase completa.',method:'transfer',_openRepair:true,_gapLabels:[label],_unitId:exercise._unitId}:null
- ].filter(Boolean);
- const retry={...exercise,prompt:'Tente novamente a mesma situação, agora sem copiar o modelo.',_openRetry:true,_gapLabels:[...(result.missing||[])],why:'Retry imediato: preserve a intenção e recupere os elementos que faltaram.'};
- return [...drills,retry];
-}
 function quickRevealModel(){const e=quickRun?.pack.exercises[quickRun.step],box=document.getElementById('roleplayModel');if(!e||!box)return;box.innerHTML=`<b>${e.target}</b><span>${e.pt||''}</span>`;box.classList.add('show');quickRun.hintUsed=true}
 function wordTap(i,b){if(quickRun.checked||b.classList.contains('used'))return;b.classList.add('used');quickRun.built.push(i);const e=quickRun.pack.exercises[quickRun.step],w=document.getElementById('wordBuilt');w.innerHTML=quickRun.built.map((idx,pos)=>`<button class="word-token" onclick="wordUntap(${pos})">${e.tokens[idx]}</button>`).join('');document.getElementById('quickCheck').disabled=quickRun.built.length===0}
 function wordUntap(pos){if(quickRun.checked)return;const idx=quickRun.built.splice(pos,1)[0],e=quickRun.pack.exercises[quickRun.step];document.querySelector(`[data-wb="${idx}"]`)?.classList.remove('used');const w=document.getElementById('wordBuilt');w.innerHTML=quickRun.built.length?quickRun.built.map((j,p)=>`<button class="word-token" onclick="wordUntap(${p})">${e.tokens[j]}</button>`).join(''):'<span style="color:#607083;font-size:9px">toque nos blocos abaixo</span>';document.getElementById('quickCheck').disabled=quickRun.built.length===0}
