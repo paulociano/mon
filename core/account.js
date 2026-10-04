@@ -94,3 +94,47 @@ function ensureMonBackupImportControl(){
  actions.querySelector('[data-mon-import]')?.addEventListener('click',()=>document.getElementById('userBackupInput')?.click());
  document.getElementById('userBackupInput')?.addEventListener('change',e=>importMonBackupFile(e.currentTarget));
 }
+
+async function renderCloudAccountPanel(){
+ const panel=document.getElementById('userCloudPanel');
+ if(typeof ensureMonBackupImportControl==='function')ensureMonBackupImportControl();
+ if(!panel)return;
+ if(typeof monCloudConfigured!=='function'||!monCloudConfigured()){
+  panel.innerHTML='<b>Conta MON</b><br>Nuvem preparada, aguardando configuração do projeto Supabase.';
+  return;
+ }
+ try{
+  const session=await monCloudSession();
+  if(session){
+   const email=escapeHtml(session.user.email||'usuário');
+   panel.innerHTML='<b>Conta MON conectada</b><br>'+email+'<div class="user-actions"><button class="user-save" onclick="syncMonNow()">sincronizar agora</button><button class="user-secondary" onclick="disconnectMonCloud()">sair</button></div>';
+  }else{
+   panel.innerHTML='<b>Sincronizar entre dispositivos</b><br><label class="user-field"><span>E-mail</span><input id="userCloudEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><div class="user-actions"><button class="user-save" onclick="connectMonCloud()">enviar link de acesso</button></div>';
+  }
+ }catch(e){
+  panel.textContent='Conta MON indisponível: '+e.message;
+ }
+}
+async function connectMonCloud(){
+ const email=document.getElementById('userCloudEmail')?.value.trim();
+ if(!email){toast('Digite seu e-mail');return}
+ try{
+  await monCloudSignIn(email);
+  toast('Link de acesso enviado ao seu e-mail');
+ }catch(e){toast(e.message)}
+}
+async function disconnectMonCloud(){
+ try{
+  await monCloudSignOut();
+  await renderCloudAccountPanel();
+  toast('Conta desconectada deste dispositivo');
+ }catch(e){toast(e.message)}
+}
+async function syncMonNow(){
+ try{
+  await monCloudPush(loadLocalProfile());
+  toast('Progresso sincronizado com a Conta MON');
+  await renderCloudAccountPanel();
+ }catch(e){toast(e.message)}
+}
+function exportMonBackup(){const payload=monSyncPayload(loadLocalProfile());const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mon-backup-'+shellLocalDateKey()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),0);toast('Backup do MON exportado')}
