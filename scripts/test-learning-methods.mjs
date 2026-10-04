@@ -6,6 +6,7 @@ const ctx=vm.createContext({console,Object,Set,Number,String,Math});
 vm.runInContext(fs.readFileSync('data/content-packs-n5.js','utf8'),ctx,{filename:'content-packs-n5.js'});
 for(const file of ['data/content-packs-n4.js','data/content-packs-n4-61-70.js','data/content-packs-n4-71-80.js','data/content-packs-n4-81-90.js'])vm.runInContext(fs.readFileSync(file,'utf8'),ctx,{filename:file});
 vm.runInContext(fs.readFileSync('core/learning-methods.js','utf8'),ctx,{filename:'learning-methods.js'});
+vm.runInContext(fs.readFileSync('core/course-engine.js','utf8'),ctx,{filename:'course-engine.js'});
 
 const unit=vm.runInContext("coursePacks.N5.units[0]",ctx);
 const seq=vm.runInContext("compileMONSequence(coursePacks.N5.units[0])",ctx);
@@ -34,8 +35,8 @@ assert.equal(checkpoints.length,3);
 for(const u of checkpoints){
  assert.equal(u.openProduction,true,u.id+' must use open production');
  assert.ok(u.scenarios.every(s=>s.assessment?.groups?.length>=3),u.id+' needs observable criteria');
- const compiled=vm.runInContext("(()=>{const e=compileMONMethod(coursePacks.N4.units.find(x=>x.id='"+u.id+"'),'roleplay',0);return {type:e.type,hasOptions:'options' in e,criteria:e.assessment?.groups?.length||0}})()",ctx);
- assert.equal(compiled.type,'openResponse',u.id+' should compile an open response');
+ const compiled=vm.runInContext("(()=>{const p=lessonPlanFromPack(coursePacks.N4.units.find(x=>x.id='"+u.id+"'));const e=p.exercises.find(x=>x.type==='openResponse');return {exists:!!e,hasOptions:e?'options' in e:true,criteria:e?.assessment?.groups?.length||0}})()",ctx);
+ assert.equal(compiled.exists,true,u.id+' should guarantee an open response in final lesson');
  assert.equal(compiled.hasOptions,false,'open production must not expose choices');
  assert.ok(compiled.criteria>=3,u.id+' open response needs criteria');
 }
