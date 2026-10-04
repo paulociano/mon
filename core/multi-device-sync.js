@@ -79,7 +79,7 @@ async function renderCloudAccountPanel(){
    panel.innerHTML='<b>Sincronizar entre dispositivos</b><br><label class="user-field"><span>E-mail</span><input id="userCloudEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><div class="user-actions"><button class="user-save" onclick="connectMonCloud()">enviar link de acesso</button></div>';
    return;
   }
-  monRememberSession(session);
+  monRememberSession(session);const badge=document.getElementById('userAccountBadge');if(badge)badge.textContent='conta sincronizada';
   const result=await monCloudReconcile();
   if(result.status==='conflict'){
    panel.innerHTML='<b>Conflito de progresso</b><br>Este dispositivo e a nuvem mudaram desde o último sync. Escolha qual versão deve continuar. Um backup local é preservado antes de substituir dados.<div class="user-actions"><button class="user-save" onclick="resolveMonCloudConflict(\'local\')">usar este dispositivo</button><button class="user-secondary" onclick="resolveMonCloudConflict(\'cloud\')">usar nuvem</button></div>';
