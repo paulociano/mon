@@ -66,6 +66,8 @@ try{
  await page.waitForSelector('#practiceCoach');
  assert.equal(pageErrors.length,0,'navigation emitted page errors: '+pageErrors.join('\n'));
 
+ await page.evaluate(async()=>await go('home'));
+ await waitVisible('#home.active');
  await page.evaluate(()=>localStorage.setItem('mon-state',JSON.stringify({saveVersion:1,xp:321,foundationDay:4})));
  await page.reload({waitUntil:'networkidle'});
  await waitVisible('#home.active');
