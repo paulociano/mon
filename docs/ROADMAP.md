@@ -191,6 +191,8 @@ Reusar os mesmos motores. Não criar um segundo sistema pedagógico paralelo.
 ### 9. Métricas de aprendizagem — camada semântica implementada ✅
 
 ### 9.2 Validação longitudinal da aprendizagem — implementada ✅
+
+### 9.3 Calibração longitudinal do Next Best Lesson — implementada ✅
 **Dependência:** motores estáveis + telemetria local.
 
 **Decisão:** atividade, retenção, domínio, transferência, reparo e autonomia agora possuem definições operacionais, denominadores e status de qualidade da amostra. Fonte de verdade: [Learning Metrics](LEARNING-METRICS.md).
@@ -206,6 +208,8 @@ Separar:
 A Home e o Next Best Lesson devem otimizar aprendizagem, não atividade.
 
 **P9.2:** retenção 1d+/3d+/7d+, dependência de pistas, transferência, autonomia e recuperação de erros recorrentes agora possuem relatório longitudinal local. Fonte de verdade: [Learning Validation](LEARNING-VALIDATION.md).
+
+**P9.3:** o Next Best Lesson usa apenas sinais longitudinais com amostra observada para frear avanço quando retenção 7d+ ou transferência permanecem frágeis. Dívidas pedagógicas diretas continuam tendo prioridade. Fonte de verdade: [NBL Calibration](NBL-CALIBRATION.md).
 
 ### 10. Performance por latência observada — instrumentação implementada ✅
 **Dependência:** Performance Lab existente.
@@ -277,7 +281,7 @@ Regras:
 6. Survival Missions 2.0 concluído.
 7. Gate estrutural N5 concluído; manter validação longitudinal de retenção e transferência.
 8. N4 por capacidades formalizado; manter calibração longitudinal dos gates funcionais.
-9. Métricas de aprendizagem implementadas; acumular evidência longitudinal antes de recalibrar decisões adaptativas.
+9. P9.2/P9.3 implementados: validar longitudinalmente e recalibrar o NBL apenas com sinais observados; manter Home fora dessa calibração por enquanto.
 10. Latência observada implementada; acumular baselines equivalentes antes de transformar números em gates.
 11. P8 avançado em Home, Lesson, Practice, Journal, Missions, Listening/Pronunciation e Kanji; seguir com validação visual publicada e refinamentos residuais sem quebrar os gates.
 
