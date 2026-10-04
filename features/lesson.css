@@ -47,3 +47,5 @@
 }
 @media(max-width:380px){.quick-energy{font-size:11px}.quick-exit{font-size:24px}.quick-top{grid-template-columns:34px 1fr auto}.quick-bottom{min-height:138px}}
 @media(max-height:560px) and (orientation:landscape){.quick-top{height:52px}.quick-main{padding-top:12px;padding-bottom:116px}.quick-bottom{min-height:92px}.quick-bottom-inner{flex-direction:row;padding:8px 0}.quick-question{font-size:24px}.quick-jp{margin:10px 0;font-size:36px}}
+
+.study-card{display:grid;gap:14px}.study-card>p,.study-contrast{font-size:10px;line-height:1.7;color:#aeb9c4}.study-model{font:500 20px/1.45 var(--display);color:#f1e4cf}.study-examples{display:grid;gap:9px}.study-examples article{padding:13px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:#111c2c}.study-examples strong,.study-examples span,.study-examples small{display:block}.study-examples strong{font:650 23px/1.3 var(--jp)}.study-examples span{color:#d7b56d}.study-examples small{margin-top:6px;color:#8f9baa;line-height:1.5}
