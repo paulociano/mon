@@ -155,6 +155,7 @@ Paleta principal:
 - [N5 Readiness Gate](docs/N5-READINESS.md)
 - [N4 Capability Contract](docs/N4-CAPABILITIES.md)
 - [Learning Metrics](docs/LEARNING-METRICS.md)
+- [State Recovery & Backup](docs/STATE-RECOVERY.md)
 - [Pesquisa de Quality Engineering](docs/QUALITY-RESEARCH-2026-10-03.md)
 - [Segurança](SECURITY.md)
 - [Contribuição](CONTRIBUTING.md)
