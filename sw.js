@@ -1,10 +1,15 @@
 const CACHE_PREFIX='mon-japanese-os-';
-const CACHE_VERSION='v34';
+const CACHE_VERSION='v35';
+const CRITICAL_SHELL_UPGRADE=CACHE_VERSION==='v35';
 const CACHE=CACHE_PREFIX+CACHE_VERSION;
 const CORE=['./','./index.html','./styles.css','./data/course-content.js','./core/state.js','./core/review-scheduler.js','./core/performance.js','./core/home-coach.js','./app.js','./manifest.json','./icon.svg','./assets/brand/mon-mark.svg','./assets/brand/mon-lockup.svg','./assets/brand/kitsu-mascot.webp','./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp'];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)));
+  event.waitUntil((async()=>{
+    const cache=await caches.open(CACHE);
+    await cache.addAll(CORE);
+    if(CRITICAL_SHELL_UPGRADE)await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate',event=>{
@@ -13,6 +18,17 @@ self.addEventListener('activate',event=>{
     await Promise.all(keys.filter(k=>k.startsWith(CACHE_PREFIX)&&k!==CACHE).map(k=>caches.delete(k)));
     if(self.registration.navigationPreload)await self.registration.navigationPreload.enable();
     await self.clients.claim();
+    if(CRITICAL_SHELL_UPGRADE){
+      const clients=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+      await Promise.all(clients.map(client=>{
+        try{
+          const url=new URL(client.url);
+          const view=url.searchParams.get('view');
+          if(!view||view==='home')return client.navigate(client.url);
+        }catch(e){}
+        return null;
+      }));
+    }
   })());
 });
 
