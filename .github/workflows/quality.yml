@@ -79,7 +79,9 @@ jobs:
       - name: Router structural integrity
         run: node scripts/test-router-integrity.mjs
       - name: JavaScript parser check
-        run: node --check app.js
+        run: |
+          node --check app.js
+          for file in features/*.js core/*.js data/*.js; do node --check "$file"; done
       - name: Lazy runtime dependencies
         run: node scripts/test-lazy-runtime-deps.mjs
       - name: Generated section banners
