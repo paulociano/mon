@@ -13,13 +13,13 @@ function boot(seed={}){
  };
  const context={localStorage,updateMetrics(){},console};
  vm.createContext(context);
- vm.runInContext(source+';globalThis.__state=state;globalThis.__save=save;globalThis.__version=MON_SAVE_VERSION;',context);
+ vm.runInContext(source+';globalThis.__state=state;globalThis.__save=save;globalThis.__version=MON_SAVE_VERSION;globalThis.__migrate=migrateState;',context);
  return {context,store};
 }
 
 {
  const {context}=boot();
- assert.equal(context.__state.saveVersion,1);
+ assert.equal(context.__state.saveVersion,2);
  assert.equal(context.__state.foundationDay,1);
  assert.deepEqual(Object.keys(context.__state.videoLearning.opened),[]);
  assert.deepEqual(Object.keys(context.__state.productionGaps),[]);
@@ -28,10 +28,18 @@ function boot(seed={}){
 {
  const legacy={xp:777,foundationDay:8,reviews:{a:{ease:2.1}}};
  const {context}=boot({'mon-state':JSON.stringify(legacy)});
- assert.equal(context.__state.saveVersion,1);
+ assert.equal(context.__state.saveVersion,2);
  assert.equal(context.__state.xp,777);
  assert.equal(context.__state.foundationDay,8);
  assert.equal(context.__state.reviews.a.ease,2.1);
+}
+{
+ const v1={saveVersion:1,xp:333,learningEvidence:{events:Array.from({length:605},(_,i)=>({at:i,kind:'attempt',ok:true}))}};
+ const {context}=boot({'mon-state':JSON.stringify(v1)});
+ assert.equal(context.__state.saveVersion,2);
+ assert.equal(context.__state.xp,333);
+ assert.equal(context.__state.learningEvidence.events.length,600);
+ assert.equal(context.__state.learningEvidence.events[0].at,5);
 }
 {
  const backup={saveVersion:1,xp:444,foundationDay:5};
@@ -45,7 +53,7 @@ function boot(seed={}){
  const future={saveVersion:99,xp:999};
  const {context}=boot({'mon-state':JSON.stringify(future)});
  assert.equal(context.__state.xp,120);
- assert.equal(context.__state.saveVersion,1);
+ assert.equal(context.__state.saveVersion,2);
 }
 {
  const initial={saveVersion:1,xp:200,foundationDay:3};
@@ -54,7 +62,7 @@ function boot(seed={}){
  context.__save();
  assert.equal(JSON.parse(store.get('mon-state')).xp,250);
  assert.equal(JSON.parse(store.get('mon-state-backup')).xp,200);
- assert.equal(JSON.parse(store.get('mon-state')).saveVersion,1);
+ assert.equal(JSON.parse(store.get('mon-state')).saveVersion,2);
 }
 {
  const initial={saveVersion:1,videoLearning:{opened:{listening:2},practice:{listening:1},last:{id:'listening',at:123}}};
@@ -85,5 +93,11 @@ function boot(seed={}){
  assert.equal(context.__state.learningEvidence.events[0].concept,'unit:n5-test');
  context.__save();
  assert.equal(JSON.parse(store.get('mon-state')).learningEvidence.events[0].spacingMs,86400000);
+}
+{
+ const {context}=boot();
+ assert.equal(context.__version,2);
+ assert.equal(context.__migrate({saveVersion:2,xp:888}).xp,888);
+ assert.throws(()=>context.__migrate({saveVersion:3}),/future MON save version/);
 }
 console.log('MON state persistence contracts passed');
