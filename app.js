@@ -11,7 +11,7 @@ const ACCOUNT_RUNTIME_SCRIPT='./core/account.js';
 const CLOUD_RUNTIME_SCRIPTS=['./config/cloud.js','./core/supabase-sync.js'];
 let accountRuntimePromise=null;
 function ensureAccountRuntime(){return accountRuntimePromise||(accountRuntimePromise=(async()=>{await loadRuntimeScript(ACCOUNT_RUNTIME_SCRIPT);for(const src of CLOUD_RUNTIME_SCRIPTS)await loadRuntimeScript(src)})())}
-const LE=LE;
+const LE='./core/learning-evidence.js';
 const LEARNING_RUNTIME_SCRIPTS=[
  './data/kanji.js',
  './data/kana.js',
