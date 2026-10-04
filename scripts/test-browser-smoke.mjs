@@ -77,7 +77,7 @@ try{
  await page.fill('#missionFreeText','五時でお願いします');
  await page.click('.mission-free .primary');
  assert.equal(await page.locator('#missionFreeText').count(),0,'successful free response must advance the dialogue');
- assert.match(await page.locator('#missionRunner').innerText(),/今日の五時|五時に変更/);
+ assert.match(await page.locator('#missionRunner').innerText(),/その時間に変更/,'NPC must react to the free-form five-o’clock choice');
  assert.equal(pageErrors.length,0,'multi-turn free mission emitted page errors: '+pageErrors.join('\n'));
 
  await page.evaluate(async()=>await go('practice'));
