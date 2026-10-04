@@ -150,6 +150,8 @@ jobs:
         run: node scripts/measure-latency-baseline.mjs
       - name: Responsive smoke
         run: node scripts/test-responsive-smoke.mjs
+      - name: P8 secondary responsive smoke
+        run: node scripts/test-p8-secondary-responsive.mjs
       - name: Offline PWA smoke
         run: node scripts/test-offline-smoke.mjs
 
