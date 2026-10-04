@@ -494,3 +494,10 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 .onboarding-card p{color:#697582;font-size:10px;line-height:1.75;max-width:520px}
 .onboarding-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
 @media (max-width:680px){.onboarding-card{padding:25px}}
+
+/* Accessibility contract */
+.skip-link{position:fixed;left:14px;top:10px;z-index:50000;transform:translateY(-160%);padding:10px 13px;border-radius:10px;background:#fff;color:#0a1626;font:800 10px/1 system-ui;text-decoration:none;box-shadow:0 10px 30px rgba(0,0,0,.28)}
+.skip-link:focus{transform:translateY(0)}
+:where(button,a,input,select,textarea,[tabindex]):focus-visible{outline:2px solid #f4e8d2;outline-offset:3px}
+#mainContent:focus{outline:none}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
