@@ -140,3 +140,31 @@ jobs:
           exit 1
       - name: Browser smoke
         run: node scripts/test-browser-smoke.mjs
+      - name: Offline PWA smoke
+        run: node scripts/test-offline-smoke.mjs
+
+
+  cross-browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [firefox, webkit]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install browser runtime
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Serve MON
+        run: |
+          python3 -m http.server 4173 > /tmp/mon-http.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 0.5; done
+          cat /tmp/mon-http.log
+          exit 1
+      - name: Cross-browser smoke
+        env:
+          MON_BROWSER: ${{ matrix.browser }}
+        run: node scripts/test-cross-browser-smoke.mjs
