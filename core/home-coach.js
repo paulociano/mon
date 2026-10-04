@@ -1,6 +1,3 @@
-// MON Home Coach
-// Pure priority policy for the Home surface. No DOM and no lazy feature dependencies.
-
 function homeCoachSignals(state={},now=Date.now()){
   const dueReviews=Object.values(state.reviewItems||{}).filter(x=>(x?.due||0)<=now).length;
   const openMistakes=Object.values(state.mistakeStats||{}).filter(x=>(x?.count||0)>(x?.recovered||0)).length;
