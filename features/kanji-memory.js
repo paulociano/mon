@@ -27,6 +27,4 @@ function startKanjiContrast(){const x=kanjiData[currentKanji],m=kanjiMemoryMeta(
 function answerKanjiContrast(k){const x=kanjiData[currentKanji],ok=k===x.k;recordKanjiLab(ok,'contrast');document.getElementById('kanjiLabChallenge').innerHTML=`<div class="km-feedback">${ok?'Boa discriminação.':'Observe a estrutura e tente novamente.'}</div>`}
 kanjiLabState();
 
-const monSelectKanjiBase=selectKanji;
-selectKanji=function(i){monSelectKanjiBase(i);renderKanjiMemoryLab()};
-renderKanjiMemoryLab();
+// UI orchestration lives in features/kanji.js; this file provides memory exercise engines.
