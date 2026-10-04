@@ -33,15 +33,15 @@ function grammarStudyBlock(unit={}){
   }
   while(examples.length<2&&notes[0])examples.push({jp:notes[0].g.form,pt:notes[0].g.pt,note:'Molde da estrutura: recupere a função antes da tradução.'});
   const commonMistakes=notes.flatMap(x=>x.commonMistakes||[]).filter((x,i,a)=>a.findIndex(y=>y.wrong===x.wrong)===i).slice(0,3);
+  const baseContrast=notes.length>1?notes.map(x=>`${x.g.form}: ${x.contrast}`).join(' '):notes[0].contrast;
+  const mistake=commonMistakes[0];
   return {
     type:'study',
     title:`${unit.title||'Lição'} · gramática aplicada`,
     mentalModel:notes.map(x=>x.mentalModel).join(' '),
     explanation:notes.map(x=>x.explanation).join(' '),
     examples,
-    contrast:notes.length>1
-      ?notes.map(x=>`${x.g.form}: ${x.contrast}`).join(' ')
-      :notes[0].contrast,
+    contrast:baseContrast+(mistake?` Erro comum: ${mistake.wrong} ${mistake.explanation}`:''),
     commonMistakes,
     realWorldUse:[...new Set(notes.map(x=>x.realWorldUse).filter(Boolean))].join(' · ')||((unit.objectives||[]).join(' · '))
   };
