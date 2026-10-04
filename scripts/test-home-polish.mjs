@@ -8,7 +8,7 @@ const css=fs.readFileSync('styles.css','utf8');
 for(const token of ['current-unit','done-unit','locked-unit','unit-progress','unit-status','node-type','aria-current="step"']){
   assert.ok(app.includes(token),'missing path rendering token '+token);
 }
-for(const token of ['rail-card-label','daily-card','quest-card','practice-mini','guideMascot','guideStateLabel','kitsu-head','kitsu-seal']){
+for(const token of ['rail-card-label','daily-card','quest-card','practice-mini','guideMascot','guideStateLabel','kitsu-art','assets/brand/kitsu-mascot.webp']){
   assert.ok(html.includes(token),'missing rail markup '+token);
 }
 for(const token of ['.path-node.checkpoint::after','.guide-card[data-state="checkpoint"]','.guide-card[data-state="review"]','.guide-mascot[data-mood="repair"]','.guide-mascot[data-mood="transfer"]','.home-reveal.is-visible']){
@@ -19,5 +19,6 @@ for(const token of ['guideMascotState','renderGuideMascot',"'repair','mistake'",
   assert.ok(app.includes(token),'missing adaptive mascot contract '+token);
 }
 assert.ok(app.includes("!['repair','review','recover','mistake','story'].includes(adaptive?.kind)"),'story coach copy must not be overwritten by generic path guidance');
-assert.ok(css.includes('@media(prefers-reduced-motion:reduce){.guide-mascot{animation:none}'),'mascot motion must respect reduced motion');
+assert.ok(css.includes('@media(prefers-reduced-motion:reduce){.guide-mascot{animation:none}.kitsu-art{transition:none}'),'mascot asset must respect reduced motion');
+assert.ok(html.includes('width="160" height="160" decoding="async"'),'Kitsu asset needs intrinsic dimensions and async decoding');
 console.log('MON home polish contracts passed');
