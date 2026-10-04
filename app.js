@@ -8,7 +8,7 @@ const NAV_PARENT={lesson:'home',session:'home',curriculum:'journey',foundation:'
 function navParentForView(id){return NAV_PARENT[id]||id}
 function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${navParentForView(id)}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 const ACCOUNT_RUNTIME_SCRIPT='./core/account.js';
-const CLOUD_RUNTIME_SCRIPTS=['./config/cloud.js','./core/supabase-sync.js'];
+const CLOUD_RUNTIME_SCRIPTS=['./config/cloud.js','./core/supabase-sync.js','./core/multi-device-sync.js'];
 let accountRuntimePromise=null;
 function ensureAccountRuntime(){return accountRuntimePromise||(accountRuntimePromise=(async()=>{await loadRuntimeScript(ACCOUNT_RUNTIME_SCRIPT);for(const src of CLOUD_RUNTIME_SCRIPTS)await loadRuntimeScript(src)})())}
 const LE='./core/learning-evidence.js';
@@ -173,7 +173,7 @@ document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',(
 window.addEventListener('popstate',()=>go(routeFromLocation(),{history:false}));
 const MON_PROFILE_KEY='mon-profile';
 function loadLocalProfile(){try{return {...{name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'},...JSON.parse(localStorage.getItem(MON_PROFILE_KEY)||'{}')}}catch(e){return {name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'}}}
-function saveLocalProfile(profile){localStorage.setItem(MON_PROFILE_KEY,JSON.stringify(profile))}
+function saveLocalProfile(profile){localStorage.setItem(MON_PROFILE_KEY,JSON.stringify(profile));if(typeof markMonSyncDirty==='function')markMonSyncDirty()}
 function userAreaMarkup(){
  return '<div class="user-shell"><div class="user-hero"><div class="user-identity"><div class="user-avatar" id="userAvatar">門</div><div><span class="eyebrow">Minha área · 私</span><h2 id="userNameHero">Estudante MON</h2><p id="userPlanHero">Seu progresso e suas preferências neste dispositivo.</p></div></div><span class="user-local-badge" id="userAccountBadge">perfil local</span></div><div class="user-grid"><section class="user-card"><h3>Seu aprendizado</h3><p>Uma leitura rápida do seu momento, sem transformar estudo em painel de vaidade.</p><div class="user-stats"><div class="user-stat"><span>nível</span><b id="userLevel">N5</b></div><div class="user-stat"><span>sequência</span><b id="userStreak">1 dia</b></div><div class="user-stat"><span>XP</span><b id="userXp">0</b></div></div><div class="user-progress-line"><i id="userJourneyBar"></i></div><div class="user-data-note" id="userJourneyText"></div><div class="user-actions"><button class="user-secondary" onclick="go(\'progress\')">ver progresso</button><button class="user-secondary" onclick="go(\'journey\')">abrir jornada</button></div></section><section class="user-card"><h3>Perfil e rotina</h3><p>Preferências simples para o MON adaptar a experiência sem exigir uma conta.</p><label class="user-field"><span>Como quer ser chamado</span><input id="userNameInput" maxlength="32" autocomplete="nickname"></label><label class="user-field"><span>Meta diária</span><select id="userGoalInput"><option value="10">10 min · leve</option><option value="20">20 min · consistente</option><option value="30">30 min · intenso</option></select></label><label class="user-field"><span>Ritmo preferido</span><select id="userModeInput"><option value="equilibrado">Equilibrado</option><option value="revisao">Mais revisão</option><option value="desafio">Mais desafio</option></select></label><div class="user-actions"><button class="user-save" onclick="saveUserArea()">salvar preferências</button><button class="user-secondary" onclick="exportMonBackup()">exportar backup</button></div><div class="user-data-note" id="userCloudPanel"></div><div class="user-data-note" id="userAccountNote">Seus dados ficam salvos localmente neste navegador. Exportar um backup protege seu progresso antes de trocar de dispositivo ou limpar os dados do site.</div></section></div></div>';
 }
@@ -475,3 +475,8 @@ const foundationNav=document.querySelector('[data-view="foundation"]');
 if(foundationNav)foundationNav.addEventListener('pointerover',()=>ensureFeatureRuntime('foundation').catch(()=>{}),{passive:true,once:true});
 const pathWarm=document.getElementById('learningPath');
 if(pathWarm)pathWarm.addEventListener('pointerover',e=>{if(e.target.closest('.path-node.current'))ensureLearningRuntime().catch(()=>{})},{passive:true});
+const monCloudResume=localStorage.getItem('mon-cloud-linked')==='1'||new URLSearchParams(location.search).has('code')||location.hash.includes('access_token');
+if(monCloudResume){
+ const bootCloud=()=>ensureAccountRuntime().then(()=>typeof monCloudBootstrap==='function'&&monCloudBootstrap()).catch(()=>{});
+ if('requestIdleCallback'in window)requestIdleCallback(bootCloud,{timeout:2500});else setTimeout(bootCloud,400);
+}
