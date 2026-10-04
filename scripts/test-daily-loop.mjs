@@ -15,6 +15,8 @@ for(const intent of ['repair','retrieve','listening','production','transfer','ad
 const session=fs.readFileSync('features/session.js','utf8');
 assert.ok(session.includes('nextBestLessonPlan(state,node)'));
 assert.ok(session.includes('dailyLoopRecipe(nextBest)'));
+assert.ok(session.includes('fitDailyLoop(baseLoop,profile.dailyGoal,profile.studyMode)'));
+assert.ok(session.includes("goal===10?4:goal===30?7:6")||fs.readFileSync('app.js','utf8').includes("goal===10?4:goal===30?7:6"));
 assert.ok(session.includes('sessionRun.nextBest'));
 assert.ok(session.includes('s.loopLabel||sessionLabels[i]'));
 assert.ok(session.includes('Duração estimada:'));
