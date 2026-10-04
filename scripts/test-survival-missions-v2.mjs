@@ -41,8 +41,10 @@ vm.runInContext("missionRun.step=2",runtimeCtx);assert.equal(vm.runInContext("ad
 assert.equal(vm.runInContext("missionEvaluateFree('五時でお願いします',adaptiveMissionTurn({id:'phone'},missionRun)).ok",runtimeCtx),true);
 assert.equal(vm.runInContext("missionEvaluateFree('分かりました',adaptiveMissionTurn({id:'phone'},missionRun)).ok",runtimeCtx),false);
 assert.equal(vm.runInContext("missionSemanticReaction('phone','negotiate','五時でお願いします').key",runtimeCtx),'five');
-vm.runInContext("missionRun.semanticReaction=missionSemanticReaction('phone','negotiate','五時でお願いします');missionRun.step=3",runtimeCtx);
-assert.ok(vm.runInContext("adaptiveMissionTurn({id:'phone'},missionRun).npc",runtimeCtx).includes('その時間に変更'));
+assert.equal(vm.runInContext("missionSemanticReaction('phone','negotiate','五時でお願いします').slots.time",runtimeCtx),'五時');
+vm.runInContext("missionRun.step=2;adaptiveMissionRecordTurn(missionRun,'free',adaptiveMissionTurn({id:'phone'},missionRun),missionSemanticReaction('phone','negotiate','五時でお願いします'));missionRun.step=3",runtimeCtx);
+assert.equal(vm.runInContext("missionRun.contextMemory.time",runtimeCtx),'五時');
+assert.ok(vm.runInContext("adaptiveMissionTurn({id:'phone'},missionRun).npc",runtimeCtx).includes('先ほど選んだ五時'));
 vm.runInContext("missionRun.step=1;missionRun.lastChoice='alt'",runtimeCtx);assert.ok(vm.runInContext("adaptiveMissionTurn({id:'phone'},missionRun).npc",runtimeCtx).includes('よろしい'));
 vm.runInContext("missionRecordFunctionalTurn({capability:'confirm',goal:'confirmar'},false)",runtimeCtx);assert.equal(vm.runInContext("state.functionalMastery.confirm.attempts",runtimeCtx),1);
 assert.ok(app.includes("'./data/missions-v2.js'"));
@@ -62,5 +64,9 @@ assert.ok(css.includes('.free-hidden'));
 for(const token of ['missionEvaluateFree','missionFreeSpeech','missionShowChoices','missionFreeHTML'])assert.ok(dialogue.includes(token),'free mission runtime missing '+token);
 for(const token of ['MISSION_REACTIONS','missionSemanticReaction','five','morning','safe'])assert.ok(reactions.includes(token),'semantic reaction runtime missing '+token);
 assert.ok(js.includes('semanticBranch:missionRun.semanticReaction?.key'));
+assert.ok(js.includes('contextMemory:{...(missionRun.contextMemory||{})}'));
+for(const token of ['missionContextualTurn','contextMemory','slots:meta?.slots'])assert.ok(dialogue.includes(token),'context memory runtime missing '+token);
+assert.ok(reactions.includes("{time:'五時'}"));
+assert.ok(reactions.includes("{route:'駅前通り'}"));
 
 console.log('MON Survival Missions 2.0 contracts passed');
