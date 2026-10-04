@@ -18,17 +18,6 @@ self.addEventListener('activate',event=>{
     await Promise.all(keys.filter(k=>k.startsWith(CACHE_PREFIX)&&k!==CACHE).map(k=>caches.delete(k)));
     if(self.registration.navigationPreload)await self.registration.navigationPreload.enable();
     await self.clients.claim();
-    if(CRITICAL_SHELL_UPGRADE){
-      const clients=await self.clients.matchAll({type:'window',includeUncontrolled:true});
-      await Promise.all(clients.map(client=>{
-        try{
-          const url=new URL(client.url);
-          const view=url.searchParams.get('view');
-          if(!view||view==='home')return client.navigate(client.url);
-        }catch(e){}
-        return null;
-      }));
-    }
   })());
 });
 
