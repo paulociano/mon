@@ -76,6 +76,8 @@ jobs:
         run: node scripts/test-daily-loop.mjs
       - name: Performance budgets
         run: node scripts/test-performance-budget.mjs
+      - name: PWA shell and update flow
+        run: node scripts/test-pwa-runtime.mjs
       - name: Lazy feature split
         run: node scripts/test-feature-split.mjs
       - name: Lazy experiences and telemetry
