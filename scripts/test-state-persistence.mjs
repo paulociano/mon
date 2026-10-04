@@ -68,6 +68,7 @@ function boot(seed={}){
  assert.equal(JSON.parse(store.get('mon-state')).xp,250);
  assert.equal(JSON.parse(store.get('mon-state-backup')).xp,200);
  assert.equal(JSON.parse(store.get('mon-state')).saveVersion,3);
+ assert.ok(store.get('mon-sync-dirty-at'),'local save must mark state dirty for cloud sync');
 }
 {
  const initial={saveVersion:1,videoLearning:{opened:{listening:2},practice:{listening:1},last:{id:'listening',at:123}}};
