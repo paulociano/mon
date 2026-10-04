@@ -261,15 +261,17 @@ Regras:
 - smoke test offline ✅;
 - política clara para microfone.
 
-### 13. Conta e sync
-**Somente depois do modelo local estar estável.**
+### 13. Conta e sync — motor multi-device implementado ✅
+**Dependência atendida:** modelo local, migrations e recovery estabilizados.
 
-- autenticação;
-- sync entre dispositivos;
-- resolução de conflitos;
-- backup;
-- privacidade;
-- migração do estado local para conta sem perda.
+- autenticação por magic link ✅;
+- sync entre dispositivos com revisão otimista ✅;
+- resolução explícita de conflitos ✅;
+- backup local + snapshot remoto de conflito ✅;
+- RLS e boundary de privacidade ✅;
+- migração do estado local para conta sem perda ✅;
+
+**Ativação operacional:** aplicar `supabase/schema.sql` e preencher URL pública + publishable key em `config/cloud.js`. Fonte de verdade: [Multi-device Sync](MULTI-DEVICE-SYNC.md).
 
 ## Ordem operacional imediata
 

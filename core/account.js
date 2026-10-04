@@ -1,8 +1,9 @@
 // MON account boundary
-// Provider-agnostic identity and sync payloads. No network provider is configured yet.
-
 const MON_ACCOUNT_KEY='mon-account';
 const MON_SYNC_VERSION=1;
+const MON_CLOUD_LINK_KEY='mon-cloud-linked';
+const MON_SYNC_DIRTY_KEY='mon-sync-dirty-at';
+const MON_CLOUD_CONFLICT_KEY='mon-cloud-conflict-last';
 
 function createMonLocalId(){
  const bytes=new Uint8Array(12);
@@ -18,33 +19,29 @@ function normalizeMonAccount(raw={}){
   userId:raw.userId||null,
   email:raw.email||null,
   status:raw.userId?'connected':'local',
-  lastSyncedAt:raw.lastSyncedAt||null
+  cloudRevision:Math.max(0,Number(raw.cloudRevision||0)),
+  lastSyncedAt:raw.lastSyncedAt||null,
+  lastSyncStatus:raw.lastSyncStatus||null
  };
 }
+function saveMonAccount(account){const next=normalizeMonAccount(account);localStorage.setItem(MON_ACCOUNT_KEY,JSON.stringify(next));return next}
 function loadMonAccount(){
  try{
-  const stored=JSON.parse(localStorage.getItem(MON_ACCOUNT_KEY)||'{}');
-  const account=normalizeMonAccount(stored);
-  localStorage.setItem(MON_ACCOUNT_KEY,JSON.stringify(account));
-  return account;
+  const account=normalizeMonAccount(JSON.parse(localStorage.getItem(MON_ACCOUNT_KEY)||'{}'));
+  localStorage.setItem(MON_ACCOUNT_KEY,JSON.stringify(account));return account;
  }catch(e){
-  const account=normalizeMonAccount();
-  try{localStorage.setItem(MON_ACCOUNT_KEY,JSON.stringify(account))}catch(err){}
-  return account;
+  const account=normalizeMonAccount();try{localStorage.setItem(MON_ACCOUNT_KEY,JSON.stringify(account))}catch(err){}return account;
  }
 }
 function monSyncPayload(profile={}){
  const account=loadMonAccount();
- return {
-  syncVersion:MON_SYNC_VERSION,
-  localId:account.localId,
-  updatedAt:new Date().toISOString(),
-  profile:{...profile},
-  learningState:typeof normalizeState==='function'?normalizeState(state):state
- };
+ return {syncVersion:MON_SYNC_VERSION,localId:account.localId,updatedAt:new Date().toISOString(),profile:{...profile},learningState:typeof normalizeState==='function'?normalizeState(state):state};
 }
 function monAccountStatus(){return loadMonAccount().status}
-function monCloudAvailable(){return false}
+function markMonSyncDirty(){try{localStorage.setItem(MON_SYNC_DIRTY_KEY,1);typeof scheduleMonCloudSync==='function'&&scheduleMonCloudSync()}catch{}}
+function monLocalSyncDirty(){try{return !!localStorage.getItem(MON_SYNC_DIRTY_KEY)}catch{return false}}
+function clearMonSyncDirty(){try{localStorage.removeItem(MON_SYNC_DIRTY_KEY)}catch{}}
+function rememberMonCloudConflict(row){try{localStorage.setItem(MON_CLOUD_CONFLICT_KEY,JSON.stringify(row))}catch{}}
 
 function validateMonBackup(payload){
  if(!payload||typeof payload!=='object'||Array.isArray(payload))throw new Error('Backup MON inválido');
@@ -59,22 +56,20 @@ function validateMonBackup(payload){
  }:{name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'};
  return {syncVersion,learningState,profile};
 }
-function importMonBackup(raw){
- const payload=typeof raw==='string'?JSON.parse(raw):raw;
- const validated=validateMonBackup(payload);
- const current=JSON.stringify(normalizeState(state));
+function applyMonSnapshot(payload,{markDirty=true}={}){
+ const validated=validateMonBackup(payload),current=JSON.stringify(normalizeState(state));
  localStorage.setItem(MON_STATE_BACKUP_KEY,current);
  localStorage.setItem(MON_STATE_KEY,JSON.stringify(validated.learningState));
  localStorage.setItem('mon-profile',JSON.stringify(validated.profile));
  state=validated.learningState;
- updateMetrics();
- return validated;
+ if(markDirty)markMonSyncDirty();else clearMonSyncDirty();
+ updateMetrics();return validated;
 }
+function importMonBackup(raw){return applyMonSnapshot(typeof raw==='string'?JSON.parse(raw):raw,{markDirty:true})}
 async function importMonBackupFile(input){
  const file=input?.files?.[0];if(!file)return false;
  try{
-  const text=await file.text();
-  importMonBackup(text);
+  importMonBackup(await file.text());
   if(typeof renderUserArea==='function')renderUserArea();
   if(typeof renderGameHome==='function')renderGameHome();
   if(typeof toast==='function')toast('Backup importado com segurança');
@@ -82,11 +77,8 @@ async function importMonBackupFile(input){
  }catch(e){
   if(typeof toast==='function')toast('Backup inválido · nada foi alterado');
   return false;
- }finally{
-  if(input)input.value='';
- }
+ }finally{if(input)input.value=''}
 }
-
 function ensureMonBackupImportControl(){
  if(document.getElementById('userBackupInput'))return;
  const actions=[...document.querySelectorAll('#user .user-actions')].at(-1);if(!actions)return;
@@ -94,47 +86,7 @@ function ensureMonBackupImportControl(){
  actions.querySelector('[data-mon-import]')?.addEventListener('click',()=>document.getElementById('userBackupInput')?.click());
  document.getElementById('userBackupInput')?.addEventListener('change',e=>importMonBackupFile(e.currentTarget));
 }
-
-async function renderCloudAccountPanel(){
- const panel=document.getElementById('userCloudPanel');
- if(typeof ensureMonBackupImportControl==='function')ensureMonBackupImportControl();
- if(!panel)return;
- if(typeof monCloudConfigured!=='function'||!monCloudConfigured()){
-  panel.innerHTML='<b>Conta MON</b><br>Nuvem preparada, aguardando configuração do projeto Supabase.';
-  return;
- }
- try{
-  const session=await monCloudSession();
-  if(session){
-   const email=escapeHtml(session.user.email||'usuário');
-   panel.innerHTML='<b>Conta MON conectada</b><br>'+email+'<div class="user-actions"><button class="user-save" onclick="syncMonNow()">sincronizar agora</button><button class="user-secondary" onclick="disconnectMonCloud()">sair</button></div>';
-  }else{
-   panel.innerHTML='<b>Sincronizar entre dispositivos</b><br><label class="user-field"><span>E-mail</span><input id="userCloudEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><div class="user-actions"><button class="user-save" onclick="connectMonCloud()">enviar link de acesso</button></div>';
-  }
- }catch(e){
-  panel.textContent='Conta MON indisponível: '+e.message;
- }
+function exportMonBackup(){
+ const payload=monSyncPayload(loadLocalProfile()),blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='mon-backup-'+shellLocalDateKey()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),0);toast('Backup do MON exportado');
 }
-async function connectMonCloud(){
- const email=document.getElementById('userCloudEmail')?.value.trim();
- if(!email){toast('Digite seu e-mail');return}
- try{
-  await monCloudSignIn(email);
-  toast('Link de acesso enviado ao seu e-mail');
- }catch(e){toast(e.message)}
-}
-async function disconnectMonCloud(){
- try{
-  await monCloudSignOut();
-  await renderCloudAccountPanel();
-  toast('Conta desconectada deste dispositivo');
- }catch(e){toast(e.message)}
-}
-async function syncMonNow(){
- try{
-  await monCloudPush(loadLocalProfile());
-  toast('Progresso sincronizado com a Conta MON');
-  await renderCloudAccountPanel();
- }catch(e){toast(e.message)}
-}
-function exportMonBackup(){const payload=monSyncPayload(loadLocalProfile());const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mon-backup-'+shellLocalDateKey()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),0);toast('Backup do MON exportado')}

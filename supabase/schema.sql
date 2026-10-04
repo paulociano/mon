@@ -5,9 +5,11 @@ create table if not exists public.mon_user_state (
   profile jsonb not null default '{}'::jsonb,
   learning_state jsonb not null default '{}'::jsonb,
   client_updated_at timestamptz,
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  revision bigint not null default 1 check (revision >= 1)
 );
 
+alter table public.mon_user_state add column if not exists revision bigint not null default 1;
 alter table public.mon_user_state enable row level security;
 revoke all on table public.mon_user_state from anon, authenticated;
 grant select, insert, update on table public.mon_user_state to authenticated;

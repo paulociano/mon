@@ -67,6 +67,7 @@ function save(){
   }
   localStorage.setItem(MON_STATE_KEY,serialized);
   state=next;
+  try{localStorage.setItem('mon-sync-dirty-at',Date.now());typeof scheduleMonCloudSync==='function'&&scheduleMonCloudSync()}catch(e){}
  }catch(e){}
  updateMetrics();
 }
