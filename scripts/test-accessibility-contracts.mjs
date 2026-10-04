@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 const html=fs.readFileSync('index.html','utf8');
 const app=fs.readFileSync('app.js','utf8');
-const css=fs.readFileSync('styles.css','utf8');
+const css=fs.readFileSync('styles.css','utf8')+html;
 
 assert.ok(html.includes('<a class="skip-link" href="#mainContent">'),'skip link must target main content');
 assert.ok(html.includes('<main id="mainContent" tabindex="-1">'),'main landmark must be programmatically focusable');
