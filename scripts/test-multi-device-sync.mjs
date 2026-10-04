@@ -58,7 +58,7 @@ function boot({state={saveVersion:3,xp:120,sessions:0,pathProgress:0,foundationD
  const {context,store}=boot({state:{saveVersion:3,xp:500,sessions:2,pathProgress:3,foundationDay:4}});
  const result=await context.__reconcile();
  assert.equal(result.status,'pushed');
- assert.deepEqual(context.__pushes,[0]);
+ assert.deepEqual(Array.from(context.__pushes),[0]);
  assert.equal(context.__account().cloudRevision,1);
  assert.equal(store.has('mon-sync-dirty-at'),false);
 }
@@ -75,7 +75,7 @@ function boot({state={saveVersion:3,xp:120,sessions:0,pathProgress:0,foundationD
  const result=await context.__reconcile();
  assert.equal(result.status,'conflict');
  assert.equal(context.__state().xp,500);
- assert.deepEqual(context.__pushes,[]);
+ assert.deepEqual(Array.from(context.__pushes),[]);
  assert.equal(JSON.parse(store.get('mon-cloud-conflict-last')).revision,2,'remote conflict snapshot must be recoverable');
  const cloud=await context.__reconcile({preference:'cloud'});
  assert.equal(cloud.status,'pulled');
@@ -85,7 +85,7 @@ function boot({state={saveVersion:3,xp:120,sessions:0,pathProgress:0,foundationD
  const {context}=boot({state:{saveVersion:3,xp:500,sessions:2,pathProgress:2,foundationDay:3},account:{localId:'m1',userId:'u1',provider:'supabase',cloudRevision:1},dirty:true,remote:row(2,900)});
  const local=await context.__reconcile({preference:'local'});
  assert.equal(local.status,'pushed');
- assert.deepEqual(context.__pushes,[2]);
+ assert.deepEqual(Array.from(context.__pushes),[2]);
  assert.equal(context.__account().cloudRevision,3);
  assert.equal(context.__state().xp,500);
 }
