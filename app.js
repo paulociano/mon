@@ -130,7 +130,7 @@ async function go(id,options={}){
    document.body.classList.toggle('focus-session',id==='session');
    document.body.classList.toggle('quick-focus',id==='lesson');
    document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
-   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===navParentForView(id)));
+   document.querySelectorAll('[data-view]').forEach(b=>{const active=b.dataset.view===navParentForView(id);b.classList.toggle('active',active);if(b.matches('#desktopNav [data-view]')){if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')}});
    const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;
    if(id==='home')renderGameHome();
    else if(id==='journey')renderJourney();
@@ -151,6 +151,7 @@ async function go(id,options={}){
    else if(id==='pronunciation'&&typeof renderPronunciation==='function')renderPronunciation();
    if(options.history!==false)commitRouteUrl(id,options.replace===true);
    keepActiveNavVisible(id);
+   const activeView=document.getElementById(id);if(activeView){activeView.setAttribute('tabindex','-1');activeView.focus({preventScroll:true})}
    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
    if(viewStart!==null&&typeof perfEnd==='function')perfEnd('view:'+id,viewStart);
  }catch(err){
@@ -337,7 +338,7 @@ function renderAdaptiveHome(){
  set('homeAdaptiveEyebrow',d.eyebrow);set('homeAdaptiveTitle',d.title);set('homeAdaptiveCopy',d.copy);set('homeAdaptiveSignal',d.signal);
  const primary=document.getElementById('homeAdaptivePrimary'),secondary=document.getElementById('homeAdaptiveSecondary');
  if(primary){primary.textContent=d.cta;primary.onclick=()=>runAdaptiveHomeAction(d.action)}
- if(secondary){secondary.textContent='por que esta sessão?';secondary.onclick=()=>document.getElementById('todayReason')?.classList.toggle('open')}
+ if(secondary){secondary.textContent='por que esta sessão?';secondary.onclick=toggleTodayReason}
  const reasonTitle=document.getElementById('todayReasonTitle'),reasonCopy=document.getElementById('todayReasonCopy');
  if(reasonTitle)reasonTitle.textContent=d.title;
  if(reasonCopy)reasonCopy.textContent=d.copy+' Sinal principal: '+d.signal+'.';
@@ -459,8 +460,9 @@ function initOnboarding(){
  const seen=localStorage.getItem('mon-onboarded')==='1'||(state.sessions||0)>0||(state.foundationDay||1)>1;
  shell.hidden=seen;
 }
+function toggleTodayReason(){const panel=document.getElementById('todayReason'),toggle=document.getElementById('todayReasonToggle');if(!panel||!toggle)return;const open=panel.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open))}
 const reasonToggle=document.getElementById('todayReasonToggle');
-if(reasonToggle)reasonToggle.addEventListener('click',()=>document.getElementById('todayReason')?.classList.toggle('open'));
+if(reasonToggle)reasonToggle.addEventListener('click',toggleTodayReason);
 updateMetrics();renderGameHome();initOnboarding();
 const initialRoute=routeFromLocation();
 if(initialRoute!=='home')go(initialRoute,{history:false}).catch(()=>{});

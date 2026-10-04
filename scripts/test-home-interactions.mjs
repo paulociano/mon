@@ -42,7 +42,7 @@ for(const handler of ['startQuickLesson','startMasteryRepair','claimPathChest'])
 
 for(const token of [
   "primary.onclick=()=>runAdaptiveHomeAction(d.action)",
-  "secondary.onclick=()=>document.getElementById('todayReason')?.classList.toggle('open')",
+  "secondary.onclick=toggleTodayReason",
   "if(action==='practice')return go('practice')",
   "if(action==='journal')return go('journal')",
   "if(action==='session')return startSession()",
@@ -52,7 +52,8 @@ for(const token of [
 }
 
 assert.ok(html.includes('id="todayReason"'),'Home needs an explainable-session rationale surface');
-assert.ok(app.includes("reasonToggle.addEventListener('click'"),'session rationale toggle must be wired by runtime');
+assert.ok(app.includes("reasonToggle.addEventListener('click',toggleTodayReason)"),'session rationale toggle must be wired by runtime');
+assert.ok(html.includes('aria-expanded="false" aria-controls="todayReasonBody"'),'session rationale toggle needs accessible state');
 assert.ok(app.includes("const NAV_PARENT="),'nested views need a primary navigation parent');
 assert.ok(html.includes('onclick="showProfileSummary()"'),'profile control must have an action');
 assert.ok(app.includes('function showProfileSummary()'),'profile action handler missing');
