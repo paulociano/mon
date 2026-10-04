@@ -476,3 +476,91 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 .update-banner[hidden]{display:none}.update-banner button{border:0;border-radius:10px;padding:8px 10px;background:#d7b56d;color:#10151c;font-size:7px;font-weight:900;white-space:nowrap}
 .update-banner button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 @media(max-width:580px){.update-banner{left:12px;right:12px;bottom:76px;max-width:none;justify-content:space-between}}
+
+
+/* ---------- Learning Journey IA ---------- */
+.today-reason{margin:14px 0 18px;border:1px solid rgba(10,22,38,.09);border-radius:18px;background:rgba(255,255,255,.7);overflow:hidden}
+.today-reason-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:0;background:transparent;color:#243244;font:700 10px/1.2 system-ui;letter-spacing:.04em;cursor:pointer}
+.today-reason-toggle b{font-size:17px;font-weight:400;transition:transform .2s ease}
+.today-reason.open .today-reason-toggle b{transform:rotate(45deg)}
+.today-reason-body{display:none;padding:0 16px 16px;color:#6d7785}
+.today-reason.open .today-reason-body{display:block}
+.today-reason-body strong{display:block;color:#172334;font:600 15px/1.35 Georgia,serif;margin-bottom:5px}
+.today-reason-body p{margin:0;font-size:9px;line-height:1.65}
+.journey-mini{background:linear-gradient(145deg,#13253a,#0a1626);color:#fff}
+.journey-mini h4{margin:8px 0 7px}
+.journey-mini p{color:#aab6c6}
+.rail-inline-action{margin-top:12px;border:0;background:transparent;color:#d7b56d;padding:0;font:700 8px/1 system-ui;text-transform:uppercase;letter-spacing:.12em;cursor:pointer}
+
+.journey-hero,.hub-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;padding:30px;border-radius:26px;background:linear-gradient(135deg,#0b1727,#152d49);color:#fff;margin-bottom:22px;position:relative;overflow:hidden}
+.journey-hero:after,.hub-hero:after{content:"門";position:absolute;right:26px;top:-35px;font-family:var(--jp);font-size:170px;line-height:1;color:rgba(255,255,255,.035);pointer-events:none}
+.journey-hero>div,.hub-hero>*{position:relative;z-index:1}
+.journey-hero h2,.hub-hero h2{font:500 clamp(29px,4vw,48px)/1.05 Georgia,serif;margin:8px 0 12px;max-width:780px}
+.journey-hero h2 em,.hub-hero h2 em{color:#d7b56d;font-style:normal}
+.journey-hero p,.hub-hero p{max-width:720px;color:#aeb9c7;font-size:10px;line-height:1.75;margin:0}
+.journey-hero .primary{flex:0 0 auto}
+
+.journey-stages{display:grid;gap:10px}
+.journey-stage{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:18px;padding:20px 22px;border:1px solid rgba(10,22,38,.08);border-radius:20px;background:#fff;transition:transform .2s ease,border-color .2s ease,opacity .2s ease}
+.journey-stage.current{border-color:rgba(230,77,61,.36);box-shadow:0 15px 40px rgba(20,31,47,.08);transform:translateY(-1px)}
+.journey-stage.done{background:#f7f9f5}
+.journey-stage.locked{opacity:.56}
+.journey-stage-index{font:600 22px/1 Georgia,serif;color:#c4ad7b}
+.journey-stage small{display:block;text-transform:uppercase;letter-spacing:.15em;color:#9a6f45;font-size:7px;font-weight:800;margin-bottom:5px}
+.journey-stage h3{font:500 18px/1.25 Georgia,serif;color:#172334;margin:0 0 5px}
+.journey-stage p{margin:0;color:#788392;font-size:9px;line-height:1.55}
+.journey-stage-status{font-size:7px;text-transform:uppercase;letter-spacing:.13em;color:#9aa3ad}
+.journey-stage.current .journey-stage-status{color:#e64d3d}
+.journey-stage.done .journey-stage-status{color:#4a8a72}
+.journey-footer-card,.progress-next-card{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-top:18px;padding:23px 25px;border-radius:20px;background:#f3eadc}
+.journey-footer-card h3,.progress-next-card h3{font:500 20px/1.25 Georgia,serif;margin:6px 0}
+.journey-footer-card p,.progress-next-card p{margin:0;color:#6f7780;font-size:9px;line-height:1.6}
+
+.hub-hero{display:block}
+.hub-groups{display:grid;gap:22px}
+.hub-group-head{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+.hub-group-head span{font:600 18px/1.2 Georgia,serif;color:#172334}
+.hub-group-head small{color:#8d97a3;font-size:8px}
+.hub-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.hub-card{min-height:155px;text-align:left;padding:18px;border:1px solid rgba(10,22,38,.08);border-radius:18px;background:#fff;color:#172334;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.hub-card:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(17,32,50,.08);border-color:rgba(215,181,109,.55)}
+.hub-card b{display:block;font-family:var(--jp);font-size:26px;color:#c08f4f;margin-bottom:18px}
+.hub-card span{display:block;font:600 15px/1.2 Georgia,serif;margin-bottom:6px}
+.hub-card small{display:block;color:#7e8894;font-size:8px;line-height:1.55}
+.hub-card.muted{background:#f7f8f9}
+
+.progress-capability-card{display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px;padding:24px 26px;border:1px solid rgba(10,22,38,.08);border-radius:22px;background:#fff}
+.progress-capability-card h3{font:500 23px/1.2 Georgia,serif;margin:7px 0}
+.progress-capability-card p{margin:0;color:#79838f;font-size:9px;line-height:1.6}
+.progress-ring-large{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;text-align:center;background:radial-gradient(circle at center,#fff 53%,transparent 54%),conic-gradient(#d7b56d var(--progress,35%),#edf0f2 0)}
+.progress-ring-large b{display:block;font:600 22px/1 Georgia,serif;color:#172334}
+.progress-ring-large span{display:block;color:#8c96a2;font-size:7px;margin-top:4px}
+.progress-evidence-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.progress-evidence{padding:18px;border-radius:18px;background:#fff;border:1px solid rgba(10,22,38,.08)}
+.progress-evidence span{display:block;color:#805f3f;text-transform:uppercase;letter-spacing:.13em;font-size:7px;font-weight:800}
+.progress-evidence b{display:block;font:600 24px/1 Georgia,serif;margin:13px 0 5px;color:#172334}
+.progress-evidence small{display:block;color:#8b95a0;font-size:8px;min-height:25px}
+.progress-evidence i{display:block;height:4px;background:#edf0f2;border-radius:99px;margin-top:13px;overflow:hidden}
+.progress-evidence i em{display:block;height:100%;background:#d7b56d;border-radius:inherit}
+
+.onboarding-shell{position:fixed;inset:0;z-index:1000;background:rgba(7,14,25,.72);backdrop-filter:blur(12px);display:grid;place-items:center;padding:22px}
+.onboarding-shell[hidden]{display:none}
+.onboarding-card{width:min(620px,100%);padding:34px;border-radius:28px;background:#f8f2e7;box-shadow:0 30px 90px rgba(0,0,0,.28)}
+.onboarding-card h2{font:500 clamp(30px,5vw,46px)/1.05 Georgia,serif;color:#172334;margin:10px 0 13px}
+.onboarding-card p{color:#697582;font-size:10px;line-height:1.75;max-width:520px}
+.onboarding-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+
+@media (max-width:1000px){
+ .hub-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .progress-evidence-grid{grid-template-columns:repeat(2,1fr)}
+ .journey-hero{align-items:flex-start;flex-direction:column}
+}
+@media (max-width:680px){
+ .journey-stage{grid-template-columns:38px 1fr;align-items:start}
+ .journey-stage-status{grid-column:2}
+ .hub-grid,.progress-evidence-grid{grid-template-columns:1fr}
+ .progress-capability-card{grid-template-columns:1fr}
+ .progress-ring-large{width:92px;height:92px}
+ .journey-footer-card,.progress-next-card{align-items:flex-start;flex-direction:column}
+ .onboarding-card{padding:25px}
+}
