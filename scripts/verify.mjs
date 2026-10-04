@@ -83,7 +83,8 @@ if(!homeCoach.includes('homeCoachDecision'))throw new Error('Adaptive Home polic
 if(!app.includes('homeCoachDecision(state,flatPath)'))throw new Error('Home runtime is not consuming Home Coach')
 if(!html.includes('id="routeLoader"'))throw new Error('Missing route loading feedback')
 if(!html.includes('aria-live="polite"'))throw new Error('Lesson feedback should expose a polite live region')
-if(!app.includes("lesson:['./features/open-production-remediation.js','./features/lesson.js']"))throw new Error('Lesson UI and remediation must stay lazy')
+if(!app.includes("lesson:['./features/open-production-remediation.js','./features/grammar-study.js','./features/lesson.js']"))throw new Error('Lesson UI, grammar study and remediation must stay lazy')
+if(!app.includes("lesson:['./features/lesson.css','./features/grammar-study.css']"))throw new Error('Grammar study styles must stay lazy')
 if(!app.includes("practice:['./features/practice.js']"))throw new Error('Practice Hub must stay lazy')
 const narrative=read('data/narrative.js');
 if(!narrative.includes('narrativeEpisodeForUnit'))throw new Error('Narrative network missing')
