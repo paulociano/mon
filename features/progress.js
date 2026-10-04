@@ -19,16 +19,12 @@ const renderProgressHubBase=renderProgressHub;
 renderProgressHub=function(){renderProgressHubBase();renderFunctionalMastery()};
 
 function renderLearningEvidence(){
- const grid=document.getElementById('progressEvidenceGrid');if(!grid||typeof learningEvidenceSummary!=='function')return;
+ const grid=document.getElementById('progressEvidenceGrid');if(!grid)return;
  grid.querySelectorAll('[data-learning-evidence]').forEach(x=>x.remove());
- const s=learningEvidenceSummary(),fmt=x=>x===null?'—':x+'%';
- const cards=[
-  ['retention','Retenção',fmt(s.retentionAccuracy),s.retentionAttempts+' reencontros após espaçamento'],
-  ['transfer','Transferência',fmt(s.transferAccuracy),s.transferAttempts+' tentativas em produção/contexto'],
-  ['independent','Sem pistas',fmt(s.independentAccuracy),s.independentAttempts+' tentativas independentes'],
-  ['autonomy','Autonomia',fmt(s.autonomyAverage),s.missionCompletions+' missões observadas']
- ];
- grid.insertAdjacentHTML('beforeend',cards.map(([id,name,value,desc])=>`<article class="progress-evidence" data-learning-evidence="${id}"><span>Evidência · ${name}</span><b>${value}</b><small>${desc}</small><i><em style="width:${parseInt(value)||0}%"></em></i></article>`).join(''));
+ if(typeof learningMetricsSnapshot!=='function')return;
+ const s=learningMetricsSnapshot(state),fmt=x=>x.value===null?'—':x.value+(x.unit==='%'?'%':'');
+ const status={empty:'sem dados',early:'amostra inicial',stale:'dados antigos',ready:'evidência suficiente'};
+ grid.insertAdjacentHTML('beforeend',s.metrics.map(x=>`<article class="progress-evidence" data-learning-evidence="${x.id}"><span>Métrica · ${x.label}</span><b>${fmt(x)}</b><small>${x.samples} observações · ${status[x.status]||x.status}</small><i><em style="width:${x.unit==='%'?(x.value||0):Math.min(100,x.samples*10)}%"></em></i></article>`).join(''));
 }
 const renderProgressHubFunctional=renderProgressHub;
 renderProgressHub=function(){renderProgressHubFunctional();renderLearningEvidence()};
