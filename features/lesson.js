@@ -110,7 +110,6 @@ function quickCheck(){
  }
  if(e.method&&typeof recordMethodOutcome==='function')recordMethodOutcome(e,ok,{hintUsed:!!quickRun.hintUsed});
  if(typeof recordMasteryEvidence==='function')recordMasteryEvidence(e,ok,{hintUsed:!!quickRun.hintUsed});
- if(e._openRepair&&ok)recoverProductionGaps(e);
  if(e.type==='openResponse'&&!ok&&!e._openRetry){const repair=buildOpenRemediation(e,quickRun.openResult||{});if(repair.length)quickRun.pack.exercises.splice(quickRun.step+1,0,...repair)}
  if(!quickRun.practiceOnly)energyTick(ok);
  const bridge=e.bridge?`<span class="feedback-bridge"><strong>Lente MON</strong>${e.bridge}</span>`:'';
