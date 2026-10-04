@@ -10,6 +10,8 @@ function shellLocalDateKey(date=new Date()){
  return `${year}-${month}-${day}`;
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600)}
+function shuffleArray(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function speak(text,rate=.86){if(!('speechSynthesis'in window)){toast('Áudio indisponível neste navegador');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(text||''));u.lang='ja-JP';u.rate=rate;const ja=speechSynthesis.getVoices().find(v=>String(v.lang).toLowerCase().startsWith('ja'));if(ja)u.voice=ja;speechSynthesis.speak(u)}
 const NAV_PARENT={lesson:'home',session:'home',curriculum:'journey',foundation:'explore',kanji:'explore',missions:'explore',reading:'explore',speaking:'explore',culture:'explore',writing:'explore',journal:'explore',videos:'explore',pronunciation:'explore',league:'explore',shop:'explore',user:'user'};
 function navParentForView(id){return NAV_PARENT[id]||id}
 function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${navParentForView(id)}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}

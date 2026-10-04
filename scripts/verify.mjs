@@ -67,7 +67,10 @@ for(const asset of ['./assets/scene/mon-home-banner.webp','./assets/scene/mon-si
 for(const cls of ['unit-progress','unit-status','node-halo','rail-card-label','home-reveal']){if(!css.includes('.'+cls)&&!html.includes('class="'+cls))throw new Error('Missing home polish contract '+cls)}
 if(!app.includes('queueHomePolish'))throw new Error('Missing progressive home reveal runtime')
 if(!app.includes('aria-current="step"'))throw new Error('Current path step lacks aria-current')
-if(!html.includes('fetchpriority="high"'))throw new Error('Hero preload should be high priority')
+if(html.includes('rel="preload"')&&html.includes('mon-home-banner.webp'))throw new Error('Home hero must not be preloaded globally outside Home route intent')
+if(!app.includes('function speak(text,rate=.86)'))throw new Error('Shared speak helper missing from shell runtime')
+if(!app.includes('function shuffleArray(a)'))throw new Error('Shared shuffle helper missing from shell runtime')
+if(!sw.includes("preload?.ok?preload:await fetch(event.request)"))throw new Error('Navigation preload must reject error responses')
 if(!app.includes('ensureLearningRuntime'))throw new Error('Missing lazy learning runtime loader')
 if(!app.includes("N5:['./data/content-packs-n5.js']")||!['N4A','N4B','N4C','N4D'].every(k=>app.includes(k+':[')))throw new Error('Level-specific content pack router missing')
 if(!app.includes('ensureContentPack(level'))throw new Error('Content pack loader seam missing')

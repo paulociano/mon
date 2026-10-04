@@ -1,4 +1,4 @@
-const CACHE='mon-japanese-os-v32';
+const CACHE='mon-japanese-os-v33';
 const CORE=['./','./index.html','./styles.css','./data/course-content.js','./core/state.js','./core/review-scheduler.js','./core/performance.js','./core/home-coach.js','./app.js','./manifest.json','./icon.svg','./assets/brand/mon-mark.svg','./assets/brand/mon-lockup.svg','./assets/brand/kitsu-mascot.webp','./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp'];
 
 self.addEventListener('install',event=>{
@@ -25,11 +25,13 @@ async function cachePut(request,response){
 async function networkFirstNavigation(event){
   try{
     const preload=await event.preloadResponse;
-    const response=preload||await fetch(event.request);
+    const response=preload?.ok?preload:await fetch(event.request);
+    if(!response?.ok)throw new Error('navigation response not ok');
     return cachePut(event.request,response);
   }catch{
     const shell=(await caches.match('./index.html'))||(await caches.match('./'));
-    return shell||Response.error();
+    if(shell)return shell;
+    try{return await fetch('./index.html',{cache:'no-cache'})}catch{return new Response('MON offline shell unavailable',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}})}
   }
 }
 async function networkFirstAsset(event){

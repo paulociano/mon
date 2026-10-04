@@ -41,6 +41,8 @@ try{
   throw new Error(`${error.message} finalUrl=${page.url()} status=${response.status()} title=${JSON.stringify(title)} body=${JSON.stringify(body.slice(0,600))} markup=${JSON.stringify(markup)}`);
  }
  assert.equal(pageErrors.length,0,'Home boot emitted page errors: '+pageErrors.join('\n'));
+ assert.equal(await page.evaluate(()=>typeof speak),'function','shared speak helper must exist at shell boot');
+ assert.equal(await page.evaluate(()=>typeof shuffleArray),'function','shared shuffle helper must exist at shell boot');
 
  for(const target of ['journey','explore','progress']){
   await page.click(`#desktopNav [data-view="${target}"]`);
@@ -61,7 +63,13 @@ try{
  await page.click('#videoClose');
  assert.equal(await page.locator('#videoModal').evaluate(el=>el.hidden),true,'video modal must hide after close');
 
- await page.click('[data-view="practice"]');
+ await page.evaluate(async()=>{await ensureLearningRuntime();await ensureFeatureRuntime('lesson');quickRun={idx:0,node:flatPath[0],pack:{title:'Smoke',exercises:[{type:'wordbank',prompt:'Monte',target:'東京駅',tokens:['東京','駅'],why:'smoke'},{type:'speak',prompt:'Fale',target:'こんにちは',pt:'olá',why:'smoke'}]},step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false};await go('lesson');renderQuickExercise()});
+ await waitVisible('#lesson.active');
+ await page.waitForSelector('#wordBank .word-token');
+ await page.evaluate(()=>speak('こんにちは'));
+ assert.equal(pageErrors.length,0,'lesson helpers emitted page errors: '+pageErrors.join('\n'));
+ await page.evaluate(async()=>await go('practice'));
+
  await waitVisible('#practice.active');
  await page.waitForSelector('#practiceCoach');
  assert.equal(pageErrors.length,0,'navigation emitted page errors: '+pageErrors.join('\n'));
