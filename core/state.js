@@ -12,7 +12,7 @@ function normalizeState(raw={}){
 }
 const MON_STATE_MIGRATIONS={
  0:s=>({...s,saveVersion:1}),
- 1:s=>({...s,saveVersion:2,learningEvidence:{events:[...((s.learningEvidence?.events)||[])].slice(-600)}),
+ 1:s=>({...s,saveVersion:2,learningEvidence:{events:[...((s.learningEvidence?.events)||[])].slice(-600)}}),
  2:s=>({...s,saveVersion:3,energy:Math.max(30,Number(s.energy||0)),maxEnergy:Math.max(30,Number(s.maxEnergy||0))})
 };
 function migrateState(raw){
