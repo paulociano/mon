@@ -67,7 +67,8 @@ for(const token of [
   assert.ok(app.includes(token),'missing resilient routing contract '+token);
 }
 
-assert.ok(sw.includes("const CACHE='mon-japanese-os-v29'"),'service worker cache version must advance with routing fix');
+const cacheVersion=Number(sw.match(/const CACHE='mon-japanese-os-v(\d+)'/)?.[1]||0);
+assert.ok(cacheVersion>=29,'service worker cache version must preserve routing fix generation or newer');
 assert.ok(sw.includes("event.request.destination==='script'||event.request.destination==='style'"),'runtime JS/CSS must avoid stale-first skew');
 assert.ok(sw.includes("fetch(event.request,{cache:'no-cache'})"),'network-first assets must request fresh code');
 
