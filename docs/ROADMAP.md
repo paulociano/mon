@@ -221,7 +221,7 @@ Definir budgets de latência somente depois de coletar baseline real em navegado
 ### 11. UI/UX de alta fidelidade — primeira fatia P8 implementada ✅
 **Pode avançar em paralelo, sem quebrar os gates.**
 
-**Fatia atual:** Home, Lesson e Practice receberam refinamento responsivo; a Fundação Zero ganhou variação determinística entre lições iniciais; energia inicial sobe para 30 e passa a ser consumida apenas em erros. O Quality Gate cobre esses comportamentos em desktop, tablet e mobile.
+**Fatia atual:** Home, Lesson e Practice receberam refinamento responsivo; a Fundação Zero ganhou variação determinística entre lições iniciais; energia inicial sobe para 30 e passa a ser consumida apenas em erros. Japan Journal, Survival Missions, Listening/Pronunciation e Kanji Atlas também receberam uma segunda leva responsiva com touch targets, hierarquia e estados de interação mais robustos. O Quality Gate cobre esses comportamentos em desktop, tablet e mobile.
 
 Superfícies prioritárias:
 1. Home adaptativa;
@@ -275,7 +275,7 @@ Regras:
 8. N4 por capacidades formalizado; manter calibração longitudinal dos gates funcionais.
 9. Métricas de aprendizagem implementadas; acumular evidência longitudinal antes de recalibrar decisões adaptativas.
 10. Latência observada implementada; acumular baselines equivalentes antes de transformar números em gates.
-11. P8 iniciado com Home/Lesson/Practice, responsividade, variedade inicial e nova política de energia; seguir refinando Journal, Missions, Listening e Kanji sem quebrar os gates.
+11. P8 avançado em Home, Lesson, Practice, Journal, Missions, Listening/Pronunciation e Kanji; seguir com validação visual publicada e refinamentos residuais sem quebrar os gates.
 
 ## Guardrails permanentes
 

@@ -9,3 +9,15 @@
 @media(max-width:700px){.mission-readiness{grid-template-columns:1fr}.mission-choices button{padding:12px}}
 
 .mission-free{display:grid;gap:9px;margin-bottom:9px}.mission-free textarea{width:100%;min-height:96px;resize:vertical;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:#0b1622;color:#edf3f7;padding:13px;font:500 15px/1.55 var(--jp)}.mission-free-actions{display:flex;gap:8px;flex-wrap:wrap}.mission-free-actions button{border:1px solid rgba(255,255,255,.08);border-radius:10px;background:#152233;color:#cbd5de;padding:8px 10px;font-size:7px}.mission-free-actions .primary{background:#7b2930;color:#fff}.mission-choices.free-hidden{display:none}.mission-free.assisted{opacity:.72}
+
+/* P8 · mission focus and mobile polish */
+.mission-npc button,.mission-choices button,.mission-free-actions button{min-height:44px}
+.mission-choices button:focus-visible,.mission-npc button:focus-visible,.mission-free-actions button:focus-visible{outline:2px solid rgba(244,169,187,.72);outline-offset:3px}
+@media(max-width:560px){
+ .mission-empty,.mission-run,.mission-complete{padding:18px 15px;border-radius:20px}
+ .mission-empty h3,.mission-run h3,.mission-complete h3{font-size:24px}
+ .mission-npc{padding:15px}.mission-npc>b{font-size:21px}
+ .mission-choice-title{font-size:9px}.mission-choices button{padding:14px 12px}.mission-choices b{font-size:16px}.mission-choices span{font-size:8px;line-height:1.45}
+ .mission-free textarea{min-height:120px;font-size:16px}.mission-free-actions{display:grid;grid-template-columns:1fr}.mission-free-actions button{width:100%}
+ .mission-result{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mission-result>div{min-width:0}
+}

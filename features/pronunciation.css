@@ -8,3 +8,18 @@
 @media(max-width:820px){.pron-layout{grid-template-columns:1fr}.pron-tabs{position:static;grid-template-columns:repeat(2,1fr)}.shadow-lab{grid-template-columns:1fr}.shadow-actions{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.pron-hero{grid-template-columns:1fr;padding:22px 18px}.pron-tabs{grid-template-columns:1fr}.pron-item-head{flex-direction:column}.pron-audio{justify-content:flex-start}.shadow-actions{grid-template-columns:1fr}.pron-summary{width:100%}}@media(prefers-reduced-motion:reduce){.pron-tabs button,.pron-audio button,.shadow-actions button{transition:none}}
 
 .pron-mic-policy{grid-column:1/-1;margin:0;padding:9px 11px;border-radius:10px;background:rgba(215,181,109,.05);color:#94a1ae;font-size:7px;line-height:1.55}
+
+/* P8 · Pronunciation mobile polish */
+.pron-audio button,.shadow-actions button,.pron-self button,.pron-tabs button{min-height:44px}
+@media(max-width:560px){
+ .pron-hero h2{font-size:clamp(31px,10vw,42px)}
+ .pron-summary{grid-template-columns:1fr 1fr}
+ .pron-tabs{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:3px}
+ .pron-tabs button{min-width:165px;scroll-snap-align:start;flex:0 0 auto}
+ .pron-concept,.pron-item,.shadow-lab,.pron-self{border-radius:18px}
+ .pron-concept,.shadow-lab,.pron-self{padding:16px}
+ .pron-item{padding:15px}.pron-item h4{font-size:25px}
+ .mora-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.mora-row span{min-width:0}
+ .shadow-chunks span{font-size:15px}.pron-transcript{font-size:9px}
+ .pron-mic-policy{font-size:8px;line-height:1.65}
+}
