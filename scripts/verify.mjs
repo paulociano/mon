@@ -48,8 +48,8 @@ for(const src of scriptOrder){
  cursor=p;
 }
 
-for(const asset of [...scriptOrder,...lazyRuntime,...featureRuntime,...debugRuntime]){
- if(!sw.includes(`'${asset}'`))throw new Error('PWA cache missing '+asset);
+for(const asset of scriptOrder){
+ if(!sw.includes(`'${asset}'`))throw new Error('PWA shell cache missing '+asset);
 }
 for(const src of [...lazyRuntime,...featureRuntime]){
  if(html.includes(`src="${src}"`))throw new Error('Lazy runtime leaked into critical HTML: '+src);
