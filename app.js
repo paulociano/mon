@@ -51,7 +51,7 @@ const FEATURE_RUNTIME_SCRIPTS={
  missions:['./data/kana.js','./data/experiences.js','./data/missions-v2.js','./features/experiences.js','./features/missions-v2.js'],
  speaking:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
  curriculum:['./data/curriculum.js'],
- lesson:['./features/lesson.js'],
+ lesson:['./features/open-production-remediation.js','./features/lesson.js'],
  practice:['./features/practice.js'],
  journal:['./data/narrative.js','./core/narrative-state.js','./features/journal.js'],
  videos:['./features/videos.js'],
