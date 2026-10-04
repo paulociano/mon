@@ -14,6 +14,7 @@ assert.ok(app.includes("function ensureContentPack(level='N5')"),'content pack l
 assert.ok(app.includes("function contentPackLevelForDay(day=state.day)"),'day-aware content pack selector missing');
 for(const token of ["if(d>=81&&d<=90)return 'N4D'","if(d>=71)return 'N4C'","if(d>=61)return 'N4B'","if(d>=55)return 'N4A'"])assert.ok(app.includes(token),'N4 day tier missing: '+token);
 assert.ok(app.includes("await ensureContentPack(level)"),'learning runtime must resolve level pack before engines');
+assert.ok(app.includes("[...CONTENT_PACK_SCRIPTS[resolved],N4_CAP]"),'N4 capability contract must be appended lazily');
 assert.ok(app.includes("applyN4CapabilityContracts()"),'N4 packs must receive capability contracts after loading');
 const runtimeList=app.match(/const LEARNING_RUNTIME_SCRIPTS=\[(.*?)\];/s)?.[1]||'';
 assert.ok(!runtimeList.includes('content-packs-n5.js'),'level data must not leak back into generic runtime list');
