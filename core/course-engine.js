@@ -65,6 +65,11 @@ function compilePackExercise(unit,template,index){
   if(template==='speak'&&scenario){if(unit.openProduction&&scenario.assessment)return {type:'openResponse',prompt:'Responda com suas próprias palavras.',npc:scenario.npc,npcPt:scenario.pt,target:scenario.reply,pt:scenario.replyPt,assessment:scenario.assessment,why:'O checkpoint avalia intenção e elementos essenciais, não cópia da frase-modelo.',method:'produce'};return {type:'speak',prompt:`Responda: ${scenario.npc}`,target:scenario.reply,pt:scenario.replyPt,why:'Produza a resposta inteira em um único fluxo.'}};
   return null;
 }
+function compileOpenProduction(unit,index=0){
+  const scenarios=unit.scenarios||[],scenario=scenarios[index%Math.max(1,scenarios.length)];
+  if(!unit.openProduction||!scenario?.assessment)return null;
+  return {type:'openResponse',prompt:'Responda com suas próprias palavras.',npc:scenario.npc,npcPt:scenario.pt,target:scenario.reply,pt:scenario.replyPt,assessment:scenario.assessment,why:'O checkpoint avalia intenção e elementos essenciais, não cópia da frase-modelo.',method:'produce'};
+}
 function lessonPlanFromPack(unit){
   const standard=(unit.templates||[]).map((t,i)=>compilePackExercise(unit,t,i)).filter(Boolean);
   const distinctive=typeof compileAdaptiveMONSequence==='function'?compileAdaptiveMONSequence(unit):typeof compileMONSequence==='function'?compileMONSequence(unit):[];
@@ -74,7 +79,7 @@ function lessonPlanFromPack(unit){
   const narrative=typeof narrativeEchoExercise==='function'?narrativeEchoExercise(unit):null;
   if(narrative)exercises.splice(Math.min(4,exercises.length),0,narrative);
   let tagged=optimizeExerciseSequence(exercises,10).map(e=>({...e,_unitId:unit.id}));
-  if(unit.openProduction&&!tagged.some(e=>e.type==='openResponse')){const open=compilePackExercise(unit,'speak',Math.max(1,(unit.scenarios||[]).length-1));if(open)tagged=[...tagged.slice(0,9),{...open,_unitId:unit.id}]}
+  if(unit.openProduction&&!tagged.some(e=>e.type==='openResponse')){const open=compileOpenProduction(unit,Math.max(1,(unit.scenarios||[]).length-1));if(open)tagged=[...tagged.slice(0,9),{...open,_unitId:unit.id}]}
   return {title:unit.title,focus:unit.symbol,unitId:unit.id,objectives:unit.objectives,mastery:unit.mastery,narrative:typeof narrativeEpisodeForUnit==='function'?narrativeEpisodeForUnit(unit):null,
     method:typeof MON_METHOD!=='undefined'?MON_METHOD:null,exercises:tagged};
 }
