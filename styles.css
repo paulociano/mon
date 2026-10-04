@@ -473,3 +473,20 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 @keyframes kitsuBreathe{0%,100%{transform:translateY(0) rotate(1deg)}50%{transform:translateY(-2px) rotate(-1deg)}}
 @media(max-width:1120px){.guide-mascot{right:13px}}
 @media(prefers-reduced-motion:reduce){.guide-mascot{animation:none}.kitsu-eye,.kitsu-mouth,.kitsu-seal{transition:none}}
+
+
+/* Kitsu generated ink asset */
+.guide-mascot{right:4px;top:22px;width:104px;height:110px;display:grid;place-items:end center;filter:none;isolation:isolate}
+.guide-mascot::before{content:"";position:absolute;inset:23px 9px 7px 18px;border-radius:50%;background:radial-gradient(circle,rgba(230,77,61,.16),transparent 68%);filter:blur(4px);z-index:-1;transition:.2s background,.2s transform}
+.kitsu-art{display:block;width:100%;height:100%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 10px 10px rgba(0,0,0,.28));transition:transform .22s ease,filter .22s ease}
+.guide-mascot[data-mood="review"]::before{background:radial-gradient(circle,rgba(99,211,194,.16),transparent 68%)}
+.guide-mascot[data-mood="review"] .kitsu-art{transform:translateY(1px) scale(.97);filter:drop-shadow(0 9px 9px rgba(0,0,0,.24)) saturate(.88)}
+.guide-mascot[data-mood="repair"]::before{background:radial-gradient(circle,rgba(209,173,114,.2),transparent 68%);transform:scale(.92)}
+.guide-mascot[data-mood="repair"] .kitsu-art{transform:rotate(-2deg) scale(.98)}
+.guide-mascot[data-mood="transfer"]::before{background:radial-gradient(circle,rgba(113,145,178,.18),transparent 68%)}
+.guide-mascot[data-mood="transfer"] .kitsu-art{transform:rotate(2deg) translateY(-2px)}
+.guide-mascot[data-mood="checkpoint"]::before{background:radial-gradient(circle,rgba(141,113,217,.18),transparent 68%)}
+.guide-mascot[data-mood="checkpoint"] .kitsu-art{transform:none;filter:drop-shadow(0 8px 8px rgba(0,0,0,.24)) saturate(.78)}
+.guide-card:hover .guide-mascot[data-mood="learn"] .kitsu-art{transform:translateY(-2px) rotate(-1deg)}
+@media(max-width:1120px){.guide-mascot{right:6px}}
+@media(prefers-reduced-motion:reduce){.kitsu-art,.guide-mascot::before{transition:none}.guide-card:hover .guide-mascot[data-mood="learn"] .kitsu-art{transform:none}}
