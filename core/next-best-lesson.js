@@ -1,6 +1,3 @@
-// MON Next Best Lesson Engine
-// Pure policy: learner evidence -> explainable lesson recipe.
-
 const NB_METHODS={
  functionalRepair:['freeRecall','cloze','transfer','roleplay','dictation'],
  repair:['freeRecall','cloze','dictation','transfer','roleplay'],
@@ -21,7 +18,7 @@ function nbWeakMasteryDimension(state={}){
    .filter(x=>x.samples>=2).sort((a,b)=>a.score-b.score)[0]||null;
 }
 function nbOpenProductionGap(state={}){
- return Object.entries(state.productionGaps||{}).map(([label,g])=>({label,count:Number(g?.count||0),recovered:Number(g?.recovered||0),open:Math.max(0,Number(g?.count||0)-Number(g?.recovered||0)),lastAt:Number(g?.lastAt||0),tokens:Array.isArray(g?.tokens)?g.tokens.filter(Boolean):[],unitId:g?.unitId||null})).filter(x=>x.open>0).sort((a,b)=>b.open-a.open||b.lastAt-a.lastAt)[0]||null;
+ return Object.entries(state.productionGaps||{}).map(([label,g])=>({label,count:+(g?.count||0),recovered:+(g?.recovered||0),open:Math.max(0,+(g?.count||0)-+(g?.recovered||0)),lastAt:+(g?.lastAt||0),tokens:Array.isArray(g?.tokens)?g.tokens.filter(Boolean):[],unitId:g?.unitId||null,capability:g?.capability||null,functionalScore:g?.capability?+(state.functionalMastery?.[g.capability]?.score||0):0})).filter(x=>x.open>0).sort((a,b)=>b.open-a.open||a.functionalScore-b.functionalScore||b.lastAt-a.lastAt)[0]||null;
 }
 function nextBestSignals(state={},now=Date.now()){
  const dueReviews=Object.values(state.reviewItems||{}).filter(x=>Number(x?.due||0)<=now).length;
@@ -37,7 +34,7 @@ function nextBestLessonPlan(state={},node={},now=Date.now()){
  const s=nextBestSignals(state,now);let intent='advance',reason='Sem dívida pedagógica prioritária.';
  if(state.remediation){intent='repair';reason='Há uma lacuna de domínio marcada para reforço.'}
  else if(s.dueReviews>=4){intent='retrieve';reason=`${s.dueReviews} itens chegaram ao ponto de recuperação espaçada.`}
- else if(s.productionGap?.open>=2){intent='functionalRepair';reason=`A função “${s.productionGap.label}” voltou a faltar ${s.productionGap.open} vezes sem recuperação consolidada.`}
+ else if(s.productionGap?.open>=2){intent='functionalRepair';reason=`A função “${s.productionGap.label}” voltou a faltar ${s.productionGap.open} vezes${s.productionGap.capability?` · domínio ${s.productionGap.functionalScore}%`:''}.`}
  else if(s.openMistakes>=3){intent='repair';reason=`${s.openMistakes} padrões de erro continuam abertos.`}
  else if(s.weakMastery?.dimension==='listen'&&s.weakMastery.score<65){intent='listening';reason=`Escuta é a dimensão mais frágil observada (${s.weakMastery.score}%).`}
  else if(s.weakMastery?.dimension==='produce'&&s.weakMastery.score<65){intent='production';reason=`Produção é a dimensão mais frágil observada (${s.weakMastery.score}%).`}
