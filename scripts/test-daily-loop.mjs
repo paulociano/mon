@@ -4,7 +4,7 @@ import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const {dailyLoopRecipe}=require('../core/next-best-lesson.js');
 
-for(const intent of ['repair','retrieve','listening','production','transfer','advance']){
+for(const intent of ['functionalRepair','repair','retrieve','listening','production','transfer','advance']){
  const r=dailyLoopRecipe({intent});
  assert.equal(r.roles.length,6,intent+' must have six blocks');
  assert.equal(r.minutes.length,6);
@@ -20,4 +20,7 @@ assert.ok(session.includes("goal===10?4:goal===30?7:6")||fs.readFileSync('app.js
 assert.ok(session.includes('sessionRun.nextBest'));
 assert.ok(session.includes('s.loopLabel||sessionLabels[i]'));
 assert.ok(session.includes('Duração estimada:'));
+assert.ok(session.includes("function:{type:'choice',title:'Repare uma função recorrente'"));
+assert.ok(session.includes('nextBest.functionalGap'));
+const focused=dailyLoopRecipe({intent:'functionalRepair'});assert.ok(focused.roles.includes('function'));
 console.log('MON adaptive Daily Loop contracts passed');

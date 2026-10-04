@@ -4,7 +4,7 @@ const require=createRequire(import.meta.url);
 const {homeCoachDecision}=require('../core/home-coach.js');
 
 const path=[{label:'Vogais',type:'lesson'},{label:'Checkpoint',type:'checkpoint'},{label:'Baú',type:'chest'}];
-const base={pathProgress:0,energy:20,reviewItems:{},mistakeStats:{},remediation:null,narrative:{episodes:{},lastEpisode:null}};
+const base={pathProgress:0,energy:20,reviewItems:{},mistakeStats:{},productionGaps:{},remediation:null,narrative:{episodes:{},lastEpisode:null}};
 
 let d=homeCoachDecision({...base,remediation:{idx:0},reviewItems:{a:{due:0},b:{due:0},c:{due:0},d:{due:0}}},path,1000);
 assert.equal(d.kind,'repair');
@@ -15,6 +15,11 @@ assert.equal(d.action,'practice');
 
 d=homeCoachDecision({...base,energy:0},path,1000);
 assert.equal(d.kind,'recover');
+
+d=homeCoachDecision({...base,productionGaps:{causa:{count:3,recovered:1,lastAt:900}}},path,1000);
+assert.equal(d.kind,'functional');
+assert.equal(d.action,'session');
+assert.match(d.signal,/2 falhas abertas/);
 
 d=homeCoachDecision({...base,mistakeStats:{a:{count:3,recovered:0},b:{count:2,recovered:0},c:{count:1,recovered:0}}},path,1000);
 assert.equal(d.kind,'mistake');

@@ -63,9 +63,10 @@ function boot(seed={}){
  assert.equal(JSON.parse(store.get('mon-state')).videoLearning.practice.listening,2);
 }
 {
- const initial={saveVersion:1,productionGaps:{'alternativa':{count:2,recovered:1,lastAt:123}}};
+ const initial={saveVersion:1,productionGaps:{'alternativa':{count:2,recovered:1,lastAt:123,tokens:['別','大丈夫']}}};
  const {context,store}=boot({'mon-state':JSON.stringify(initial)});
  assert.equal(context.__state.productionGaps.alternativa.count,2);
+ assert.deepEqual(Array.from(context.__state.productionGaps.alternativa.tokens),['別','大丈夫']);
  context.__state.productionGaps.alternativa.recovered=2;context.__save();
  assert.equal(JSON.parse(store.get('mon-state')).productionGaps.alternativa.recovered,2);
 }

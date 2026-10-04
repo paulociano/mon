@@ -1,15 +1,13 @@
-// MON Home Coach
-// Pure priority policy for the Home surface. No DOM and no lazy feature dependencies.
-
 function homeCoachSignals(state={},now=Date.now()){
   const dueReviews=Object.values(state.reviewItems||{}).filter(x=>(x?.due||0)<=now).length;
   const openMistakes=Object.values(state.mistakeStats||{}).filter(x=>(x?.count||0)>(x?.recovered||0)).length;
   const unresolvedNarrative=Object.values(state.narrative?.episodes||{}).filter(x=>!x.resolved).length;
-  return {dueReviews,openMistakes,unresolvedNarrative,energy:Math.max(0,state.energy||0)};
+  let productionGap;for(const [label,g] of Object.entries(state.productionGaps||{})){const open=(g?.count||0)-(g?.recovered||0);if(open>0&&(!productionGap||open>productionGap.open))productionGap={label,open}}
+  return {dueReviews,openMistakes,unresolvedNarrative,productionGap,energy:Math.max(0,state.energy||0)};
 }
 function homeCoachDecision(state={},flatPath=[],now=Date.now()){
   const total=flatPath.length,idx=total?Math.max(0,Math.min(total-1,state.pathProgress||0)):0,node=flatPath[idx]||null;
-  const {dueReviews:due,openMistakes:mistakes,unresolvedNarrative,energy}=homeCoachSignals(state,now);
+  const {dueReviews:due,openMistakes:mistakes,unresolvedNarrative,productionGap,energy}=homeCoachSignals(state,now);
 
   if(state.remediation?.idx===idx){
     return {kind:'repair',eyebrow:'prioridade · domínio',title:'Fortaleça antes de abrir o próximo portão.',copy:'Você concluiu a atividade, mas a evidência ainda está frágil em uma habilidade crítica. O reforço é curto e direcionado.',cta:'fortalecer agora →',secondary:'ver prática adaptativa',action:'repair',secondaryAction:'practice',signal:'Mastery Graph',node};
@@ -19,6 +17,9 @@ function homeCoachDecision(state={},flatPath=[],now=Date.now()){
   }
   if(energy<=0){
     return {kind:'recover',eyebrow:'prioridade · ritmo',title:'Sua energia de lição acabou. Sua memória, não.',copy:'Use a prática livre para recuperar itens, corrigir erros e preparar o próximo nó sem gastar Energia.',cta:'abrir prática livre →',secondary:'ver Diário no Japão',action:'practice',secondaryAction:'journal',signal:'0 energia',node};
+  }
+  if(productionGap?.open>=2){
+    return {kind:'functional',eyebrow:'prioridade · comunicação',title:`Reforce “${productionGap.label}”.`,copy:'A próxima sessão recupera essa função e volta à produção livre.',cta:'sessão →',action:'session',signal:`${productionGap.open} falhas abertas`,node};
   }
   if(mistakes>=3){
     return {kind:'mistake',eyebrow:'prioridade · correção',title:`${mistakes} padrões recorrentes merecem uma correção curta.`,copy:'Repetir a unidade inteira seria desperdício. O Caderno de Erros consegue atacar exatamente o padrão que voltou a aparecer.',cta:'corrigir erros →',secondary:'continuar trilha',action:'practice',secondaryAction:'lesson',signal:`${mistakes} erros abertos`,node};

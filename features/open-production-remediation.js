@@ -1,7 +1,7 @@
 // MON open-production remediation · lazy with lesson
 function recordProductionGaps(exercise,result){
  state.productionGaps=state.productionGaps||{};
- for(const label of result.missing||[]){const old=state.productionGaps[label]||{count:0,recovered:0};state.productionGaps[label]={...old,count:old.count+1,lastAt:Date.now(),unitId:exercise._unitId||null}}
+ const labels=exercise.assessment?.labels||[],groups=exercise.assessment?.groups||[];for(const label of result.missing||[]){const old=state.productionGaps[label]||{count:0,recovered:0},i=labels.indexOf(label),tokens=(groups[i]||[]).filter(Boolean).slice(0,4);state.productionGaps[label]={...old,count:old.count+1,lastAt:Date.now(),unitId:exercise._unitId||null,tokens:tokens.length?tokens:(old.tokens||[])}}
 }
 function recoverProductionGaps(exercise){
  state.productionGaps=state.productionGaps||{};
