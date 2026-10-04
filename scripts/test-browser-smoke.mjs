@@ -4,7 +4,12 @@ import assert from 'node:assert/strict';
 const base=process.env.MON_SMOKE_URL||'http://127.0.0.1:4173';
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:1280,height:900}});
-await page.addInitScript(()=>localStorage.setItem('mon-onboarded','1'));
+await page.addInitScript(()=>{
+ localStorage.setItem('mon-onboarded','1');
+ window.__srConstructed=0;
+ class FakeSpeechRecognition{constructor(){window.__srConstructed++}start(){}stop(){}}
+ Object.defineProperty(window,'SpeechRecognition',{value:FakeSpeechRecognition,writable:true});
+});
 const pageErrors=[];
 page.on('pageerror',error=>pageErrors.push(String(error?.stack||error)));
 page.on('console',msg=>{if(msg.type()==='error')console.error('[browser console]',msg.text())});
@@ -41,6 +46,15 @@ try{
   throw new Error(`${error.message} finalUrl=${page.url()} status=${response.status()} title=${JSON.stringify(title)} body=${JSON.stringify(body.slice(0,600))} markup=${JSON.stringify(markup)}`);
  }
  assert.equal(pageErrors.length,0,'Home boot emitted page errors: '+pageErrors.join('\n'));
+ await page.keyboard.press('Tab');
+ assert.equal(await page.evaluate(()=>document.activeElement?.classList.contains('skip-link')),true,'first keyboard stop should expose skip link');
+ await page.keyboard.press('Enter');
+ assert.equal(await page.evaluate(()=>document.activeElement?.id),'mainContent','skip link must move focus to main content');
+ const progressNav=page.locator('#desktopNav [data-view="progress"]');
+ await progressNav.focus();await page.keyboard.press('Enter');await waitVisible('#progress.active');
+ assert.equal(await page.evaluate(()=>document.activeElement?.id),'progress','keyboard navigation must move focus to the active view');
+ await page.evaluate(async()=>await go('home'));
+ await waitVisible('#home.active');
  assert.equal(await page.evaluate(()=>typeof speak),'function','shared speak helper must exist at shell boot');
  assert.equal(await page.evaluate(()=>typeof shuffleArray),'function','shared shuffle helper must exist at shell boot');
 
@@ -51,7 +65,15 @@ try{
  await page.click('#desktopNav [data-view="explore"]');
  await waitVisible('#explore.active');
 
- await page.click('[data-view="videos"]');
+ await page.click('[data-view="pronunciation"]');
+ await waitVisible('#pronunciation.active');
+ await page.waitForSelector('#pronMic',{state:'visible'});
+ assert.equal(await page.evaluate(()=>window.__srConstructed),0,'opening pronunciation must not request microphone access');
+ const micBox=await page.locator('#pronMic').boundingBox();
+ assert.ok(micBox&&micBox.width>=24&&micBox.height>=24,'microphone control must meet minimum target size');
+ assert.match(await page.locator('#pronMicPolicy').innerText(),/só é solicitado/i,'microphone policy must explain explicit activation');
+ await page.evaluate(async()=>await go('videos'));
+
  await waitVisible('#videos.active');
  await page.waitForSelector('#videoGrid .video-card');
  assert.equal(await page.locator('#videoModal').evaluate(el=>el.hidden),true,'video modal must stay hidden before playback');
