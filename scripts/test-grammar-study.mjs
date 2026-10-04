@@ -8,11 +8,13 @@ vm.runInContext(fs.readFileSync('data/foundation.js','utf8'),ctx,{filename:'data
 vm.runInContext(fs.readFileSync('data/session.js','utf8'),ctx,{filename:'data/session.js'});
 vm.runInContext(fs.readFileSync('core/course-engine.js','utf8'),ctx,{filename:'core/course-engine.js'});
 
-for(let day=13;day<=24;day++){
+for(let day=1;day<=24;day++){
   const plan=vm.runInContext(`buildLesson({day:${day},label:'Fundação ${day}'},{})`,ctx);
   const first=plan.exercises[0];
   assert.equal(first?.type,'study',`day ${day} should start with a study block`);
   assert.ok(first.title?.length>=4,`day ${day} needs a study title`);
+  assert.ok(first.canDo?.length>=3,`day ${day} needs observable Can-do goals`);
+  assert.ok(first.situation?.length>=20,`day ${day} needs a learning situation`);
   assert.ok(first.mentalModel?.length>=30,`day ${day} needs a substantive mental model`);
   assert.ok(first.explanation?.length>=80,`day ${day} needs applied grammar explanation`);
   assert.ok(Array.isArray(first.examples)&&first.examples.length>=2,`day ${day} needs at least two worked examples`);
