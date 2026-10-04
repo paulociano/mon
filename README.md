@@ -185,6 +185,7 @@ Paleta principal:
 ## Documentação
 
 - [Roadmap](docs/ROADMAP.md)
+- [Japanese Learning System](docs/JAPANESE-LEARNING-SYSTEM.md)
 - [N5 Readiness Gate](docs/N5-READINESS.md)
 - [N4 Capability Contract](docs/N4-CAPABILITIES.md)
 - [Learning Metrics](docs/LEARNING-METRICS.md)
