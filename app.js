@@ -3,6 +3,9 @@
 
 const viewNames={home:'Hoje',journey:'Jornada',practice:'Praticar',explore:'Explorar',progress:'Progresso',user:'Minha área',lesson:'Lição',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Mapa acadêmico',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos',pronunciation:'Pronúncia'};
 let currentKanji=0;
+// Shell-safe summary constants. Keep boot independent from lazy feature datasets.
+const SHELL_FOUNDATION_TOTAL=14;
+const SHELL_KANJI_COUNT=80;
 function shellLocalDateKey(date=new Date()){
  const year=date.getFullYear();
  const month=String(date.getMonth()+1).padStart(2,'0');
