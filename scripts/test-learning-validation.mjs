@@ -4,8 +4,8 @@ import assert from 'node:assert/strict';
 
 const ctx=vm.createContext({console,Date,Math,Number,String,Array,Object,Set});
 const mistakesSource=fs.readFileSync('core/mistakes.js','utf8');
-assert.ok(mistakesSource.includes("kind:'mistake'"));
-assert.ok(mistakesSource.includes("kind:'mistake_recovery'"));
+assert.ok(mistakesSource.includes("mistakeEvidence('mistake'"));
+assert.ok(mistakesSource.includes("mistakeEvidence('mistake_recovery'"));
 vm.runInContext(fs.readFileSync('core/learning-validation.js','utf8')+';globalThis.__report=learningValidationReport;globalThis.__trend=validationTrend;',ctx);
 
 const H=60*60*1000,now=Date.parse('2026-10-04T15:00:00Z');
