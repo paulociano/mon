@@ -32,13 +32,13 @@ const LEARNING_RUNTIME_SCRIPTS=[
  './core/course-engine.js',
  './core/progression-engine.js'
 ];
-const CONTENT_PACK_SCRIPTS={N5:'./data/content-packs-n5.js'};
+const CONTENT_PACK_SCRIPTS={N5:['./data/content-packs-n5.js'],N4:['./data/content-packs-n5.js','./data/content-packs-n4.js']};
 const contentPackPromises={};
 function ensureContentPack(level='N5'){
  const resolved=CONTENT_PACK_SCRIPTS[level]?level:'N5';
  if(contentPackPromises[resolved])return contentPackPromises[resolved];
- const src=CONTENT_PACK_SCRIPTS[resolved];
- contentPackPromises[resolved]=loadRuntimeScript(src).catch(err=>{delete contentPackPromises[resolved];throw err});
+ const sources=CONTENT_PACK_SCRIPTS[resolved];
+ contentPackPromises[resolved]=(async()=>{for(const src of sources)await loadRuntimeScript(src)})().catch(err=>{delete contentPackPromises[resolved];throw err});
  return contentPackPromises[resolved];
 }
 const FEATURE_RUNTIME_SCRIPTS={
