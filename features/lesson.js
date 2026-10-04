@@ -71,7 +71,7 @@ function quickCheck(){
  }else if(['speak','roleplay'].includes(e.type)){
    ok=quickRun.selected===1;chosen=ok?'produção aceita':'produção abaixo do limiar';
  }else if(e.type==='openResponse'){
-   chosen=(quickRun.typed||'').trim();const result=evaluateOpenProduction(chosen,e.assessment);ok=result.ok;detail=`<span class="open-assessment"><strong>${result.score}% dos elementos funcionais</strong>${result.covered.length?`Cobriu: ${result.covered.join(' · ')}.`:''}${result.missing.length?` Falta: ${result.missing.join(' · ')}.`:''}</span>`;const input=document.getElementById('quickTyped');if(input){input.disabled=true;input.classList.add(ok?'correct':'wrong')}
+   chosen=(quickRun.typed||'').trim();const result=evaluateOpenProduction(chosen,e.assessment);ok=result.ok;detail=`<span class="open-assessment"><strong>${result.score}% dos elementos funcionais</strong>${result.covered.length?`Cobriu: ${result.covered.join(' · ')}.`:''}${result.missing.length?` Falta: ${result.missing.join(' · ')}.`:''}</span>`;quickRun.openResult=result;if(!ok)recordProductionGaps(e,result);else if(e._openRetry)recoverProductionGaps(e);const input=document.getElementById('quickTyped');if(input){input.disabled=true;input.classList.add(ok?'correct':'wrong')}
  }else if(['recall','dictation','cloze','transfer'].includes(e.type)){
    chosen=(quickRun.typed||'').trim();const accepted=(e.accepted?.length?e.accepted:[e.target]).filter(Boolean);
    ok=accepted.some(x=>normalizeJP(chosen)===normalizeJP(x));
@@ -88,9 +88,10 @@ function quickCheck(){
  }
  if(e.method&&typeof recordMethodOutcome==='function')recordMethodOutcome(e,ok,{hintUsed:!!quickRun.hintUsed});
  if(typeof recordMasteryEvidence==='function')recordMasteryEvidence(e,ok,{hintUsed:!!quickRun.hintUsed});
+ if(e.type==='openResponse'&&!ok&&!e._openRetry){const repair=buildOpenRemediation(e,quickRun.openResult||{});if(repair.length)quickRun.pack.exercises.splice(quickRun.step+1,0,...repair)}
  if(!quickRun.practiceOnly)energyTick(ok);
  const bridge=e.bridge?`<span class="feedback-bridge"><strong>Lente MON</strong>${e.bridge}</span>`:'';
- setQuickFeedback(ok?(e.type==='openResponse'?'Intenção preservada.':e._remediation?'Erro recuperado!':e.method?'Recuperação válida.':'Correto!'):(e.type==='openResponse'?'Resposta ainda incompleta.':'Boa correção.'),(e.why||'')+detail+bridge,ok);
+ setQuickFeedback(ok?(e.type==='openResponse'?(e._openRetry?'Intenção recuperada.':'Intenção preservada.'):e._openRepair?'Lacuna reparada.':e._remediation?'Erro recuperado!':e.method?'Recuperação válida.':'Correto!'):(e.type==='openResponse'&&!e._openRetry?'Resposta incompleta. O MON vai treinar a lacuna e trazer esta situação de volta.':e.type==='openResponse'?'Retry ainda incompleto.':'Boa correção.'),(e.why||'')+detail+bridge,ok);
  const btn=document.getElementById('quickCheck');btn.disabled=false;btn.textContent='CONTINUAR';btn.classList.add('continue');btn.onclick=quickNext;save();
 }function quickNext(){if(!quickRun)return;if(!quickRun.practiceOnly&&state.energy<=0&&quickRun.step<quickRun.pack.exercises.length-1){quickRun.step=quickRun.pack.exercises.length;renderQuickComplete(true);return}quickRun.step++;renderQuickExercise()}
 function renderQuickComplete(outOfEnergy=false){

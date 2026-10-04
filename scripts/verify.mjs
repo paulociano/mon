@@ -29,7 +29,7 @@ const scriptOrder=[
  './core/home-coach.js',
  './app.js'
 ];
-const featureRuntime=['./features/missions-v2.css','./features/missions-v2.js','./data/missions-v2.js','./features/kanji-memory.css','./features/kanji-memory.js','./data/kanji-memory.js','./data/pronunciation.js','./features/pronunciation.js','./features/pronunciation.css','./features/videos.js','./features/videos.css','./core/narrative-state.js','./features/journal.js','./features/journal.css','./data/narrative.js','./features/lesson.js','./features/lesson.css','./features/practice.js','./features/practice.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
+const featureRuntime=['./features/missions-v2.css','./features/missions-v2.js','./data/missions-v2.js','./features/kanji-memory.css','./features/kanji-memory.js','./data/kanji-memory.js','./data/pronunciation.js','./features/pronunciation.js','./features/pronunciation.css','./features/videos.js','./features/videos.css','./core/narrative-state.js','./features/journal.js','./features/journal.css','./data/narrative.js','./features/open-production-remediation.js','./features/lesson.js','./features/lesson.css','./features/practice.js','./features/practice.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
 const debugRuntime=['./features/performance-lab.js','./features/performance-lab.css'];
 const lazyRuntime=[
  './data/content-packs-n5.js',
@@ -80,7 +80,7 @@ if(!homeCoach.includes('homeCoachDecision'))throw new Error('Adaptive Home polic
 if(!app.includes('homeCoachDecision(state,flatPath)'))throw new Error('Home runtime is not consuming Home Coach')
 if(!html.includes('id="routeLoader"'))throw new Error('Missing route loading feedback')
 if(!html.includes('aria-live="polite"'))throw new Error('Lesson feedback should expose a polite live region')
-if(!app.includes("lesson:['./features/lesson.js']"))throw new Error('Lesson UI must stay lazy')
+if(!app.includes("lesson:['./features/open-production-remediation.js','./features/lesson.js']"))throw new Error('Lesson UI and remediation must stay lazy')
 if(!app.includes("practice:['./features/practice.js']"))throw new Error('Practice Hub must stay lazy')
 const narrative=read('data/narrative.js');
 if(!narrative.includes('narrativeEpisodeForUnit'))throw new Error('Narrative network missing')
