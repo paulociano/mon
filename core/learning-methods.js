@@ -20,6 +20,66 @@ function grammarBridge(id,g={}){
   return grammarBridgeNotes[id]||`Observe a função de ${g.form||'este padrão'} dentro da frase antes de procurar uma tradução fixa em português.`;
 }
 
+Object.assign(grammarBridgeNotes,{
+  existenceAru:'あります apresenta a existência de coisas. Pense no padrão como “há X neste ponto”, não como tradução direta de “ter”.',
+  existenceIru:'います apresenta pessoas e animais existentes em um lugar. O contraste com あります depende do tipo de entidade.',
+  positionNo:'の liga a referência espacial ao nome anterior: A の 上 significa “a região de cima de A”, formando um bloco de localização.',
+  timeNi:'に fixa a ação em um ponto específico do tempo. Horários definidos funcionam como alvos temporais.',
+  durationFromTo:'から abre o intervalo e まで fecha o limite. O mesmo mapa mental funciona para tempo e deslocamento.',
+  invitationMashou:'〜ましょう inclui o falante na proposta. É uma iniciativa conjunta, próxima de “vamos fazer”.',
+  invitationMasenka:'〜ませんか usa a forma negativa como convite polido. Em vez de negar, abre espaço para a outra pessoa aceitar ou recusar.',
+  likeGa:'好き descreve uma preferência/estado, por isso o item preferido aparece com が em vez de ser tratado como objeto com を.',
+  adjectiveI:'Adjetivos い carregam comportamento predicativo próprio. O い faz parte da forma e pode mudar em negação e passado.',
+  adjectiveNa:'Adjetivos な usam な antes de substantivos, mas com です predicam sem esse な. O comportamento é diferente dos adjetivos い.',
+  countersTsu:'Os contadores classificam aquilo que está sendo contado. つ é uma família geral útil quando o objeto não exige um contador mais específico.',
+  countersPeople:'Pessoas usam 人, com leituras especiais em 一人 e 二人. Aprenda número + contador como um bloco sonoro.',
+  teKudasai:'A forma て deixa a ação conectável; ください transforma essa ação em um pedido polido para outra pessoa.',
+  teMoIi:'〜てもいい combina uma ação em forma て com a ideia de “mesmo fazendo, está tudo bem”, produzindo permissão.',
+  teWaIkenai:'〜てはいけません enquadra a ação como algo que não é aceitável. É uma proibição mais forte que uma simples preferência negativa.',
+  desireTai:'〜たい se liga ao radical verbal e transforma a ação em desejo do falante. Comporte-se com ela como uma forma descritiva, não como futuro.',
+  teIru:'〜ている conecta uma ação a um estado em curso ou resultante. O contexto decide se o foco é “estar fazendo” ou “estar nesse estado”.',
+  frequency:'Advérbios de frequência calibram quão recorrente é a ação. あまり normalmente pede uma forma negativa para expressar baixa frequência.',
+  pastPolite:'ました e ませんでした carregam o passado no final do verbo. O restante da frase pode permanecer estável enquanto o predicado muda.',
+  beforeAfter:'前に e 後で organizam eventos em relação a um ponto de referência. Primeiro identifique qual ação serve de âncora temporal.',
+  reasonKara:'から colocado após uma razão conecta causa e consequência. Leia a frase como “A; por causa disso, B”.',
+  contrastKedo:'けど cria contraste e também pode suavizar o que vem depois. Em conversa, a segunda metade pode até ficar implícita.',
+  questionWords:'Palavras interrogativas deixam aberta a informação procurada. A partícula ao redor delas ainda mostra qual papel aquela resposta terá.',
+  alreadyYet:'もう indica que uma mudança ou conclusão já ocorreu; まだ mantém a situação antes da conclusão ou em continuidade.',
+  phoneIdentity:'No telefone, identificar-se cedo cria o contexto compartilhado. Xです é direto; Xと申します eleva a polidez da autoapresentação.'
+});
+
+function grammarStudyNote(id,g={}){
+  const mentalModel=grammarBridge(id,g);
+  return {
+    mentalModel,
+    explanation:`${g.form||'Este padrão'} serve para ${g.function||'organizar a frase'}. Em uso, ${g.pt||'o sentido depende do contexto'}. ${mentalModel}`
+  };
+}
+function grammarStudyBlock(unit={}){
+  const ids=(unit.grammar||[]).filter(id=>grammarCatalog?.[id]);
+  if(!ids.length)return null;
+  const notes=ids.map(id=>({id,g:grammarCatalog[id],...grammarStudyNote(id,grammarCatalog[id])}));
+  const scenario=(unit.scenarios||[])[0];
+  const examples=[];
+  if(scenario?.reply)examples.push({jp:scenario.reply,pt:scenario.replyPt||scenario.pt||'Resposta aplicada da situação.',note:'Exemplo da própria situação da lição: observe as partículas e o final da frase em contexto.'});
+  for(const x of notes){
+    if(examples.length>=4)break;
+    examples.push({jp:x.g.form,pt:x.g.pt,note:`Molde de ${x.g.function}: use a forma como mapa funcional, não como frase para decorar isoladamente.`});
+  }
+  while(examples.length<2&&notes[0])examples.push({jp:notes[0].g.form,pt:notes[0].g.pt,note:notes[0].mentalModel});
+  return {
+    type:'study',
+    title:`${unit.title||'Lição'} · gramática aplicada`,
+    mentalModel:notes.map(x=>x.mentalModel).join(' '),
+    explanation:notes.map(x=>`${x.g.form}: ${x.explanation}`).join(' '),
+    examples,
+    contrast:notes.length>1
+      ?`Nesta lição, não escolha estruturas pela tradução em português. Compare as funções: ${notes.map(x=>`${x.g.form} → ${x.g.function}`).join(' · ')}.`
+      :`Use ${notes[0].g.form} quando a intenção for ${notes[0].g.function}. Trocar a estrutura muda o papel gramatical, mesmo que a tradução pareça próxima.`,
+    realWorldUse:(unit.objectives||[]).join(' · ')
+  };
+}
+
 const pronunciationContrasts=[
   {a:'おばさん',aPt:'tia',b:'おばあさん',bPt:'avó',focus:'vogal longa'},
   {a:'ビル',aPt:'prédio',b:'ビール',bPt:'cerveja',focus:'duração vocálica'},
