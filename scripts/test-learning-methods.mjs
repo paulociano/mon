@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
-const ctx=vm.createContext({console,Object,Set,Number,String,Math});
+const ctx=vm.createContext({console,Object,Set,Number,String,Math,state:{methodStats:{},reviewItems:{},mistakeStats:{},masteryEvidence:{},narrative:{episodes:{}}}});
 vm.runInContext(fs.readFileSync('data/content-packs-n5.js','utf8'),ctx,{filename:'content-packs-n5.js'});
 for(const file of ['data/content-packs-n4.js','data/content-packs-n4-61-70.js','data/content-packs-n4-71-80.js','data/content-packs-n4-81-90.js'])vm.runInContext(fs.readFileSync(file,'utf8'),ctx,{filename:file});
 vm.runInContext(fs.readFileSync('core/learning-methods.js','utf8'),ctx,{filename:'learning-methods.js'});
