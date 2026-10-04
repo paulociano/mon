@@ -15,7 +15,9 @@ for(const lazy of ['./data/content-packs.js','./features/session.js','./features
   assert.ok(!core.includes(`'${lazy}'`),'lazy runtime must not be install-precache '+lazy);
 }
 const installBlock=sw.match(/self\.addEventListener\('install'[\s\S]*?\n}\);/)?.[0]||'';
-assert.ok(!installBlock.includes('skipWaiting'),'updates must not activate silently during install');
+assert.ok(installBlock.includes("if(CRITICAL_SHELL_UPGRADE)await self.skipWaiting()"),'v35 critical shell recovery must activate immediately');
+assert.ok(sw.includes("const CRITICAL_SHELL_UPGRADE=CACHE_VERSION==='v35'"),'forced activation must be explicitly scoped to v35 only');
+assert.ok(sw.includes("if(!view||view==='home')return client.navigate(client.url)"),'critical upgrade may auto-reload Home only');
 assert.ok(sw.includes("event.data?.type==='SKIP_WAITING'"),'service worker needs explicit update activation message');
 assert.ok(sw.includes("const CACHE_PREFIX='mon-japanese-os-'"),'service worker cache namespace missing');
 assert.ok(sw.includes("k.startsWith(CACHE_PREFIX)&&k!==CACHE"),'service worker must only delete MON-owned caches');
