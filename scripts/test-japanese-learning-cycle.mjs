@@ -15,6 +15,7 @@ for(const file of [
   'data/n4-capabilities.js',
   'data/kanji.js',
   'data/missions-v2.js',
+  'data/grammar-pedagogy.js',
   'core/learning-methods.js',
   'core/course-engine.js'
 ])vm.runInContext(fs.readFileSync(file,'utf8'),ctx,{filename:file});

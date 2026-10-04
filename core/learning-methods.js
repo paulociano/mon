@@ -4,88 +4,17 @@ const MON_METHOD={
   principle:'Primeiro compreenda a missão e o mecanismo; depois recupere, transfira e produza com apoio decrescente.'
 };
 
-const grammarBridgeNotes={
-  topicDesu:'は organiza o tópico. Não pense nele como um sinal de “=”: primeiro diga sobre o que você fala, depois complete a informação.',
-  questionKa:'か marca a pergunta no fim. Em fala casual a entonação também ajuda, mas aqui o padrão polido deixa a intenção explícita.',
-  locationNi:'に marca o destino de movimento. Compare com で: に aponta para onde você vai; で marca onde uma ação acontece.',
-  locationWaDoko:'O molde X は どこですか separa tópico e pergunta. Evite traduzir palavra por palavra; recupere o bloco inteiro.',
-  objectO:'を marca o objeto da ação. Em português a ordem costuma carregar esse papel; em japonês a partícula é a pista mais confiável.',
-  requestKudasai:'ください funciona bem para pedir algo concreto. Pense em “X を ください” como um bloco funcional, não como tradução literal de “dar”.',
-  requestOnegai:'お願いします pede item, serviço ou ação com mais flexibilidade. É especialmente útil em atendimento e situações formais.',
-  deAction:'で marca o palco da ação. Lugar + で responde “onde a ação acontece?”, diferente de に com destino/existência.',
-  gaState:'が frequentemente destaca aquilo que está em certo estado ou foco perceptivo. Não tente substituir mecanicamente por “o/a” do português.',
-  karaMade:'から e まで formam limites: origem/início → fim. O mesmo mapa mental serve para tempo e deslocamento.'
-};
 function grammarBridge(id,g={}){
-  return grammarBridgeNotes[id]||`Observe a função de ${g.form||'este padrão'} dentro da frase antes de procurar uma tradução fixa em português.`;
+  return g.mentalModel||grammarCatalog?.[id]?.mentalModel||`Observe a função de ${g.form||'este padrão'} dentro da frase antes de procurar uma tradução fixa em português.`;
 }
-
-Object.assign(grammarBridgeNotes,{
-  existenceAru:'あります apresenta a existência de coisas. Pense no padrão como “há X neste ponto”, não como tradução direta de “ter”.',
-  existenceIru:'います apresenta pessoas e animais existentes em um lugar. O contraste com あります depende do tipo de entidade.',
-  positionNo:'の liga a referência espacial ao nome anterior: A の 上 significa “a região de cima de A”, formando um bloco de localização.',
-  timeNi:'に fixa a ação em um ponto específico do tempo. Horários definidos funcionam como alvos temporais.',
-  durationFromTo:'から abre o intervalo e まで fecha o limite. O mesmo mapa mental funciona para tempo e deslocamento.',
-  invitationMashou:'〜ましょう inclui o falante na proposta. É uma iniciativa conjunta, próxima de “vamos fazer”.',
-  invitationMasenka:'〜ませんか usa a forma negativa como convite polido. Em vez de negar, abre espaço para a outra pessoa aceitar ou recusar.',
-  likeGa:'好き descreve uma preferência/estado, por isso o item preferido aparece com が em vez de ser tratado como objeto com を.',
-  adjectiveI:'Adjetivos い carregam comportamento predicativo próprio. O い faz parte da forma e pode mudar em negação e passado.',
-  adjectiveNa:'Adjetivos な usam な antes de substantivos, mas com です predicam sem esse な. O comportamento é diferente dos adjetivos い.',
-  countersTsu:'Os contadores classificam aquilo que está sendo contado. つ é uma família geral útil quando o objeto não exige um contador mais específico.',
-  countersPeople:'Pessoas usam 人, com leituras especiais em 一人 e 二人. Aprenda número + contador como um bloco sonoro.',
-  teKudasai:'A forma て deixa a ação conectável; ください transforma essa ação em um pedido polido para outra pessoa.',
-  teMoIi:'〜てもいい combina uma ação em forma て com a ideia de “mesmo fazendo, está tudo bem”, produzindo permissão.',
-  teWaIkenai:'〜てはいけません enquadra a ação como algo que não é aceitável. É uma proibição mais forte que uma simples preferência negativa.',
-  desireTai:'〜たい se liga ao radical verbal e transforma a ação em desejo do falante. Comporte-se com ela como uma forma descritiva, não como futuro.',
-  teIru:'〜ている conecta uma ação a um estado em curso ou resultante. O contexto decide se o foco é “estar fazendo” ou “estar nesse estado”.',
-  frequency:'Advérbios de frequência calibram quão recorrente é a ação. あまり normalmente pede uma forma negativa para expressar baixa frequência.',
-  pastPolite:'ました e ませんでした carregam o passado no final do verbo. O restante da frase pode permanecer estável enquanto o predicado muda.',
-  beforeAfter:'前に e 後で organizam eventos em relação a um ponto de referência. Primeiro identifique qual ação serve de âncora temporal.',
-  reasonKara:'から colocado após uma razão conecta causa e consequência. Leia a frase como “A; por causa disso, B”.',
-  contrastKedo:'けど cria contraste e também pode suavizar o que vem depois. Em conversa, a segunda metade pode até ficar implícita.',
-  questionWords:'Palavras interrogativas deixam aberta a informação procurada. A partícula ao redor delas ainda mostra qual papel aquela resposta terá.',
-  alreadyYet:'もう indica que uma mudança ou conclusão já ocorreu; まだ mantém a situação antes da conclusão ou em continuidade.',
-  phoneIdentity:'No telefone, identificar-se cedo cria o contexto compartilhado. Xです é direto; Xと申します eleva a polidez da autoapresentação.'
-});
-
-Object.assign(grammarBridgeNotes,{
-  obligationNaito:'〜ないといけません parte da forma negativa para marcar necessidade prática: pense em “se eu não fizer, não resolve”, não em uma tradução palavra por palavra.',
-  permissionTemo:'〜ても大丈夫です enquadra a ação como aceitável. O foco é remover uma restrição: “mesmo fazendo isso, está tudo bem”.',
-  conditionTara:'〜たら cria um ponto de passagem: quando A se concretizar, B passa a valer. É útil para instruções e próximos passos.',
-  purposeYouni:'〜ように aponta para um resultado desejado que você tenta garantir, especialmente cuidado, hábito ou capacidade.',
-  givingTeMoraeru:'〜てもらえますか transforma a ação da outra pessoa em ajuda recebida por você, criando um pedido mais suave.',
-  softNdesu:'〜んですが abre contexto antes do pedido ou problema. Ele prepara o interlocutor para entender por que a próxima fala importa.',
-  experienceTaKoto:'〜たことがあります trata uma ação passada como experiência acumulada: “já tive a experiência de fazer X”.',
-  planTsumori:'〜つもりです mostra uma intenção já formada. É mais planejado do que um desejo momentâneo com 〜たい.',
-  hearsaySou:'〜そうです separa informação recebida da sua própria observação. A fonte está implícita no “ouvi dizer”.',
-  explanationToIu:'〜という意味です transforma uma expressão em objeto de explicação: “isso quer dizer...”.',
-  suggestionHouga:'〜たほうがいい compara implicitamente alternativas e recomenda a ação considerada melhor.',
-  politeDecline:'〜はちょっと… deixa a recusa parcialmente implícita. O contexto social completa o “é um pouco difícil”.',
-  reasonNode:'〜ので apresenta razão de modo mais explicativo e geralmente mais suave do que uma justificativa brusca.',
-  whileNagara:'〜ながら mantém uma ação como pano de fundo enquanto outra acontece em paralelo.',
-  tryTeMiru:'〜てみる significa experimentar uma ação para ver o resultado, não apenas “ver” literalmente.',
-  becomeYouNiNaru:'〜ようになる marca mudança de estado ou capacidade ao longo do tempo: algo passa a ser possível ou habitual.',
-  passiveRareru:'A voz passiva muda o foco para aquilo que recebe a ação. Em avisos, importa primeiro entender o que será feito ou afetado.',
-  writtenTeAru:'〜てあります descreve um estado que existe porque alguém realizou uma ação intencionalmente antes.',
-  dueMadeNi:'〜までに estabelece um limite de conclusão: a ação precisa ocorrer antes de o ponto final ser ultrapassado.',
-  ifBa:'〜ば abre uma condição lógica: quando a condição é satisfeita, a consequência se torna aplicável.',
-  mustNakereba:'〜なければなりません expressa obrigação formal por uma lógica de “se não fizer, não serve / não pode ficar assim”.',
-  nominalNoWa:'〜のは empacota uma ação como tópico. Isso permite comparar, explicar ou avaliar o próprio ato.',
-  contrastNonI:'〜のに coloca lado a lado expectativa e resultado inesperado. O contraste é parte central do sentido.',
-  seemMitai:'〜みたいです marca impressão baseada no que parece ser verdade, sem afirmar certeza total.',
-  reportedTte:'〜って pode introduzir fala citada ou um tópico em registro informal. O contexto indica qual função está ativa.',
-  opinionToOmou:'〜と思います embala uma proposição como opinião sua, diminuindo a força de uma afirmação absoluta.',
-  compareYori:'AよりBのほうが organiza comparação por referência: A é o ponto de comparação e B recebe o destaque.',
-  sequenceTara:'〜たら、そのあと usa a conclusão de uma ação como gatilho para a próxima etapa da sequência.',
-  uncertaintyKamo:'〜かもしれません mantém uma hipótese aberta. É possibilidade, não previsão certa.',
-  askNdeshouka:'〜んでしょうか transforma dúvida em pedido de explicação, soando menos como uma pergunta seca de sim/não.'
-});
-
 function grammarStudyNote(id,g={}){
-  const mentalModel=grammarBridge(id,g);
   return {
-    mentalModel,
-    explanation:`${g.form||'Este padrão'} serve para ${g.function||'organizar a frase'}. Em uso, ${g.pt||'o sentido depende do contexto'}. ${mentalModel}`
+    mentalModel:g.mentalModel||grammarBridge(id,g),
+    explanation:g.explanation||`${g.form||'Este padrão'} serve para ${g.function||'organizar a frase'}.`,
+    examples:[...(g.examples||[])],
+    contrast:g.contrast||'Compare a função deste padrão com estruturas próximas antes de escolher pela tradução.',
+    commonMistakes:[...(g.commonMistakes||[])],
+    realWorldUse:g.realWorldUse||g.function||''
   };
 }
 function grammarStudyBlock(unit={}){
@@ -94,22 +23,27 @@ function grammarStudyBlock(unit={}){
   const notes=ids.map(id=>({id,g:grammarCatalog[id],...grammarStudyNote(id,grammarCatalog[id])}));
   const scenario=(unit.scenarios||[])[0];
   const examples=[];
-  if(scenario?.reply)examples.push({jp:scenario.reply,pt:scenario.replyPt||scenario.pt||'Resposta aplicada da situação.',note:'Exemplo da própria situação da lição: observe as partículas e o final da frase em contexto.'});
+  if(scenario?.reply)examples.push({jp:scenario.reply,pt:scenario.replyPt||scenario.pt||'Resposta aplicada da situação.',note:'Exemplo da própria situação da lição: observe a estrutura funcionando dentro da intenção comunicativa.'});
   for(const x of notes){
+    for(const example of x.examples||[]){
+      if(examples.length>=4)break;
+      if(!examples.some(e=>e.jp===example.jp&&e.pt===example.pt))examples.push({...example,note:example.note||`Exemplo do catálogo para ${x.g.form}.`});
+    }
     if(examples.length>=4)break;
-    examples.push({jp:x.g.form,pt:x.g.pt,note:`Molde de ${x.g.function}: use a forma como mapa funcional, não como frase para decorar isoladamente.`});
   }
-  while(examples.length<2&&notes[0])examples.push({jp:notes[0].g.form,pt:notes[0].g.pt,note:notes[0].mentalModel});
+  while(examples.length<2&&notes[0])examples.push({jp:notes[0].g.form,pt:notes[0].g.pt,note:'Molde da estrutura: recupere a função antes da tradução.'});
+  const commonMistakes=notes.flatMap(x=>x.commonMistakes||[]).filter((x,i,a)=>a.findIndex(y=>y.wrong===x.wrong)===i).slice(0,3);
+  const baseContrast=notes.length>1?notes.map(x=>`${x.g.form}: ${x.contrast}`).join(' '):notes[0].contrast;
+  const mistake=commonMistakes[0];
   return {
     type:'study',
     title:`${unit.title||'Lição'} · gramática aplicada`,
     mentalModel:notes.map(x=>x.mentalModel).join(' '),
-    explanation:notes.map(x=>`${x.g.form}: ${x.explanation}`).join(' '),
+    explanation:notes.map(x=>x.explanation).join(' '),
     examples,
-    contrast:notes.length>1
-      ?`Nesta lição, não escolha estruturas pela tradução em português. Compare as funções: ${notes.map(x=>`${x.g.form} → ${x.g.function}`).join(' · ')}.`
-      :`Use ${notes[0].g.form} quando a intenção for ${notes[0].g.function}. Trocar a estrutura muda o papel gramatical, mesmo que a tradução pareça próxima.`,
-    realWorldUse:(unit.objectives||[]).join(' · ')
+    contrast:baseContrast+(mistake?` Erro comum: ${mistake.wrong} ${mistake.explanation}`:''),
+    commonMistakes,
+    realWorldUse:[...new Set(notes.map(x=>x.realWorldUse).filter(Boolean))].join(' · ')||((unit.objectives||[]).join(' · '))
   };
 }
 
@@ -150,7 +84,7 @@ function compileMONMethod(unit,method,index=0){
     return {type:'discovery',prompt:'Observe os exemplos e identifique a função que acabou de estudar.',examples,
       options:methodOptions(g.item.function,Object.values(grammarCatalog).map(x=>x.function)),
       answer:g.item.function,why:`${g.item.form} · ${g.item.pt}`,
-      bridge:grammarBridge(g.id,g.item),
+      bridge:g.item.mentalModel||grammarBridge(g.id,g.item),
       _reviewType:'grammar',_reviewKey:'P:'+g.id,method:'discover'};
   }
   if(method==='freeRecall'&&v.item){

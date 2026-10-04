@@ -22,6 +22,7 @@ const LEARNING_RUNTIME_SCRIPTS=[
  './core/mistakes.js',
  LE,
  './core/mastery-graph.js',
+ './data/grammar-pedagogy.js',
  './core/learning-methods.js',
  './core/course-engine.js',
  './core/progression-engine.js'
