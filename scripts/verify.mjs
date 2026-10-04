@@ -36,6 +36,7 @@ const lazyRuntime=[
  './core/next-best-lesson.js',
  './core/mistakes.js',
  './core/learning-evidence.js',
+ './core/learning-metrics.js',
  './core/mastery-graph.js',
  './core/learning-methods.js',
  './core/course-engine.js',
