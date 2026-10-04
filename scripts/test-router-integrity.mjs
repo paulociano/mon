@@ -1,6 +1,8 @@
 import fs from 'node:fs';import assert from 'node:assert/strict';
 const app=fs.readFileSync('app.js','utf8');
-const start=app.indexOf('async function go(id,options={})'),end=app.indexOf("document.querySelectorAll('[data-view]')",start);
+const start=app.indexOf('async function go(id,options={})');
+const listener="document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener";
+const end=app.indexOf(listener,start);
 assert.ok(start>=0&&end>start,'router function must exist before nav listeners');
 const route=app.slice(start,end);
 for(const token of ['try{','catch(err)','finally{','return requestId===routeRequestId','commitRouteUrl(id','keepActiveNavVisible(id)'])assert.ok(route.includes(token),'router truncated or missing '+token);
