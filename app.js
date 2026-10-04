@@ -1,6 +1,3 @@
-// MON application runtime
-// Course datasets live in data/course-content.js.
-
 const viewNames={home:'Hoje',journey:'Jornada',practice:'Praticar',explore:'Explorar',progress:'Progresso',user:'Minha área',lesson:'Lição',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Mapa acadêmico',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos',pronunciation:'Pronúncia'};
 let currentKanji=0;
 function shellLocalDateKey(date=new Date()){
@@ -48,7 +45,7 @@ const FEATURE_RUNTIME_SCRIPTS={
  session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./data/narrative.js','./core/next-best-lesson.js','./features/foundation.js','./features/session.js'],
  kanji:['./data/kanji.js','./data/kanji-memory.js','./features/kanji.js','./features/kanji-memory.js'],
  reading:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
- missions:['./data/kana.js','./data/experiences.js','./data/missions-v2.js','./features/experiences.js','./features/missions-v2.js'],
+ missions:['./data/kana.js','./data/experiences.js','./data/missions-v2.js','./data/missions-dialogues.js','./features/experiences.js','./features/missions-dialogue.js','./features/missions-v2.js'],
  speaking:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
  progress:['./features/progress.js'],
  curriculum:['./data/curriculum.js'],
