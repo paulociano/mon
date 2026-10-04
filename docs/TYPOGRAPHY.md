@@ -14,8 +14,8 @@ Stack system-first:
 
 - ui-sans-serif;
 - San Francisco / Apple system via `-apple-system`;
-- Segoe UI Variable / Segoe UI no Windows;
-- Helvetica Neue / Arial como fallbacks finais.
+- Segoe UI no Windows;
+- Arial como fallback final.
 
 Objetivo: interface, navegação, controles, labels, métricas e texto funcional.
 
@@ -43,8 +43,8 @@ Georgia permanece apenas como fallback dentro do token. Ela não deve ser hardco
 
 Stack pedagógica sans:
 
-- Hiragino Sans / Hiragino Kaku Gothic ProN;
-- Yu Gothic UI / Yu Gothic;
+- Hiragino Sans;
+- Yu Gothic UI;
 - Noto Sans JP;
 - Meiryo;
 - sans-serif.
