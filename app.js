@@ -181,49 +181,7 @@ function renderUserArea(){
  ensureUserArea();const profile=loadLocalProfile(),p=currentPlan(),stage=JOURNEY_STAGES[journeyStageIndex()],pct=Math.round(journeyStageProgress()*100);
  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};set('userNameHero',profile.name);set('userLevel',(p.displayLevel||p.level)+' · dia '+p.localDay+'/'+p.total);set('userStreak',(state.streak||0)+' '+((state.streak||0)===1?'dia':'dias'));set('userXp',state.xp||0);set('userJourneyText',stage.name+' · '+stage.title+' · '+pct+'% da etapa');const bar=document.getElementById('userJourneyBar');if(bar)bar.style.width=pct+'%';const name=document.getElementById('userNameInput'),goal=document.getElementById('userGoalInput'),mode=document.getElementById('userModeInput');if(name)name.value=profile.name;if(goal)goal.value=String(profile.dailyGoal);if(mode)mode.value=profile.studyMode;const avatar=document.getElementById('userAvatar');if(avatar)avatar.textContent=(profile.name.trim()[0]||'門').toUpperCase();const account=loadMonAccount(),badge=document.getElementById('userAccountBadge'),note=document.getElementById('userAccountNote');if(badge)badge.textContent=monAccountStatus()==='connected'?'conta sincronizada':'perfil local';if(note)note.textContent=typeof monCloudConfigured==='function'&&monCloudConfigured()?'Conta MON disponível. Entre por link seguro enviado ao seu e-mail para sincronizar entre dispositivos.':'Este perfil tem um ID local estável, mas a nuvem ainda precisa da URL e chave publicável do projeto Supabase.';renderCloudAccountPanel();
 }
-async function renderCloudAccountPanel(){
- const panel=document.getElementById('userCloudPanel');
- if(!panel)return;
- if(typeof monCloudConfigured!=='function'||!monCloudConfigured()){
-  panel.innerHTML='<b>Conta MON</b><br>Nuvem preparada, aguardando configuração do projeto Supabase.';
-  return;
- }
- try{
-  const session=await monCloudSession();
-  if(session){
-   const email=escapeHtml(session.user.email||'usuário');
-   panel.innerHTML='<b>Conta MON conectada</b><br>'+email+'<div class="user-actions"><button class="user-save" onclick="syncMonNow()">sincronizar agora</button><button class="user-secondary" onclick="disconnectMonCloud()">sair</button></div>';
-  }else{
-   panel.innerHTML='<b>Sincronizar entre dispositivos</b><br><label class="user-field"><span>E-mail</span><input id="userCloudEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><div class="user-actions"><button class="user-save" onclick="connectMonCloud()">enviar link de acesso</button></div>';
-  }
- }catch(e){
-  panel.textContent='Conta MON indisponível: '+e.message;
- }
-}
-async function connectMonCloud(){
- const email=document.getElementById('userCloudEmail')?.value.trim();
- if(!email){toast('Digite seu e-mail');return}
- try{
-  await monCloudSignIn(email);
-  toast('Link de acesso enviado ao seu e-mail');
- }catch(e){toast(e.message)}
-}
-async function disconnectMonCloud(){
- try{
-  await monCloudSignOut();
-  await renderCloudAccountPanel();
-  toast('Conta desconectada deste dispositivo');
- }catch(e){toast(e.message)}
-}
-async function syncMonNow(){
- try{
-  await monCloudPush(loadLocalProfile());
-  toast('Progresso sincronizado com a Conta MON');
-  await renderCloudAccountPanel();
- }catch(e){toast(e.message)}
-}
 function saveUserArea(){const name=(document.getElementById('userNameInput')?.value||'Estudante MON').trim().slice(0,32)||'Estudante MON',dailyGoal=Number(document.getElementById('userGoalInput')?.value||20),studyMode=document.getElementById('userModeInput')?.value||'equilibrado';saveLocalProfile({name,dailyGoal,studyMode});renderUserArea();toast('Preferências salvas neste dispositivo')}
-function exportMonBackup(){const payload=monSyncPayload(loadLocalProfile());const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mon-backup-'+shellLocalDateKey()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),0);toast('Backup do MON exportado')}
 function showProfileSummary(){ensureUserArea();go('user')}
 function currentPlan(){const d=Number(state.day||1);if(d<=30)return{level:'N5',displayLevel:'N5',phase:'n5',localDay:d,total:30,label:'sobrevivência',start:1};if(d<=54)return{level:'N4',displayLevel:'PONTE',phase:'bridge',localDay:d-30,total:24,label:'consolidação N5 → N4',start:31};if(d<=90)return{level:'N4',displayLevel:'N4',phase:'n4',localDay:d-54,total:36,label:'autonomia',start:55};return{level:'N3',displayLevel:'N3',phase:'n3',localDay:Math.min(90,d-90),total:90,label:'integração',start:91}}
 const JOURNEY_STAGES=[
