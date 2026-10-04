@@ -23,6 +23,7 @@ function boot(seed={}){
  assert.equal(context.__state.foundationDay,1);
  assert.deepEqual(Object.keys(context.__state.videoLearning.opened),[]);
  assert.deepEqual(Object.keys(context.__state.productionGaps),[]);
+ assert.deepEqual(Object.keys(context.__state.functionalMastery),[]);
 }
 {
  const legacy={xp:777,foundationDay:8,reviews:{a:{ease:2.1}}};
@@ -69,5 +70,12 @@ function boot(seed={}){
  assert.deepEqual(Array.from(context.__state.productionGaps.alternativa.tokens),['別','大丈夫']);
  context.__state.productionGaps.alternativa.recovered=2;context.__save();
  assert.equal(JSON.parse(store.get('mon-state')).productionGaps.alternativa.recovered,2);
+}
+{
+ const initial={saveVersion:1,functionalMastery:{confirm:{attempts:4,successes:3,score:74,lastAt:321,lastLabel:'confirmação',tokens:['確認']}}};
+ const {context,store}=boot({'mon-state':JSON.stringify(initial)});
+ assert.equal(context.__state.functionalMastery.confirm.score,74);
+ context.__state.functionalMastery.confirm.score=81;context.__save();
+ assert.equal(JSON.parse(store.get('mon-state')).functionalMastery.confirm.score,81);
 }
 console.log('MON state persistence contracts passed');

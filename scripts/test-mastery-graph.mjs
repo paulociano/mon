@@ -2,10 +2,11 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
-const state={masteryEvidence:{},unitMastery:{},methodStats:{}};
+const state={masteryEvidence:{},unitMastery:{},methodStats:{},productionGaps:{},functionalMastery:{}};
 const ctx=vm.createContext({state,console,Object,Set,Number,String,Math,Date});
 vm.runInContext(fs.readFileSync('data/content-packs-n5.js','utf8'),ctx);
 vm.runInContext(fs.readFileSync('core/mastery-graph.js','utf8'),ctx);
+vm.runInContext(fs.readFileSync('features/open-production-remediation.js','utf8'),ctx);
 
 for(let i=0;i<3;i++)vm.runInContext("recordMasteryEvidence({_reviewType:'vocabulary',_reviewKey:'eki',type:'choice'},true,{hintUsed:false})",ctx);
 for(let i=0;i<3;i++)vm.runInContext("recordMasteryEvidence({_reviewType:'vocabulary',_reviewKey:'eki',type:'recall'},false,{hintUsed:false})",ctx);
@@ -29,4 +30,11 @@ const status=vm.runInContext("unitMasteryStatus(coursePacks.N5.units[0])",ctx);
 assert.ok(['exposed','reinforcing','mastered'].includes(status.status));
 assert.ok(status.coverage>=0&&status.coverage<=100);
 
+vm.runInContext("recordProductionGaps({_unitId:'n4-test',assessment:{labels:['causa','alternativa'],groups:[['ので'],['別','大丈夫']]}},{missing:['causa','alternativa']})",ctx);
+assert.equal(vm.runInContext("state.functionalMastery.explain.attempts",ctx),1);
+assert.equal(vm.runInContext("state.functionalMastery.negotiate.attempts",ctx),1);
+assert.ok(vm.runInContext("state.functionalMastery.explain.score",ctx)<35);
+vm.runInContext("recoverProductionGaps({_gapLabels:['causa','alternativa']})",ctx);
+assert.equal(vm.runInContext("state.functionalMastery.explain.successes",ctx),1);
+assert.ok(vm.runInContext("state.functionalMastery.explain.score",ctx)>0);
 console.log('MON mastery graph tests passed');
