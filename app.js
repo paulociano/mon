@@ -11,6 +11,7 @@ const ACCOUNT_RUNTIME_SCRIPT='./core/account.js';
 const CLOUD_RUNTIME_SCRIPTS=['./config/cloud.js','./core/supabase-sync.js'];
 let accountRuntimePromise=null;
 function ensureAccountRuntime(){return accountRuntimePromise||(accountRuntimePromise=(async()=>{await loadRuntimeScript(ACCOUNT_RUNTIME_SCRIPT);for(const src of CLOUD_RUNTIME_SCRIPTS)await loadRuntimeScript(src)})())}
+const LE=LE;
 const LEARNING_RUNTIME_SCRIPTS=[
  './data/kanji.js',
  './data/kana.js',
@@ -21,7 +22,7 @@ const LEARNING_RUNTIME_SCRIPTS=[
  './core/narrative-state.js',
  './core/next-best-lesson.js',
  './core/mistakes.js',
- './core/learning-evidence.js',
+ LE,
  './core/mastery-graph.js',
  './core/learning-methods.js',
  './core/course-engine.js',
@@ -41,9 +42,9 @@ const FEATURE_RUNTIME_SCRIPTS={
  session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./data/narrative.js','./core/next-best-lesson.js','./features/foundation.js','./features/session.js'],
  kanji:['./data/kanji.js','./data/kanji-memory.js','./features/kanji.js','./features/kanji-memory.js'],
  reading:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
- missions:['./core/learning-evidence.js','./data/kana.js','./data/experiences.js','./data/missions-v2.js','./data/missions-dialogues.js','./features/experiences.js','./features/missions-reactions.js','./features/missions-world.js','./features/missions-dialogue.js','./features/missions-v2.js'],
+ missions:[LE,'./data/kana.js','./data/experiences.js','./data/missions-v2.js','./data/missions-dialogues.js','./features/experiences.js','./features/missions-reactions.js','./features/missions-world.js','./features/missions-dialogue.js','./features/missions-v2.js'],
  speaking:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
- progress:['./core/learning-evidence.js','./features/progress.js'],
+ progress:[LE,'./features/progress.js'],
  curriculum:['./data/curriculum.js'],
  lesson:['./features/open-production-remediation.js','./features/lesson.js'],
  practice:['./features/practice.js'],
@@ -329,7 +330,6 @@ function ensureDrawingCanvases(){
 const globalSearch=document.getElementById('globalSearch');
 if(globalSearch){globalSearch.addEventListener('keydown',async e=>{if(e.key==='Enter'&&e.target.value.trim()){await go('kanji');const q=e.target.value.trim();const ks=document.getElementById('kanjiSearch');ks.value=q;renderKanjiList('all',q);setTimeout(()=>ks.focus(),220)}})}
 if(matchMedia('(pointer:fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelectorAll('.experience-card,.mission').forEach(card=>{card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.setProperty('--rx',(-y*4)+'deg');card.style.setProperty('--ry',(x*5)+'deg')});card.addEventListener('pointerleave',()=>{card.style.setProperty('--rx','0deg');card.style.setProperty('--ry','0deg')})})}
-// ---------- V6 GAME LOOP ----------
 const pathUnits=[
  {title:'Portão 1 · Sons que cabem na boca',sub:'vogais, mora e primeiro hiragana',nodes:[['lesson','Vogais','あ',1],['lesson','K + S','し',2],['story','Primeiras palavras','本',2],['chest','Baú','箱',0],['checkpoint','Checkpoint','門',3]]},
  {title:'Portão 2 · Hiragana automático',sub:'linhas restantes, dakuten e combinações',nodes:[['lesson','T + N','つ',3],['lesson','H + M','ふ',4],['lesson','Y + R + W','ら',5],['lesson','Dakuten','が',6],['checkpoint','Checkpoint','門',7]]},
