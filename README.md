@@ -158,6 +158,7 @@ Paleta principal:
 - [Learning Validation](docs/LEARNING-VALIDATION.md)
 - [Next Best Lesson Calibration](docs/NBL-CALIBRATION.md)
 - [State Recovery & Backup](docs/STATE-RECOVERY.md)
+- [Multi-device Sync](docs/MULTI-DEVICE-SYNC.md)
 - [PWA Runtime Resilience](docs/PWA-RUNTIME.md)
 - [Accessibility & Microphone Policy](docs/ACCESSIBILITY-MICROPHONE.md)
 - [Latency Observability](docs/LATENCY-OBSERVABILITY.md)
