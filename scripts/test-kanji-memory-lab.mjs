@@ -28,8 +28,9 @@ assert.ok(html.includes('id="kanji"'),'Kanji Atlas lazy host must exist in the s
 assert.ok(atlas.includes('function ensureKanjiAtlas()'),'Kanji Atlas must hydrate the lazy host');
 assert.ok(atlas.includes('id="kanjiStudyFlow"'),'Kanji Atlas must expose the guided study flow');
 assert.ok(state.includes('kanjiLab:{attempts:0'));
-assert.ok(css.includes('.km-contrast'));
-assert.ok(css.includes('.km-options'));
+assert.ok(css.includes('.ka-challenge'),'guided Kanji challenges must stay styled');
+assert.ok(css.includes('.ka-options'),'guided Kanji answer options must stay styled');
+assert.ok(css.includes('.ka-writing'),'guided Kanji writing step must stay styled');
 assert.ok(!fs.readFileSync('README.md','utf8').includes('lista oficial JLPT'));
 
 console.log('MON Kanji Memory Lab 2.0 contracts passed');
