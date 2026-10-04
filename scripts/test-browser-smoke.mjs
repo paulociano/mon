@@ -9,24 +9,42 @@ const pageErrors=[];
 page.on('pageerror',error=>pageErrors.push(String(error?.stack||error)));
 page.on('console',msg=>{if(msg.type()==='error')console.error('[browser console]',msg.text())});
 
+async function waitVisible(selector){
+ try{
+  await page.waitForSelector(selector,{state:'visible'});
+ }catch(error){
+  const snapshot=await page.locator(selector).evaluateAll(nodes=>nodes.map(node=>({
+   tag:node.tagName,
+   id:node.id,
+   className:node.className,
+   hidden:node.hidden,
+   display:getComputedStyle(node).display,
+   visibility:getComputedStyle(node).visibility,
+   opacity:getComputedStyle(node).opacity,
+   rect:node.getBoundingClientRect().toJSON()
+  }))).catch(()=>[]);
+  throw new Error(`Failed waiting for ${selector}. pageErrors=${pageErrors.join(' | ')||'none'} snapshot=${JSON.stringify(snapshot)} original=${error.message}`);
+ }
+}
+
 try{
  await page.goto(base,{waitUntil:'networkidle'});
- await page.waitForSelector('#home.active');
+ await waitVisible('#home.active');
  assert.equal(pageErrors.length,0,'Home boot emitted page errors: '+pageErrors.join('\n'));
 
  for(const target of ['journey','explore','progress']){
   await page.click(`#desktopNav [data-view="${target}"]`);
-  await page.waitForSelector(`#${target}.active`);
+  await waitVisible(`#${target}.active`);
  }
  await page.click('#desktopNav [data-view="explore"]');
- await page.waitForSelector('#explore.active');
+ await waitVisible('#explore.active');
 
  await page.click('[data-view="videos"]');
- await page.waitForSelector('#videos.active');
+ await waitVisible('#videos.active');
  await page.waitForSelector('#videoGrid .video-card');
  assert.equal(await page.locator('#videoModal').evaluate(el=>el.hidden),true,'video modal must stay hidden before playback');
  await page.locator('#videoGrid .video-card').first().click();
- await page.waitForSelector('#videoModal.open');
+ await waitVisible('#videoModal.open');
  assert.equal(await page.locator('#videoModal').evaluate(el=>el.hidden),false,'video modal should unhide after click');
  assert.match(await page.locator('#videoStage iframe').getAttribute('src'),/youtube-nocookie\.com\/embed\//);
  assert.match(await page.locator('#videoExternalLink').getAttribute('href'),/youtube\.com\/watch\?v=/);
@@ -34,18 +52,18 @@ try{
  assert.equal(await page.locator('#videoModal').evaluate(el=>el.hidden),true,'video modal must hide after close');
 
  await page.click('[data-view="practice"]');
- await page.waitForSelector('#practice.active');
+ await waitVisible('#practice.active');
  await page.waitForSelector('#practiceCoach');
  assert.equal(pageErrors.length,0,'navigation emitted page errors: '+pageErrors.join('\n'));
 
  await page.evaluate(()=>localStorage.setItem('mon-state',JSON.stringify({saveVersion:1,xp:321,foundationDay:4})));
  await page.reload({waitUntil:'networkidle'});
- await page.waitForSelector('#home.active');
+ await waitVisible('#home.active');
  assert.equal(await page.evaluate(()=>state.xp),321,'valid persisted state must survive reload');
 
  await page.evaluate(()=>localStorage.setItem('mon-state','{broken'));
  await page.reload({waitUntil:'networkidle'});
- await page.waitForSelector('#home.active');
+ await waitVisible('#home.active');
  assert.equal(await page.evaluate(()=>state.saveVersion),1,'corrupt state must recover to a valid schema');
  assert.equal(await page.evaluate(()=>localStorage.getItem('mon-state-corrupt-last')),'{broken','corrupt primary payload must be preserved');
  assert.equal(pageErrors.length,0,'recovery reload emitted page errors: '+pageErrors.join('\n'));
