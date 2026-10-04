@@ -64,6 +64,10 @@ async function ensureFeatureRuntime(name){
  return featureRuntimePromises[name];
 }
 let learningRuntimePromise=null;
+function contentPackLevelForDay(day=state.day){
+ const d=Number(day||1);
+ return d>=55&&d<=90?'N4':'N5';
+}
 function loadRuntimeScript(src){
  return new Promise((resolve,reject)=>{
    const existing=document.querySelector(`script[data-runtime-src="${src}"]`);
@@ -81,11 +85,13 @@ function loadRuntimeStyle(href){
  });
 }
 const FEATURE_RUNTIME_STYLES={journey:['./features/journey.css'],explore:['./features/journey.css'],progress:['./features/journey.css'],user:['./features/user.css'],foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
-function ensureLearningRuntime(){
+async function ensureLearningRuntime(){
+ const level=contentPackLevelForDay();
+ await ensureContentPack(level);
  if(learningRuntimePromise)return learningRuntimePromise;
  const started=typeof perfStart==='function'?perfStart('runtime:learning'):null;
  document.body.classList.add('learning-runtime-loading');
- learningRuntimePromise=(async()=>{const level=CONTENT_PACK_SCRIPTS[currentPlan().level]?currentPlan().level:'N5';await ensureContentPack(level);for(const src of LEARNING_RUNTIME_SCRIPTS)await loadRuntimeScript(src);document.body.classList.add('learning-runtime-ready');if(started!==null&&typeof perfEnd==='function')perfEnd('runtime:learning',started)})()
+ learningRuntimePromise=(async()=>{for(const src of LEARNING_RUNTIME_SCRIPTS)await loadRuntimeScript(src);document.body.classList.add('learning-runtime-ready');if(started!==null&&typeof perfEnd==='function')perfEnd('runtime:learning',started)})()
    .catch(err=>{learningRuntimePromise=null;toast('Não consegui carregar o motor de aprendizagem');throw err})
    .finally(()=>document.body.classList.remove('learning-runtime-loading'));
  return learningRuntimePromise;
