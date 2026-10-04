@@ -24,3 +24,16 @@ function missionUpdateFunctional(cap,ok,label=''){
  state.functionalMastery[cap]={...old,attempts:old.attempts+1,successes:old.successes+(ok?1:0),score,lastAt:Date.now(),lastLabel:label||cap};
 }
 function missionRecordFunctionalTurn(turn,ok){if(turn?.capability)missionUpdateFunctional(turn.capability,ok,turn.goal||turn.capability)}
+
+function missionNormalize(s){return String(s||'').toLowerCase().replace(/[\s。、！？!?.,]/g,'')}
+function missionEvaluateFree(text,turn){
+ const q=missionNormalize(text),groups=turn?.keys||[],hits=groups.map(g=>g.some(k=>q.includes(missionNormalize(k)))),need=Math.max(1,Math.ceil(groups.length*.66));
+ return {ok:hits.filter(Boolean).length>=need,score:groups.length?Math.round(hits.filter(Boolean).length/groups.length*100):0,missing:hits.map((x,i)=>x?null:i).filter(x=>x!==null)}
+}
+function missionFreeHTML(turn){
+ return `<div class="mission-free"><textarea id="missionFreeText" lang="ja" rows="3" spellcheck="false" placeholder="responda em japonês com suas próprias palavras…"></textarea><div class="mission-free-actions"><button onclick="missionFreeSpeech(this)">● ditar</button><button class="primary" onclick="answerMissionV2('free')">avaliar resposta →</button><button onclick="missionShowChoices()">usar opções prontas</button></div></div>`
+}
+function missionShowChoices(){document.querySelector('.mission-choices')?.classList.remove('free-hidden');document.querySelector('.mission-free')?.classList.add('assisted')}
+function missionFreeSpeech(btn){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Ditado por voz indisponível neste navegador');return}const r=new SR();r.lang='ja-JP';r.interimResults=false;r.maxAlternatives=1;btn.textContent='● ouvindo…';r.onresult=x=>{const i=document.getElementById('missionFreeText');if(i)i.value=x.results[0][0].transcript;btn.textContent='● capturado'};r.onend=()=>{if(btn.textContent==='● ouvindo…')btn.textContent='● ditar'};r.start()
+}
