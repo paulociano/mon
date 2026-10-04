@@ -1,6 +1,3 @@
-// MON mastery-based progression
-// Completion is activity; progression requires enough evidence in structured N5 units.
-
 function progressionOptions(correct,pool,count=4){
   const vals=[correct,...pool.filter(x=>x!==correct)].filter((x,i,a)=>a.indexOf(x)===i);
   return vals.slice(0,count);
