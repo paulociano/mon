@@ -28,6 +28,8 @@ jobs:
         run: node scripts/verify.mjs
       - name: Review scheduler behavior
         run: node scripts/test-review-scheduler.mjs
+      - name: State persistence and recovery
+        run: node scripts/test-state-persistence.mjs
       - name: Curriculum content contracts
         run: node scripts/test-content-packs.mjs
       - name: Content quality
