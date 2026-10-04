@@ -1,7 +1,7 @@
 const MON_METHOD={
-  name:'Gate Loop',
-  stages:['discover','recall','transfer','produce','reflect'],
-  principle:'Ajuda aparece depois da tentativa sempre que o conteúdo já foi apresentado.'
+  name:'Japanese Learning Cycle',
+  stages:['input','study','retrieve','transfer','produce','reflect'],
+  principle:'Primeiro compreenda a missão e o mecanismo; depois recupere, transfira e produza com apoio decrescente.'
 };
 
 const grammarBridgeNotes={
@@ -147,7 +147,7 @@ function compileMONMethod(unit,method,index=0){
       s?{jp:s.reply,pt:s.replyPt}:null,
       {jp:g.item.form,pt:g.item.pt}
     ].filter(Boolean);
-    return {type:'discovery',prompt:'Descubra a regra antes da explicação.',examples,
+    return {type:'discovery',prompt:'Observe os exemplos e identifique a função que acabou de estudar.',examples,
       options:methodOptions(g.item.function,Object.values(grammarCatalog).map(x=>x.function)),
       answer:g.item.function,why:`${g.item.form} · ${g.item.pt}`,
       bridge:grammarBridge(g.id,g.item),
