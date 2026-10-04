@@ -77,8 +77,9 @@ function lessonPlanFromPack(unit){
   if(narrative)exercises.splice(Math.min(4,exercises.length),0,narrative);
   let tagged=optimizeExerciseSequence(exercises,10).map(e=>({...e,_unitId:unit.id}));
   if(unit.openProduction&&!tagged.some(e=>e.type==='openResponse')){const open=compileOpenProduction(unit,Math.max(1,(unit.scenarios||[]).length-1));if(open)tagged=[...tagged.slice(0,9),{...open,_unitId:unit.id}]}
+  const learning=typeof japaneseLearningContract==='function'?japaneseLearningContract(unit):null;
   return {title:unit.title,focus:unit.symbol,unitId:unit.id,objectives:unit.objectives,mastery:unit.mastery,narrative:typeof narrativeEpisodeForUnit==='function'?narrativeEpisodeForUnit(unit):null,
-    study:typeof grammarStudyBlock==='function'?grammarStudyBlock(unit):null,
+    learning,study:learning?.study||(typeof grammarStudyBlock==='function'?grammarStudyBlock(unit):null),kanjiStudy:learning?.kanji||[],
     method:typeof MON_METHOD!=='undefined'?MON_METHOD:null,exercises:tagged};
 }
 
@@ -160,6 +161,7 @@ function buildLesson(node,learnerState){
   const ordered=nextBest&&typeof sequenceLessonByPlan==='function'
     ?sequenceLessonByPlan(exercises,nextBest,nextBest.targetExercises||8)
     :optimizeExerciseSequence(exercises,10);
-  const lessonExercises=pack.study?[pack.study,...ordered]:ordered;
-  return {...pack,exercises:lessonExercises,adaptive:true,reviewCount:reviews.length,nextBest};
+  const adaptiveStudy=pack.learning&&typeof adaptStudyForLearner==='function'?adaptStudyForLearner(pack.learning,learnerState||state):pack.study;
+  const lessonExercises=adaptiveStudy?[adaptiveStudy,...ordered]:ordered;
+  return {...pack,study:adaptiveStudy,exercises:lessonExercises,adaptive:true,reviewCount:reviews.length,nextBest};
 }
