@@ -87,3 +87,5 @@ function n4PracticalStats(){
  const units=coursePacks.N4.units;
  return {units:units.length,vocabulary:units.flatMap(u=>u.vocabulary).filter((x,i,a)=>a.indexOf(x)===i).length,grammar:units.flatMap(u=>u.grammar).filter((x,i,a)=>a.indexOf(x)===i).length,scenarios:units.reduce((n,u)=>n+u.scenarios.length,0),firstDay:Math.min(...units.map(u=>u.day)),lastDay:Math.max(...units.map(u=>u.day))};
 }
+
+typeof applyGrammarPedagogy==='function'&&applyGrammarPedagogy();
