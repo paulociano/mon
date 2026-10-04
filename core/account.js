@@ -38,6 +38,7 @@ function monSyncPayload(profile={}){
  return {syncVersion:MON_SYNC_VERSION,localId:account.localId,updatedAt:new Date().toISOString(),profile:{...profile},learningState:typeof normalizeState==='function'?normalizeState(state):state};
 }
 function monAccountStatus(){return loadMonAccount().status}
+function markMonSyncDirty(){try{localStorage.setItem(MON_SYNC_DIRTY_KEY,1);typeof scheduleMonCloudSync==='function'&&scheduleMonCloudSync()}catch{}}
 function monLocalSyncDirty(){try{return !!localStorage.getItem(MON_SYNC_DIRTY_KEY)}catch{return false}}
 function clearMonSyncDirty(){try{localStorage.removeItem(MON_SYNC_DIRTY_KEY)}catch{}}
 function rememberMonCloudConflict(row){try{localStorage.setItem(MON_CLOUD_CONFLICT_KEY,JSON.stringify(row))}catch{}}
