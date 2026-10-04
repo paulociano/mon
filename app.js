@@ -315,7 +315,28 @@ function renderLeague(){const base=[['Aiko','2.480'],['Kenji','2.130'],['Mina','
 function renderShop(){updateMetrics()}
 function buyItem(type){const costs={freeze:100,energy:60,boost:180},cost=costs[type];if(state.gems<cost)return toast('Cristais insuficientes');state.gems-=cost;if(type==='freeze'){state.streakFreeze=(state.streakFreeze||0)+1;toast('Amuleto equipado')}if(type==='energy'){state.energy=state.maxEnergy;toast('Energia recarregada')}if(type==='boost'){state.xpBoostUntil=Date.now()+15*60*1000;toast('2× XP ativo por 15 min')}save()}
 
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+let monUpdateWorker=null,monReloadForUpdate=false;
+function showMonUpdate(worker){
+ monUpdateWorker=worker;
+ const banner=document.getElementById('updateBanner');
+ if(banner)banner.hidden=false;
+}
+function applyMonUpdate(){
+ if(!monUpdateWorker)return;
+ monReloadForUpdate=true;
+ monUpdateWorker.postMessage({type:'SKIP_WAITING'});
+}
+function watchMonUpdate(reg){
+ if(reg.waiting&&navigator.serviceWorker.controller)showMonUpdate(reg.waiting);
+ reg.addEventListener('updatefound',()=>{
+  const worker=reg.installing;if(!worker)return;
+  worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)showMonUpdate(worker)});
+ });
+}
+if('serviceWorker' in navigator){
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(monReloadForUpdate)window.location.reload()});
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(watchMonUpdate).catch(()=>{}));
+}
 updateMetrics();renderGameHome();
 for(const name of ['kanji','reading','missions','speaking','curriculum','journal','videos','pronunciation']){
  const nav=document.querySelector(`[data-view="${name}"]`);
