@@ -14,7 +14,7 @@ function boot(seed={}){
  };
  const context={localStorage,updateMetrics(){},console,Date,JSON,Math,Uint8Array,crypto:globalThis.crypto};
  vm.createContext(context);
- vm.runInContext(stateSource+';globalThis.__state=state;',context);
+ vm.runInContext(stateSource+';globalThis.__getState=()=>state;',context);
  vm.runInContext(accountSource+';globalThis.__validate=validateMonBackup;globalThis.__import=importMonBackup;globalThis.__payload=monSyncPayload;',context);
  return {context,store};
 }
@@ -24,7 +24,7 @@ function boot(seed={}){
  const payload={syncVersion:1,profile:{name:'Paulo',dailyGoal:30,studyMode:'desafio'},learningState:{saveVersion:1,xp:999,foundationDay:9,learningEvidence:{events:[{at:1,kind:'attempt',ok:true}]}}};
  const out=context.__import(JSON.stringify(payload));
  assert.equal(out.learningState.saveVersion,2);
- assert.equal(context.__state.xp,999);
+ assert.equal(context.__getState().xp,999);
  assert.equal(JSON.parse(context.localStorage.getItem('mon-state')).saveVersion,2);
  assert.equal(JSON.parse(context.localStorage.getItem('mon-state-backup')).xp,120);
  assert.equal(JSON.parse(context.localStorage.getItem('mon-profile')).name,'Paulo');
