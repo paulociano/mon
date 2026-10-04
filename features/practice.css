@@ -28,3 +28,14 @@
 #practice .practice-tile:focus-visible{outline:2px solid rgba(244,169,187,.7);outline-offset:3px}
 @media(max-width:760px){.practice-coach{grid-template-columns:auto 1fr;padding:17px}.practice-coach .primary{grid-column:1/-1;width:100%}.practice-coach-mark{width:44px;height:44px;border-radius:14px}}
 @media(prefers-reduced-motion:reduce){#practice .practice-tile{transition:none}}
+
+/* P8 · responsive Practice Hub polish */
+@media(max-width:560px){
+ .practice-coach{grid-template-columns:1fr;gap:12px;padding:16px;border-radius:18px}
+ .practice-coach-mark{width:42px;height:42px}.practice-coach h3{font-size:21px}.practice-coach p{font-size:10px}
+ .review-deck,.mastery-map,.mistake-notebook{padding:16px;border-radius:18px}
+ .review-deck-stats,.mistake-stats{grid-template-columns:1fr}
+ .review-deck-stats .primary,.mistake-stats>div:last-child{grid-column:auto}
+ .mastery-edges article{grid-template-columns:1fr;gap:7px}.mastery-meter{order:3}
+ #practice .practice-tile{min-height:160px;padding:17px}
+}
