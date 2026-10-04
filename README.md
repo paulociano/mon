@@ -155,6 +155,7 @@ Paleta principal:
 - [N5 Readiness Gate](docs/N5-READINESS.md)
 - [N4 Capability Contract](docs/N4-CAPABILITIES.md)
 - [Learning Metrics](docs/LEARNING-METRICS.md)
+- [Learning Validation](docs/LEARNING-VALIDATION.md)
 - [State Recovery & Backup](docs/STATE-RECOVERY.md)
 - [PWA Runtime Resilience](docs/PWA-RUNTIME.md)
 - [Accessibility & Microphone Policy](docs/ACCESSIBILITY-MICROPHONE.md)
