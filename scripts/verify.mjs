@@ -73,7 +73,7 @@ if(!app.includes('function speak(text,rate=.86)'))throw new Error('Shared speak 
 if(!app.includes('function shuffleArray(a)'))throw new Error('Shared shuffle helper missing from shell runtime')
 if(!sw.includes("preload?.ok?preload:await fetch(event.request)"))throw new Error('Navigation preload must reject error responses')
 if(!app.includes('ensureLearningRuntime'))throw new Error('Missing lazy learning runtime loader')
-if(!app.includes("N5:['./data/content-packs-n5.js']")||!['N4A','N4B','N4C','N4D'].every(k=>app.includes(k+':[')))throw new Error('Level-specific content pack router missing')
+if(!app.includes("const N5='./data/content-packs-n5.js'")||!['N4A','N4B','N4C','N4D'].every(k=>app.includes(k+':[')))throw new Error('Level-specific content pack router missing')
 if(!app.includes('ensureContentPack(level'))throw new Error('Content pack loader seam missing')
 if(!app.includes('loadRuntimeStyle'))throw new Error('Missing lazy feature stylesheet loader')
 const homeCoach=read('core/home-coach.js');
