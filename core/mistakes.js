@@ -1,6 +1,4 @@
 // MON mistake model
-// Converts raw wrong answers into a compact pedagogical notebook.
-
 function mistakeCategory(exercise={}){
   const prompt=(exercise.prompt||'').toLowerCase();
   if(exercise.type==='listen') return 'escuta';
@@ -27,6 +25,7 @@ function safeExerciseSnapshot(exercise={}){
   if(Array.isArray(exercise.pairs))out.pairs=exercise.pairs.slice(0,8);
   return out;
 }
+function mistakeEvidence(kind,key,context,at){if(typeof recordLearningEvidence==='function')recordLearningEvidence({source:'mistake',kind,concept:key,ok:kind!=='mistake',context,at})}
 function recordMistake(exercise={},context={}){
   state.mistakeStats=state.mistakeStats||{};
   state.mistakes=Array.isArray(state.mistakes)?state.mistakes:[];
@@ -40,6 +39,7 @@ function recordMistake(exercise={},context={}){
   if(typeof gradeReview==='function')gradeReview('error',key,'hard',{category:entry.category});
   state.mistakes.unshift({at:now,key,category:entry.category,title:entry.title,node:entry.node});
   state.mistakes=state.mistakes.slice(0,60);
+  mistakeEvidence('mistake',key,entry.category,now);
   return entry;
 }
 function markMistakeRecovered(exercise={}){
@@ -47,6 +47,7 @@ function markMistakeRecovered(exercise={}){
   if(!x)return;
   x.recovered=(x.recovered||0)+1;
   x.lastRecoveredAt=Date.now();
+  mistakeEvidence('mistake_recovery',key,x.category,x.lastRecoveredAt);
   if(typeof gradeReview==='function')gradeReview('error',key,'good',{category:x.category});
 }
 function mistakePriority(x){

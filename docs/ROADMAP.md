@@ -189,6 +189,8 @@ Expandir por capacidades, não por quantidade:
 Reusar os mesmos motores. Não criar um segundo sistema pedagógico paralelo.
 
 ### 9. Métricas de aprendizagem — camada semântica implementada ✅
+
+### 9.2 Validação longitudinal da aprendizagem — implementada ✅
 **Dependência:** motores estáveis + telemetria local.
 
 **Decisão:** atividade, retenção, domínio, transferência, reparo e autonomia agora possuem definições operacionais, denominadores e status de qualidade da amostra. Fonte de verdade: [Learning Metrics](LEARNING-METRICS.md).
@@ -202,6 +204,8 @@ Separar:
 - autonomia: missões completadas com menos pistas.
 
 A Home e o Next Best Lesson devem otimizar aprendizagem, não atividade.
+
+**P9.2:** retenção 1d+/3d+/7d+, dependência de pistas, transferência, autonomia e recuperação de erros recorrentes agora possuem relatório longitudinal local. Fonte de verdade: [Learning Validation](LEARNING-VALIDATION.md).
 
 ### 10. Performance por latência observada — instrumentação implementada ✅
 **Dependência:** Performance Lab existente.
