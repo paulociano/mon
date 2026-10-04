@@ -18,10 +18,11 @@ function renderVideos(){
 function setVideoFilter(cat,btn){videoFilter=cat;document.querySelectorAll('[data-video-filter]').forEach(x=>x.classList.toggle('active',x===btn));renderVideos()}
 function openVideo(id){
  const v=MON_VIDEOS.find(x=>x.id===id);if(!v)return;
- const modal=document.getElementById('videoModal'),stage=document.getElementById('videoStage');
+ const modal=document.getElementById('videoModal'),stage=document.getElementById('videoStage'),external=document.getElementById('videoExternalLink');
  document.getElementById('videoModalTitle').textContent=v.title;document.getElementById('videoModalCopy').textContent=v.desc;
- stage.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${v.yt}?autoplay=1&rel=0" title="${v.title}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
- modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('video-open');document.getElementById('videoClose')?.focus();
+ if(external)external.href='https://www.youtube.com/watch?v='+encodeURIComponent(v.yt);
+ stage.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${v.yt}?autoplay=1&rel=0" title="${v.title}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+ modal.hidden=false;modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('video-open');document.getElementById('videoClose')?.focus();
 }
-function closeVideo(){const modal=document.getElementById('videoModal'),stage=document.getElementById('videoStage');if(stage)stage.innerHTML='';modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true');document.body.classList.remove('video-open')}
+function closeVideo(){const modal=document.getElementById('videoModal'),stage=document.getElementById('videoStage');if(stage)stage.innerHTML='';modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true');if(modal)modal.hidden=true;document.body.classList.remove('video-open')}
 (function(){renderVideos();document.getElementById('videoClose')?.addEventListener('click',closeVideo);document.getElementById('videoModal')?.addEventListener('click',e=>{if(e.target.id==='videoModal')closeVideo()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('video-open'))closeVideo()})})();
