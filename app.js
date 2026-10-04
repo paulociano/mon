@@ -1,6 +1,3 @@
-// MON application runtime
-// Course datasets live in data/course-content.js.
-
 const viewNames={home:'Hoje',journey:'Jornada',practice:'Praticar',explore:'Explorar',progress:'Progresso',user:'Minha área',lesson:'Lição',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Mapa acadêmico',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos',pronunciation:'Pronúncia'};
 let currentKanji=0;
 function shellLocalDateKey(date=new Date()){
