@@ -19,7 +19,7 @@ function homeCoachDecision(state={},flatPath=[],now=Date.now()){
     return {kind:'recover',eyebrow:'prioridade · ritmo',title:'Sua energia de lição acabou. Sua memória, não.',copy:'Use a prática livre para recuperar itens, corrigir erros e preparar o próximo nó sem gastar Energia.',cta:'abrir prática livre →',secondary:'ver Diário no Japão',action:'practice',secondaryAction:'journal',signal:'0 energia',node};
   }
   if(productionGap?.open>=2){
-    return {kind:'functional',eyebrow:'prioridade · comunicação',title:`Reforce “${productionGap.label}”.`,copy:'A próxima sessão recupera essa função e volta à produção livre.',cta:'sessão direcionada →',action:'session',signal:`${productionGap.open} falhas abertas`,node};
+    return {kind:'functional',eyebrow:'prioridade · comunicação',title:`Reforce “${productionGap.label}”.`,copy:'A próxima sessão recupera essa função e volta à produção livre.',cta:'sessão →',action:'session',signal:`${productionGap.open} falhas abertas`,node};
   }
   if(mistakes>=3){
     return {kind:'mistake',eyebrow:'prioridade · correção',title:`${mistakes} padrões recorrentes merecem uma correção curta.`,copy:'Repetir a unidade inteira seria desperdício. O Caderno de Erros consegue atacar exatamente o padrão que voltou a aparecer.',cta:'corrigir erros →',secondary:'continuar trilha',action:'practice',secondaryAction:'lesson',signal:`${mistakes} erros abertos`,node};
