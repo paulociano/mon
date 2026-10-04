@@ -3,7 +3,7 @@ import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const {nextBestLessonPlan,sequenceLessonByPlan}=require('../core/next-best-lesson.js');
 
-const base={reviewItems:{},mistakeStats:{},masteryEvidence:{},methodStats:{},narrative:{episodes:{}},remediation:null};
+const base={reviewItems:{},mistakeStats:{},masteryEvidence:{},methodStats:{},narrative:{episodes:{}},productionGaps:{},remediation:null};
 const node={day:25,label:'Estação',type:'lesson'};
 
 let p=nextBestLessonPlan({...base,remediation:{idx:1}},node,1000);
@@ -12,6 +12,12 @@ assert.equal(p.intent,'repair');
 p=nextBestLessonPlan({...base,reviewItems:{a:{due:0},b:{due:0},c:{due:0},d:{due:0}}},node,1000);
 assert.equal(p.intent,'retrieve');
 assert.equal(p.reviewCount,3);
+
+p=nextBestLessonPlan({...base,productionGaps:{alternativa:{count:3,recovered:1,lastAt:900,tokens:['別','大丈夫']}}},node,1000);
+assert.equal(p.intent,'functionalRepair');
+assert.equal(p.functionalGap.label,'alternativa');
+assert.equal(p.functionalGap.open,2);
+assert.deepEqual(p.functionalGap.tokens,['別','大丈夫']);
 
 p=nextBestLessonPlan({...base,mistakeStats:{a:{count:2,recovered:0},b:{count:2,recovered:0},c:{count:1,recovered:0}}},node,1000);
 assert.equal(p.intent,'repair');
