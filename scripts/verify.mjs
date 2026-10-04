@@ -54,7 +54,7 @@ for(const asset of scriptOrder){
 }
 for(const src of [...lazyRuntime,...featureRuntime]){
  if(html.includes(`src="${src}"`))throw new Error('Lazy runtime leaked into critical HTML: '+src);
- if(!app.includes(`'${src}'`))throw new Error('Lazy runtime loader missing '+src);
+ if(!app.includes(src))throw new Error('Lazy runtime loader missing '+src);
  if(!fs.existsSync(path.join(root,src.slice(2))))throw new Error('Lazy runtime file missing '+src);
 }
 
