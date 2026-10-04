@@ -8,7 +8,7 @@ const missions = [
  {symbol:'病',title:'Pedir ajuda em saúde',desc:'descrever sintomas simples e entender instruções',level:'essencial'}
 ];
 const phrases = [
- ['すみません。','sumimasen','Com licença / desculpe.'],['もう一度お願いします。','mou ichido onegaishimasu','Mais uma vez, por favor.'],['ゆっくりお願いします。','yukkuri onegaishimasu','Mais devagar, por favor.'],['日本語がまだよく分かりません。','nihongo ga mada yoku wakarimasen','Ainda não entendo bem japonês.'],['これはいくらですか。','kore wa ikura desu ka','Quanto custa isto?'],['これをください。','kore o kudasai','Quero isto / isto, por favor.'],['駅はどこですか。','eki wa doko desu ka','Onde fica a estação?'],['大丈夫です。','daijoubu desu','Está tudo bem / não preciso.']
+ ['すみません。','sumimasen','Com licença / desculpe.'],['もう一度お願いします。','mou ichido onegaishimasu','Mais uma vez, por favor.'],['ゆっくりお願いします。','yukkuri onegaishimasu','Mais devagar, por favor.'],['日本語がまだよく分かりません。','nihongo ga mada yoku wakarimasen','Ainda não entendo bem japonês.'],['どういう意味ですか。','dou iu imi desu ka','O que isso significa?'],['書いてもらえますか。','kaite moraemasu ka','Pode escrever para mim?'],['ちょっと待ってください。','chotto matte kudasai','Espere um instante, por favor.'],['分かりました。','wakarimashita','Entendi.'],['これはいくらですか。','kore wa ikura desu ka','Quanto custa isto?'],['これをください。','kore o kudasai','Quero isto / isto, por favor.'],['駅はどこですか。','eki wa doko desu ka','Onde fica a estação?'],['大丈夫です。','daijoubu desu','Está tudo bem / não preciso.']
 ];
 const missionSpeech = [
  {npc:'どこまで行きますか。',npcPt:'Até onde você vai?',target:'東京駅までお願いします。',pt:'Até a Estação de Tóquio, por favor.'},
