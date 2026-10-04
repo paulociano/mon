@@ -36,12 +36,13 @@ async function monCloudReconcile({preference=null}={}){
    monRecordCloudSync(pushed,session);return {status:'pushed',row:pushed};
   }
   const remoteRevision=Number(remote.revision||1),knownRevision=Number(account.cloudRevision||0),cloudChanged=remoteRevision!==knownRevision;
+  if(remoteRevision<knownRevision){rememberMonCloudConflict(remote);saveMonAccount({...account,lastSyncStatus:'conflict'});return {status:'conflict',row:remote,reason:'revision-regressed'}}
   if(preference==='cloud'){monApplyCloudRow(remote,session);return {status:'pulled',row:remote}}
   if(preference==='local'){
    const pushed=await monCloudPush(loadLocalProfile(),{expectedRevision:remoteRevision});
    monRecordCloudSync(pushed,session);return {status:'pushed',row:pushed};
   }
-  if(cloudChanged&&localDirty){saveMonAccount({...account,lastSyncStatus:'conflict'});return {status:'conflict',row:remote}}
+  if(cloudChanged&&localDirty){rememberMonCloudConflict(remote);saveMonAccount({...account,lastSyncStatus:'conflict'});return {status:'conflict',row:remote}}
   if(cloudChanged){monApplyCloudRow(remote,session);return {status:'pulled',row:remote}}
   if(localDirty){
    try{
@@ -49,7 +50,7 @@ async function monCloudReconcile({preference=null}={}){
     monRecordCloudSync(pushed,session);return {status:'pushed',row:pushed};
    }catch(e){
     if(e?.code!=='MON_SYNC_CONFLICT')throw e;
-    const latest=await monCloudPull();
+    const latest=await monCloudPull();rememberMonCloudConflict(latest);
     saveMonAccount({...account,lastSyncStatus:'conflict'});
     return {status:'conflict',row:latest};
    }
