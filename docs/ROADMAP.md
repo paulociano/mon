@@ -243,10 +243,10 @@ Regras:
 - export/import do progresso ✅;
 - recuperação de estado corrompido ✅;
 - backup pré-migration + testes de upgrade ✅;
-- estratégia de atualização do Service Worker;
+- estratégia de atualização do Service Worker ✅;
 - auditoria de acessibilidade;
-- testes cross-browser;
-- smoke test offline;
+- testes cross-browser ✅;
+- smoke test offline ✅;
 - política clara para microfone.
 
 ### 13. Conta e sync
@@ -271,7 +271,7 @@ Regras:
 8. N4 por capacidades formalizado; manter calibração longitudinal dos gates funcionais.
 9. Métricas de aprendizagem implementadas; acumular evidência longitudinal antes de recalibrar decisões adaptativas.
 10. Definir budgets de latência com dados reais do Performance Lab.
-11. Hardening de estado concluído; seguir para PWA/offline, acessibilidade e cross-browser antes de escala.
+11. Hardening de estado e PWA/runtime concluídos; seguir para acessibilidade e política de microfone antes de escala.
 
 ## Guardrails permanentes
 
