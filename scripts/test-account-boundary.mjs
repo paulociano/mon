@@ -6,7 +6,7 @@ for(const token of ['MON_ACCOUNT_KEY','MON_SYNC_VERSION','createMonLocalId','nor
 assert.ok(app.includes("'./core/account.js'"),'account runtime must be loaded');
 assert.ok(app.includes('monAccountStatus()'),'user area must expose account state');
 assert.ok(core.includes('function exportMonBackup()')&&core.includes('monSyncPayload('),'backup must use versioned sync payload');
-assert.ok(app.includes('ensureMonBackupImportControl'),'user area must mount validated backup import lazily');
+assert.ok(core.includes('ensureMonBackupImportControl'),'lazy account runtime must mount validated backup import');
 for(const token of ['renderCloudAccountPanel','connectMonCloud','disconnectMonCloud','syncMonNow','exportMonBackup'])assert.ok(core.includes(token),'account action must stay lazy '+token);
 assert.ok(!html.toLowerCase().includes('entrar com google'),'shell must not advertise unavailable auth');
 console.log('MON account boundary contracts passed');
