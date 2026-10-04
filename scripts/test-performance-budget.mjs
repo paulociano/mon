@@ -5,12 +5,12 @@ const size=p=>fs.statSync(p).size;
 const kb=n=>Math.round(n/1024*10)/10;
 
 const eagerScripts=['data/course-content.js','core/state.js','core/review-scheduler.js','core/performance.js','core/home-coach.js','app.js'];
-const dataScripts=['data/kanji.js','data/kana.js','data/foundation.js','data/session.js','data/experiences.js','data/curriculum.js','data/narrative.js','data/pronunciation.js','data/kanji-memory.js','data/missions-v2.js','data/missions-dialogues.js'];
+const dataScripts=['data/kanji.js','data/kana.js','data/foundation.js','data/session.js','data/grammar-study-foundation.js','data/experiences.js','data/curriculum.js','data/narrative.js','data/pronunciation.js','data/kanji-memory.js','data/missions-v2.js','data/missions-dialogues.js'];
 const narrativeDataScripts=['data/narrative.js'];
 const foundationRouteScripts=['data/kana.js','data/foundation.js'];
 const experienceRouteScripts=['data/kana.js','data/experiences.js'];
 const kanjiRouteScripts=['data/kanji.js'];
-const featureScripts=['features/foundation.js','features/session.js','features/kanji.js','features/experiences.js','features/open-production-remediation.js','features/lesson.js','features/practice.js','features/progress.js','features/journal.js','features/videos.js','features/pronunciation.js','features/kanji-memory.js','features/missions-reactions.js','features/missions-world.js','features/missions-dialogue.js','features/missions-v2.js'];
+const featureScripts=['features/foundation.js','features/session.js','features/kanji.js','features/experiences.js','features/open-production-remediation.js','features/grammar-study.js','features/lesson.js','features/practice.js','features/progress.js','features/journal.js','features/videos.js','features/pronunciation.js','features/kanji-memory.js','features/missions-reactions.js','features/missions-world.js','features/missions-dialogue.js','features/missions-v2.js'];
 const kanjiMemoryScripts=['features/kanji-memory.js'];
 const missionV2Scripts=['features/missions-v2.js'];
 const missionDialogueScripts=['features/missions-dialogue.js'];
@@ -22,6 +22,7 @@ const journalFeatureScripts=['features/journal.js'];
 const practiceFeatureScripts=['features/practice.js'];
 const progressFeatureScripts=['features/progress.js'];
 const lessonFeatureScripts=['features/lesson.js'];
+const grammarStudyScripts=['features/grammar-study.js'];
 const openRemediationScripts=['features/open-production-remediation.js'];
 const accountScripts=['core/account.js'];
 const multiDeviceSyncScripts=['core/multi-device-sync.js','core/supabase-sync.js'];
@@ -50,6 +51,7 @@ const missionDialogueJs=missionDialogueScripts.reduce((n,p)=>n+size(p),0);
 const missionReactionJs=missionReactionScripts.reduce((n,p)=>n+size(p),0);
 const missionWorldJs=missionWorldScripts.reduce((n,p)=>n+size(p),0);
 const dataJs=dataScripts.reduce((n,p)=>n+size(p),0);
+const grammarStudyJs=grammarStudyScripts.reduce((n,p)=>n+size(p),0);
 const narrativeJs=narrativeDataScripts.reduce((n,p)=>n+size(p),0);
 const foundationRouteJs=foundationRouteScripts.reduce((n,p)=>n+size(p),0);
 const experienceRouteJs=experienceRouteScripts.reduce((n,p)=>n+size(p),0);
@@ -63,19 +65,21 @@ const learningValidationJs=learningValidationScripts.reduce((n,p)=>n+size(p),0);
 const n4CapabilityJs=n4CapabilityScripts.reduce((n,p)=>n+size(p),0);
 const n4BaseJs=n4BaseScripts.reduce((n,p)=>n+size(p),0),n4SocialJs=n4SocialScripts.reduce((n,p)=>n+size(p),0),n4UrbanJs=n4UrbanScripts.reduce((n,p)=>n+size(p),0),n4ConversationJs=n4ConversationScripts.reduce((n,p)=>n+size(p),0);
 const n4ExtensionJs=n4ExtensionScripts.reduce((n,p)=>n+size(p),0);
-const css=size('styles.css'),journeyCss=size('features/journey.css'),featureCss=size('features/foundation.css'),lessonCss=size('features/lesson.css'),practiceCss=size('features/practice.css'),journalCss=size('features/journal.css'),videoCss=size('features/videos.css'),pronunciationCss=size('features/pronunciation.css'),kanjiMemoryCss=size('features/kanji-memory.css'),missionsV2Css=size('features/missions-v2.css'),html=size('index.html');
+const css=size('styles.css'),journeyCss=size('features/journey.css'),featureCss=size('features/foundation.css'),lessonCss=size('features/lesson.css'),grammarStudyCss=size('features/grammar-study.css'),practiceCss=size('features/practice.css'),journalCss=size('features/journal.css'),videoCss=size('features/videos.css'),pronunciationCss=size('features/pronunciation.css'),kanjiMemoryCss=size('features/kanji-memory.css'),missionsV2Css=size('features/missions-v2.css'),html=size('index.html');
 const hero=size('assets/scene/mon-home-banner.webp'),side=size('assets/scene/mon-sidebar-bg.webp');
 
 assert.ok(eagerJs<=72*1024,`eager JS budget exceeded: ${kb(eagerJs)} KB`);
-assert.ok(dataJs<=104*1024,`total lazy dataset budget exceeded: ${kb(dataJs)} KB`);
+assert.ok(dataJs<=116*1024,`total lazy dataset budget exceeded: ${kb(dataJs)} KB`);
 assert.ok(foundationRouteJs<=29*1024,`Foundation route data budget exceeded: ${kb(foundationRouteJs)} KB`);
 assert.ok(experienceRouteJs<=9*1024,`Experience route data budget exceeded: ${kb(experienceRouteJs)} KB`);
 assert.ok(kanjiRouteJs<=11*1024,`Kanji route data budget exceeded: ${kb(kanjiRouteJs)} KB`);
 assert.ok(narrativeJs<=18*1024,`narrative data budget exceeded: ${kb(narrativeJs)} KB`);
-assert.ok(featureJs<=148*1024,`feature runtime budget exceeded: ${kb(featureJs)} KB`);
+assert.ok(featureJs<=151*1024,`feature runtime budget exceeded: ${kb(featureJs)} KB`);
 assert.ok(lessonJs<=20*1024,`lesson UI JS budget exceeded: ${kb(lessonJs)} KB`);
+assert.ok(grammarStudyJs<=3*1024,`grammar study JS budget exceeded: ${kb(grammarStudyJs)} KB`);
 assert.ok(openRemediationJs<=4*1024,`open remediation JS budget exceeded: ${kb(openRemediationJs)} KB`);
 assert.ok(lessonCss<=10*1024,`lesson UI CSS budget exceeded: ${kb(lessonCss)} KB`);
+assert.ok(grammarStudyCss<=4*1024,`grammar study CSS budget exceeded: ${kb(grammarStudyCss)} KB`);
 assert.ok(practiceJs<=10*1024,`Practice Hub JS budget exceeded: ${kb(practiceJs)} KB`);
 assert.ok(progressJs<=4*1024,`Progress functional mastery JS budget exceeded: ${kb(progressJs)} KB`);
 assert.ok(practiceCss<=12*1024,`Practice Hub CSS budget exceeded: ${kb(practiceCss)} KB`);
@@ -118,5 +122,5 @@ assert.ok(source.includes("const hydratedViews=new Set(['home'])"),'view hydrati
 assert.ok(source.includes('ensureDrawingCanvases'),'canvas setup should be lazy');
 
 console.log('MON performance budgets passed',JSON.stringify({
- eagerJsKB:kb(eagerJs),dataJsKB:kb(dataJs),narrativeKB:kb(narrativeJs),foundationRouteKB:kb(foundationRouteJs),experienceRouteKB:kb(experienceRouteJs),kanjiRouteKB:kb(kanjiRouteJs),featureJsKB:kb(featureJs),lazyJsKB:kb(lazyJs),accountKB:kb(accountJs),multiDeviceSyncKB:kb(multiDeviceSyncJs),learningEvidenceKB:kb(learningEvidenceJs),learningMetricsKB:kb(learningMetricsJs),learningValidationKB:kb(learningValidationJs),n4CapabilityKB:kb(n4CapabilityJs),n4BaseKB:kb(n4BaseJs),n4SocialKB:kb(n4SocialJs),n4UrbanKB:kb(n4UrbanJs),n4ConversationKB:kb(n4ConversationJs),n4RuntimeKB:kb(lazyJs+n4ExtensionJs+n4CapabilityJs),cssKB:kb(css),journeyCssKB:kb(journeyCss),featureCssKB:kb(featureCss),lessonJsKB:kb(lessonJs),openRemediationKB:kb(openRemediationJs),lessonCssKB:kb(lessonCss),practiceJsKB:kb(practiceJs),progressJsKB:kb(progressJs),practiceCssKB:kb(practiceCss),journalJsKB:kb(journalJs),journalCssKB:kb(journalCss),videoJsKB:kb(videoJs),videoCssKB:kb(videoCss),pronunciationJsKB:kb(pronunciationJs),pronunciationCssKB:kb(pronunciationCss),kanjiMemoryJsKB:kb(kanjiMemoryJs),kanjiMemoryCssKB:kb(kanjiMemoryCss),missionsV2JsKB:kb(missionsV2Js),missionDialogueKB:kb(missionDialogueJs),missionReactionKB:kb(missionReactionJs),missionWorldKB:kb(missionWorldJs),missionsV2CssKB:kb(missionsV2Css),htmlKB:kb(html),heroKB:kb(hero),sidebarKB:kb(side)
+ eagerJsKB:kb(eagerJs),dataJsKB:kb(dataJs),narrativeKB:kb(narrativeJs),foundationRouteKB:kb(foundationRouteJs),experienceRouteKB:kb(experienceRouteJs),kanjiRouteKB:kb(kanjiRouteJs),featureJsKB:kb(featureJs),lazyJsKB:kb(lazyJs),accountKB:kb(accountJs),multiDeviceSyncKB:kb(multiDeviceSyncJs),learningEvidenceKB:kb(learningEvidenceJs),learningMetricsKB:kb(learningMetricsJs),learningValidationKB:kb(learningValidationJs),n4CapabilityKB:kb(n4CapabilityJs),n4BaseKB:kb(n4BaseJs),n4SocialKB:kb(n4SocialJs),n4UrbanKB:kb(n4UrbanJs),n4ConversationKB:kb(n4ConversationJs),n4RuntimeKB:kb(lazyJs+n4ExtensionJs+n4CapabilityJs),cssKB:kb(css),journeyCssKB:kb(journeyCss),featureCssKB:kb(featureCss),lessonJsKB:kb(lessonJs),grammarStudyJsKB:kb(grammarStudyJs),openRemediationKB:kb(openRemediationJs),lessonCssKB:kb(lessonCss),grammarStudyCssKB:kb(grammarStudyCss),practiceJsKB:kb(practiceJs),progressJsKB:kb(progressJs),practiceCssKB:kb(practiceCss),journalJsKB:kb(journalJs),journalCssKB:kb(journalCss),videoJsKB:kb(videoJs),videoCssKB:kb(videoCss),pronunciationJsKB:kb(pronunciationJs),pronunciationCssKB:kb(pronunciationCss),kanjiMemoryJsKB:kb(kanjiMemoryJs),kanjiMemoryCssKB:kb(kanjiMemoryCss),missionsV2JsKB:kb(missionsV2Js),missionDialogueKB:kb(missionDialogueJs),missionReactionKB:kb(missionReactionJs),missionWorldKB:kb(missionWorldJs),missionsV2CssKB:kb(missionsV2Css),htmlKB:kb(html),heroKB:kb(hero),sidebarKB:kb(side)
 }));
