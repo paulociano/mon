@@ -1,6 +1,4 @@
 // MON mistake model
-// Converts raw wrong answers into a compact pedagogical notebook.
-
 function mistakeCategory(exercise={}){
   const prompt=(exercise.prompt||'').toLowerCase();
   if(exercise.type==='listen') return 'escuta';
