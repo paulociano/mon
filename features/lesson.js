@@ -10,21 +10,7 @@ function renderQuickExercise(){
  const methodLabel=e.type==='study'?' · estudar':e.method?` · ${({discover:'descobrir',recall:'recuperar',transfer:'transferir',produce:'produzir'}[e.method]||e.method)}`:'';
  setQuickFeedback(e.method?'Gate Loop'+methodLabel:'Escolha uma resposta.');
  let h=`<span class="quick-kicker">${quickRun.pack.title} · ${quickRun.step+1}/${total}${methodLabel}</span>`;
- if(e.type==='study'){
-   setQuickFeedback('Estude primeiro.',' A prática começa depois desta explicação.');
-   h+=`<section class="study-card">
-     <span class="study-label">gramática aplicada · 文法</span>
-     <h2 class="quick-question">${e.title}</h2>
-     <div class="study-mental-model"><span>modelo mental</span><p>${e.mentalModel}</p></div>
-     <div class="study-explanation"><span>como funciona</span><p>${e.explanation}</p></div>
-     <div class="study-examples">${(e.examples||[]).map(x=>`<article class="study-example"><b lang="ja">${x.jp}</b><span>${x.pt}</span><p>${x.note}</p></article>`).join('')}</div>
-     <div class="study-contrast"><span>compare / evite</span><p>${e.contrast||''}</p></div>
-     ${e.realWorldUse?`<div class="study-real"><span>na vida real</span><p>${e.realWorldUse}</p></div>`:''}
-   </section>`;
-   main.innerHTML=h;document.getElementById('quickEnergy').textContent=state.energy;
-   btn.disabled=false;btn.textContent='COMEÇAR A PRÁTICA';btn.classList.add('continue');btn.onclick=quickNext;
-   return;
- }
+ if(e.type==='study'){renderGrammarStudyStep(e,{main,btn,h});return}
  if(e._story){
    h+=`<aside class="story-memory"><div class="story-memory-top"><span>${e._story.arc}</span><b>${e._story.place}</b></div><div class="story-memory-character"><strong>${e._story.character}</strong><small>${e._story.role}</small></div><p>${e._story.scenePt}</p><em lang="ja">${e._story.sceneJp}</em><div class="story-memory-tags">${(e._story.reuses||[]).map(x=>`<span>${x}</span>`).join('')}</div></aside>`;
  }
