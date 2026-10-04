@@ -172,8 +172,10 @@ Fonte de verdade do gate: [N5 Readiness](N5-READINESS.md).
 
 **Gate:** se `test-n5-scale.mjs` ou `test-n5-depth.mjs` falhar, a expansão curricular relacionada volta a ficar bloqueada.
 
-### 8. N4 por capacidades
+### 8. N4 por capacidades — contrato implementado ✅
 **Dependência:** N5 profundo validado.
+
+**Decisão:** o N4 passa a ser governado por cinco capacidades funcionais observáveis — repair, confirm, explain, negotiate e summarize — com contrato explícito por unidade e validação no CI. Fonte de verdade: [N4 Capability Contract](N4-CAPABILITIES.md).
 
 Expandir por capacidades, não por quantidade:
 - narrar eventos com mais detalhe;
@@ -264,7 +266,7 @@ Regras:
 5. Kanji Memory Lab 2.0 concluído.
 6. Survival Missions 2.0 concluído.
 7. Gate estrutural N5 concluído; manter validação longitudinal de retenção e transferência.
-8. Formalizar N4 por capacidades observáveis sobre os mesmos motores pedagógicos.
+8. N4 por capacidades formalizado; manter calibração longitudinal dos gates funcionais.
 9. Implementar métricas de aprendizagem separando atividade, retenção, transferência, reparo e autonomia.
 10. Definir budgets de latência com dados reais do Performance Lab.
 11. Executar hardening de estado/PWA/acessibilidade antes de escala.
