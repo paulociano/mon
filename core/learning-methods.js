@@ -1,6 +1,3 @@
-// MON distinctive learning methods
-// Pedagogical seam: harder retrieval and transfer before hints or model answers.
-
 const MON_METHOD={
   name:'Gate Loop',
   stages:['discover','recall','transfer','produce','reflect'],
