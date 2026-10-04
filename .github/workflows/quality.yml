@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: JavaScript syntax
         run: |
           find . -type f \( -name "*.js" -o -name "*.mjs" \) -not -path "./.git/*" -print0 | xargs -0 -n1 node --check
@@ -95,7 +95,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install Chromium smoke runtime
         run: |
           npm install --no-save playwright@1.55.0
