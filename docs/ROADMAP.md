@@ -239,11 +239,11 @@ Regras:
 - animação ambiente discreta.
 
 ### 12. Robustez antes de escala
-- migração/versionamento de estado local;
-- export/import do progresso;
-- recuperação de estado corrompido;
+- migração/versionamento de estado local ✅;
+- export/import do progresso ✅;
+- recuperação de estado corrompido ✅;
+- backup pré-migration + testes de upgrade ✅;
 - estratégia de atualização do Service Worker;
-- testes de upgrade entre versões;
 - auditoria de acessibilidade;
 - testes cross-browser;
 - smoke test offline;
@@ -271,7 +271,7 @@ Regras:
 8. N4 por capacidades formalizado; manter calibração longitudinal dos gates funcionais.
 9. Métricas de aprendizagem implementadas; acumular evidência longitudinal antes de recalibrar decisões adaptativas.
 10. Definir budgets de latência com dados reais do Performance Lab.
-11. Executar hardening de estado/PWA/acessibilidade antes de escala.
+11. Hardening de estado concluído; seguir para PWA/offline, acessibilidade e cross-browser antes de escala.
 
 ## Guardrails permanentes
 
