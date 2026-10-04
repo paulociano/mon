@@ -32,6 +32,8 @@ jobs:
         run: node scripts/test-state-persistence.mjs
       - name: Curriculum content contracts
         run: node scripts/test-content-packs.mjs
+      - name: Level content pack routing
+        run: node scripts/test-content-pack-routing.mjs
       - name: Content quality
         run: node scripts/test-content-quality.mjs
       - name: Narrative network
