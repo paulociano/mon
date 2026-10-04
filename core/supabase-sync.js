@@ -17,5 +17,28 @@ async function getMonSupabase(){
 async function monCloudSession(){const client=await getMonSupabase();if(!client)return null;const {data}=await client.auth.getSession();return data.session||null}
 async function monCloudSignIn(email){const client=await getMonSupabase();if(!client)throw new Error('Nuvem MON ainda não configurada');const redirectTo=location.href.split('#')[0];const {error}=await client.auth.signInWithOtp({email,options:{emailRedirectTo:redirectTo}});if(error)throw error;return true}
 async function monCloudSignOut(){const client=await getMonSupabase();if(!client)return;const {error}=await client.auth.signOut();if(error)throw error}
-async function monCloudPush(profile){const client=await getMonSupabase(),session=await monCloudSession();if(!client||!session)throw new Error('Entre na Conta MON para sincronizar');const payload=monSyncPayload(profile);const row={user_id:session.user.id,sync_version:payload.syncVersion,profile:payload.profile,learning_state:payload.learningState,client_updated_at:payload.updatedAt,updated_at:new Date().toISOString()};const {error}=await client.from('mon_user_state').upsert(row,{onConflict:'user_id'});if(error)throw error;return row.updated_at}
-async function monCloudPull(){const client=await getMonSupabase(),session=await monCloudSession();if(!client||!session)throw new Error('Entre na Conta MON para sincronizar');const {data,error}=await client.from('mon_user_state').select('sync_version,profile,learning_state,updated_at').eq('user_id',session.user.id).maybeSingle();if(error)throw error;return data}
+function monSyncConflict(message='O progresso mudou em outro dispositivo'){const e=new Error(message);e.code='MON_SYNC_CONFLICT';return e}
+function monCloudRow(session,payload,revision){
+ return {user_id:session.user.id,sync_version:payload.syncVersion,profile:payload.profile,learning_state:payload.learningState,client_updated_at:payload.updatedAt,updated_at:new Date().toISOString(),revision};
+}
+async function monCloudPull(){
+ const client=await getMonSupabase(),session=await monCloudSession();
+ if(!client||!session)throw new Error('Entre na Conta MON para sincronizar');
+ const {data,error}=await client.from('mon_user_state').select('sync_version,profile,learning_state,client_updated_at,updated_at,revision').eq('user_id',session.user.id).maybeSingle();
+ if(error)throw error;
+ return data;
+}
+async function monCloudPush(profile,{expectedRevision=0}={}){
+ const client=await getMonSupabase(),session=await monCloudSession();
+ if(!client||!session)throw new Error('Entre na Conta MON para sincronizar');
+ const payload=monSyncPayload(profile),nextRevision=Math.max(1,Number(expectedRevision||0)+1),row=monCloudRow(session,payload,nextRevision);
+ if(Number(expectedRevision||0)===0){
+  const {data,error}=await client.from('mon_user_state').insert(row).select('sync_version,profile,learning_state,client_updated_at,updated_at,revision').single();
+  if(error){if(error.code==='23505')throw monSyncConflict();throw error}
+  return data;
+ }
+ const {data,error}=await client.from('mon_user_state').update(row).eq('user_id',session.user.id).eq('revision',Number(expectedRevision)).select('sync_version,profile,learning_state,client_updated_at,updated_at,revision').maybeSingle();
+ if(error)throw error;
+ if(!data)throw monSyncConflict();
+ return data;
+}
