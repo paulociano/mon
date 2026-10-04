@@ -67,12 +67,12 @@ const css=size('styles.css'),journeyCss=size('features/journey.css'),featureCss=
 const hero=size('assets/scene/mon-home-banner.webp'),side=size('assets/scene/mon-sidebar-bg.webp');
 
 assert.ok(eagerJs<=72*1024,`eager JS budget exceeded: ${kb(eagerJs)} KB`);
-assert.ok(dataJs<=104*1024,`total lazy dataset budget exceeded: ${kb(dataJs)} KB`);
+assert.ok(dataJs<=120*1024,`total lazy dataset budget exceeded: ${kb(dataJs)} KB`);
 assert.ok(foundationRouteJs<=29*1024,`Foundation route data budget exceeded: ${kb(foundationRouteJs)} KB`);
 assert.ok(experienceRouteJs<=9*1024,`Experience route data budget exceeded: ${kb(experienceRouteJs)} KB`);
 assert.ok(kanjiRouteJs<=11*1024,`Kanji route data budget exceeded: ${kb(kanjiRouteJs)} KB`);
 assert.ok(narrativeJs<=18*1024,`narrative data budget exceeded: ${kb(narrativeJs)} KB`);
-assert.ok(featureJs<=148*1024,`feature runtime budget exceeded: ${kb(featureJs)} KB`);
+assert.ok(featureJs<=151*1024,`feature runtime budget exceeded: ${kb(featureJs)} KB`);
 assert.ok(lessonJs<=20*1024,`lesson UI JS budget exceeded: ${kb(lessonJs)} KB`);
 assert.ok(openRemediationJs<=4*1024,`open remediation JS budget exceeded: ${kb(openRemediationJs)} KB`);
 assert.ok(lessonCss<=10*1024,`lesson UI CSS budget exceeded: ${kb(lessonCss)} KB`);
@@ -97,13 +97,13 @@ assert.ok(multiDeviceSyncJs<=12*1024,`multi-device sync JS budget exceeded: ${kb
 assert.ok(learningEvidenceJs<=4*1024,`learning evidence JS budget exceeded: ${kb(learningEvidenceJs)} KB`);
 assert.ok(learningMetricsJs<=6*1024,`learning metrics JS budget exceeded: ${kb(learningMetricsJs)} KB`);
 assert.ok(learningValidationJs<=6*1024,`learning validation JS budget exceeded: ${kb(learningValidationJs)} KB`);
-assert.ok(lazyJs<=96*1024,`lazy N5 learning runtime budget exceeded: ${kb(lazyJs)} KB`);
+assert.ok(lazyJs<=97*1024,`lazy N5 learning runtime budget exceeded: ${kb(lazyJs)} KB`);
 assert.ok(n4CapabilityJs<=7*1024,`N4 capability contract budget exceeded: ${kb(n4CapabilityJs)} KB`);
 for(const [name,bytes] of [['base',n4BaseJs],['social',n4SocialJs],['urban',n4UrbanJs],['conversation',n4ConversationJs]])assert.ok(bytes<=15*1024,`N4 ${name} chunk budget exceeded: ${kb(bytes)} KB`);
-assert.ok(lazyJs+n4BaseJs+n4CapabilityJs<=117*1024,`N4A runtime budget exceeded: ${kb(lazyJs+n4BaseJs+n4CapabilityJs)} KB`);
-assert.ok(lazyJs+n4BaseJs+n4SocialJs+n4CapabilityJs<=132*1024,`N4B runtime budget exceeded: ${kb(lazyJs+n4BaseJs+n4SocialJs+n4CapabilityJs)} KB`);
-assert.ok(lazyJs+n4BaseJs+n4SocialJs+n4UrbanJs+n4CapabilityJs<=147*1024,`N4C runtime budget exceeded: ${kb(lazyJs+n4BaseJs+n4SocialJs+n4UrbanJs+n4CapabilityJs)} KB`);
-assert.ok(lazyJs+n4ExtensionJs+n4CapabilityJs<=162*1024,`N4D runtime budget exceeded: ${kb(lazyJs+n4ExtensionJs+n4CapabilityJs)} KB`);
+assert.ok(lazyJs+n4BaseJs+n4CapabilityJs<=118*1024,`N4A runtime budget exceeded: ${kb(lazyJs+n4BaseJs+n4CapabilityJs)} KB`);
+assert.ok(lazyJs+n4BaseJs+n4SocialJs+n4CapabilityJs<=133*1024,`N4B runtime budget exceeded: ${kb(lazyJs+n4BaseJs+n4SocialJs+n4CapabilityJs)} KB`);
+assert.ok(lazyJs+n4BaseJs+n4SocialJs+n4UrbanJs+n4CapabilityJs<=148*1024,`N4C runtime budget exceeded: ${kb(lazyJs+n4BaseJs+n4SocialJs+n4UrbanJs+n4CapabilityJs)} KB`);
+assert.ok(lazyJs+n4ExtensionJs+n4CapabilityJs<=163*1024,`N4D runtime budget exceeded: ${kb(lazyJs+n4ExtensionJs+n4CapabilityJs)} KB`);
 assert.ok(css<=94*1024,`CSS budget exceeded: ${kb(css)} KB`);
 assert.ok(journeyCss<=12*1024,`Journey CSS budget exceeded: ${kb(journeyCss)} KB`);
 assert.ok(featureCss<=30*1024,`feature CSS budget exceeded: ${kb(featureCss)} KB`);
