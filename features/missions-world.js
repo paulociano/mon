@@ -26,3 +26,5 @@ function missionWorldSummary(w={}){
  if(w.route==='rerouted')return `rota alterada · ${w.routeName}`;
  return null
 }
+
+function missionUpdateFunctional(cap,ok,label=''){if(!cap)return;state.functionalMastery=state.functionalMastery||{};const old=state.functionalMastery[cap]||{attempts:0,successes:0,score:35},a=old.attempts<2?.42:.28,score=Math.round(old.score*(1-a)+(ok?100:0)*a);state.functionalMastery[cap]={...old,attempts:old.attempts+1,successes:old.successes+(ok?1:0),score,lastAt:Date.now(),lastLabel:label||cap};}function missionRecordFunctionalTurn(turn,ok){if(turn?.capability)missionUpdateFunctional(turn.capability,ok,turn.goal||turn.capability)}
