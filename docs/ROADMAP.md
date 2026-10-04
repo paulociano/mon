@@ -295,17 +295,17 @@ Regras:
 ## Ordem operacional imediata
 
 1. Sistema de aprendizagem japonês unificado concluído; validar longitudinalmente compreensão, retrieval e transferência por unidade.
-1. Home adaptativa concluída.
-2. Next Best Lesson Engine concluído.
-3. Daily Loop adaptativo concluído.
-4. Listening & Pronunciation Lab concluído.
-5. Kanji Memory Lab 2.0 concluído.
-6. Survival Missions 2.0 concluído.
-7. Gate estrutural N5 concluído; manter validação longitudinal de retenção e transferência.
-8. N4 por capacidades formalizado; manter calibração longitudinal dos gates funcionais.
-9. P9.2/P9.3 implementados: validar longitudinalmente e recalibrar o NBL apenas com sinais observados; manter Home fora dessa calibração por enquanto.
-10. P10.2 concluída: baseline multi-run calibrado entre engines; não transformar milissegundos absolutos em gate até existir evidência de dispositivo real.
-11. P8 avançado em Home, Lesson, Practice, Journal, Missions, Listening/Pronunciation e Kanji; seguir com validação visual publicada e refinamentos residuais sem quebrar os gates.
+2. Home adaptativa concluída.
+3. Next Best Lesson Engine concluído.
+4. Daily Loop adaptativo concluído.
+5. Listening & Pronunciation Lab concluído.
+6. Kanji Memory Lab 2.0 concluído.
+7. Survival Missions 2.0 concluído.
+8. Gate estrutural N5 concluído; manter validação longitudinal de retenção e transferência.
+9. N4 por capacidades formalizado; manter calibração longitudinal dos gates funcionais.
+10. P9.2/P9.3 implementados: validar longitudinalmente e recalibrar o NBL apenas com sinais observados; manter Home fora dessa calibração por enquanto.
+11. P10.2 concluída: baseline multi-run calibrado entre engines; não transformar milissegundos absolutos em gate até existir evidência de dispositivo real.
+12. P8 avançado em Home, Lesson, Practice, Journal, Missions, Listening/Pronunciation e Kanji; seguir com validação visual publicada e refinamentos residuais sem quebrar os gates.
 
 ## Guardrails permanentes
 
