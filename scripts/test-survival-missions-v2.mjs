@@ -19,6 +19,7 @@ assert.equal(repairs.length,2);
 assert.ok(repairs.some(x=>x.id==='meaning'&&x.jp.includes('意味')));
 
 const js=fs.readFileSync('features/missions-v2.js','utf8');
+const reactions=fs.readFileSync('features/missions-reactions.js','utf8');
 const dialogue=fs.readFileSync('features/missions-dialogue.js','utf8');
 const css=fs.readFileSync('features/missions-v2.css','utf8');
 const app=fs.readFileSync('app.js','utf8');
@@ -33,15 +34,20 @@ assert.ok(js.includes('objective'));
 for(const id of ['work','phone','cityhall','disaster']){const d=vm.runInContext(`missionDialoguesV4['${id}']`,ctx);assert.ok(d,id+' adaptive dialogue missing');assert.equal(d.opening.length,2);assert.ok(Object.values(d.pressure).every(x=>x.free&&x.keys?.length>=2),id+' pressure turns must be free-form');assert.ok(d.closing)}
 const runtimeCtx=vm.createContext({state:{functionalMastery:{negotiate:{attempts:3,score:28},repair:{attempts:3,score:72}}},missionRun:{id:'phone',step:0,pressureCapability:'negotiate',lastChoice:null},missionDialoguesV4:vm.runInContext('missionDialoguesV4',ctx),Date,Math,Object,Number,String,Set});
 vm.runInContext(dialogue,runtimeCtx,{filename:'missions-dialogue.js'});
+vm.runInContext(reactions,runtimeCtx,{filename:'missions-reactions.js'});
 assert.equal(vm.runInContext("missionPressureCapability('phone')",runtimeCtx),'negotiate');
 assert.equal(vm.runInContext("adaptiveMissionTurns('phone',missionRun).length",runtimeCtx),4);
 vm.runInContext("missionRun.step=2",runtimeCtx);assert.equal(vm.runInContext("adaptiveMissionTurn({id:'phone'},missionRun).free",runtimeCtx),true);
 assert.equal(vm.runInContext("missionEvaluateFree('五時でお願いします',adaptiveMissionTurn({id:'phone'},missionRun)).ok",runtimeCtx),true);
 assert.equal(vm.runInContext("missionEvaluateFree('分かりました',adaptiveMissionTurn({id:'phone'},missionRun)).ok",runtimeCtx),false);
+assert.equal(vm.runInContext("missionSemanticReaction('phone','negotiate','五時でお願いします').key",runtimeCtx),'five');
+vm.runInContext("missionRun.semanticReaction=missionSemanticReaction('phone','negotiate','五時でお願いします');missionRun.step=3",runtimeCtx);
+assert.ok(vm.runInContext("adaptiveMissionTurn({id:'phone'},missionRun).npc",runtimeCtx).includes('その時間に変更'));
 vm.runInContext("missionRun.step=1;missionRun.lastChoice='alt'",runtimeCtx);assert.ok(vm.runInContext("adaptiveMissionTurn({id:'phone'},missionRun).npc",runtimeCtx).includes('よろしい'));
 vm.runInContext("missionRecordFunctionalTurn({capability:'confirm',goal:'confirmar'},false)",runtimeCtx);assert.equal(vm.runInContext("state.functionalMastery.confirm.attempts",runtimeCtx),1);
 assert.ok(app.includes("'./data/missions-v2.js'"));
 assert.ok(app.includes("'./data/missions-dialogues.js'"));
+assert.ok(app.includes("'./features/missions-reactions.js'"));
 assert.ok(app.includes("'./features/missions-dialogue.js'"));
 assert.ok(app.includes("'./features/missions-v2.js'"));
 assert.ok(app.includes("missions:['./features/missions-v2.css']"));
@@ -54,5 +60,7 @@ assert.ok(css.includes('.mission-repair-note'));
 assert.ok(css.includes('.mission-free'));
 assert.ok(css.includes('.free-hidden'));
 for(const token of ['missionEvaluateFree','missionFreeSpeech','missionShowChoices','missionFreeHTML'])assert.ok(dialogue.includes(token),'free mission runtime missing '+token);
+for(const token of ['MISSION_REACTIONS','missionSemanticReaction','five','morning','safe'])assert.ok(reactions.includes(token),'semantic reaction runtime missing '+token);
+assert.ok(js.includes('semanticBranch:missionRun.semanticReaction?.key'));
 
 console.log('MON Survival Missions 2.0 contracts passed');
