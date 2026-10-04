@@ -205,3 +205,84 @@ function methodPerformanceSummary(){
   for(const [k,v] of Object.entries(state.methodStats||{}))out[k]={...v,accuracy:v.attempts?Math.round(v.correct/v.attempts*100):0};
   return out;
 }
+
+const JAPANESE_LEARNING_SOURCES={
+  functional:'Irodori',
+  grammar:'Desvendando',
+  kanji:'Meu Amigo Kanji'
+};
+function unitKanjiMeaning(k,unit={}){
+  const known=typeof kanjiData!=='undefined'?kanjiData.find(x=>x.k===k):null;
+  if(known)return known.m;
+  for(const id of unit.vocabulary||[]){
+    const v=vocabularyCatalog?.[id];
+    if(v?.kanji?.includes(k))return v.pt;
+  }
+  return 'kanji da situação';
+}
+function kanjiStudyForUnit(unit={}){
+  const scenario=(unit.scenarios||[])[0]||{};
+  return (unit.kanji||[]).slice(0,5).map(k=>{
+    const known=typeof kanjiData!=='undefined'?kanjiData.find(x=>x.k===k):null;
+    const vocab=(unit.vocabulary||[]).map(id=>vocabularyCatalog?.[id]).find(v=>v?.kanji?.includes(k));
+    const word=vocab?.jp||known?.ex?.[0]?.[0]||k;
+    const reading=vocab?.reading||known?.ex?.[0]?.[1]||'';
+    const context=[scenario.npc,scenario.reply].find(x=>String(x||'').includes(k))||`${word} aparece no vocabulário funcional desta unidade.`;
+    return {k,meaning:unitKanjiMeaning(k,unit),word,reading,context};
+  });
+}
+function japaneseLearningContract(unit={}){
+  const scenario=(unit.scenarios||[])[0]||{};
+  const study=grammarStudyBlock(unit);
+  const kanji=kanjiStudyForUnit(unit);
+  const canDo=(unit.objectives||[]).filter(Boolean);
+  const situation=unit.context||`${unit.title||'Situação prática'}: ${scenario.pt||canDo[0]||'use japonês para concluir a tarefa comunicativa.'}`;
+  const repair={jp:'すみません、もう一度ゆっくりお願いします。',pt:'Desculpe, mais uma vez devagar, por favor.'};
+  if(study){
+    study.canDo=canDo;
+    study.situation=situation;
+    study.kanjiPreview=kanji;
+    study.repair=repair;
+  }
+  return {
+    unitId:unit.id||null,
+    canDo,
+    situation,
+    input:{jp:scenario.npc||scenario.reply||'',pt:scenario.pt||scenario.replyPt||''},
+    study,
+    kanji,
+    repair,
+    practice:['understand','notice','retrieve','transfer','produce'],
+    sources:[JAPANESE_LEARNING_SOURCES.functional,JAPANESE_LEARNING_SOURCES.grammar,...(kanji.length?[JAPANESE_LEARNING_SOURCES.kanji]:[])]
+  };
+}
+function grammarEvidenceScore(id,learnerState={}){
+  const cells=learnerState.masteryEvidence?.['grammar:P:'+id]||{};
+  const rows=['recognize','recall','transfer','produce'].map(d=>cells[d]).filter(x=>Number.isFinite(x?.score));
+  if(!rows.length)return null;
+  return Math.round(rows.reduce((n,x)=>n+x.score,0)/rows.length);
+}
+function adaptStudyForLearner(contract={},learnerState={}){
+  const study=contract.study;if(!study)return null;
+  const unit=typeof coursePacks!=='undefined'
+    ?[...(coursePacks.N5?.units||[]),...(coursePacks.N4?.units||[])].find(x=>x.id===contract.unitId)
+    :null;
+  const scores=(unit?.grammar||[]).map(id=>grammarEvidenceScore(id,learnerState)).filter(Number.isFinite);
+  const average=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):null;
+  const mode=average===null?'full':average>=85?'practice':average>=65?'compact':'full';
+  if(mode==='compact')return {...study,mode,explanation:study.explanation.split('. ').slice(0,2).join('. '),examples:(study.examples||[]).slice(0,2)};
+  if(mode==='practice')return {...study,mode,explanation:'Reative o modelo mental e confirme o contraste antes de aplicar sem apoio.',examples:(study.examples||[]).slice(0,1)};
+  return {...study,mode:'full'};
+}
+function missionLearningContract(mission={}){
+  return {
+    canDo:mission.objective||mission.title||'concluir a missão',
+    situation:mission.context||mission.title||'situação funcional',
+    input:{jp:mission.npc||'',pt:mission.npcPt||''},
+    repair:typeof missionRepairPhrase==='function'?missionRepairPhrase():{jp:'すみません、もう一度お願いします。',pt:'Mais uma vez, por favor.'},
+    transfer:{jp:mission.altReply||mission.reply||'',pt:mission.altReplyPt||mission.replyPt||''},
+    criterion:'concluir a tarefa preservando intenção e recuperar a conversa se faltar compreensão',
+    source:JAPANESE_LEARNING_SOURCES.functional
+  };
+}
+
