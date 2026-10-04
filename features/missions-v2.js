@@ -25,7 +25,7 @@ function answerMissionV2(choice){
   else{missionRun.repairNote='<b>Repetição pedida.</b> O interlocutor repete o mesmo turno mais devagar. Tente novamente sem mudar de assunto.';speak(turn.npc)}
   save();renderMissionV2();return
  }
- if(choice==='wrong'){missionRun.wrong++;if(typeof missionRecordFunctionalTurn==='function')missionRecordFunctionalTurn(turn,false);f.innerHTML='<b>Frase válida, função errada.</b> Volte ao objetivo desta etapa. Você ainda pode reparar ou tentar outra formulação.';return}
+ if(choice==='wrong'){missionRun.wrong++;if(typeof missionRecordFunctionalTurn==='function')missionRecordFunctionalTurn(turn,false);if(typeof recordLearningEvidence==='function')recordLearningEvidence({source:'mission',kind:'attempt',dimension:'produce',method:'roleplay',ok:false,hintUsed:missionRun.supportShown,context:'mission',capability:turn?.capability||null});f.innerHTML='<b>Frase válida, função errada.</b> Volte ao objetivo desta etapa. Você ainda pode reparar ou tentar outra formulação.';return}
  let semantic=null;
  if(choice==='free'){
   const text=document.getElementById('missionFreeText')?.value||'',result=typeof missionEvaluateFree==='function'?missionEvaluateFree(text,turn):{ok:false,score:0,missing:[]};
@@ -33,8 +33,9 @@ function answerMissionV2(choice){
   if(typeof missionSemanticReaction==='function')semantic=missionSemanticReaction(m.id,turn.capability,text);
  }
  if(!['target','alt','free'].includes(choice))return;
+ if(typeof recordLearningEvidence==='function')recordLearningEvidence({source:'mission',kind:'attempt',dimension:'produce',method:'roleplay',ok:true,hintUsed:missionRun.supportShown||choice!=='free',context:'mission',capability:turn?.capability||null});
  missionRun.strategies.push(choice==='free'?'free':choice==='alt'?'reformulate':'direct');if(typeof adaptiveMissionRecordTurn==='function')adaptiveMissionRecordTurn(missionRun,choice,turn,semantic);if(typeof missionRecordFunctionalTurn==='function')missionRecordFunctionalTurn(turn,true);missionRun.step++;missionRun.supportShown=false;missionRun.repairNote='';
- if(missionRun.step>=total){const autonomy=missionAutonomyScore(missionRun),previous=s.completed[m.id],best=Math.max(autonomy,Number(previous?.autonomy||0));s.completed[m.id]={at:Date.now(),repairs:missionRun.repairs,wrong:missionRun.wrong,strategies:[...missionRun.strategies],attempts:s.attempts[m.id]||1,autonomy:best,label:missionAutonomyLabel(best),turns:missionRun.history?.length||total,pressureCapability:missionRun.pressureCapability||null,semanticBranch:missionRun.semanticReaction?.key||null,contextMemory:{...(missionRun.contextMemory||{})},worldState:{...(missionRun.worldState||{})}};state.xp+=20;save();renderMissionGridV2();toast('Missão concluída · autonomia '+autonomy+'% · +20 XP')}
+ if(missionRun.step>=total){const autonomy=missionAutonomyScore(missionRun),previous=s.completed[m.id],best=Math.max(autonomy,Number(previous?.autonomy||0));s.completed[m.id]={at:Date.now(),repairs:missionRun.repairs,wrong:missionRun.wrong,strategies:[...missionRun.strategies],attempts:s.attempts[m.id]||1,autonomy:best,label:missionAutonomyLabel(best),turns:missionRun.history?.length||total,pressureCapability:missionRun.pressureCapability||null,semanticBranch:missionRun.semanticReaction?.key||null,contextMemory:{...(missionRun.contextMemory||{})},worldState:{...(missionRun.worldState||{})}};if(typeof recordLearningEvidence==='function')recordLearningEvidence({source:'mission',kind:'mission_complete',context:'mission',autonomy,ok:true,capability:missionRun.pressureCapability||null});state.xp+=20;save();renderMissionGridV2();toast('Missão concluída · autonomia '+autonomy+'% · +20 XP')}
  renderMissionV2();
 }
 function renderMissionGridV2(){

@@ -17,3 +17,18 @@ function renderFunctionalMastery(){
 }
 const renderProgressHubBase=renderProgressHub;
 renderProgressHub=function(){renderProgressHubBase();renderFunctionalMastery()};
+
+function renderLearningEvidence(){
+ const grid=document.getElementById('progressEvidenceGrid');if(!grid||typeof learningEvidenceSummary!=='function')return;
+ grid.querySelectorAll('[data-learning-evidence]').forEach(x=>x.remove());
+ const s=learningEvidenceSummary(),fmt=x=>x===null?'—':x+'%';
+ const cards=[
+  ['retention','Retenção',fmt(s.retentionAccuracy),s.retentionAttempts+' reencontros após espaçamento'],
+  ['transfer','Transferência',fmt(s.transferAccuracy),s.transferAttempts+' tentativas em produção/contexto'],
+  ['independent','Sem pistas',fmt(s.independentAccuracy),s.independentAttempts+' tentativas independentes'],
+  ['autonomy','Autonomia',fmt(s.autonomyAverage),s.missionCompletions+' missões observadas']
+ ];
+ grid.insertAdjacentHTML('beforeend',cards.map(([id,name,value,desc])=>`<article class="progress-evidence" data-learning-evidence="${id}"><span>Evidência · ${name}</span><b>${value}</b><small>${desc}</small><i><em style="width:${parseInt(value)||0}%"></em></i></article>`).join(''));
+}
+const renderProgressHubFunctional=renderProgressHub;
+renderProgressHub=function(){renderProgressHubFunctional();renderLearningEvidence()};

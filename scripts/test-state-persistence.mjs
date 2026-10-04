@@ -78,4 +78,12 @@ function boot(seed={}){
  context.__state.functionalMastery.confirm.score=81;context.__save();
  assert.equal(JSON.parse(store.get('mon-state')).functionalMastery.confirm.score,81);
 }
+{
+ const initial={saveVersion:1,learningEvidence:{events:[{at:123,kind:'attempt',source:'mastery',concept:'unit:n5-test',dimension:'recall',ok:true,spacingMs:86400000}]}};
+ const {context,store}=boot({'mon-state':JSON.stringify(initial)});
+ assert.equal(context.__state.learningEvidence.events.length,1);
+ assert.equal(context.__state.learningEvidence.events[0].concept,'unit:n5-test');
+ context.__save();
+ assert.equal(JSON.parse(store.get('mon-state')).learningEvidence.events[0].spacingMs,86400000);
+}
 console.log('MON state persistence contracts passed');
