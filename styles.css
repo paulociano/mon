@@ -471,3 +471,8 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 .kanji-atlas-hero{min-height:300px;align-items:center;margin:0 0 18px;padding:36px 40px;border:1px solid rgba(245,235,216,.15);border-radius:30px;overflow:hidden;background-image:linear-gradient(90deg,rgba(5,11,19,.98),rgba(5,11,19,.72) 42%,rgba(5,11,19,.16) 72%),url('./assets/scene/kanji-atlas-banner.webp');background-size:cover;background-position:center;box-shadow:0 28px 72px rgba(0,0,0,.28)}
 .kanji-atlas-hero>div{max-width:560px}.kanji-atlas-hero h3{font:500 34px/1.05 Georgia,serif;margin:9px 0 10px;color:#fff}.kanji-atlas-hero p{max-width:470px;color:#c1c9d2;font-size:12px;line-height:1.6}
 @media(max-width:720px){.kanji-atlas-hero{min-height:250px;padding:28px 24px;background-position:58% center}.kanji-atlas-hero h3{font-size:28px}}
+
+.update-banner{position:fixed;right:18px;bottom:18px;z-index:32000;display:flex;align-items:center;gap:12px;max-width:min(420px,calc(100vw - 36px));padding:11px 12px 11px 15px;border:1px solid rgba(215,181,109,.24);border-radius:15px;background:#101b28;color:#dfe6ed;box-shadow:0 18px 55px rgba(0,0,0,.34);font-size:8px}
+.update-banner[hidden]{display:none}.update-banner button{border:0;border-radius:10px;padding:8px 10px;background:#d7b56d;color:#10151c;font-size:7px;font-weight:900;white-space:nowrap}
+.update-banner button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(max-width:580px){.update-banner{left:12px;right:12px;bottom:76px;max-width:none;justify-content:space-between}}
