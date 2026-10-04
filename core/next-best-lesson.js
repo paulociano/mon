@@ -68,4 +68,4 @@ const orders={functionalRepair:['retrieve','function','apply','transfer','produc
 const minutes={functionalRepair:[2,4,3,3,4,3],repair:[3,3,3,3,2,3],retrieve:[3,3,3,3,2,3],listening:[3,3,3,3,2,4],production:[2,3,3,3,3,4],transfer:[2,3,3,3,3,4],advance:[2,3,3,4,3,4]};
 return {intent:plan.intent||'advance',roles:orders[plan.intent]||orders.advance,minutes:minutes[plan.intent]||minutes.advance,labels:{retrieve:'Aquecer memória',function:'Reparar função',listen:'Ouvir',learn:'Aprender',apply:'Aplicar',transfer:'Reencontrar',produce:'Produzir',reflect:'Fechar o ciclo'}};
 }
-if(typeof module!=='undefined'&&module.exports)module.exports={nextBestSignals,nextBestLessonPlan,sequenceLessonByPlan,dailyLoopRecipe,nbWeakMasteryDimension,nbExerciseFamily,nbOpenProductionGap,nbValidationSignal};
+if(typeof module!=='undefined'&&module.exports)module.exports={nextBestSignals,nextBestLessonPlan,sequenceLessonByPlan,dailyLoopRecipe,nbWeakMasteryDimension,nbExerciseFamily,nbOpenProductionGap};
