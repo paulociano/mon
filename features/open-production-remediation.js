@@ -6,7 +6,7 @@ function updateFunctionalMastery(label,ok,tokens=[]){
 }
 function recordProductionGaps(exercise,result){
  state.productionGaps=state.productionGaps||{};
- const labels=exercise.assessment?.labels||[],groups=exercise.assessment?.groups||[],seen=new Set();for(const label of result.missing||[]){const old=state.productionGaps[label]||{count:0,recovered:0},i=labels.indexOf(label),tokens=(groups[i]||[]).filter(Boolean).slice(0,4);state.productionGaps[label]={...old,count:old.count+1,lastAt:Date.now(),unitId:exercise._unitId||null,tokens:tokens.length?tokens:(old.tokens||[])};const cap=functionalCapability(label);if(!seen.has(cap)){seen.add(cap);updateFunctionalMastery(label,false,tokens)}}
+ const labels=exercise.assessment?.labels||[],groups=exercise.assessment?.groups||[],seen=new Set();for(const label of result.missing||[]){const old=state.productionGaps[label]||{count:0,recovered:0},i=labels.indexOf(label),tokens=(groups[i]||[]).filter(Boolean).slice(0,4);const cap=functionalCapability(label);state.productionGaps[label]={...old,count:old.count+1,lastAt:Date.now(),unitId:exercise._unitId||null,tokens:tokens.length?tokens:(old.tokens||[]),capability:cap};if(!seen.has(cap)){seen.add(cap);updateFunctionalMastery(label,false,tokens)}}
 }
 function recoverProductionGaps(exercise){
  state.productionGaps=state.productionGaps||{};const seen=new Set();for(const label of exercise._gapLabels||[]){const old=state.productionGaps[label]||{count:0,recovered:0};state.productionGaps[label]={...old,recovered:(old.recovered||0)+1,lastRecoveredAt:Date.now()};const cap=functionalCapability(label);if(!seen.has(cap)){seen.add(cap);updateFunctionalMastery(label,true,old.tokens||[])}}
