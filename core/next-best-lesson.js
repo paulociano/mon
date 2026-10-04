@@ -2,6 +2,7 @@
 // Pure policy: learner evidence -> explainable lesson recipe.
 
 const NB_METHODS={
+ functionalRepair:['freeRecall','cloze','transfer','roleplay','dictation'],
  repair:['freeRecall','cloze','dictation','transfer','roleplay'],
  retrieve:['freeRecall','dictation','cloze','transfer','roleplay'],
  listening:['dictation','minimalPair','freeRecall','transfer','roleplay'],
@@ -19,6 +20,9 @@ function nbWeakMasteryDimension(state={}){
  return Object.keys(sums).map(d=>({dimension:d,score:Math.round(sums[d]/counts[d]),samples:counts[d]}))
    .filter(x=>x.samples>=2).sort((a,b)=>a.score-b.score)[0]||null;
 }
+function nbOpenProductionGap(state={}){
+ return Object.entries(state.productionGaps||{}).map(([label,g])=>({label,count:Number(g?.count||0),recovered:Number(g?.recovered||0),open:Math.max(0,Number(g?.count||0)-Number(g?.recovered||0)),lastAt:Number(g?.lastAt||0),tokens:Array.isArray(g?.tokens)?g.tokens.filter(Boolean):[],unitId:g?.unitId||null})).filter(x=>x.open>0).sort((a,b)=>b.open-a.open||b.lastAt-a.lastAt)[0]||null;
+}
 function nextBestSignals(state={},now=Date.now()){
  const dueReviews=Object.values(state.reviewItems||{}).filter(x=>Number(x?.due||0)<=now).length;
  const openMistakes=Object.values(state.mistakeStats||{}).filter(x=>(x?.count||0)>(x?.recovered||0)).length;
@@ -26,19 +30,21 @@ function nextBestSignals(state={},now=Date.now()){
  const weakMastery=nbWeakMasteryDimension(state);
  const weakMethod=Object.entries(state.methodStats||{}).map(([method,s])=>({method,attempts:s?.attempts||0,accuracy:s?.attempts?s.correct/s.attempts:null}))
    .filter(x=>x.attempts>=2&&x.accuracy!==null).sort((a,b)=>a.accuracy-b.accuracy)[0]||null;
- return {dueReviews,openMistakes,unresolvedNarrative,weakMastery,weakMethod};
+ const productionGap=nbOpenProductionGap(state);
+ return {dueReviews,openMistakes,unresolvedNarrative,weakMastery,weakMethod,productionGap};
 }
 function nextBestLessonPlan(state={},node={},now=Date.now()){
  const s=nextBestSignals(state,now);let intent='advance',reason='Sem dívida pedagógica prioritária.';
  if(state.remediation){intent='repair';reason='Há uma lacuna de domínio marcada para reforço.'}
  else if(s.dueReviews>=4){intent='retrieve';reason=`${s.dueReviews} itens chegaram ao ponto de recuperação espaçada.`}
+ else if(s.productionGap?.open>=2){intent='functionalRepair';reason=`A função “${s.productionGap.label}” voltou a faltar ${s.productionGap.open} vezes sem recuperação consolidada.`}
  else if(s.openMistakes>=3){intent='repair';reason=`${s.openMistakes} padrões de erro continuam abertos.`}
  else if(s.weakMastery?.dimension==='listen'&&s.weakMastery.score<65){intent='listening';reason=`Escuta é a dimensão mais frágil observada (${s.weakMastery.score}%).`}
  else if(s.weakMastery?.dimension==='produce'&&s.weakMastery.score<65){intent='production';reason=`Produção é a dimensão mais frágil observada (${s.weakMastery.score}%).`}
  else if(s.weakMethod?.method==='produce'&&s.weakMethod.accuracy<.65){intent='production';reason='Produção recente está abaixo do nível desejável.'}
  else if(s.unresolvedNarrative>0){intent='transfer';reason='Há uma situação narrativa ainda não resolvida com evidência suficiente.'}
- const objective={repair:'Corrigir uma lacuna específica antes de ampliar dificuldade.',retrieve:'Recuperar memória vencendo antes de introduzir novidade.',listening:'Converter som em sentido com menos apoio visual.',production:'Produzir japonês com menos pistas.',transfer:'Reutilizar linguagem conhecida em contexto diferente.',advance:'Aprender pouco conteúdo novo e fechá-lo com recuperação e produção.'}[intent];
- return {intent,objective,reason,signals:s,reviewCount:intent==='repair'||intent==='retrieve'?3:intent==='advance'?1:2,targetExercises:intent==='repair'||intent==='retrieve'?9:8,methodOrder:[...(NB_METHODS[intent]||NB_METHODS.advance)],node:{day:node?.day||null,label:node?.label||'',type:node?.type||'lesson'}};
+ const objective={functionalRepair:`Reparar a função comunicativa “${s.productionGap?.label||'produção'}” e voltar a usá-la sem apoio.`,repair:'Corrigir uma lacuna específica antes de ampliar dificuldade.',retrieve:'Recuperar memória vencendo antes de introduzir novidade.',listening:'Converter som em sentido com menos apoio visual.',production:'Produzir japonês com menos pistas.',transfer:'Reutilizar linguagem conhecida em contexto diferente.',advance:'Aprender pouco conteúdo novo e fechá-lo com recuperação e produção.'}[intent];
+ return {intent,objective,reason,signals:s,functionalGap:intent==='functionalRepair'?s.productionGap:null,reviewCount:intent==='repair'||intent==='retrieve'?3:intent==='advance'?1:2,targetExercises:intent==='repair'||intent==='retrieve'?9:8,methodOrder:[...(NB_METHODS[intent]||NB_METHODS.advance)],node:{day:node?.day||null,label:node?.label||'',type:node?.type||'lesson'}};
 }
 function nbExerciseFamily(e={}){
  if(['listen','audio','dictation','minimalPair'].includes(e.type))return'listen';
@@ -55,8 +61,8 @@ function sequenceLessonByPlan(exercises=[],plan={},limit=8){
  return out.slice(0,limit);
 }
 function dailyLoopRecipe(plan={}){
- const orders={repair:['retrieve','listen','apply','transfer','produce','reflect'],retrieve:['retrieve','listen','apply','transfer','produce','reflect'],listening:['listen','retrieve','transfer','apply','produce','reflect'],production:['retrieve','apply','listen','transfer','produce','reflect'],transfer:['retrieve','listen','apply','transfer','produce','reflect'],advance:['listen','retrieve','learn','apply','transfer','produce']};
- const minutes={repair:[3,3,3,3,2,3],retrieve:[3,3,3,3,2,3],listening:[3,3,3,3,2,4],production:[2,3,3,3,3,4],transfer:[2,3,3,3,3,4],advance:[2,3,3,4,3,4]};
- return {intent:plan.intent||'advance',roles:orders[plan.intent]||orders.advance,minutes:minutes[plan.intent]||minutes.advance,labels:{retrieve:'Aquecer memória',listen:'Ouvir',learn:'Aprender',apply:'Aplicar',transfer:'Reencontrar',produce:'Produzir',reflect:'Fechar o ciclo'}};
+ const orders={functionalRepair:['retrieve','function','apply','transfer','produce','reflect'],repair:['retrieve','listen','apply','transfer','produce','reflect'],retrieve:['retrieve','listen','apply','transfer','produce','reflect'],listening:['listen','retrieve','transfer','apply','produce','reflect'],production:['retrieve','apply','listen','transfer','produce','reflect'],transfer:['retrieve','listen','apply','transfer','produce','reflect'],advance:['listen','retrieve','learn','apply','transfer','produce']};
+ const minutes={functionalRepair:[2,4,3,3,4,3],repair:[3,3,3,3,2,3],retrieve:[3,3,3,3,2,3],listening:[3,3,3,3,2,4],production:[2,3,3,3,3,4],transfer:[2,3,3,3,3,4],advance:[2,3,3,4,3,4]};
+ return {intent:plan.intent||'advance',roles:orders[plan.intent]||orders.advance,minutes:minutes[plan.intent]||minutes.advance,labels:{retrieve:'Aquecer memória',function:'Reparar função',listen:'Ouvir',learn:'Aprender',apply:'Aplicar',transfer:'Reencontrar',produce:'Produzir',reflect:'Fechar o ciclo'}};
 }
-if(typeof module!=='undefined'&&module.exports)module.exports={nextBestSignals,nextBestLessonPlan,sequenceLessonByPlan,dailyLoopRecipe,nbWeakMasteryDimension,nbExerciseFamily};
+if(typeof module!=='undefined'&&module.exports)module.exports={nextBestSignals,nextBestLessonPlan,sequenceLessonByPlan,dailyLoopRecipe,nbWeakMasteryDimension,nbExerciseFamily,nbOpenProductionGap};
