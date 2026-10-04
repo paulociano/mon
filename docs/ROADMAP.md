@@ -161,21 +161,16 @@ Cada missão deve exigir:
 - reparar quando não entende;
 - completar uma tarefa observável.
 
-### 7. Auditoria profunda do N5 — em andamento
+### 7. Auditoria profunda do N5 — gate estrutural concluído ✅
 **Dependência:** engines e modalidades estabilizados.
 
-**Gates implementados:** cobertura funcional, densidade lexical por unidade, orçamento de vocabulário novo, reaparição mínima, variedade de cenários críticos, recall + transfer + roleplay e capacidades gramaticais essenciais agora têm contrato executável no CI.
+**Decisão:** o N5 está estruturalmente pronto para sustentar a expansão por capacidades do N4. O gate executável cobre escala, cobertura funcional, densidade lexical, orçamento de vocabulário novo, reaparição, variedade de cenários críticos, recall + transfer + roleplay e capacidades gramaticais essenciais.
 
-Antes de ampliar o volume:
-- revisar cobertura funcional;
-- aumentar variedade de exemplos;
-- fechar lacunas de partículas, verbos, adjetivos, tempo, contadores e serviços;
-- ampliar leitura funcional;
-- garantir reaparição em múltiplos contextos;
-- auditar densidade de vocabulário novo por sessão;
-- verificar que cada habilidade importante aparece em recall e transferência.
+A validação de **retenção, transferência e autonomia reais** continua longitudinalmente e não deve ser confundida com completude estrutural do currículo.
 
-**Gate:** qualidade de retenção e transferência deve justificar expansão.
+Fonte de verdade do gate: [N5 Readiness](N5-READINESS.md).
+
+**Gate:** se `test-n5-scale.mjs` ou `test-n5-depth.mjs` falhar, a expansão curricular relacionada volta a ficar bloqueada.
 
 ### 8. N4 por capacidades
 **Dependência:** N5 profundo validado.
@@ -268,10 +263,11 @@ Regras:
 4. Listening & Pronunciation Lab concluído.
 5. Kanji Memory Lab 2.0 concluído.
 6. Survival Missions 2.0 concluído.
-7. Auditar N5 completo.
-8. Expandir para N4 somente depois dos gates anteriores.
-9. Definir budgets de latência com dados reais do Performance Lab.
-10. Executar hardening de estado/PWA/acessibilidade antes de escala.
+7. Gate estrutural N5 concluído; manter validação longitudinal de retenção e transferência.
+8. Formalizar N4 por capacidades observáveis sobre os mesmos motores pedagógicos.
+9. Implementar métricas de aprendizagem separando atividade, retenção, transferência, reparo e autonomia.
+10. Definir budgets de latência com dados reais do Performance Lab.
+11. Executar hardening de estado/PWA/acessibilidade antes de escala.
 
 ## Guardrails permanentes
 
