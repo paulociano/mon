@@ -74,6 +74,8 @@ jobs:
         run: node scripts/test-home-polish.mjs
       - name: Guided learning journey
         run: node scripts/test-learning-journey.mjs
+      - name: Deep-link navigation
+        run: node scripts/test-deep-links.mjs
       - name: Generated section banners
         run: node scripts/test-section-banners.mjs
       - name: Adaptive Home Coach

@@ -97,7 +97,12 @@ function setRouteBusy(on,label='Carregando'){
  if(loader){loader.setAttribute('aria-hidden',on?'false':'true');loader.setAttribute('aria-label',label);loader.dataset.label=label}
 }
 let routeRequestId=0;
-async function go(id){
+const ROUTABLE_VIEWS=new Set(Object.keys(viewNames));
+function routeFromLocation(){const id=new URL(location.href).searchParams.get('view');return id&&ROUTABLE_VIEWS.has(id)?id:'home'}
+function routeUrl(id){const url=new URL(location.href);if(id==='home')url.searchParams.delete('view');else url.searchParams.set('view',id);return url.pathname+url.search+url.hash}
+function commitRouteUrl(id,replace=false){const next=routeUrl(id);if(next===location.pathname+location.search+location.hash)return;history[replace?'replaceState':'pushState']({monView:id},'',next)}
+async function go(id,options={}){
+ if(!ROUTABLE_VIEWS.has(id))id='home';
  const requestId=++routeRequestId;
  const previous=document.querySelector('.view.active')?.id||'home';
  const viewStart=typeof perfStart==='function'?perfStart('view:'+id):null;
@@ -139,6 +144,7 @@ async function go(id){
    else if(id==='videos'&&typeof renderVideos==='function')renderVideos();
    else if(id==='pronunciation'&&typeof renderPronunciation==='function')renderPronunciation();
 
+   if(options.history!==false)commitRouteUrl(id,options.replace===true);
    keepActiveNavVisible(id);
    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
    if(viewStart!==null&&typeof perfEnd==='function')perfEnd('view:'+id,viewStart);
@@ -158,6 +164,7 @@ async function go(id){
  return requestId===routeRequestId;
 }
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
+window.addEventListener('popstate',()=>go(routeFromLocation(),{history:false}));
 const MON_PROFILE_KEY='mon-profile';
 function loadLocalProfile(){try{return {...{name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'},...JSON.parse(localStorage.getItem(MON_PROFILE_KEY)||'{}')}}catch(e){return {name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'}}}
 function saveLocalProfile(profile){localStorage.setItem(MON_PROFILE_KEY,JSON.stringify(profile))}
@@ -461,6 +468,9 @@ function initOnboarding(){
 const reasonToggle=document.getElementById('todayReasonToggle');
 if(reasonToggle)reasonToggle.addEventListener('click',()=>document.getElementById('todayReason')?.classList.toggle('open'));
 updateMetrics();renderGameHome();initOnboarding();
+const initialRoute=routeFromLocation();
+if(initialRoute!=='home')go(initialRoute,{history:false}).catch(()=>{});
+else history.replaceState({monView:'home'},'',routeUrl('home'));
 for(const name of ['kanji','reading','missions','speaking','curriculum','journal','videos','pronunciation']){
  const nav=document.querySelector(`[data-view="${name}"]`);
  if(nav)nav.addEventListener('pointerover',()=>ensureFeatureRuntime(name).catch(()=>{}),{passive:true,once:true});
