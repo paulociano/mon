@@ -38,7 +38,11 @@ function rememberCorruptState(raw){
 function loadState(){
  const primaryRaw=localStorage.getItem(MON_STATE_KEY);
  if(primaryRaw){
-  try{return parseStoredState(primaryRaw)}catch(e){rememberCorruptState(primaryRaw)}
+  try{
+   const parsed=JSON.parse(primaryRaw),loaded=migrateState(parsed),from=Number(parsed.saveVersion||0);
+   if(from<MON_SAVE_VERSION)try{localStorage.setItem(MON_STATE_BACKUP_KEY,primaryRaw);localStorage.setItem(MON_STATE_KEY,JSON.stringify(loaded))}catch(e){}
+   return loaded;
+  }catch(e){rememberCorruptState(primaryRaw)}
  }
  const backupRaw=localStorage.getItem(MON_STATE_BACKUP_KEY);
  if(backupRaw){
