@@ -86,3 +86,11 @@ async function importMonBackupFile(input){
   if(input)input.value='';
  }
 }
+
+function ensureMonBackupImportControl(){
+ if(document.getElementById('userBackupInput'))return;
+ const actions=[...document.querySelectorAll('#user .user-actions')].at(-1);if(!actions)return;
+ actions.insertAdjacentHTML('beforeend','<button class="user-secondary" type="button" data-mon-import>importar backup</button><input id="userBackupInput" type="file" accept="application/json,.json" hidden>');
+ actions.querySelector('[data-mon-import]')?.addEventListener('click',()=>document.getElementById('userBackupInput')?.click());
+ document.getElementById('userBackupInput')?.addEventListener('change',e=>importMonBackupFile(e.currentTarget));
+}
