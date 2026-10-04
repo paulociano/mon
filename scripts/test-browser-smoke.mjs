@@ -28,8 +28,18 @@ async function waitVisible(selector){
 }
 
 try{
- await page.goto(base,{waitUntil:'networkidle'});
- await waitVisible('#home.active');
+ const response=await page.goto(base,{waitUntil:'networkidle'});
+ if(!response?.ok()){
+  throw new Error(`MON smoke navigation failed: status=${response?.status()??'none'} url=${page.url()}`);
+ }
+ try{
+  await waitVisible('#home.active');
+ }catch(error){
+  const title=await page.title().catch(()=> '');
+  const body=await page.locator('body').innerText().catch(()=> '');
+  const markup=(await page.content().catch(()=> '')).slice(0,1200);
+  throw new Error(`${error.message} finalUrl=${page.url()} status=${response.status()} title=${JSON.stringify(title)} body=${JSON.stringify(body.slice(0,600))} markup=${JSON.stringify(markup)}`);
+ }
  assert.equal(pageErrors.length,0,'Home boot emitted page errors: '+pageErrors.join('\n'));
 
  for(const target of ['journey','explore','progress']){
