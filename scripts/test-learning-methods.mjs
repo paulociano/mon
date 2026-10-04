@@ -42,5 +42,7 @@ for(const u of checkpoints){
  assert.ok(compiled.criteria>=3,u.id+' open response needs criteria');
 }
 const lesson=fs.readFileSync('features/lesson.js','utf8');
-for(const token of ['evaluateOpenProduction','quickOpenSpeech',"e.type==='openResponse'",'elementos funcionais'])assert.ok(lesson.includes(token),'missing open-production runtime '+token);
+for(const token of ['evaluateOpenProduction','quickOpenSpeech',"e.type==='openResponse'",'elementos funcionais','buildOpenRemediation','recordProductionGaps','recoverProductionGaps','_openRetry','_openRepair','treinar a lacuna'])assert.ok(lesson.includes(token),'missing open-production runtime '+token);
+assert.ok(lesson.includes("if(exercise._openRetry||!result.missing?.length)return []"),'open retry must not recursively schedule another remediation cycle');
+assert.ok(lesson.includes("quickRun.pack.exercises.splice(quickRun.step+1,0,...repair)"),'remediation must run immediately before returning to the lesson');
 console.log('MON learning-method tests passed: '+Array.from(methodKinds).join(', ')+' + open N4 checkpoints');
