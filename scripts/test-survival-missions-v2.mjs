@@ -24,17 +24,20 @@ const css=fs.readFileSync('features/missions-v2.css','utf8');
 const app=fs.readFileSync('app.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
 const state=fs.readFileSync('core/state.js','utf8');
-for(const branch of ["choice.startsWith('repair:')","choice==='wrong'","choice!=='target'&&choice!=='alt'"])assert.ok(js.includes(branch));
+for(const branch of ["choice.startsWith('repair:')","choice==='wrong'","choice==='free'","['target','alt','free'].includes(choice)"])assert.ok(js.includes(branch));
 assert.ok(js.includes('missionAutonomyScore'));
 assert.ok(js.includes('supportShown=true'));
 assert.ok(js.includes("missionAutonomyLabel"));
 assert.ok(js.includes('completed[m.id]'));
 assert.ok(js.includes('objective'));
-for(const id of ['work','phone','cityhall','disaster']){const d=vm.runInContext(`missionDialoguesV4['${id}']`,ctx);assert.ok(d,id+' adaptive dialogue missing');assert.equal(d.opening.length,2);assert.ok(Object.keys(d.pressure).length>=2);assert.ok(d.closing)}
+for(const id of ['work','phone','cityhall','disaster']){const d=vm.runInContext(`missionDialoguesV4['${id}']`,ctx);assert.ok(d,id+' adaptive dialogue missing');assert.equal(d.opening.length,2);assert.ok(Object.values(d.pressure).every(x=>x.free&&x.keys?.length>=2),id+' pressure turns must be free-form');assert.ok(d.closing)}
 const runtimeCtx=vm.createContext({state:{functionalMastery:{negotiate:{attempts:3,score:28},repair:{attempts:3,score:72}}},missionRun:{id:'phone',step:0,pressureCapability:'negotiate',lastChoice:null},missionDialoguesV4:vm.runInContext('missionDialoguesV4',ctx),Date,Math,Object,Number,String,Set});
 vm.runInContext(dialogue,runtimeCtx,{filename:'missions-dialogue.js'});
 assert.equal(vm.runInContext("missionPressureCapability('phone')",runtimeCtx),'negotiate');
 assert.equal(vm.runInContext("adaptiveMissionTurns('phone',missionRun).length",runtimeCtx),4);
+vm.runInContext("missionRun.step=2",runtimeCtx);assert.equal(vm.runInContext("adaptiveMissionTurn({id:'phone'},missionRun).free",runtimeCtx),true);
+assert.equal(vm.runInContext("missionEvaluateFree('五時でお願いします',adaptiveMissionTurn({id:'phone'},missionRun)).ok",runtimeCtx),true);
+assert.equal(vm.runInContext("missionEvaluateFree('分かりました',adaptiveMissionTurn({id:'phone'},missionRun)).ok",runtimeCtx),false);
 vm.runInContext("missionRun.step=1;missionRun.lastChoice='alt'",runtimeCtx);assert.ok(vm.runInContext("adaptiveMissionTurn({id:'phone'},missionRun).npc",runtimeCtx).includes('よろしい'));
 vm.runInContext("missionRecordFunctionalTurn({capability:'confirm',goal:'confirmar'},false)",runtimeCtx);assert.equal(vm.runInContext("state.functionalMastery.confirm.attempts",runtimeCtx),1);
 assert.ok(app.includes("'./data/missions-v2.js'"));
@@ -48,5 +51,8 @@ assert.ok(css.includes('.mission-run'));
 assert.ok(css.includes('.mission-complete'));
 assert.ok(css.includes('.mission-readiness'));
 assert.ok(css.includes('.mission-repair-note'));
+assert.ok(css.includes('.mission-free'));
+assert.ok(css.includes('.free-hidden'));
+for(const token of ['missionEvaluateFree','missionFreeSpeech','missionShowChoices','missionFreeHTML'])assert.ok(dialogue.includes(token),'free mission runtime missing '+token);
 
 console.log('MON Survival Missions 2.0 contracts passed');
