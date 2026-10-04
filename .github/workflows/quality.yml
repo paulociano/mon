@@ -126,6 +126,8 @@ jobs:
         run: node scripts/test-lazy-lesson-ui.mjs
       - name: Local Performance Lab
         run: node scripts/test-performance-lab.mjs
+      - name: Latency calibration contracts
+        run: node scripts/test-latency-calibration.mjs
       - name: Practice Hub
         run: node scripts/test-practice-hub.mjs
 
@@ -150,6 +152,8 @@ jobs:
         run: node scripts/test-browser-smoke.mjs
       - name: Latency baseline
         run: node scripts/measure-latency-baseline.mjs
+      - name: Multi-round latency calibration
+        run: node scripts/calibrate-latency-baseline.mjs
       - name: Responsive smoke
         run: node scripts/test-responsive-smoke.mjs
       - name: P8 secondary responsive smoke
@@ -182,3 +186,8 @@ jobs:
         env:
           MON_BROWSER: ${{ matrix.browser }}
         run: node scripts/test-cross-browser-smoke.mjs
+      - name: Cross-browser latency calibration
+        env:
+          MON_BROWSER: ${{ matrix.browser }}
+          MON_LATENCY_ROUNDS: 3
+        run: node scripts/calibrate-latency-baseline.mjs

@@ -211,10 +211,10 @@ A Home e o Next Best Lesson devem otimizar aprendizagem, não atividade.
 
 **P9.3:** o Next Best Lesson usa apenas sinais longitudinais com amostra observada para frear avanço quando retenção 7d+ ou transferência permanecem frágeis. Dívidas pedagógicas diretas continuam tendo prioridade. Fonte de verdade: [NBL Calibration](NBL-CALIBRATION.md).
 
-### 10. Performance por latência observada — instrumentação implementada ✅
+### 10. Performance por latência observada — calibração multi-run implementada ✅
 **Dependência:** Performance Lab existente.
 
-**Decisão:** o MON passa a registrar distribuições p50/p95 para boot, features, views e tempo até lição interativa, com baseline reproduzível em CI. Fonte de verdade: [Latency Observability](LATENCY-OBSERVABILITY.md).
+**Decisão:** o MON registra distribuições p50/p95 e calibra a variabilidade entre múltiplas rodadas equivalentes em Chromium, Firefox e WebKit. Budgets absolutos continuam adiados até existir evidência representativa de dispositivo real. Fonte de verdade: [Latency Observability](LATENCY-OBSERVABILITY.md).
 
 Além dos budgets de bytes:
 - boot p50/p95;
@@ -282,7 +282,7 @@ Regras:
 7. Gate estrutural N5 concluído; manter validação longitudinal de retenção e transferência.
 8. N4 por capacidades formalizado; manter calibração longitudinal dos gates funcionais.
 9. P9.2/P9.3 implementados: validar longitudinalmente e recalibrar o NBL apenas com sinais observados; manter Home fora dessa calibração por enquanto.
-10. Latência observada implementada; acumular baselines equivalentes antes de transformar números em gates.
+10. P10.2 concluída: baseline multi-run calibrado entre engines; não transformar milissegundos absolutos em gate até existir evidência de dispositivo real.
 11. P8 avançado em Home, Lesson, Practice, Journal, Missions, Listening/Pronunciation e Kanji; seguir com validação visual publicada e refinamentos residuais sem quebrar os gates.
 
 ## Guardrails permanentes

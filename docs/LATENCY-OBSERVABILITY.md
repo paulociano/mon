@@ -42,14 +42,22 @@ O baseline:
 
 O baseline de CI é **lab data**, não field data.
 
+## Calibração multi-run
+
+Além do baseline simples, o CI executa `scripts/calibrate-latency-baseline.mjs`.
+
+A calibração abre um contexto novo por rodada, limpa o histórico local, repete as mesmas transições Home ↔ Progresso e mede novamente `lesson:interactive`. Entre rodadas, calcula mediana dos p50/p95, mínimo, máximo e spread relativo.
+
+Chromium usa 5 rodadas por padrão. Firefox e WebKit usam 3 rodadas cada. Isso responde se o número é reproduzível no mesmo laboratório, mas ainda não prova que representa um dispositivo real ou hardware mais lento.
+
 ## Budgets de latência
 
 Nesta etapa, o MON deliberadamente **não falha o CI por um número arbitrário de milissegundos**.
 
 Um budget de latência só deve virar gate quando houver:
 
-- baseline repetido em condições equivalentes;
-- entendimento da variabilidade entre runs;
+- baseline repetido em condições equivalentes ✅;
+- entendimento da variabilidade entre runs ✅ via calibração multi-run;
 - pelo menos um ambiente representativo além do runner de CI;
 - impacto perceptível ou risco operacional que justifique o threshold.
 
