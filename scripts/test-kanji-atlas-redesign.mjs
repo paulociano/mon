@@ -1,0 +1,12 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';
+const html=fs.readFileSync('index.html','utf8'),atlas=fs.readFileSync('features/kanji.js','utf8'),memory=fs.readFileSync('features/kanji-memory.js','utf8'),css=fs.readFileSync('features/kanji-memory.css','utf8'),app=fs.readFileSync('app.js','utf8');
+assert.ok(html.includes('<section id="kanji" class="view"></section>'),'Kanji Atlas shell must stay lazy');
+assert.ok(!html.includes('Forja de memória'),'legacy forge must leave critical HTML');
+for(const token of ['ensureKanjiAtlas','kanjiMastery','renderKanjiFocus','renderKanjiStudy','renderKanjiContext','revisar agora','continuar estudo'])assert.ok(atlas.includes(token),'missing guided Atlas contract '+token);
+for(const step of ['meaning','reading','contrast','writing','context'])assert.ok(atlas.includes(step),'missing study step '+step);
+assert.ok(atlas.includes("data-kstatus=\"due\""),'review-oriented library filter missing');
+assert.ok(atlas.includes("data-kstatus=\"mastered\""),'mastered library filter missing');
+assert.ok(app.includes("else if(id==='kanji'){ensureKanjiAtlas();renderKanjiAtlas()}"),'router must hydrate Atlas lazily');
+assert.ok(!memory.includes('monSelectKanjiBase'),'legacy Memory Lab must not override Atlas selection');
+assert.ok(css.includes('.ka-focus')&&css.includes('.ka-stepper'),'redesign styles missing');
+console.log('MON guided Kanji Atlas contracts passed');
