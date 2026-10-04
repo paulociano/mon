@@ -161,6 +161,7 @@ Paleta principal:
 - [Multi-device Sync](docs/MULTI-DEVICE-SYNC.md)
 - [PWA Runtime Resilience](docs/PWA-RUNTIME.md)
 - [Accessibility & Microphone Policy](docs/ACCESSIBILITY-MICROPHONE.md)
+- [Typography System](docs/TYPOGRAPHY.md)
 - [Latency Observability](docs/LATENCY-OBSERVABILITY.md)
 - [Pesquisa de Quality Engineering](docs/QUALITY-RESEARCH-2026-10-03.md)
 - [Segurança](SECURITY.md)
