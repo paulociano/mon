@@ -8,6 +8,7 @@ const css=fs.readFileSync('features/videos.css','utf8');
 assert.ok(app.includes("videos:['./features/videos.js']"));
 assert.ok(app.includes("videos:['./features/videos.css']"));
 assert.ok(html.includes('data-view="videos"'));
+assert.ok(html.includes('data-icon="映" onclick="go(\'videos\')"'),'Video Library should be discoverable from Practice Hub');
 assert.ok(html.includes('id="videoGrid"'));
 assert.ok(html.includes('id="videoStage"'));
 assert.ok(html.includes('id="videoModal" class="video-modal" aria-hidden="true" hidden'),'video modal must be natively hidden before lazy CSS loads');

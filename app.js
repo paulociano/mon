@@ -32,7 +32,7 @@ const LEARNING_RUNTIME_SCRIPTS=[
  './core/course-engine.js',
  './core/progression-engine.js'
 ];
-const CONTENT_PACK_SCRIPTS={N5:['./data/content-packs-n5.js'],N4:['./data/content-packs-n5.js','./data/content-packs-n4.js']};
+const CONTENT_PACK_SCRIPTS={N5:['./data/content-packs-n5.js'],N4A:['./data/content-packs-n5.js','./data/content-packs-n4.js'],N4B:['./data/content-packs-n5.js','./data/content-packs-n4.js','./data/content-packs-n4-61-70.js'],N4C:['./data/content-packs-n5.js','./data/content-packs-n4.js','./data/content-packs-n4-61-70.js','./data/content-packs-n4-71-80.js'],N4D:['./data/content-packs-n5.js','./data/content-packs-n4.js','./data/content-packs-n4-61-70.js','./data/content-packs-n4-71-80.js','./data/content-packs-n4-81-90.js']};
 const contentPackPromises={};
 function ensureContentPack(level='N5'){
  const resolved=CONTENT_PACK_SCRIPTS[level]?level:'N5';
@@ -66,7 +66,11 @@ async function ensureFeatureRuntime(name){
 let learningRuntimePromise=null;
 function contentPackLevelForDay(day=state.day){
  const d=Number(day||1);
- return d>=55&&d<=90?'N4':'N5';
+ if(d>=81&&d<=90)return 'N4D';
+ if(d>=71)return 'N4C';
+ if(d>=61)return 'N4B';
+ if(d>=55)return 'N4A';
+ return 'N5';
 }
 function loadRuntimeScript(src){
  return new Promise((resolve,reject)=>{
