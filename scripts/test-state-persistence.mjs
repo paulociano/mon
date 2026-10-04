@@ -21,6 +21,7 @@ function boot(seed={}){
  const {context}=boot();
  assert.equal(context.__state.saveVersion,1);
  assert.equal(context.__state.foundationDay,1);
+ assert.deepEqual(Object.keys(context.__state.videoLearning.opened),[]);
 }
 {
  const legacy={xp:777,foundationDay:8,reviews:{a:{ease:2.1}}};
@@ -52,5 +53,12 @@ function boot(seed={}){
  assert.equal(JSON.parse(store.get('mon-state')).xp,250);
  assert.equal(JSON.parse(store.get('mon-state-backup')).xp,200);
  assert.equal(JSON.parse(store.get('mon-state')).saveVersion,1);
+}
+{
+ const initial={saveVersion:1,videoLearning:{opened:{listening:2},practice:{listening:1},last:{id:'listening',at:123}}};
+ const {context,store}=boot({'mon-state':JSON.stringify(initial)});
+ assert.equal(context.__state.videoLearning.opened.listening,2);
+ context.__state.videoLearning.practice.listening=2;context.__save();
+ assert.equal(JSON.parse(store.get('mon-state')).videoLearning.practice.listening,2);
 }
 console.log('MON state persistence contracts passed');

@@ -8,13 +8,14 @@ const curriculumData=[
   {days:'21–25',title:'Trabalho básico',desc:'Apresentar-se, confirmar instruções e pedir ajuda sem travar.',kanji:'働',meta:['15 kanji','5 padrões','trabalho']},
   {days:'26–30',title:'Autonomia inicial',desc:'Misturar tudo em leitura, fala e missões sem roteiro fechado.',kanji:'話',meta:['10 kanji','3 padrões','integração']}
  ]},
- {level:'N4',title:'Autonomia',range:'dias 31–90',promise:'Lidar com trabalho, serviços e vida social com menos preparação.',kanji:350,grammar:72,missions:24,units:[
-  {days:'31–40',title:'Trabalho & pedidos',desc:'Prioridade, permissão, obrigação, confirmação e comunicação com equipe.',kanji:'仕',meta:['45 kanji','12 padrões','empresa']},
-  {days:'41–50',title:'Serviços & burocracia',desc:'Prefeitura, banco, celular, entregas, formulários e atendimento.',kanji:'手',meta:['45 kanji','12 padrões','serviços']},
-  {days:'51–60',title:'Saúde & imprevistos',desc:'Sintomas, orientação, farmácia, atraso, perda e pedido de suporte.',kanji:'病',meta:['40 kanji','10 padrões','saúde']},
-  {days:'61–70',title:'Relações sociais',desc:'Convites, preferências, passado, planos e suavização de pedidos.',kanji:'会',meta:['45 kanji','13 padrões','social']},
-  {days:'71–80',title:'Leitura urbana',desc:'Avisos, instruções, menus, mensagens e interfaces japonesas.',kanji:'読',meta:['50 kanji','12 padrões','leitura']},
-  {days:'81–90',title:'Conversas abertas',desc:'Reparar falhas, reformular, explicar contexto e sustentar turnos maiores.',kanji:'考',meta:['45 kanji','13 padrões','conversa']}
+ {level:'N4',title:'Ponte & Autonomia',range:'ponte 31–54 · N4 55–90',promise:'Consolidar a base N5 e depois lidar com trabalho, serviços, leitura e conversas abertas com menos preparação.',kanji:350,grammar:72,missions:24,units:[
+  {days:'31–40',title:'Ponte · vida diária e interação',desc:'Saúde, reparo de conversa, rotina, convites, preferências e descrição funcional.',kanji:'橋',meta:['consolidação N5','fala curta','rotina']},
+  {days:'41–50',title:'Ponte · ação, tempo e explicação',desc:'Existência, quantidades, pedidos, permissão, desejos, passado, sequência e motivo.',kanji:'結',meta:['consolidação N5','produção','tempo']},
+  {days:'51–54',title:'Ponte · serviços e autonomia N5',desc:'Perguntas abertas, status, telefone e um checkpoint de mini-dia sem abandonar a interação.',kanji:'門',meta:['checkpoint N5','serviços','reparo']},
+  {days:'55–60',title:'N4 · autonomia funcional',desc:'Prioridade, burocracia, saúde, planejamento, leitura urbana e conversa aberta com menos apoio.',kanji:'自',meta:['entrada N4','transferência','autonomia']},
+  {days:'61–70',title:'N4 · relações sociais',desc:'Convites, atrasos, favores, small talk, experiências, visitas e negociação leve.',kanji:'会',meta:['interação','suavização','social']},
+  {days:'71–80',title:'N4 · leitura funcional',desc:'Avisos, transporte, moradia, entregas, interfaces, banco, termos e alertas.',kanji:'読',meta:['leitura para agir','cidade','serviços']},
+  {days:'81–90',title:'N4 · conversas abertas',desc:'Problemas, comparação, narrativa, opinião, telefone, negociação e checkpoint final de autonomia.',kanji:'考',meta:['produção aberta','imprevistos','conversa']}
  ]},
  {level:'N3',title:'Integração',range:'dias 91–180',promise:'Entender contexto, nuance e informação real com autonomia crescente.',kanji:650,grammar:150,missions:36,units:[
   {days:'91–105',title:'Notícias & avisos',desc:'Extrair ideia central, datas, causa e consequência em textos reais curtos.',kanji:'報',meta:['60 kanji','15 padrões','notícias']},
