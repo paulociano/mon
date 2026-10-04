@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 
 const shell=fs.readFileSync('data/course-content.js','utf8');
 const app=fs.readFileSync('app.js','utf8');
-const sw=fs.readFileSync('sw.js','utf8');
 
 assert.ok(shell.includes('SHELL_FOUNDATION_TOTAL=24'));
 assert.ok(shell.includes('shellFoundationOutline'));
@@ -12,7 +11,7 @@ for(const forbidden of ['const kanjiData','const kanaSets','const grammarData','
 
 for(const p of ['data/kanji.js','data/kana.js','data/foundation.js','data/session.js','data/experiences.js','data/curriculum.js']){
  assert.ok(fs.existsSync(p),p+' missing');
- assert.ok(sw.includes("'./"+p+"'"),p+' missing from PWA cache');
+ assert.ok(app.includes("'./"+p+"'"),p+' missing from lazy runtime loader');
 }
 assert.ok(app.includes("kanji:['./data/kanji.js','./data/kanji-memory.js','./features/kanji.js','./features/kanji-memory.js']"));
 assert.ok(app.includes("curriculum:['./data/curriculum.js']"));
