@@ -28,8 +28,8 @@ const LEARNING_RUNTIME_SCRIPTS=[
  './core/course-engine.js',
  './core/progression-engine.js'
 ];
-const N4_CAP='./data/n4-capabilities.js';
-const CONTENT_PACK_SCRIPTS={N5:['./data/content-packs-n5.js'],N4A:['./data/content-packs-n5.js','./data/content-packs-n4.js'],N4B:['./data/content-packs-n5.js','./data/content-packs-n4.js','./data/content-packs-n4-61-70.js'],N4C:['./data/content-packs-n5.js','./data/content-packs-n4.js','./data/content-packs-n4-61-70.js','./data/content-packs-n4-71-80.js'],N4D:['./data/content-packs-n5.js','./data/content-packs-n4.js','./data/content-packs-n4-61-70.js','./data/content-packs-n4-71-80.js','./data/content-packs-n4-81-90.js']};
+const N5='./data/content-packs-n5.js',N4=['./data/content-packs-n4.js','./data/content-packs-n4-61-70.js','./data/content-packs-n4-71-80.js','./data/content-packs-n4-81-90.js'],N4_CAP='./data/n4-capabilities.js';
+const CONTENT_PACK_SCRIPTS={N5:[N5],N4A:[N5,...N4.slice(0,1)],N4B:[N5,...N4.slice(0,2)],N4C:[N5,...N4.slice(0,3)],N4D:[N5,...N4]};
 const contentPackPromises={};
 function ensureContentPack(level='N5'){
  const resolved=CONTENT_PACK_SCRIPTS[level]?level:'N5';
