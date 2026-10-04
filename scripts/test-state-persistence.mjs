@@ -40,6 +40,9 @@ function boot(seed={}){
  assert.equal(context.__state.xp,333);
  assert.equal(context.__state.learningEvidence.events.length,600);
  assert.equal(context.__state.learningEvidence.events[0].at,5);
+ assert.equal(JSON.parse(context.localStorage.getItem('mon-state')).saveVersion,2);
+ assert.equal(JSON.parse(context.localStorage.getItem('mon-state-backup')).saveVersion,1);
+ assert.equal(JSON.parse(context.localStorage.getItem('mon-state-backup')).xp,333);
 }
 {
  const backup={saveVersion:1,xp:444,foundationDay:5};
