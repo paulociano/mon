@@ -99,7 +99,7 @@ function foundationVariedExercises(day,p,pairs,wordChars,grammarTokens){
  ],middle=items.slice(1,-1),shift=(day-1)%middle.length;
  return [items[0],...middle.slice(shift),...middle.slice(0,shift),items.at(-1)];
 }
-function lessonPlanFromNode(node){let day=node.day||1;const structured=typeof coursePackForDay==='function'?coursePackForDay(day):null;if(structured)return lessonPlanFromPack(structured);if(day<=24){const p=foundationSessionPlans[Math.max(0,Math.min(23,day-1))];const basic=day<=7?kanaCourse.hira.basic:day<=12?kanaCourse.kata.basic:kanaCourse.hira.basic;const sample=basic.slice(Math.max(0,(day*3)%Math.max(1,basic.length-4)),Math.max(0,(day*3)%Math.max(1,basic.length-4))+4);const pairs=sample.length>=3?sample.slice(0,3):kanaCourse.hira.basic.slice(0,3);const wordChars=[...p.word].filter(x=>x.trim());const grammarTokens=(p.phrase.replace('。','').match(/.{1,2}/g)||[p.phrase.replace('。','')]);return {title:node.label,focus:p.kana,exercises:foundationVariedExercises(day,p,pairs,wordChars,grammarTokens)}}
+function lessonPlanFromNode(node){let day=node.day||1;const structured=typeof coursePackForDay==='function'?coursePackForDay(day):null;if(structured)return lessonPlanFromPack(structured);if(day<=24){const p=foundationSessionPlans[Math.max(0,Math.min(23,day-1))];const basic=day<=7?kanaCourse.hira.basic:day<=12?kanaCourse.kata.basic:kanaCourse.hira.basic;const sample=basic.slice(Math.max(0,(day*3)%Math.max(1,basic.length-4)),Math.max(0,(day*3)%Math.max(1,basic.length-4))+4);const pairs=sample.length>=3?sample.slice(0,3):kanaCourse.hira.basic.slice(0,3);const wordChars=[...p.word].filter(x=>x.trim());const grammarTokens=(p.phrase.replace('。','').match(/.{1,2}/g)||[p.phrase.replace('。','')]);return {title:node.label,focus:p.kana,study:typeof foundationStudyBlock==='function'?foundationStudyBlock(day):null,exercises:foundationVariedExercises(day,p,pairs,wordChars,grammarTokens)}}
  const mi=Math.max(0,Math.min(missions.length-1,(day-25)%missions.length)),m=missions[mi],sp=missionSpeech[mi],rd=microReadings[mi],k=kanjiData[(day-25)%kanjiData.length],ex=k.ex[0];return {title:node.label,focus:m.symbol,exercises:[
   {type:'listen',prompt:'O que a pessoa quis dizer?',audio:sp.npc,options:engineShuffledOptions(sp.npcPt,missionSpeech.map(x=>x.npcPt)),answer:sp.npcPt,why:'Capture primeiro a intenção geral.'},
   {type:'choice',prompt:`Qual kanji significa “${k.m.toLowerCase()}”?`,options:engineShuffledOptions(k.k,kanjiData.map(x=>x.k)),answer:k.k,why:`${k.k} · ${k.m}`},
@@ -159,5 +159,6 @@ function buildLesson(node,learnerState){
   const ordered=nextBest&&typeof sequenceLessonByPlan==='function'
     ?sequenceLessonByPlan(exercises,nextBest,nextBest.targetExercises||8)
     :optimizeExerciseSequence(exercises,10);
-  return {...pack,exercises:ordered,adaptive:true,reviewCount:reviews.length,nextBest};
+  const lessonExercises=pack.study?[pack.study,...ordered]:ordered;
+  return {...pack,exercises:lessonExercises,adaptive:true,reviewCount:reviews.length,nextBest};
 }
