@@ -32,7 +32,7 @@ const scriptOrder=[
 const featureRuntime=['./features/missions-v2.css','./features/missions-v2.js','./data/missions-v2.js','./features/kanji-memory.css','./features/kanji-memory.js','./data/kanji-memory.js','./data/pronunciation.js','./features/pronunciation.js','./features/pronunciation.css','./features/videos.js','./features/videos.css','./core/narrative-state.js','./features/journal.js','./features/journal.css','./data/narrative.js','./features/lesson.js','./features/lesson.css','./features/practice.js','./features/practice.css','./data/kanji.js','./data/kana.js','./data/foundation.js','./data/session.js','./data/experiences.js','./data/curriculum.js','./features/foundation.js','./features/foundation.css','./features/session.js','./features/kanji.js','./features/experiences.js'];
 const debugRuntime=['./features/performance-lab.js','./features/performance-lab.css'];
 const lazyRuntime=[
- './data/content-packs.js',
+ './data/content-packs-n5.js',
  './core/next-best-lesson.js',
  './core/mistakes.js',
  './core/mastery-graph.js',
@@ -69,6 +69,8 @@ if(!app.includes('queueHomePolish'))throw new Error('Missing progressive home re
 if(!app.includes('aria-current="step"'))throw new Error('Current path step lacks aria-current')
 if(!html.includes('fetchpriority="high"'))throw new Error('Hero preload should be high priority')
 if(!app.includes('ensureLearningRuntime'))throw new Error('Missing lazy learning runtime loader')
+if(!app.includes("CONTENT_PACK_SCRIPTS={N5:'./data/content-packs-n5.js'}"))throw new Error('Level-specific content pack router missing')
+if(!app.includes('ensureContentPack(level'))throw new Error('Content pack loader seam missing')
 if(!app.includes('loadRuntimeStyle'))throw new Error('Missing lazy feature stylesheet loader')
 const homeCoach=read('core/home-coach.js');
 if(!homeCoach.includes('homeCoachDecision'))throw new Error('Adaptive Home policy missing')
