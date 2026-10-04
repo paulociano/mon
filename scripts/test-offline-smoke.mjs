@@ -14,6 +14,7 @@ try{
  await page.evaluate(async()=>{await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)location.reload()});
  await page.waitForLoadState('networkidle');
  await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
+ await page.waitForFunction(()=>typeof go==='function');
 
  // Warm critical lazy surfaces so their runtime assets are available offline.
  await page.evaluate(async()=>{await go('progress');await go('practice');await go('home')});
