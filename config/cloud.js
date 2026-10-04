@@ -1,5 +1,5 @@
 // Public Supabase browser configuration.
-// Publishable keys are designed for client use; never put a service_role key here.
+// Only public browser credentials belong in this file. Privileged server credentials must stay server-side.
 globalThis.MON_CLOUD_CONFIG=Object.freeze({
  url:'',
  publishableKey:''
