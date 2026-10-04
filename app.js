@@ -17,7 +17,6 @@ const LEARNING_RUNTIME_SCRIPTS=[
  './data/experiences.js',
  './data/foundation.js',
  './data/session.js',
- './data/content-packs.js',
  './data/narrative.js',
  './core/narrative-state.js',
  './core/next-best-lesson.js',
@@ -27,6 +26,15 @@ const LEARNING_RUNTIME_SCRIPTS=[
  './core/course-engine.js',
  './core/progression-engine.js'
 ];
+const CONTENT_PACK_SCRIPTS={N5:'./data/content-packs-n5.js'};
+const contentPackPromises={};
+function ensureContentPack(level='N5'){
+ const resolved=CONTENT_PACK_SCRIPTS[level]?level:'N5';
+ if(contentPackPromises[resolved])return contentPackPromises[resolved];
+ const src=CONTENT_PACK_SCRIPTS[resolved];
+ contentPackPromises[resolved]=loadRuntimeScript(src).catch(err=>{delete contentPackPromises[resolved];throw err});
+ return contentPackPromises[resolved];
+}
 const FEATURE_RUNTIME_SCRIPTS={
  foundation:['./data/kana.js','./data/foundation.js','./features/foundation.js'],
  session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./data/narrative.js','./core/next-best-lesson.js','./features/foundation.js','./features/session.js'],
@@ -71,7 +79,7 @@ function ensureLearningRuntime(){
  if(learningRuntimePromise)return learningRuntimePromise;
  const started=typeof perfStart==='function'?perfStart('runtime:learning'):null;
  document.body.classList.add('learning-runtime-loading');
- learningRuntimePromise=(async()=>{for(const src of LEARNING_RUNTIME_SCRIPTS)await loadRuntimeScript(src);document.body.classList.add('learning-runtime-ready');if(started!==null&&typeof perfEnd==='function')perfEnd('runtime:learning',started)})()
+ learningRuntimePromise=(async()=>{const level=CONTENT_PACK_SCRIPTS[currentPlan().level]?currentPlan().level:'N5';await ensureContentPack(level);for(const src of LEARNING_RUNTIME_SCRIPTS)await loadRuntimeScript(src);document.body.classList.add('learning-runtime-ready');if(started!==null&&typeof perfEnd==='function')perfEnd('runtime:learning',started)})()
    .catch(err=>{learningRuntimePromise=null;toast('Não consegui carregar o motor de aprendizagem');throw err})
    .finally(()=>document.body.classList.remove('learning-runtime-loading'));
  return learningRuntimePromise;
