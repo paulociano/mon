@@ -1,7 +1,7 @@
 // MON application runtime
 // Course datasets live in data/course-content.js.
 
-const viewNames={home:'Aprender',lesson:'Lição',practice:'Praticar',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Trilha acadêmica',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos',pronunciation:'Pronúncia'};
+const viewNames={home:'Hoje',journey:'Jornada',practice:'Praticar',explore:'Explorar',progress:'Progresso',lesson:'Lição',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Mapa acadêmico',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos',pronunciation:'Pronúncia'};
 let currentKanji=0;
 function shellLocalDateKey(date=new Date()){
  const year=date.getFullYear();
@@ -10,7 +10,9 @@ function shellLocalDateKey(date=new Date()){
  return `${year}-${month}-${day}`;
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600)}
-function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${id}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+const NAV_PARENT={lesson:'home',session:'home',curriculum:'journey',foundation:'explore',kanji:'explore',missions:'explore',reading:'explore',speaking:'explore',culture:'explore',writing:'explore',journal:'explore',videos:'explore',pronunciation:'explore',league:'explore',shop:'explore'};
+function navParentForView(id){return NAV_PARENT[id]||id}
+function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${navParentForView(id)}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 const LEARNING_RUNTIME_SCRIPTS=[
  './data/kanji.js',
  './data/kana.js',
@@ -74,7 +76,7 @@ function loadRuntimeStyle(href){
    link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>reject(new Error('Falha ao carregar '+href));document.head.appendChild(link);
  });
 }
-const FEATURE_RUNTIME_STYLES={foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
+const FEATURE_RUNTIME_STYLES={journey:['./features/journey.css'],explore:['./features/journey.css'],progress:['./features/journey.css'],foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
 function ensureLearningRuntime(){
  if(learningRuntimePromise)return learningRuntimePromise;
  const started=typeof perfStart==='function'?perfStart('runtime:learning'):null;
@@ -97,6 +99,7 @@ async function go(id){
  const viewStart=typeof perfStart==='function'?perfStart('view:'+id):null;
  const busyTimer=setTimeout(()=>{if(requestId===routeRequestId)setRouteBusy(true,'Abrindo '+(viewNames[id]||id))},90);
  try{
+   if(['journey','explore','progress'].includes(id))await ensureFeatureRuntime(id);
    if(id==='foundation')await ensureFeatureRuntime('foundation');
    if(id==='curriculum')await ensureFeatureRuntime('curriculum');
    if(id==='kanji')await ensureFeatureRuntime('kanji');
@@ -110,10 +113,12 @@ async function go(id){
    document.body.classList.toggle('focus-session',id==='session');
    document.body.classList.toggle('quick-focus',id==='lesson');
    document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
-   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
+   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===navParentForView(id)));
 
    const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;
    if(id==='home')renderGameHome();
+   else if(id==='journey')renderJourney();
+   else if(id==='progress')renderProgressHub();
    else if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);
    else if(id==='foundation')renderFoundation();
    else if(id==='kanji'){ensureDrawingCanvases();renderKanjiList();selectKanji(currentKanji)}
@@ -135,7 +140,7 @@ async function go(id){
    console.error('MON route failed',id,err);
    if(requestId===routeRequestId){
      document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===previous));
-     document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===previous));
+     document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===navParentForView(previous)));
      const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[previous]||previous;
      toast('Não consegui abrir '+(viewNames[id]||id)+'. Tente novamente.');
    }
@@ -152,6 +157,78 @@ function showProfileSummary(){
  toast(`Perfil local · ${p.level} dia ${p.localDay} · ${state.streak||0} dias de sequência · ${state.xp||0} XP`);
 }
 function currentPlan(){const d=Number(state.day||1);if(d<=30)return{level:'N5',localDay:d,total:30,label:'sobrevivência',start:1};if(d<=90)return{level:'N4',localDay:d-30,total:60,label:'autonomia',start:31};return{level:'N3',localDay:Math.min(90,d-90),total:90,label:'integração',start:91}}
+
+const JOURNEY_STAGES=[
+ {name:'Abrir o portão',title:'Reconhecer sons e começar a ler.',copy:'Som, ritmo, kana e primeiras frases funcionais.'},
+ {name:'Sobreviver',title:'Pedir, perguntar e se locomover.',copy:'Situações essenciais de estação, compras, comida e direção.'},
+ {name:'Viver',title:'Resolver sua rotina.',copy:'Casa, agenda, bairro, serviços e trabalho básico.'},
+ {name:'Interagir',title:'Manter conversas curtas e reparar falhas.',copy:'Listening, resposta espontânea e estratégias de reparo.'},
+ {name:'Ganhar autonomia',title:'Resolver situações novas.',copy:'Transferência, produção e leitura funcional com menos pistas.'}
+];
+function journeyStageIndex(){
+ if(!state.foundationComplete)return 0;
+ const d=Number(state.day||1);
+ if(d<=30)return 1;
+ if(d<=60)return 2;
+ if(d<=90)return 3;
+ return 4;
+}
+function journeyStageProgress(){
+ const stage=journeyStageIndex();
+ if(stage===0)return Math.max(0,Math.min(1,((state.foundationDay||1)-1)/Math.max(1,SHELL_FOUNDATION_TOTAL)));
+ if(stage===1)return Math.max(0,Math.min(1,(Math.min(30,state.day||1)-1)/29));
+ if(stage===2)return Math.max(0,Math.min(1,((Math.min(60,state.day||31)-31))/29));
+ if(stage===3)return Math.max(0,Math.min(1,((Math.min(90,state.day||61)-61))/29));
+ return Math.max(0,Math.min(1,((Math.min(180,state.day||91)-91))/89));
+}
+function runJourneyPrimary(){
+ const d=homeCoachDecision(state,flatPath);
+ return runAdaptiveHomeAction(d.action);
+}
+function renderJourney(){
+ const current=journeyStageIndex();
+ document.querySelectorAll('.journey-stage').forEach((el,i)=>{
+   el.classList.toggle('done',i<current);
+   el.classList.toggle('current',i===current);
+   el.classList.toggle('locked',i>current);
+   const status=el.querySelector('.journey-stage-status');
+   if(status)status.textContent=i<current?'conquistado':i===current?'agora':'depois';
+ });
+}
+function averageMasteryDimension(dimension){
+ const vals=[];
+ for(const cells of Object.values(state.masteryEvidence||{})){
+   const score=Number(cells?.[dimension]?.score);
+   if(Number.isFinite(score))vals.push(score);
+ }
+ return vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):0;
+}
+function renderProgressHub(){
+ const stage=journeyStageIndex(),meta=JOURNEY_STAGES[stage],pct=Math.round(journeyStageProgress()*100);
+ const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
+ set('progressCapabilityTitle',meta.name+' · '+meta.title);
+ set('progressCapabilityCopy',meta.copy);
+ set('progressJourneyPct',pct+'%');const ring=document.querySelector('.progress-ring-large');if(ring)ring.style.setProperty('--progress',pct+'%');
+ set('journeyStageMini',meta.name);
+ set('journeyCapabilityMini',meta.title);
+ const due=Object.values(state.reviewItems||{}).filter(x=>(x?.due||0)<=Date.now()).length;
+ const mistakes=Object.values(state.mistakeStats||{}).filter(x=>(x?.count||0)>(x?.recovered||0)).length;
+ const dims=[
+   ['Reconhecer',averageMasteryDimension('recognize'),'identificar com apoio'],
+   ['Recuperar',averageMasteryDimension('recall'),'lembrar sem pista'],
+   ['Escutar',averageMasteryDimension('listen'),'transformar som em sentido'],
+   ['Produzir',averageMasteryDimension('produce'),'responder e construir']
+ ];
+ const grid=document.getElementById('progressEvidenceGrid');
+ if(grid)grid.innerHTML=dims.map(([name,score,desc])=>`<article class="progress-evidence"><span>${name}</span><b>${score||'—'}${score?'%':''}</b><small>${desc}</small><i><em style="width:${score||0}%"></em></i></article>`).join('');
+ const nextTitle=document.getElementById('progressNextTitle'),nextCopy=document.getElementById('progressNextCopy');
+ if(nextTitle&&nextCopy){
+   if(due>=4){nextTitle.textContent='Revisar antes de empilhar novidade.';nextCopy.textContent=`${due} itens chegaram ao ponto ideal de recuperação espaçada.`;}
+   else if(mistakes>=3){nextTitle.textContent='Corrigir o padrão que está voltando.';nextCopy.textContent=`${mistakes} padrões ainda aparecem como erros recorrentes.`;}
+   else {nextTitle.textContent='Transferir o que você já sabe.';nextCopy.textContent='O próximo avanço vem de usar linguagem conhecida em um contexto um pouco diferente.';}
+ }
+}
+
 function updateMetrics(){
  const mastered=Object.values(state.reviews).filter(r=>(r.interval||0)>=7&&(r.reps||0)>=3).length;
  const reviewedKanji=new Set(Object.keys(state.reviews||{}));
@@ -238,7 +315,10 @@ function renderAdaptiveHome(){
  set('homeAdaptiveEyebrow',d.eyebrow);set('homeAdaptiveTitle',d.title);set('homeAdaptiveCopy',d.copy);set('homeAdaptiveSignal',d.signal);
  const primary=document.getElementById('homeAdaptivePrimary'),secondary=document.getElementById('homeAdaptiveSecondary');
  if(primary){primary.textContent=d.cta;primary.onclick=()=>runAdaptiveHomeAction(d.action)}
- if(secondary){secondary.textContent=d.secondary;secondary.onclick=()=>runAdaptiveHomeAction(d.secondaryAction)}
+ if(secondary){secondary.textContent='por que esta sessão?';secondary.onclick=()=>document.getElementById('todayReason')?.classList.toggle('open')}
+ const reasonTitle=document.getElementById('todayReasonTitle'),reasonCopy=document.getElementById('todayReasonCopy');
+ if(reasonTitle)reasonTitle.textContent=d.title;
+ if(reasonCopy)reasonCopy.textContent=d.copy+' Sinal principal: '+d.signal+'.';
  const guide=document.querySelector('.guide-card');
  if(guide&&['repair','review','recover','mistake','story'].includes(d.kind)){
    set('guideTitle',d.title);set('guideCopy',d.copy);
@@ -286,6 +366,7 @@ function renderGameHome(){
  el('courseSectionLabel',`Seção ${unit+1}`);el('courseScore',Math.round((state.xp||0)/10));el('coursePct',pct+'%');el('leagueMiniText',`${state.leagueXp||0} XP esta semana`);
  const goal=Math.min(100,Math.round((q.xp||0)/30*100)),ring=document.getElementById('dailyRing');if(ring)ring.style.setProperty('--goal',goal+'%');el('dailyGoalPct',goal+'%');
  renderQuests();renderHomeJournalSummary();const adaptive=renderAdaptiveHome();
+ const stage=journeyStageIndex(),stageMeta=JOURNEY_STAGES[stage];el('journeyStageMini',stageMeta.name);el('journeyCapabilityMini',stageMeta.title);
  const g=flatPath[Math.min(progress,total-1)];
  if(g&& !['repair','review','recover','mistake','story'].includes(adaptive?.kind)){
    const repair=state.remediation?.idx===progress,guide=document.querySelector('.guide-card');
@@ -345,7 +426,21 @@ if('serviceWorker' in navigator){
  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(monReloadForUpdate)window.location.reload()});
  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(watchMonUpdate).catch(()=>{}));
 }
-updateMetrics();renderGameHome();
+function finishOnboarding(mode){
+ localStorage.setItem('mon-onboarded','1');
+ const shell=document.getElementById('onboardingShell');if(shell)shell.hidden=true;
+ if(mode==='diagnostic')startDiagnostic();
+ else {go('home');setTimeout(()=>runJourneyPrimary(),120);}
+}
+function initOnboarding(){
+ const shell=document.getElementById('onboardingShell');
+ if(!shell)return;
+ const seen=localStorage.getItem('mon-onboarded')==='1'||(state.sessions||0)>0||(state.foundationDay||1)>1;
+ shell.hidden=seen;
+}
+const reasonToggle=document.getElementById('todayReasonToggle');
+if(reasonToggle)reasonToggle.addEventListener('click',()=>document.getElementById('todayReason')?.classList.toggle('open'));
+updateMetrics();renderGameHome();initOnboarding();
 for(const name of ['kanji','reading','missions','speaking','curriculum','journal','videos','pronunciation']){
  const nav=document.querySelector(`[data-view="${name}"]`);
  if(nav)nav.addEventListener('pointerover',()=>ensureFeatureRuntime(name).catch(()=>{}),{passive:true,once:true});

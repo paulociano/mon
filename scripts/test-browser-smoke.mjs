@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 const base=process.env.MON_SMOKE_URL||'http://127.0.0.1:4173';
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:1280,height:900}});
+await page.addInitScript(()=>localStorage.setItem('mon-onboarded','1'));
 const pageErrors=[];
 page.on('pageerror',error=>pageErrors.push(String(error?.stack||error)));
 page.on('console',msg=>{if(msg.type()==='error')console.error('[browser console]',msg.text())});
@@ -12,6 +13,13 @@ try{
  await page.goto(base,{waitUntil:'networkidle'});
  await page.waitForSelector('#home.active');
  assert.equal(pageErrors.length,0,'Home boot emitted page errors: '+pageErrors.join('\n'));
+
+ for(const target of ['journey','explore','progress']){
+  await page.click(`#desktopNav [data-view="${target}"]`);
+  await page.waitForSelector(`#${target}.active`);
+ }
+ await page.click('#desktopNav [data-view="explore"]');
+ await page.waitForSelector('#explore.active');
 
  await page.click('[data-view="videos"]');
  await page.waitForSelector('#videos.active');

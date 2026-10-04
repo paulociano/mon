@@ -8,7 +8,7 @@ const css=fs.readFileSync('styles.css','utf8');
 for(const token of ['current-unit','done-unit','locked-unit','unit-progress','unit-status','node-type','aria-current="step"']){
   assert.ok(app.includes(token),'missing path rendering token '+token);
 }
-for(const token of ['rail-card-label','daily-card','quest-card','practice-mini','guideMascot','guideStateLabel','kitsu-art','assets/brand/kitsu-mascot.webp']){
+for(const token of ['rail-card-label','guideMascot','guideStateLabel','kitsu-art','assets/brand/kitsu-mascot.webp','journey-mini','journeyStageMini','journeyCapabilityMini','todayReason']){
   assert.ok(html.includes(token),'missing rail markup '+token);
 }
 for(const token of ['.path-node.checkpoint::after','.guide-card[data-state="checkpoint"]','.guide-card[data-state="review"]','.guide-mascot[data-mood="repair"]','.guide-mascot[data-mood="transfer"]','.home-reveal.is-visible']){
