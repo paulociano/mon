@@ -25,7 +25,8 @@ try{
 
  await page.evaluate(()=>{state.xp=432;save()});
  await page.reload({waitUntil:'domcontentloaded'});
- await page.waitForSelector('#home.active',{state:'visible'});
+ await page.waitForSelector('#progress.active',{state:'visible'});
+ assert.match(page.url(),/[?&]view=progress(?:&|$)/,selected+' deep-link route must survive reload');
  assert.equal(await page.evaluate(()=>state.xp),432,selected+' persisted state failed after reload');
  assert.equal(errors.length,0,selected+' emitted page errors: '+errors.join('\n'));
 
