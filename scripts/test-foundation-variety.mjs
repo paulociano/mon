@@ -3,7 +3,7 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const ctx=vm.createContext({console,Math,Number,String,Array,Object,Set});
-for(const file of ['data/kana.js','data/foundation.js','core/course-engine.js']){
+for(const file of ['data/kana.js','data/foundation.js','data/session.js','core/course-engine.js']){
  vm.runInContext(fs.readFileSync(file,'utf8'),ctx,{filename:file});
 }
 const signatures=[];
