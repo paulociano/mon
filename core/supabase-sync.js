@@ -9,6 +9,7 @@ async function ensureSupabaseSdk(){
 }
 async function getMonSupabase(){
  if(monSupabaseClient)return monSupabaseClient;
+ if(!monCloudConfigured()&&typeof monEnsureCloudConfig==='function'){try{await monEnsureCloudConfig()}catch{}}
  if(!monCloudConfigured())return null;
  const sdk=await ensureSupabaseSdk(),c=monCloudConfig();
  monSupabaseClient=sdk.createClient(c.url,c.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});

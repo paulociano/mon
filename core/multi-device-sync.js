@@ -26,6 +26,7 @@ function monApplyCloudRow(row,session){
  return validated;
 }
 async function monCloudReconcile({preference=null}={}){
+ if(!monCloudAvailable()&&typeof monEnsureCloudConfig==='function'){try{await monEnsureCloudConfig()}catch{}}
  if(!monCloudAvailable())return {status:'unavailable'};
  if(monSyncInFlight)return monSyncInFlight;
  const run=(async()=>{
@@ -77,6 +78,7 @@ async function renderCloudAccountPanel(){
  if(typeof ensureMonBackupImportControl==='function')ensureMonBackupImportControl();
  if(typeof ensureMonPrivacyControls==='function')ensureMonPrivacyControls();
  if(!panel)return;
+ if(!monCloudAvailable()&&typeof monEnsureCloudConfig==='function'){try{await monEnsureCloudConfig()}catch{}}
  if(!monCloudAvailable()){panel.innerHTML='<b>Conta MON</b><br>Seu progresso está neste navegador. A sincronização ainda não está disponível; exporte um backup para protegê-lo.';return}
  try{
   const session=await monCloudSession();

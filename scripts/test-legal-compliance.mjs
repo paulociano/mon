@@ -41,6 +41,7 @@ for(const requiredText of [
 const deleteFn=fs.readFileSync('supabase/functions/delete-account/index.ts','utf8');
 for(const requiredText of [
  "auth.admin.deleteUser(user.id, false)",
+ "auth.signOut({ scope: 'global' })",
  "userClient.auth.getUser(token)",
  "DELETE_MY_ACCOUNT",
  "SUPABASE_SECRET_KEYS",

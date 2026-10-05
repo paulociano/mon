@@ -11,7 +11,7 @@ A Conta MON não deve ser aberta ao público enquanto qualquer gate P0 permanece
 - [ ] decidir política de idade;
 - [x] implementar exclusão completa da identidade de autenticação por backend/Edge Function no repositório;
 - [x] deployar a Edge Function `delete-account` no projeto Supabase MON (`sa-east-1`);
-- [ ] injetar a publishable key no runtime/deploy do frontend;
+- [x] disponibilizar a publishable key ao frontend por runtime público controlado (`public-config`), sem expor secret/service-role;
 - [ ] configurar Site URL + Redirect URL do Supabase Auth para `https://paulociano.github.io/mon/`;
 - [ ] testar exclusão completa ponta a ponta com usuário autenticado real;
 - [x] provisionar o projeto Supabase MON em `sa-east-1`;

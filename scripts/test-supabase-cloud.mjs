@@ -6,6 +6,8 @@ assert.ok(adapter.includes('signInWithOtp'),'Conta MON must use passwordless ema
 assert.ok(!config.toLowerCase().includes('service_role'),'service role key must never appear in browser config');
 assert.ok(config.includes('mon-supabase-publishable-key'),'browser config must support deploy-time publishable-key injection');
 assert.ok(config.includes('MON_CLOUD_RUNTIME_CONFIG'),'browser config must support runtime override without committing a key');
+assert.ok(config.includes("functions/v1/public-config"),'browser config must resolve the public key at runtime when deploy injection is absent');
+assert.ok(config.includes('monEnsureCloudConfig'),'browser config resolver missing');
 assert.ok(fs.readFileSync('index.html','utf8').includes('name="mon-supabase-publishable-key" content=""'),'static shell must expose an empty publishable-key injection point');
 assert.ok(sql.includes('enable row level security'),'cloud state table must enable RLS');
 assert.ok(sql.includes('revision bigint not null default 1'),'cloud state needs optimistic revision');
@@ -14,4 +16,8 @@ assert.ok(!adapter.includes('.upsert('),'multi-device writes must not use blind 
 for(const token of ['auth.uid()) = user_id','for select to authenticated','for insert to authenticated','for update to authenticated'])assert.ok(sql.includes(token),'missing RLS contract '+token);
 assert.ok(sql.includes('revoke all on table public.mon_user_state from anon, authenticated'),'table grants must be least privilege before authenticated grants');
 assert.ok(fs.readFileSync('features/user.js','utf8').includes('renderCloudAccountPanel'),'user area must render cloud account state');
+const publicConfigFn=fs.readFileSync('supabase/functions/public-config/index.ts','utf8');
+for(const token of ['SUPABASE_PUBLISHABLE_KEYS','sb_publishable_','Cache-Control'])assert.ok(publicConfigFn.includes(token),'public config function missing '+token);
+assert.ok(!publicConfigFn.includes('SUPABASE_SECRET_KEYS')&&!publicConfigFn.includes('SUPABASE_SERVICE_ROLE_KEY'),'public config must never expose privileged key material');
+assert.ok(fs.readFileSync('supabase/config.toml','utf8').includes('[functions.public-config]\nverify_jwt = false'),'public config must be intentionally unauthenticated');
 console.log('MON Supabase cloud contracts passed');

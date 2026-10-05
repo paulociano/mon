@@ -9,17 +9,19 @@
 - GitHub Pages production URL: `https://paulociano.github.io/mon/`
 - `public.mon_user_state`: RLS enabled, anonymous table access revoked, authenticated CRUD ownership-scoped by `auth.uid()`
 - Edge Function `delete-account`: deployed and JWT verification enabled
+- Edge Function `public-config`: public, read-only bootstrap endpoint for browser-safe Supabase configuration
 
-## Frontend public-key injection
+## Frontend public configuration
 
-The repository does not commit the publishable key.
+The repository does not commit the publishable key. MON resolves browser-safe cloud configuration in this order:
 
-`config/cloud.js` reads it from either:
+1. `globalThis.MON_CLOUD_RUNTIME_CONFIG.publishableKey`;
+2. the deploy-time meta tag `<meta name="mon-supabase-publishable-key" content="">`;
+3. the public `public-config` Edge Function.
 
-1. `globalThis.MON_CLOUD_RUNTIME_CONFIG.publishableKey`; or
-2. the empty meta tag `<meta name="mon-supabase-publishable-key" content="">`.
+The Edge Function returns only the project URL and active `sb_publishable_...` key. Supabase documents publishable keys as safe for public clients when RLS and least-privilege grants protect the data. Secret/service-role material is never returned.
 
-The hosting/deploy layer should inject the project's active `sb_publishable_...` value into one of those public-runtime channels. This key is intended for public clients, but privileged secret/service-role material must never enter the browser or repository.
+This removes the GitHub Pages key-injection blocker while preserving the ability to override/rotate browser configuration later.
 
 ## Supabase Auth URL configuration
 
@@ -34,7 +36,7 @@ Do not add wildcard production redirects when the exact URL is sufficient.
 
 ## Verification still required
 
-After the publishable key and Auth URLs are configured, use disposable test accounts and prove:
+After the Auth URLs are configured, use disposable test accounts and prove:
 
 1. magic-link sign-in creates a valid browser session;
 2. user A can create/read/update/delete only A's `mon_user_state`;
@@ -46,3 +48,8 @@ After the publishable key and Auth URLs are configured, use disposable test acco
 8. function/database logs contain no leaked tokens or personal payloads.
 
 Do not mark these gates complete until the behavior is observed end to end.
+
+
+## Account deletion session behavior
+
+Before deleting the Auth user, `delete-account` revokes the user's refresh sessions globally. Supabase access-token JWTs may remain cryptographically valid until their encoded expiry, so the database design also relies on deletion of the Auth identity plus the `ON DELETE CASCADE` removal of `mon_user_state`. New cloud rows cannot be recreated for a deleted identity because of the foreign key to `auth.users`.
