@@ -47,7 +47,7 @@ const FEATURE_RUNTIME_SCRIPTS={
  progress:[LE,'./core/learning-metrics.js','./core/learning-validation.js','./features/progress.js'],
  curriculum:['./data/curriculum.js'],
  lesson:['./features/open-production-remediation.js','./features/lesson.js'],
- practice:['./features/practice.js'],
+ practice:['./features/grammar-notebook.js','./features/practice.js'],
  journal:['./data/narrative.js','./core/narrative-state.js','./features/journal.js'],
  videos:['./features/videos.js'],
  pronunciation:['./data/pronunciation.js','./features/pronunciation.js']
@@ -85,7 +85,7 @@ function loadRuntimeStyle(href){
    link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>reject(new Error('Falha ao carregar '+href));document.head.appendChild(link);
  });
 }
-const FEATURE_RUNTIME_STYLES={journey:['./features/journey.css'],explore:['./features/journey.css'],progress:['./features/journey.css'],user:['./features/user.css'],foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
+const FEATURE_RUNTIME_STYLES={journey:['./features/journey.css'],explore:['./features/journey.css'],progress:['./features/journey.css'],user:['./features/user.css'],foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/grammar-notebook.css','./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
 async function ensureLearningRuntime(){
  const level=contentPackLevelForDay();
  await ensureContentPack(level);
