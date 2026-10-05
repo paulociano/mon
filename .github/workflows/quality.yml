@@ -28,6 +28,8 @@ jobs:
           find . -type f \( -name "*.js" -o -name "*.mjs" \) -not -path "./.git/*" -not -path "./node_modules/*" -print0 | xargs -0 -n1 node --check
       - name: Repository quality and security
         run: node scripts/test-repository-quality.mjs
+      - name: Legal and compliance baseline
+        run: node scripts/test-legal-compliance.mjs
       - name: Accessibility contracts
         run: node scripts/test-accessibility-contracts.mjs
       - name: Typography contracts

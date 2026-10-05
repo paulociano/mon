@@ -8,7 +8,7 @@ const NAV_PARENT={lesson:'home',session:'home',curriculum:'journey',foundation:'
 function navParentForView(id){return NAV_PARENT[id]||id}
 function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${navParentForView(id)}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 let accountRuntimePromise=null;
-function ensureAccountRuntime(){return accountRuntimePromise||(accountRuntimePromise=(async()=>{for(const src of ['./core/account.js','./config/cloud.js','./core/supabase-sync.js','./core/multi-device-sync.js','./features/offline.js','./features/user.js'])await loadRuntimeScript(src)})().catch(err=>{accountRuntimePromise=null;throw err}))}
+function ensureAccountRuntime(){return accountRuntimePromise||(accountRuntimePromise=(async()=>{for(const src of ['./core/account.js','./config/cloud.js','./core/supabase-sync.js','./core/multi-device-sync.js','./features/offline.js','./features/account-privacy.js','./features/user.js'])await loadRuntimeScript(src)})().catch(err=>{accountRuntimePromise=null;throw err}))}
 const LE='./core/learning-evidence.js';
 const LEARNING_RUNTIME_SCRIPTS=[
  './data/kanji.js',
