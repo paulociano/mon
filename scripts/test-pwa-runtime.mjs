@@ -17,7 +17,7 @@ for(const lazy of ['./data/content-packs.js','./features/session.js','./features
 }
 const installBlock=sw.match(/self\.addEventListener\('install'[\s\S]*?\n}\);/)?.[0]||'';
 assert.ok(installBlock.includes("if(CRITICAL_SHELL_UPGRADE)await self.skipWaiting()"),'controlled install hook must remain available');
-assert.ok(sw.includes("const CACHE_VERSION='v38'"),'account-runtime recovery must bump the MON cache version');
+assert.ok(sw.includes("const CACHE_VERSION='v39'"),'auth-first rollout must bump the MON cache version');
 assert.ok(sw.includes('const CRITICAL_SHELL_UPGRADE=false'),'updates must stay user-controlled after the v37 recovery');
 assert.ok(!sw.includes('client.navigate('),'service worker activation must not trigger navigation reload loops');
 assert.ok(sw.includes("event.data?.type==='SKIP_WAITING'"),'service worker needs explicit update activation message');
