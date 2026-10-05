@@ -1,6 +1,5 @@
 // MON multi-device sync coordinator. Loaded lazily with account runtime.
 let monSyncTimer=null,monSyncInFlight=null;
-function monEscapeHtml(value){return String(value??'').replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':'&quot;',"'":'&#39;'}[ch]))}
 
 function monCloudAvailable(){return typeof monCloudConfigured==='function'&&monCloudConfigured()}
 function monHasMeaningfulLocalProgress(){
@@ -94,8 +93,9 @@ async function renderCloudAccountPanel(){
    panel.innerHTML='<b>Conflito de progresso</b><br>Este dispositivo e a nuvem mudaram desde o último sync. Escolha qual versão deve continuar. Um backup local é preservado antes de substituir dados.<div class="user-actions"><button class="user-save" onclick="resolveMonCloudConflict(\'local\')">usar este dispositivo</button><button class="user-secondary" onclick="resolveMonCloudConflict(\'cloud\')">usar nuvem</button></div>';
    return;
   }
-  const account=loadMonAccount(),email=monEscapeHtml(session.user.email||'usuário'),syncText=account.lastSyncedAt?'último sync '+new Date(account.lastSyncedAt).toLocaleString():'sync pronto';
-  panel.innerHTML='<b>Conta MON conectada</b><br>'+email+' · revisão '+account.cloudRevision+' · '+syncText+'<div class="user-actions"><button class="user-save" onclick="syncMonNow()">sincronizar agora</button><button class="user-secondary" onclick="disconnectMonCloud()">sair</button></div>';
+  const account=loadMonAccount(),syncText=account.lastSyncedAt?'último sync '+new Date(account.lastSyncedAt).toLocaleString():'sync pronto';
+  panel.innerHTML='<b>Conta MON conectada</b><br><span id="monCloudIdentity"></span> · revisão '+account.cloudRevision+' · '+syncText+'<div class="user-actions"><button class="user-save" onclick="syncMonNow()">sincronizar agora</button><button class="user-secondary" onclick="disconnectMonCloud()">sair</button></div>';
+  const identity=document.getElementById('monCloudIdentity');if(identity)identity.textContent=session.user.email||'usuário';
  }catch(e){panel.textContent='Conta MON indisponível: '+e.message}
 }
 async function connectMonCloud(){
