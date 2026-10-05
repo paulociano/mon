@@ -205,6 +205,8 @@ jobs:
         run: node scripts/test-responsive-smoke.mjs
       - name: P8 secondary responsive smoke
         run: node scripts/test-p8-secondary-responsive.mjs
+      - name: P8 visual QA evidence
+        run: node scripts/test-p8-visual-qa.mjs
       - name: Offline PWA smoke
         run: node scripts/test-offline-smoke.mjs
       - name: Preserve browser evidence
