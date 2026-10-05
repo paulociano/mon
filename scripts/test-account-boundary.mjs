@@ -12,7 +12,8 @@ assert.ok(fs.readFileSync('features/user.js','utf8').includes('monAccountStatus(
 assert.ok(core.includes('function exportMonBackup()')&&core.includes('monSyncPayload('),'backup must use versioned sync payload');
 assert.ok(core.includes('ensureMonBackupImportControl'),'lazy account runtime must mount validated backup import');
 for(const token of ['exportMonBackup'])assert.ok(core.includes(token),'account action must stay lazy '+token);
-for(const token of ['renderCloudAccountPanel','connectMonCloud','disconnectMonCloud','syncMonNow','resolveMonCloudConflict'])assert.ok(sync.includes(token),'sync action must stay lazy '+token);
+for(const token of ['renderCloudAccountPanel','disconnectMonCloud','syncMonNow','resolveMonCloudConflict'])assert.ok(sync.includes(token),'sync action must stay lazy '+token);
+assert.ok(fs.readFileSync('features/user.js','utf8').includes('connectMonCloud'),'account sign-in action must stay inside the lazy user boundary');
 assert.ok(!html.toLowerCase().includes('entrar com google'),'shell must not advertise unavailable auth');
 console.log('MON account boundary contracts passed');
 
