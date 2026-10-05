@@ -22,6 +22,8 @@ function speak(text,rate=.86){if(!('speechSynthesis'in window)){toast('Áudio in
 const NAV_PARENT={auth:'auth',lesson:'home',session:'home',curriculum:'journey',foundation:'explore',kanji:'explore',missions:'explore',reading:'explore',speaking:'explore',culture:'explore',writing:'explore',journal:'explore',videos:'explore',pronunciation:'explore',league:'explore',shop:'explore',user:'user'};
 function navParentForView(id){return NAV_PARENT[id]||id}
 function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${navParentForView(id)}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+let authRuntimePromise=null;
+function ensureAuthRuntime(){return authRuntimePromise||(authRuntimePromise=(async()=>{for(const src of ['./config/cloud.js','./core/supabase-sync.js','./features/account-auth.js'])await loadRuntimeScript(src)})().catch(err=>{authRuntimePromise=null;throw err}))}
 let accountRuntimePromise=null;
 function ensureAccountRuntime(){return accountRuntimePromise||(accountRuntimePromise=(async()=>{for(const src of ['./core/account.js','./config/cloud.js','./core/supabase-sync.js','./core/multi-device-sync.js','./features/offline.js','./features/account-privacy.js','./features/account-auth.js','./features/user.js'])await loadRuntimeScript(src)})().catch(err=>{accountRuntimePromise=null;throw err}))}
 const LE='./core/learning-evidence.js';
@@ -132,7 +134,7 @@ async function go(id,options={}){
  const viewStart=typeof perfStart==='function'?perfStart('view:'+id):null;
  const busyTimer=setTimeout(()=>{if(requestId===routeRequestId)setRouteBusy(true,'Abrindo '+(viewNames[id]||id))},90);
  try{
-   if(id==='auth'){await ensureAccountRuntime();await ensureFeatureRuntime('auth');ensureAuthPage();}
+   if(id==='auth'){await ensureAuthRuntime();await ensureFeatureRuntime('auth');ensureAuthPage();}
    if(id==='user'){await ensureAccountRuntime();ensureUserArea();}
    if(['journey','explore','progress','user'].includes(id))await ensureFeatureRuntime(id);
    if(id==='foundation')await ensureFeatureRuntime('foundation');
