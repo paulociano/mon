@@ -490,3 +490,26 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 @media (max-width:680px){.onboarding-card{padding:25px}}
 
 
+
+
+/* P8.4 · system states and semantic motion */
+.route-busy .view.active{opacity:.72;transition:opacity .16s ease}
+.route-busy .route-loader{height:4px}
+.learning-runtime-loading #practice::before{font-size:10px;padding:14px 16px;border-radius:16px}
+.update-banner{font-size:10px;padding:13px 14px 13px 16px;border-radius:18px}.update-banner button{font-size:9px;padding:9px 11px}
+.user-card [role="status"],#offlineStatus{line-height:1.55}
+@media(prefers-reduced-motion:no-preference){
+ .view.active{animation:viewEnter .28s cubic-bezier(.2,.72,.2,1) both}
+ .path-node.done .node-icon,.mission-v2.done .symbol{animation:masterySettle .34s cubic-bezier(.2,.8,.2,1)}
+ .quick-option.correct,.mission-choices button.correct{animation:successSettle .26s ease both}
+ .quick-option.wrong,.mission-choices button.wrong{animation:errorNudge .24s ease both}
+ .progress-evidence i em,.unit-progress i,.quest-progress i{transition:width .42s cubic-bezier(.2,.75,.2,1)}
+}
+@keyframes viewEnter{from{opacity:.65;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes masterySettle{0%{transform:scale(.9)}70%{transform:scale(1.08)}100%{transform:none}}
+@keyframes successSettle{0%{transform:scale(.985)}60%{transform:scale(1.01)}100%{transform:none}}
+@keyframes errorNudge{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@media(prefers-reduced-motion:reduce){
+ .route-busy .view.active{opacity:1;transition:none}
+ .view.active,.path-node.done .node-icon,.mission-v2.done .symbol,.quick-option.correct,.quick-option.wrong,.mission-choices button.correct,.mission-choices button.wrong{animation:none!important}
+}
