@@ -53,3 +53,25 @@ Do not mark these gates complete until the behavior is observed end to end.
 ## Account deletion session behavior
 
 Before deleting the Auth user, `delete-account` revokes the user's refresh sessions globally. Supabase access-token JWTs may remain cryptographically valid until their encoded expiry, so the database design also relies on deletion of the Auth identity plus the `ON DELETE CASCADE` removal of `mon_user_state`. New cloud rows cannot be recreated for a deleted identity because of the foreign key to `auth.users`.
+
+
+## Database E2E evidence — 5 October 2026
+
+Tests were executed directly against the production MON database inside explicit transactions that were rolled back. Synthetic Auth identities and state rows therefore did not persist.
+
+Observed results:
+
+- RLS identity simulation resolved `auth.uid()` to user A;
+- user A could read its own `mon_user_state`;
+- user A could not read user B's state;
+- user A could not update user B's state;
+- user A could not delete user B's state;
+- user A could update its own state;
+- an update with expected `revision=1` succeeded once;
+- a second update using the now-stale `revision=1` matched zero rows, proving the database-side CAS contract used by MON;
+- deleting the synthetic `auth.users` identity removed the corresponding `mon_user_state` row through the foreign-key cascade;
+- all synthetic records were rolled back after verification.
+
+These checks validate database authorization and concurrency contracts. They do **not** replace a real browser Auth flow, email delivery, persisted session, client sync, or the deployed `delete-account` HTTP path.
+
+At the time of this verification the project had zero real Auth users, so the authenticated-user E2E gate remains open.
