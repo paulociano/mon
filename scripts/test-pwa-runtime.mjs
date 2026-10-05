@@ -35,3 +35,5 @@ console.log('MON PWA shell and update contracts passed');
 assert.ok(app.includes("monUpdateWorker?.state==='installed'"),'update action must ignore stale non-waiting worker references');
 assert.ok(app.includes('reg?.waiting'),'update action must resolve the current waiting worker');
 assert.ok(app.includes('location.reload()'),'update action must recover when the worker already activated');
+
+assert.ok(app.includes("caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('mon-japanese-os-'))"),'fresh auth migration must clear only MON-owned PWA caches');
