@@ -36,6 +36,7 @@ function recordMasteryEvidence(exercise={},ok=false,meta={}){
     score,lastAt:now
   };
   state.masteryEvidence[concept]=conceptState;
+  if(exercise._contrastPair&&typeof recordGrammarContrastOutcome==='function')recordGrammarContrastOutcome(exercise,ok);
   if(typeof recordLearningEvidence==='function')recordLearningEvidence({source:'mastery',kind:'attempt',concept,dimension,method:exercise.method||exercise.type||null,ok,hintUsed:!!meta.hintUsed,spacingMs:old.lastAt?now-old.lastAt:null,context:dimension==='transfer'||dimension==='produce'?'transfer':'practice',at:now});
   return {concept,dimension,score};
 }
