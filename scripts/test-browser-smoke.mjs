@@ -42,6 +42,10 @@ try{
   await waitVisible('#auth.active');
   assert.equal(await page.locator('#authEmail').count(),1,'root route must expose login email field');
   assert.equal(await page.locator('#authPassword').count(),1,'root route must expose login password field');
+  await page.keyboard.press('Tab');
+  assert.equal(await page.evaluate(()=>document.activeElement?.classList.contains('skip-link')),true,'auth page must preserve skip link as first keyboard stop');
+  await page.keyboard.press('Enter');
+  assert.equal(await page.evaluate(()=>document.activeElement?.id),'mainContent','auth skip link must move focus to main content');
   await page.evaluate(async()=>await go('home',{replace:true}));
   await waitVisible('#home.active');
  }catch(error){
@@ -56,10 +60,6 @@ try{
  const guideBox=await page.locator('#guideVisual').boundingBox();
  assert.ok(guideBox&&guideBox.width>=80&&guideBox.height>=80,'abstract guide effect must keep a visible visual footprint');
  assert.equal(await page.locator('#guideVisual .guide-glyph').innerText(),'門','abstract guide effect should carry the MON gate glyph');
- await page.keyboard.press('Tab');
- assert.equal(await page.evaluate(()=>document.activeElement?.classList.contains('skip-link')),true,'first keyboard stop should expose skip link');
- await page.keyboard.press('Enter');
- assert.equal(await page.evaluate(()=>document.activeElement?.id),'mainContent','skip link must move focus to main content');
  const progressNav=page.locator('#desktopNav [data-view="progress"]');
  await progressNav.focus();await page.keyboard.press('Enter');await waitVisible('#progress.active');
  assert.equal(await page.evaluate(()=>document.activeElement?.id),'progress','keyboard navigation must move focus to the active view');
