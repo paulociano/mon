@@ -95,4 +95,21 @@ No email address or token value is recorded in this handoff.
 
 After the reload check, the historical Auth identity from the earlier magic-link tests was deleted with explicit user approval. Readback confirmed exactly one remaining Auth identity and exactly one remaining `mon_user_state` row, belonging to the current account. The old cloud row was removed by cascade.
 
-Real two-account cross-access, cloud-only deletion through the current UI, full deletion of the current identity through `delete-account`, and post-operation log review remain open.
+Real two-account cross-access, cloud-only deletion through the current UI, and post-operation log review remain open.
+
+
+## Real account deletion E2E — 5 October 2026
+
+The current authenticated production account was deleted by the user through the MON account-deletion flow.
+
+Post-operation readback against the production Supabase project confirmed:
+
+- `auth.users`: 0 rows;
+- `auth.sessions`: 0 rows;
+- `public.mon_user_state`: 0 rows.
+
+This proves that the real Auth identity was removed, server-side sessions were cleared, and the cloud learning-state row was removed through the deletion cascade.
+
+The dedicated observability/log query returned a Supabase backend error during this verification, so post-operation log inspection remains open and is not claimed as complete.
+
+**Result:** **PASS — real authenticated account deletion, session removal, and cloud-state cascade**
