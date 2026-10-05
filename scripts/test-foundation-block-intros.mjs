@@ -1,7 +1,7 @@
 import fs from'node:fs';import vm from'node:vm';import assert from'node:assert/strict';
 const ctx=vm.createContext({console,Object,Set,Map,Number,String,Math,Array});
 for(const f of['data/foundation.js','data/session.js','core/course-engine.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx,{filename:f});
-for(const day of [1,8,13,17,22]){
+for(const day of [1,6,8,13,17,22]){
  const intro=vm.runInContext(`foundationBlockIntro(${day})`,ctx);
  assert.equal(intro?.type,'study');assert.equal(intro?.mode,'block-intro');assert.ok(intro.examples.length>=3);
  const lesson=vm.runInContext(`lessonPlanFromNode({day:${day},label:'Foundation'})`,ctx);
