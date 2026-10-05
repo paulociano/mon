@@ -1,3 +1,6 @@
+if(typeof document!=='undefined'&&!document.querySelector('link[data-mon-reading-support]')){
+ const link=document.createElement('link');link.rel='stylesheet';link.href='./features/reading-support.css';link.dataset.monReadingSupport='1';document.head.appendChild(link);
+}
 // MON adaptive reading support · romaji above Japanese when the reading is reliable.
 const MON_KANA_ROMAJI={
  'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko',
