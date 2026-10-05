@@ -37,3 +37,13 @@ function renderLearningValidation(){
   {id:'recurrent-errors',label:'Erros',value:r.recurrentErrors.value,samples:r.recurrentErrors.samples,note:validationDeltaText(r.recurrentErrors,true)} ];grid.insertAdjacentHTML('beforeend',cards.map(x=>`<article class="progress-evidence" data-learning-validation="${x.id}"><span>Validação · ${x.label}</span><b>${x.value===null?'—':x.value+'%'}</b><small>${x.samples} observações · ${x.note}</small><i><em style="width:${x.value||0}%"></em></i></article>`).join(''));
 }const renderProgressHubMetrics=renderProgressHub;
 renderProgressHub=function(){renderProgressHubMetrics();renderLearningValidation()};
+
+function renderReadingMastery(){
+ const grid=document.getElementById('progressEvidenceGrid');if(!grid)return;
+ grid.querySelectorAll('[data-reading-mastery]').forEach(x=>x.remove());
+ const cell=state.masteryEvidence?.['reading:global']?.recall||null,attempts=Number(cell?.attempts||0),score=Number(cell?.score||0);
+ const stage=attempts<3?'calibrando':score>=80?'sem apoio':score>=55?'furigana':'romaji';
+ grid.insertAdjacentHTML('beforeend',`<article class="progress-evidence" data-reading-mastery="global"><span>Leitura · autonomia</span><b>${attempts?score+'%':'—'}</b><small>${attempts} leituras sem pista · apoio atual: ${stage}</small><i><em style="width:${attempts?score:0}%"></em></i></article>`);
+}
+const renderProgressHubReading=renderProgressHub;
+renderProgressHub=function(){renderProgressHubReading();renderReadingMastery()};
