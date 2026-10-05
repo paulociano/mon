@@ -207,5 +207,9 @@ function foundationBlockIntro(day){
       {jp:'千円です。',pt:'São mil ienes.',note:'Preço conecta número a uma necessidade real.'}
     ],contrast:'Saber contar de 1 a 10 não basta; o japonês usa contadores e leituras contextuais.',realWorldUse:'Horários, compras, pessoas, pedidos e serviços.',referenceLabel:'Atlas funcional · números e autonomia'}
   };
-  const x=intros[day];return x?{type:'study',mode:'block-intro',...x}:null;
+  const x=intros[day];return x?{type:'study',mode:'block-intro',...x,
+    canDo:['reconhecer as partes do novo bloco','localizar uma forma no mapa completo','explicar o que será praticado antes de responder'],
+    situation:`Transição da Fundação Zero · dia ${day}: veja o mapa do próximo sistema antes de praticar suas partes.`,
+    sources:day<13?['Irodori','Meu Amigo Kanji']:['Irodori','Desvendando']
+  }:null;
 }
