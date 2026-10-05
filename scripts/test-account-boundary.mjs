@@ -34,5 +34,6 @@ assert.ok(app.includes("k.startsWith('mon-japanese-os-')"),'auth reset must clea
 const userSource=fs.readFileSync('features/user.js','utf8');
 assert.ok(userSource.includes('id="userAuthGate"'),'user route must expose an auth-first gate');
 assert.ok(userSource.includes('id="userProfileShell" class="user-profile-shell" hidden'),'profile shell must start hidden until session verification');
-assert.ok(sync.includes('profileShell.hidden=true'),'signed-out state must keep profile hidden');
-assert.ok(sync.includes('profileShell.hidden=false'),'valid session must reveal profile');
+assert.ok(userSource.includes('function setMonUserAuthState(connected)'),'user UI must own auth visibility');
+assert.ok(sync.includes('setMonUserAuthState(false)'),'signed-out state must keep profile hidden');
+assert.ok(sync.includes('setMonUserAuthState(true)'),'valid session must reveal profile');
