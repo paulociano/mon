@@ -58,7 +58,7 @@ function transferValidation(events=[]){
  return {value:validationPct(rows),samples:rows.length,status:validationEvidenceStatus(rows.length),trend:validationTrend(rows,validationPct)};
 }
 function autonomyValidation(events=[]){
- const rows=events.filter(x=>x.kind==='mission_complete'&&Number.isFinite(Number(x.autonomy)));
+ const rows=events.filter(x=>x.kind==='mission_complete'&&Number.isFinite(x.autonomy)&&x.autonomy>=0&&x.autonomy<=100);
  const avg=x=>x.length?Math.round(x.reduce((n,r)=>n+Number(r.autonomy||0),0)/x.length):null;
  return {value:avg(rows),samples:rows.length,status:validationEvidenceStatus(rows.length),trend:validationTrend(rows,avg)};
 }

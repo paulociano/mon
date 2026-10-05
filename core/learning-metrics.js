@@ -46,7 +46,7 @@ function learningMetricRepair(state={},now=Date.now()){
  return metricEnvelope('repair','Reparo',metricPct(recovered,attempts),attempts,lastAt,{unit:'%',recovered},now);
 }
 function learningMetricAutonomy(events=[],now=Date.now()){
- const rows=events.filter(x=>x.kind==='mission_complete'&&Number.isFinite(Number(x.autonomy)));
+ const rows=events.filter(x=>x.kind==='mission_complete'&&Number.isFinite(x.autonomy)&&x.autonomy>=0&&x.autonomy<=100);
  const value=rows.length?Math.round(rows.reduce((n,x)=>n+Number(x.autonomy||0),0)/rows.length):null;
  const lastAt=Math.max(0,...rows.map(x=>Number(x.at||0)));
  return metricEnvelope('autonomy','Autonomia',value,rows.length,lastAt,{unit:'%',missions:rows.length},now);

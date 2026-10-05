@@ -8,6 +8,7 @@ const html=fs.readFileSync('index.html','utf8');
 const coreMatch=sw.match(/const CORE=\[(.*?)\];/s);
 assert.ok(coreMatch,'service worker CORE shell missing');
 const core=coreMatch[1];
+for(const match of core.matchAll(/'([^']+)'/g)){const file=match[1];if(file!=='./')assert.ok(fs.existsSync(file),'precache asset missing: '+file)}
 for(const asset of ['./','./index.html','./styles.css','./data/course-content.js','./core/state.js','./app.js']){
   assert.ok(core.includes(`'${asset}'`),'critical shell asset missing '+asset);
 }

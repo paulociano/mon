@@ -123,3 +123,35 @@ function boot({state={saveVersion:3,xp:120,sessions:0,pathProgress:0,foundationD
  assert.equal(context.__state().xp,300,'revision rollback must never replace newer known local state');
 }
 console.log('MON multi-device sync contracts passed');
+
+{
+ const {context,store}=boot({state:{saveVersion:3,xp:500,sessions:2},account:{userId:'u1',cloudRevision:1},dirty:true,remote:row(1)});
+ vm.runInContext(`monCloudPush=async function(profile,{expectedRevision}){
+  const snapshot=JSON.parse(JSON.stringify(state));
+  await new Promise(resolve=>globalThis.releasePush=resolve);
+  return {revision:expectedRevision+1,learning_state:snapshot};
+ };`,context);
+ const pending=context.__reconcile();
+ while(!context.releasePush)await new Promise(r=>setTimeout(r,0));
+ vm.runInContext("state.xp=600;localStorage.setItem('mon-sync-dirty-at','new-change')",context);
+ context.releasePush();const result=await pending;
+ assert.equal(result.row.learning_state.xp,500);
+ assert.equal(context.__state().xp,600);
+ assert.equal(store.has('mon-sync-dirty-at'),true,'an older ACK must preserve newer changes');
+ vm.runInContext('clearTimeout(monSyncTimer)',context);
+ vm.runInContext("monCloudPush=async (profile,{expectedRevision})=>({revision:expectedRevision+1,learning_state:normalizeState(state)})",context);
+ context.__remote=row(2,500);
+ const retry=await context.__reconcile();
+ assert.equal(retry.row.learning_state.xp,600);
+ assert.equal(store.has('mon-sync-dirty-at'),false);
+}
+{
+ const {context}=boot({state:{saveVersion:3,xp:500,sessions:2},account:{userId:'u1',cloudRevision:1},remote:row(2,800)});
+ vm.runInContext("monCloudPull=async()=>{await new Promise(resolve=>globalThis.releasePull=resolve);return globalThis.__remote}",context);
+ const pending=context.__reconcile();
+ while(!context.releasePull)await new Promise(r=>setTimeout(r,0));
+ vm.runInContext('state.xp=600',context);context.releasePull();
+ const result=await pending;
+ assert.equal(result.status,'conflict','pull must not overwrite changes made during the request');
+ assert.equal(context.__state().xp,600);
+}

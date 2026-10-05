@@ -8,8 +8,8 @@ function pronState(){
 function pronSpeak(text,rate=.86){
  if(!('speechSynthesis'in window)){toast('Áudio TTS indisponível neste navegador');return}
  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='ja-JP';u.rate=rate;u.pitch=1;
- const voices=speechSynthesis.getVoices(),ja=voices.find(v=>String(v.lang).toLowerCase().startsWith('ja'));if(ja)u.voice=ja;
- speechSynthesis.speak(u);const ps=pronState();ps.plays++;saveState();
+ const voices=speechSynthesis.getVoices(),ja=voices.find(v=>String(v.lang).toLowerCase().startsWith('ja'));if(!ja){toast('Voz japonesa indisponível. Ative uma voz japonesa no dispositivo ou pratique com o texto.');return}u.voice=ja;u.onerror=()=>toast('Não foi possível reproduzir o áudio. Você pode continuar com o texto.');
+ speechSynthesis.speak(u);const ps=pronState();ps.plays++;save();
 }
 function pronMoras(moras=[]){return `<div class="mora-row">${moras.map((m,i)=>`<span><i>${i+1}</i><b lang="ja">${m}</b></span>`).join('')}</div>`}
 function renderPronunciation(){
@@ -25,7 +25,7 @@ function renderPronunciation(){
   <section class="pron-self"><span class="eyebrow">autoavaliação depois da tentativa</span><h3>Sem ouvir de novo: o que você percebeu?</h3><div><button onclick="ratePron(1)">perdi o ritmo</button><button onclick="ratePron(2)">quase estável</button><button onclick="ratePron(3)">ritmo claro</button></div><p id="pronSelfFeedback">A autoavaliação é parte do treino: compare duração, pausas e blocos, não “sotaque perfeito”.</p></section>
  </main></div>`;
 }
-function setPronTrack(id){pronTrackId=id;const ps=pronState();ps.tracks[id]=(ps.tracks[id]||0)+1;saveState();renderPronunciation()}
+function setPronTrack(id){pronTrackId=id;const ps=pronState();ps.tracks[id]=(ps.tracks[id]||0)+1;save();renderPronunciation()}
 function nextShadow(){pronShadowIndex=(pronShadowIndex+1)%pronunciationShadowing.length;renderPronunciation()}
 function pronRecord(){
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition,box=document.getElementById('pronTranscript'),btn=document.getElementById('pronMic');
@@ -33,9 +33,9 @@ function pronRecord(){
  if(pronRecognition)try{pronRecognition.stop()}catch{}
  const target=pronunciationShadowing[pronShadowIndex%pronunciationShadowing.length].jp;
  const r=new SR();pronRecognition=r;r.lang='ja-JP';r.interimResults=false;r.maxAlternatives=1;if(btn){btn.textContent='● ouvindo…';btn.setAttribute('aria-pressed','true')};
- r.onresult=e=>{const txt=e.results[0][0].transcript,match=typeof similarity==='function'?similarity(txt,target):0;box.innerHTML=`<b>Reconhecido:</b> <span lang="ja">${txt}</span><br><small>Correspondência textual aproximada: ${match}%. Não é avaliação fonética.</small>`;const ps=pronState();ps.shadowAttempts++;ps.lastTranscript={target,text:txt,match,at:Date.now()};saveState();};
+ r.onresult=e=>{const txt=e.results[0][0].transcript,match=typeof similarity==='function'?similarity(txt,target):0;box.innerHTML=`<b>Reconhecido:</b> <span lang="ja">${escapeHtml(txt)}</span><br><small>Correspondência textual aproximada: ${match}%. Não é avaliação fonética.</small>`;const ps=pronState();ps.shadowAttempts++;ps.lastTranscript={target,text:txt,match,at:Date.now()};save();};
  r.onerror=e=>{box.textContent=e?.error==='not-allowed'?'Acesso ao microfone não foi permitido. Você pode continuar o shadowing sem microfone ou liberar a permissão nas configurações do navegador.':'Não consegui reconhecer esta tentativa. Isso não significa que sua pronúncia esteja errada; tente novamente em ambiente mais silencioso.'};
  r.onend=()=>{pronRecognition=null;if(btn){btn.textContent='● falar';btn.setAttribute('aria-pressed','false')}};r.start();
 }
-function ratePron(rating){const ps=pronState();ps.selfRatings.unshift({rating,track:pronTrackId,at:Date.now()});ps.selfRatings=ps.selfRatings.slice(0,30);saveState();const f=document.getElementById('pronSelfFeedback');if(f)f.textContent=rating===1?'Ótimo diagnóstico. Volte ao áudio lento e marque cada mora com o dedo.':rating===2?'Boa base. Faça mais uma repetição sem ler e preserve as pausas.':'Bom. Agora teste a mesma frase em velocidade natural sem acelerar as moras longas.'}
+function ratePron(rating){const ps=pronState();ps.selfRatings.unshift({rating,track:pronTrackId,at:Date.now()});ps.selfRatings=ps.selfRatings.slice(0,30);save();const f=document.getElementById('pronSelfFeedback');if(f)f.textContent=rating===1?'Ótimo diagnóstico. Volte ao áudio lento e marque cada mora com o dedo.':rating===2?'Boa base. Faça mais uma repetição sem ler e preserve as pausas.':'Bom. Agora teste a mesma frase em velocidade natural sem acelerar as moras longas.'}
 pronState();renderPronunciation();

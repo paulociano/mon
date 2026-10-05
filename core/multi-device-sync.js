@@ -12,10 +12,12 @@ function monRememberSession(session){
  try{localStorage.setItem(MON_CLOUD_LINK_KEY,'1')}catch{}
  return account;
 }
-function monRecordCloudSync(row,session){
- const prev=loadMonAccount();
- const account=saveMonAccount({...prev,provider:'supabase',userId:session?.user?.id||prev.userId,email:session?.user?.email||prev.email,cloudRevision:Number(row?.revision||0),lastSyncedAt:row?.updated_at||new Date().toISOString(),lastSyncStatus:'synced'});
- clearMonSyncDirty();try{localStorage.setItem(MON_CLOUD_LINK_KEY,'1')}catch{};return account;
+function monLocalSnapshot(){return JSON.stringify([state,loadLocalProfile()])}
+function monRecordCloudSync(row,session,snapshot=monLocalSnapshot()){
+ const prev=loadMonAccount(),pending=snapshot!==monLocalSnapshot();
+ const account=saveMonAccount({...prev,provider:'supabase',userId:session?.user?.id||prev.userId,email:session?.user?.email||prev.email,cloudRevision:Number(row?.revision||0),lastSyncedAt:row?.updated_at||new Date().toISOString(),lastSyncStatus:pending?'pending':'synced'});
+ if(!pending)clearMonSyncDirty();else markMonSyncDirty();
+ try{localStorage.setItem(MON_CLOUD_LINK_KEY,'1')}catch{};return account;
 }
 function monApplyCloudRow(row,session){
  const validated=applyMonSnapshot({syncVersion:row.sync_version,profile:row.profile,learningState:row.learning_state},{markDirty:false});
@@ -25,29 +27,30 @@ function monApplyCloudRow(row,session){
 }
 async function monCloudReconcile({preference=null}={}){
  if(!monCloudAvailable())return {status:'unavailable'};
- if(monSyncInFlight&&!preference)return monSyncInFlight;
+ if(monSyncInFlight)return monSyncInFlight;
  const run=(async()=>{
   const session=await monCloudSession();
   if(!session)return {status:'disconnected'};
-  const account=monRememberSession(session),remote=await monCloudPull();
+  const account=monRememberSession(session),beforePull=monLocalSnapshot(),remote=await monCloudPull();
   const localDirty=monLocalSyncDirty()||(!account.cloudRevision&&monHasMeaningfulLocalProgress());
+  if(remote&&beforePull!==monLocalSnapshot()){rememberMonCloudConflict(remote);return {status:'conflict',row:remote,reason:'local-changed-during-pull'}}
   if(!remote){
-   const pushed=await monCloudPush(loadLocalProfile(),{expectedRevision:0});
-   monRecordCloudSync(pushed,session);return {status:'pushed',row:pushed};
+   const snapshot=monLocalSnapshot(),pushed=await monCloudPush(loadLocalProfile(),{expectedRevision:0});
+   monRecordCloudSync(pushed,session,snapshot);return {status:'pushed',row:pushed};
   }
   const remoteRevision=Number(remote.revision||1),knownRevision=Number(account.cloudRevision||0),cloudChanged=remoteRevision!==knownRevision;
   if(remoteRevision<knownRevision){rememberMonCloudConflict(remote);saveMonAccount({...account,lastSyncStatus:'conflict'});return {status:'conflict',row:remote,reason:'revision-regressed'}}
   if(preference==='cloud'){monApplyCloudRow(remote,session);return {status:'pulled',row:remote}}
   if(preference==='local'){
-   const pushed=await monCloudPush(loadLocalProfile(),{expectedRevision:remoteRevision});
-   monRecordCloudSync(pushed,session);return {status:'pushed',row:pushed};
+   const snapshot=monLocalSnapshot(),pushed=await monCloudPush(loadLocalProfile(),{expectedRevision:remoteRevision});
+   monRecordCloudSync(pushed,session,snapshot);return {status:'pushed',row:pushed};
   }
   if(cloudChanged&&localDirty){rememberMonCloudConflict(remote);saveMonAccount({...account,lastSyncStatus:'conflict'});return {status:'conflict',row:remote}}
   if(cloudChanged){monApplyCloudRow(remote,session);return {status:'pulled',row:remote}}
   if(localDirty){
    try{
-    const pushed=await monCloudPush(loadLocalProfile(),{expectedRevision:knownRevision});
-    monRecordCloudSync(pushed,session);return {status:'pushed',row:pushed};
+    const snapshot=monLocalSnapshot(),pushed=await monCloudPush(loadLocalProfile(),{expectedRevision:knownRevision});
+    monRecordCloudSync(pushed,session,snapshot);return {status:'pushed',row:pushed};
    }catch(e){
     if(e?.code!=='MON_SYNC_CONFLICT')throw e;
     const latest=await monCloudPull();rememberMonCloudConflict(latest);
@@ -57,7 +60,7 @@ async function monCloudReconcile({preference=null}={}){
   }
   monRecordCloudSync(remote,session);return {status:'current',row:remote};
  })();
- if(!preference)monSyncInFlight=run;
+ monSyncInFlight=run;
  try{return await run}finally{if(monSyncInFlight===run)monSyncInFlight=null}
 }
 function scheduleMonCloudSync(){
@@ -65,7 +68,7 @@ function scheduleMonCloudSync(){
  monSyncTimer=setTimeout(async()=>{try{
   const result=await monCloudReconcile();
   if(result.status==='conflict'&&document.getElementById('user')?.classList.contains('active'))renderCloudAccountPanel();
- }catch(e){}},1600);
+ }catch(e){const account=loadMonAccount();saveMonAccount({...account,lastSyncStatus:'error'});const badge=document.getElementById('userAccountBadge');if(badge)badge.textContent='envio pendente'}},1600);
 }
 async function monCloudBootstrap(){try{return await monCloudReconcile()}catch(e){return {status:'error',error:e}}}
 
@@ -73,15 +76,16 @@ async function renderCloudAccountPanel(){
  const panel=document.getElementById('userCloudPanel');
  if(typeof ensureMonBackupImportControl==='function')ensureMonBackupImportControl();
  if(!panel)return;
- if(!monCloudAvailable()){panel.innerHTML='<b>Conta MON</b><br>Nuvem preparada, aguardando configuração do projeto Supabase.';return}
+ if(!monCloudAvailable()){panel.innerHTML='<b>Conta MON</b><br>Seu progresso está neste navegador. A sincronização ainda não está disponível; exporte um backup para protegê-lo.';return}
  try{
   const session=await monCloudSession();
   if(!session){
    panel.innerHTML='<b>Sincronizar entre dispositivos</b><br><label class="user-field"><span>E-mail</span><input id="userCloudEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><div class="user-actions"><button class="user-save" onclick="connectMonCloud()">enviar link de acesso</button></div>';
    return;
   }
-  monRememberSession(session);const badge=document.getElementById('userAccountBadge');if(badge)badge.textContent='conta sincronizada';
+  monRememberSession(session);const badge=document.getElementById('userAccountBadge');if(badge)badge.textContent='conta conectada';
   const result=await monCloudReconcile();
+  if(badge)badge.textContent=result.status==='conflict'?'conflito de progresso':monLocalSyncDirty()?'envio pendente':'conta sincronizada';
   if(result.status==='conflict'){
    panel.innerHTML='<b>Conflito de progresso</b><br>Este dispositivo e a nuvem mudaram desde o último sync. Escolha qual versão deve continuar. Um backup local é preservado antes de substituir dados.<div class="user-actions"><button class="user-save" onclick="resolveMonCloudConflict(\'local\')">usar este dispositivo</button><button class="user-secondary" onclick="resolveMonCloudConflict(\'cloud\')">usar nuvem</button></div>';
    return;
@@ -107,6 +111,7 @@ async function disconnectMonCloud(){
 async function resolveMonCloudConflict(choice){
  try{
   const result=await monCloudReconcile({preference:choice});
+  if(result.status==='conflict'){await renderCloudAccountPanel();toast('O progresso mudou novamente. Revise as versões antes de escolher.');return}
   if(typeof renderUserArea==='function')renderUserArea();
   toast(result.status==='pulled'?'Progresso da nuvem aplicado':'Progresso deste dispositivo enviado');
  }catch(e){toast(e.message)}
@@ -119,3 +124,5 @@ async function syncMonNow(){
   await renderCloudAccountPanel();
  }catch(e){toast(e.message)}
 }
+
+if(typeof window!=='undefined')window.addEventListener('online',scheduleMonCloudSync);

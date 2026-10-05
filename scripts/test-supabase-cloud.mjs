@@ -10,5 +10,5 @@ assert.ok(adapter.includes(".eq('revision',Number(expectedRevision))"),'cloud up
 assert.ok(!adapter.includes('.upsert('),'multi-device writes must not use blind upsert');
 for(const token of ['auth.uid()) = user_id','for select to authenticated','for insert to authenticated','for update to authenticated'])assert.ok(sql.includes(token),'missing RLS contract '+token);
 assert.ok(sql.includes('revoke all on table public.mon_user_state from anon, authenticated'),'table grants must be least privilege before authenticated grants');
-assert.ok(app.includes('renderCloudAccountPanel'),'user area must render cloud account state');
+assert.ok(fs.readFileSync('features/user.js','utf8').includes('renderCloudAccountPanel'),'user area must render cloud account state');
 console.log('MON Supabase cloud contracts passed');

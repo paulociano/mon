@@ -108,3 +108,16 @@ function boot(seed={}){
  assert.throws(()=>context.__migrate({saveVersion:4}),/future MON save version/);
 }
 console.log('MON state persistence contracts passed');
+{
+ const {context,store}=boot();
+ const write=context.localStorage.setItem;
+ context.localStorage.setItem=()=>{throw new Error('QuotaExceededError')};
+ context.__state.xp=987;
+ assert.equal(context.__save(),false,'failed writes must return failure');
+ assert.equal(vm.runInContext('monSaveFailed',context),true);
+ assert.equal(store.has('mon-state'),false);
+ context.localStorage.setItem=write;
+ assert.equal(context.__save(),true,'retry must persist the in-memory progress');
+ assert.equal(JSON.parse(store.get('mon-state')).xp,987);
+ assert.equal(vm.runInContext('monSaveFailed',context),false);
+}

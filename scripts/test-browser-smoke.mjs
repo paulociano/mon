@@ -5,6 +5,7 @@ const base=process.env.MON_SMOKE_URL||'http://127.0.0.1:4173';
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:1280,height:900}});
 await page.addInitScript(()=>{
+ if(window!==window.top)return;
  localStorage.setItem('mon-onboarded','1');
  window.__srConstructed=0;
  class FakeSpeechRecognition{constructor(){window.__srConstructed++}start(){}stop(){}}

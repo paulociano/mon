@@ -53,3 +53,10 @@ const source=fs.readFileSync('core/learning-metrics.js','utf8');
 assert.ok(!source.includes('fetch(')&&!source.includes('sendBeacon'),'learning metrics must stay local-only');
 
 console.log('MON learning metrics contracts passed');
+
+{
+ const rows=[null,undefined,'',false,'50',-1,101].map(autonomy=>({kind:'mission_complete',autonomy}));
+ ctx.__missingAutonomy=rows;
+ const metric=vm.runInContext('learningMetricAutonomy(__missingAutonomy)',ctx);
+ assert.equal(metric.samples,0);assert.equal(metric.value,null);
+}
