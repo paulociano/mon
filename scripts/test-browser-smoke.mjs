@@ -46,6 +46,11 @@ try{
   throw new Error(`${error.message} finalUrl=${page.url()} status=${response.status()} title=${JSON.stringify(title)} body=${JSON.stringify(body.slice(0,600))} markup=${JSON.stringify(markup)}`);
  }
  assert.equal(pageErrors.length,0,'Home boot emitted page errors: '+pageErrors.join('\n'));
+ await waitVisible('#guideVisual');
+ assert.equal(await page.locator('img[src*="kitsu-mascot"]').count(),0,'legacy mascot image must not render');
+ const guideBox=await page.locator('#guideVisual').boundingBox();
+ assert.ok(guideBox&&guideBox.width>=80&&guideBox.height>=80,'abstract guide effect must keep a visible visual footprint');
+ assert.equal(await page.locator('#guideVisual .guide-glyph').innerText(),'門','abstract guide effect should carry the MON gate glyph');
  await page.keyboard.press('Tab');
  assert.equal(await page.evaluate(()=>document.activeElement?.classList.contains('skip-link')),true,'first keyboard stop should expose skip link');
  await page.keyboard.press('Enter');
