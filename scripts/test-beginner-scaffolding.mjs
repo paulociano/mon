@@ -3,7 +3,7 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
 const ctx=vm.createContext({console,Math,Number,String,Array,Object,Set});
-for(const file of ['data/kana.js','data/foundation.js','data/session.js','core/course-engine.js']){
+for(const file of ['data/kana.js','data/foundation.js','data/session.js','core/beginner-scaffolding.js','core/course-engine.js']){
   vm.runInContext(fs.readFileSync(file,'utf8'),ctx,{filename:file});
 }
 for(let day=1;day<=24;day++){
@@ -18,6 +18,7 @@ const day16=vm.runInContext("lessonPlanFromNode({day:16,label:'Fundação 16'}).
 assert.deepEqual(Array.from(day16.tokens),['ともだち','と','いきます'],'day 16 must use linguistic blocks rather than character chunks');
 assert.equal(day16.cue,'Vou com um amigo.');
 assert.match(day16.hint,/companhia.*と.*ação polida/);
-const lesson=fs.readFileSync('features/lesson.js','utf8');
-for(const token of ['wordbank-cue','quickWordbankHint','wordbankHint','hintUsed=true'])assert.ok(lesson.includes(token),'guided wordbank UI missing '+token);
+const lesson=fs.readFileSync('features/lesson.js','utf8'),scaffold=fs.readFileSync('core/beginner-scaffolding.js','utf8');
+assert.ok(lesson.includes('renderGuidedWordbank'),'lesson runtime must delegate guided reconstruction UI');
+for(const token of ['wordbank-cue','quickWordbankHint','wordbankHint','hintUsed=true'])assert.ok(scaffold.includes(token),'guided wordbank support missing '+token);
 console.log('MON beginner reconstruction scaffolding contracts passed');

@@ -49,13 +49,3 @@
 @media(max-height:560px) and (orientation:landscape){.quick-top{height:52px}.quick-main{padding-top:12px;padding-bottom:116px}.quick-bottom{min-height:92px}.quick-bottom-inner{flex-direction:row;padding:8px 0}.quick-question{font-size:24px}.quick-jp{margin:10px 0;font-size:36px}}
 
 .study-card{display:grid;gap:14px}.study-card>p,.study-contrast{font-size:10px;line-height:1.7;color:#aeb9c4}.study-model{font:500 20px/1.45 var(--display);color:#f1e4cf}.study-examples{display:grid;gap:9px}.study-examples article{padding:13px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:#111c2c}.study-examples strong,.study-examples span,.study-examples small{display:block}.study-examples strong{font:650 23px/1.3 var(--jp)}.study-examples span{color:#d7b56d}.study-examples small{margin-top:6px;color:#8f9baa;line-height:1.5}
-
-
-/* Guided reconstruction · beginner scaffold */
-.wordbank-cue{margin:18px 0 8px;padding:13px 15px;border:1px solid rgba(215,181,109,.16);border-radius:14px;background:rgba(215,181,109,.055)}
-.wordbank-cue span{display:block;margin-bottom:4px;font-size:7px;text-transform:uppercase;letter-spacing:.12em;color:#d7b56d}
-.wordbank-cue strong{font-size:12px;line-height:1.5;color:#e7ebf0}
-.wordbank-hint-button{margin-top:18px}
-.wordbank-hint{display:none;margin-top:9px;padding:10px 12px;border-radius:11px;background:rgba(255,255,255,.035);color:#98a6b5;font-size:9px;line-height:1.6}
-.wordbank-hint.show{display:block}
-@media(max-width:560px){.wordbank-cue strong{font-size:13px}.wordbank-hint{font-size:10px}}
