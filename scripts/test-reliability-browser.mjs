@@ -23,12 +23,11 @@ try{
   assert.equal(await loaderPage.evaluate(()=>go('user')),true);
   await loaderPage.waitForSelector('#user.active');
  }finally{await loaderContext.close()}
- await page.evaluate(()=>go('user'));
+ await page.evaluate(async()=>{await go('user');await renderCloudAccountPanel();setMonUserAuthState(true)});
  await page.waitForSelector('#user.active');
- await page.waitForFunction(()=>document.getElementById('userCloudPanel')?.textContent.length>0);
- await page.evaluate(()=>setMonUserAuthState(true));
  await page.fill('#userNameInput','Teste de rotina');
  await page.click('button[onclick="saveUserArea()"]');
+ await page.evaluate(async()=>{await renderCloudAccountPanel();setMonUserAuthState(true)});
  assert.equal(await page.locator('#userNameHero').innerText(),'Teste de rotina');
  assert.ok(await page.locator('#userAccountBadge').isVisible(),'sync status must remain visible on mobile');
  const a11y=await new AxeBuilder({page}).include('#user').withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
@@ -54,9 +53,7 @@ try{
  await page.evaluate(()=>go('pronunciation'));
  await page.evaluate(()=>ratePron(2));
  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('mon-state')).pronunciation.selfRatings[0].rating),2);
- await page.evaluate(()=>go('user'));
- await page.waitForFunction(()=>document.getElementById('userCloudPanel')?.textContent.length>0);
- await page.evaluate(()=>setMonUserAuthState(true));
+ await page.evaluate(async()=>{await go('user');await renderCloudAccountPanel();setMonUserAuthState(true)});
  await page.click('#prepareOffline');
  await page.waitForFunction(()=>document.getElementById('offlineStatus').textContent.startsWith('Lições,'));
  await context.setOffline(true);
