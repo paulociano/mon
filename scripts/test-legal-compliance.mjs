@@ -7,6 +7,10 @@ const required=[
  'legal/DATA-RETENTION.md',
  'legal/SUBPROCESSORS.md',
  'legal/AGE-AND-CHILD-SAFETY.md',
+ 'legal/privacy.html',
+ 'legal/terms.html',
+ 'legal/legal-viewer.js',
+ 'legal/legal-viewer.css',
  'compliance/DATA-INVENTORY.md',
  'compliance/PROCESSING-REGISTER.md',
  'compliance/INCIDENT-RESPONSE.md',
@@ -57,3 +61,13 @@ for(const requiredText of [
 ])if(!cloud.includes(requiredText))throw new Error('client account deletion integration missing: '+requiredText);
 
 console.log('legal/compliance baseline ok');
+
+const authPage=fs.readFileSync('features/auth-page.js','utf8');
+for(const href of ['legal/privacy.html','legal/terms.html'])if(!authPage.includes(href))throw new Error('auth legal link missing: '+href);
+for(const file of ['legal/privacy.html','legal/terms.html']){
+ const html=fs.readFileSync(file,'utf8');
+ if(!html.includes('baseline pré-produção'))throw new Error('legal page must disclose pre-launch status: '+file);
+ if(!html.includes('legal-viewer.js'))throw new Error('legal page must load canonical source viewer: '+file);
+}
+const privacyControls=fs.readFileSync('features/account-privacy.js','utf8');
+for(const href of ['legal/privacy.html','legal/terms.html'])if(!privacyControls.includes(href))throw new Error('account legal link missing: '+href);

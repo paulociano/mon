@@ -43,7 +43,7 @@ function ensureMonPrivacyControls(){
  if(document.querySelector('[data-mon-privacy-controls]'))return;
  const actions=[...document.querySelectorAll('#user .user-actions')].at(-1);if(!actions)return;
  const wrap=document.createElement('span');wrap.dataset.monPrivacyControls='1';wrap.className='user-actions';
- wrap.innerHTML='<button class="user-secondary" type="button" data-mon-delete-cloud>Excluir dados da nuvem</button><button class="user-secondary" type="button" data-mon-delete-account>Excluir Conta MON</button><a class="user-secondary" href="legal/PRIVACY-POLICY.md" target="_blank" rel="noopener">privacidade</a><a class="user-secondary" href="legal/TERMS-OF-USE.md" target="_blank" rel="noopener">termos</a>';
+ wrap.innerHTML='<button class="user-secondary" type="button" data-mon-delete-cloud>Excluir dados da nuvem</button><button class="user-secondary" type="button" data-mon-delete-account>Excluir Conta MON</button><a class="user-secondary" href="legal/privacy.html" target="_blank" rel="noopener">privacidade</a><a class="user-secondary" href="legal/terms.html" target="_blank" rel="noopener">termos</a>';
  actions.insertAdjacentElement('afterend',wrap);
  wrap.querySelector('[data-mon-delete-cloud]')?.addEventListener('click',async e=>{const btn=e.currentTarget;btn.disabled=true;try{await deleteMonCloudData()}catch(err){if(typeof toast==='function')toast(err?.message||'Não foi possível excluir os dados da nuvem')}finally{btn.disabled=false}});
  wrap.querySelector('[data-mon-delete-account]')?.addEventListener('click',async e=>{const btn=e.currentTarget;btn.disabled=true;try{await deleteMonAccount()}catch(err){if(typeof toast==='function')toast(err?.message||'Não foi possível excluir a Conta MON')}finally{btn.disabled=false}});
