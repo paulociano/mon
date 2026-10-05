@@ -15,3 +15,7 @@ for(const token of ['exportMonBackup'])assert.ok(core.includes(token),'account a
 for(const token of ['renderCloudAccountPanel','connectMonCloud','disconnectMonCloud','syncMonNow','resolveMonCloudConflict'])assert.ok(sync.includes(token),'sync action must stay lazy '+token);
 assert.ok(!html.toLowerCase().includes('entrar com google'),'shell must not advertise unavailable auth');
 console.log('MON account boundary contracts passed');
+
+const profileSummary=app.match(/function showProfileSummary\(\)\{([^}]*)\}/)?.[1]||'';
+assert.ok(profileSummary.includes("go('user')"),'profile summary must route through the user lazy boundary');
+assert.ok(!profileSummary.includes('ensureUserArea('),'profile summary must not touch lazy user symbols before account runtime loads');
