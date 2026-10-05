@@ -48,12 +48,23 @@ function monKanaToRomaji(text){
 function monReadingMode(stateLike=typeof state!=='undefined'?state:null){
  const mode=stateLike?.romajiMode;return mode==='show'||mode==='hide'?mode:'auto';
 }
-function monReadingSupportClass(stateLike=typeof state!=='undefined'?state:null,mode=monReadingMode(stateLike),annotation='romaji'){
+function monReadingStage(stateLike=typeof state!=='undefined'?state:null){
+ const cell=stateLike?.masteryEvidence?.['reading:global']?.recall||null,attempts=Number(cell?.attempts||0),score=Number(cell?.score||0);
+ if(attempts>=3){
+  if(score>=80)return {kind:'none',faded:false,source:'mastery',attempts,score};
+  if(score>=55)return {kind:'furigana',faded:false,source:'mastery',attempts,score};
+  return {kind:'romaji',faded:false,source:'mastery',attempts,score};
+ }
+ const day=Math.max(1,Number(stateLike?.foundationDay||1));
+ if(stateLike?.foundationComplete||day>12)return {kind:'furigana',faded:false,source:'foundation',attempts,score};
+ if(day>8)return {kind:'romaji',faded:true,source:'foundation',attempts,score};
+ return {kind:'romaji',faded:false,source:'foundation',attempts,score};
+}
+function monReadingSupportClass(stateLike=typeof state!=='undefined'?state:null,mode=monReadingMode(stateLike),annotation='romaji',stage=monReadingStage(stateLike)){
  if(mode==='show')return 'romaji-show';
  if(mode==='hide')return 'romaji-hide';
- const day=Math.max(1,Number(stateLike?.foundationDay||1));
  if(annotation==='furigana')return 'romaji-auto reading-furigana';
- if(day>8)return 'romaji-auto romaji-auto-faded';
+ if(stage?.faded)return 'romaji-auto romaji-auto-faded';
  return 'romaji-auto';
 }
 function monContainsKanji(text){
@@ -66,20 +77,20 @@ function monKanaOnlyReading(text){
 function renderJapaneseReading(text,reading='',options={}){
  const jp=String(text??''),source=String(reading||monKanaOnlyReading(jp)||''),directRomaji=String(options.romaji||'').trim();
  if(!source&&!directRomaji)return monEscapeReadingHtml(jp);
- const mode=options.mode||monReadingMode(options.state),stateLike=options.state||(typeof state!=='undefined'?state:null);
- const day=Math.max(1,Number(stateLike?.foundationDay||1)),pastFoundation=!!stateLike?.foundationComplete||day>12;
+ const mode=options.mode||monReadingMode(options.state),stateLike=options.state||(typeof state!=='undefined'?state:null),stage=monReadingStage(stateLike);
  let annotation='romaji',support=String(directRomaji||monKanaToRomaji(source)||'').trim();
- if(mode==='auto'&&pastFoundation){
+ if(mode==='auto'&&stage.kind==='none')return monEscapeReadingHtml(jp);
+ if(mode==='auto'&&stage.kind==='furigana'){
   if(!monContainsKanji(jp)||!source)return monEscapeReadingHtml(jp);
   annotation='furigana';support=source;
  }
  if(!support)return monEscapeReadingHtml(jp);
- const klass=monReadingSupportClass(stateLike,mode,annotation);
+ const klass=monReadingSupportClass(stateLike,mode,annotation,stage);
  return `<ruby class="mon-reading ${klass}" data-reading-support="${mode}" data-reading-kind="${annotation}"><rb lang="ja">${monEscapeReadingHtml(jp)}</rb><rt aria-hidden="true">${monEscapeReadingHtml(support)}</rt></ruby>`;
 }
 function adaptExistingJapaneseRuby(root,options={}){
  if(!root?.querySelectorAll)return 0;
- const stateLike=options.state||(typeof state!=='undefined'?state:null),mode=options.mode||monReadingMode(stateLike);
+ const stateLike=options.state||(typeof state!=='undefined'?state:null),mode=options.mode||monReadingMode(stateLike),stage=monReadingStage(stateLike);
  let count=0;
  root.querySelectorAll('ruby').forEach(ruby=>{
   if(ruby.classList.contains('mon-reading'))return;
@@ -87,13 +98,14 @@ function adaptExistingJapaneseRuby(root,options={}){
   const source=rt.dataset.monKana||rt.textContent.trim();if(!source)return;
   if(!rt.dataset.monKana)rt.dataset.monKana=source;
   const jp=[...ruby.childNodes].filter(n=>n!==rt).map(n=>n.textContent||'').join('').trim();
-  const day=Math.max(1,Number(stateLike?.foundationDay||1)),pastFoundation=!!stateLike?.foundationComplete||day>12;
-  const annotation=mode==='auto'&&pastFoundation?'furigana':'romaji';
+  if(mode==='auto'&&stage.kind==='none'){rt.hidden=true;count++;return}
+  const annotation=mode==='auto'&&stage.kind==='furigana'?'furigana':'romaji';
   const support=annotation==='furigana'?source:monKanaToRomaji(source);
   if(!support)return;
-  ruby.classList.add('mon-reading',...monReadingSupportClass(stateLike,mode,annotation).split(/\s+/).filter(Boolean));
+  rt.hidden=false;
+  ruby.classList.add('mon-reading',...monReadingSupportClass(stateLike,mode,annotation,stage).split(/\s+/).filter(Boolean));
   ruby.dataset.readingSupport=mode;ruby.dataset.readingKind=annotation;rt.setAttribute('aria-hidden','true');rt.textContent=support;count++;
  });
  return count;
 }
-if(typeof window!=='undefined')Object.assign(window,{monKanaToRomaji,renderJapaneseReading,adaptExistingJapaneseRuby,monReadingMode,monReadingSupportClass,monContainsKanji});
+if(typeof window!=='undefined')Object.assign(window,{monKanaToRomaji,renderJapaneseReading,adaptExistingJapaneseRuby,monReadingMode,monReadingStage,monReadingSupportClass,monContainsKanji});
