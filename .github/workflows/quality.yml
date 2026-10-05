@@ -92,6 +92,8 @@ jobs:
         run: node scripts/test-grammar-conceptual-mastery.mjs
       - name: Contrastive grammar interleaving
         run: node scripts/test-grammar-contrast-interleaving.mjs
+      - name: Longitudinal contrast retention
+        run: node scripts/test-grammar-contrast-retention.mjs
       - name: Learning evidence behavior
         run: node scripts/test-learning-evidence.mjs
       - name: Learning metrics semantics
