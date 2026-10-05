@@ -42,4 +42,10 @@ assert.match(graduated,/data-reading-kind="furigana"/);
 const kanaAfterFoundation=context.renderJapaneseReading('みず','みず',{state:{romajiMode:'auto',foundationDay:24,foundationComplete:true}});
 assert.equal(kanaAfterFoundation,'みず','kana-only text should stop showing redundant reading support after foundation');
 
+const trustedRomaji=context.renderJapaneseReading('日本語がまだよく分かりません。','',{romaji:'nihongo ga mada yoku wakarimasen',state:{romajiMode:'auto',foundationDay:4,foundationComplete:false}});
+assert.match(trustedRomaji,/>nihongo ga mada yoku wakarimasen<\/rt>/);
+
+const trustedRomajiAfterFoundation=context.renderJapaneseReading('日本語がまだよく分かりません。','',{romaji:'nihongo ga mada yoku wakarimasen',state:{romajiMode:'auto',foundationDay:24,foundationComplete:true}});
+assert.equal(trustedRomajiAfterFoundation,'日本語がまだよく分かりません。','romaji-only sources must not become fake furigana after foundation');
+
 console.log('reading support contracts: ok');
