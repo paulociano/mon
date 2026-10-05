@@ -102,6 +102,9 @@ function compileMONMethod(unit,method,index=0){
       _reviewType:'grammar',_reviewKey:'P:'+g.id,_masteryDimension:'mechanism',method:'mechanism'};
   }
   if(method==='contrast'&&g.item){
+    let target=g,partner=grammarContrastPartner(g.id);
+    if(!partner)for(const id of unit.grammar||[]){const p=grammarContrastPartner(id);if(p){target={id,item:grammarCatalog[id]};partner=p;break}}
+    if(partner)return grammarContrastExercise(target.id,partner);
     const pool=Object.values(grammarCatalog).map(x=>x.contrast).filter(Boolean);
     return {type:'choice',prompt:`Qual contraste evita confundir ${g.item.form} com uma estrutura próxima?`,jp:g.item.form,
       options:methodOptions(g.item.contrast,pool),answer:g.item.contrast,
