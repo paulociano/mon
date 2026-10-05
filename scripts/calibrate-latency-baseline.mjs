@@ -27,7 +27,7 @@ try{
   const context=await browser.newContext({viewport:{width:1280,height:900}});
   const page=await context.newPage();
   await page.addInitScript(()=>{localStorage.setItem('mon-onboarded','1');localStorage.removeItem('mon_perf_v1')});
-  await page.goto(base+'?debug=1',{waitUntil:'networkidle'});
+  await page.goto(base+'?view=home&debug=1',{waitUntil:'networkidle'});
   await page.waitForSelector('#home.active',{state:'visible'});
   for(let i=0;i<6;i++)await page.evaluate(async()=>{await go('progress');await go('home')});
   await page.evaluate(async()=>{
