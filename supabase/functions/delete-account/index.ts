@@ -60,6 +60,12 @@ Deno.serve(async (req: Request) => {
   const user = userData?.user
   if (userError || !user) return json({ error: 'unauthorized' }, 401)
 
+  const { error: signOutError } = await userClient.auth.signOut({ scope: 'global' })
+  if (signOutError) {
+    console.error('delete-account: session revocation failed', signOutError.code || signOutError.name)
+    return json({ error: 'session_revocation_failed' }, 500)
+  }
+
   const admin = createClient(supabaseUrl, secretKey, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
   })
