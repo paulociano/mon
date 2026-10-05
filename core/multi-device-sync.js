@@ -75,6 +75,7 @@ async function monCloudBootstrap(){try{return await monCloudReconcile()}catch(e)
 async function renderCloudAccountPanel(){
  const panel=document.getElementById('userCloudPanel');
  if(typeof ensureMonBackupImportControl==='function')ensureMonBackupImportControl();
+ if(typeof ensureMonPrivacyControls==='function')ensureMonPrivacyControls();
  if(!panel)return;
  if(!monCloudAvailable()){panel.innerHTML='<b>Conta MON</b><br>Seu progresso está neste navegador. A sincronização ainda não está disponível; exporte um backup para protegê-lo.';return}
  try{

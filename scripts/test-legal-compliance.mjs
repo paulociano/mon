@@ -29,7 +29,7 @@ for(const requiredText of [
  'using ((select auth.uid()) = user_id)'
 ])if(!schema.includes(requiredText))throw new Error('cloud deletion control missing: '+requiredText);
 
-const account=fs.readFileSync('core/account.js','utf8');
+const account=fs.readFileSync('features/account-privacy.js','utf8');
 for(const requiredText of [
  'async function deleteMonCloudData',
  'async function deleteMonAccount',
@@ -47,7 +47,7 @@ for(const requiredText of [
  "SUPABASE_SERVICE_ROLE_KEY"
 ])if(!deleteFn.includes(requiredText))throw new Error('server-side account deletion control missing: '+requiredText);
 
-const cloud=fs.readFileSync('core/supabase-sync.js','utf8');
+const cloud=fs.readFileSync('features/account-privacy.js','utf8');
 for(const requiredText of [
  "client.functions.invoke('delete-account'",
  "scope:'local'"

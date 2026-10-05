@@ -17,16 +17,6 @@ async function getMonSupabase(){
 async function monCloudSession(){const client=await getMonSupabase();if(!client)return null;const {data}=await client.auth.getSession();return data.session||null}
 async function monCloudSignIn(email){const client=await getMonSupabase();if(!client)throw new Error('Nuvem MON ainda não configurada');const redirectTo=location.href.split('#')[0];const {error}=await client.auth.signInWithOtp({email,options:{emailRedirectTo:redirectTo}});if(error)throw error;return true}
 async function monCloudSignOut(){const client=await getMonSupabase();if(!client)return;const {error}=await client.auth.signOut();if(error)throw error}
-async function monCloudDeleteAccount(){
- const client=await getMonSupabase(),session=await monCloudSession();
- if(!client||!session)throw new Error('Entre na Conta MON para excluir a conta');
- const {data,error}=await client.functions.invoke('delete-account',{body:{confirm:'DELETE_MY_ACCOUNT'}});
- if(error)throw new Error('Não foi possível excluir sua Conta MON');
- if(!data?.deleted)throw new Error('A exclusão da Conta MON não foi confirmada');
- try{await client.auth.signOut({scope:'local'})}catch{}
- monSupabaseClient=null;
- return true;
-}
 function monSyncConflict(message='O progresso mudou em outro dispositivo'){const e=new Error(message);e.code='MON_SYNC_CONFLICT';return e}
 function monCloudRow(session,payload,revision){
  return {user_id:session.user.id,sync_version:payload.syncVersion,profile:payload.profile,learning_state:payload.learningState,client_updated_at:payload.updatedAt,updated_at:new Date().toISOString(),revision};
