@@ -423,12 +423,15 @@ function showMonUpdate(worker){
  const banner=document.getElementById('updateBanner');
  if(banner)banner.hidden=false;
 }
-function applyMonUpdate(){
- if(!monUpdateWorker)return false;
+async function applyMonUpdate(){
  const lessonActive=document.getElementById('lesson')?.classList.contains('active')||document.body.classList.contains('focus-session');
  if(lessonActive){toast('Atualização pronta. Conclua a lição antes de recarregar.');return false}
  monReloadForUpdate=true;
- monUpdateWorker.postMessage({type:'SKIP_WAITING'});
+ const reg=await navigator.serviceWorker?.getRegistration?.();
+ const worker=(monUpdateWorker?.state==='installed'?monUpdateWorker:null)||reg?.waiting||null;
+ if(worker){worker.postMessage({type:'SKIP_WAITING'});return true}
+ const banner=document.getElementById('updateBanner');if(banner)banner.hidden=true;
+ location.reload();
  return true;
 }
 function watchMonUpdate(reg){
@@ -439,7 +442,7 @@ function watchMonUpdate(reg){
  });
 }
 if('serviceWorker' in navigator){
- navigator.serviceWorker.addEventListener('controllerchange',()=>{if(monReloadForUpdate)window.location.reload()});
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{const banner=document.getElementById('updateBanner');if(banner)banner.hidden=true;if(monReloadForUpdate)window.location.reload()});
  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(watchMonUpdate).catch(()=>{}));
 }
 function finishOnboarding(mode){
