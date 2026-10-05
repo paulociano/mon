@@ -26,5 +26,5 @@ const syncAdapter=fs.readFileSync('core/supabase-sync.js','utf8');
 assert.ok(syncAdapter.includes('monSupabaseClientPromise'),'Supabase client creation must be single-flight');
 assert.ok(syncAdapter.includes('if(monSupabaseClientPromise)return monSupabaseClientPromise'),'concurrent account bootstrap must reuse the same client promise');
 const multi=fs.readFileSync('core/multi-device-sync.js','utf8');
-assert.ok(multi.includes('function monEscapeHtml'),'account UI must own its HTML escaping helper');
-assert.ok(!multi.includes('email=escapeHtml('),'account UI must not depend on an unloaded global escapeHtml helper');
+assert.ok(multi.includes("identity.textContent=session.user.email||'usuário'"),'account identity must render through textContent');
+assert.ok(!multi.includes('escapeHtml('),'account UI must not depend on an unloaded global escapeHtml helper');
