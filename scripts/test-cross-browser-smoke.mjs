@@ -14,7 +14,7 @@ page.on('pageerror',e=>errors.push(String(e?.stack||e)));
 
 try{
  await page.addInitScript(()=>localStorage.setItem('mon-onboarded','1'));
- const response=await page.goto(base,{waitUntil:'domcontentloaded'});
+ const response=await page.goto(base+'?view=home',{waitUntil:'domcontentloaded'});
  assert.ok(response?.ok(),selected+' shell navigation failed');
  await page.waitForSelector('#home.active',{state:'visible'});
 
