@@ -18,7 +18,8 @@ const required=[
  'compliance/DPIA.md',
  'compliance/RELEASE-GATES.md',
  'compliance/SUPABASE-VENDOR-REVIEW.md',
- 'compliance/SUPABASE-E2E-EVIDENCE.md'
+ 'compliance/SUPABASE-E2E-EVIDENCE.md',
+ 'compliance/MINOR-SAFETY-REVIEW.md'
 ];
 for(const file of required){
  if(!fs.existsSync(file))throw new Error('missing legal/compliance file: '+file);
@@ -79,3 +80,8 @@ for(const source of [privacyPolicy,terms])if(!source.includes('Paulo Henrique Gr
 if(privacyPolicy.includes('[NOME/RAZÃO SOCIAL DO RESPONSÁVEL]')||terms.includes('[NOME/RAZÃO SOCIAL DO RESPONSÁVEL]'))throw new Error('controller placeholder must not remain');
 if(!agePolicy.includes('sem restrição etária'))throw new Error('age decision must be explicit');
 if(!agePolicy.includes('gate de salvaguardas para menores permanece aberto'))throw new Error('minor safeguards gate must remain explicit');
+
+const minorReview=fs.readFileSync('compliance/MINOR-SAFETY-REVIEW.md','utf8');
+for(const token of ['Baseline técnico protetivo','sem restrição etária','Conformidade jurídica para menores: aberta'])if(!minorReview.includes(token))throw new Error('minor-safety review missing '+token);
+for(const forbidden of ['type="date"','name="birth','navigator.geolocation'])if(authPage.includes(forbidden))throw new Error('auth surface must not collect age/location: '+forbidden);
+if(!authPage.includes('criança ou adolescente'))throw new Error('auth surface needs plain-language minor guidance');

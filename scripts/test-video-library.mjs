@@ -20,7 +20,7 @@ assert.ok(js.includes("modal.hidden=false"),'opening a video must unhide the nat
 assert.ok(js.includes("modal.hidden=true"),'closing a video must restore native hidden state');
 assert.ok(js.includes("youtube.com/watch?v="),'video player needs a YouTube fallback link');
 assert.ok(js.includes('referrerpolicy="strict-origin-when-cross-origin"'),'video iframe should use an explicit referrer policy');
-assert.ok(js.includes('loading="lazy"'));
+assert.ok(!js.includes('i.ytimg.com'),'video grid must not contact YouTube thumbnails before click');
 assert.ok(js.includes('recommendedVideo'),'video recommendation policy missing');
 assert.ok(js.includes('videoDimensionScores'),'video recommendation must use learning evidence');
 assert.ok(js.includes('startVideoPractice'),'video must hand off to active practice');
@@ -32,3 +32,7 @@ assert.ok(css.includes('.video-modal[hidden]{display:none!important}'));
 assert.ok(css.includes('.video-fallback'));
 assert.ok(css.includes('.video-recommendation'));
 console.log('MON Video Library contracts passed');
+
+assert.ok(js.includes('autoplay=0'),'external player must not autoplay');
+assert.ok(!js.includes('autoplay=1'),'external player autoplay must stay disabled');
+assert.ok(js.includes('video-poster'),'video grid must use a local poster');
