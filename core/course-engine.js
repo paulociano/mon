@@ -172,6 +172,6 @@ function buildLesson(node,learnerState){
     ?sequenceLessonByPlan(exercises,nextBest,nextBest.targetExercises||8)
     :optimizeExerciseSequence(exercises,10);
   const adaptiveStudy=pack.learning&&typeof adaptStudyForLearner==='function'?adaptStudyForLearner(pack.learning,learnerState||state):pack.study;
-  const lessonExercises=adaptiveStudy?[adaptiveStudy,...ordered]:ordered;
+  const lessonExercises=adaptiveStudy&&!base.includes(adaptiveStudy)?[adaptiveStudy,...ordered]:ordered;
   return {...pack,study:adaptiveStudy,exercises:lessonExercises,adaptive:true,reviewCount:reviews.length,nextBest};
 }
