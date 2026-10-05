@@ -52,7 +52,7 @@ assert.equal(full.mode,'full','new concepts should receive full study');
 
 const compactState={masteryEvidence:{}};
 for(const id of vm.runInContext('coursePacks.N5.units[0].grammar',ctx)){
-  compactState.masteryEvidence['grammar:P:'+id]={recognize:{attempts:3,score:82},recall:{attempts:3,score:78}};
+  compactState.masteryEvidence['grammar:P:'+id]={recognize:{attempts:3,score:82},mechanism:{attempts:3,score:78},contrast:{attempts:3,score:76},transfer:{attempts:2,score:74},produce:{attempts:2,score:72}};
 }
 ctx.compactState=compactState;
 const compact=vm.runInContext("adaptStudyForLearner(japaneseLearningContract(coursePacks.N5.units[0]),compactState)",ctx);

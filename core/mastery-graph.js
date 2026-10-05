@@ -1,4 +1,6 @@
 const MASTERY_DIMENSIONS=['recognize','recall','listen','transfer','produce'];
+const GRAMMAR_MASTERY_DIMENSIONS=['recognize','mechanism','contrast','transfer','produce'];
+function masteryDimensionsForConcept(concept=''){return String(concept).startsWith('grammar:')?GRAMMAR_MASTERY_DIMENSIONS:MASTERY_DIMENSIONS}
 
 function masteryConceptId(exercise={}){
   if(exercise._reviewType&&exercise._reviewKey)return exercise._reviewType+':'+exercise._reviewKey;
@@ -7,6 +9,7 @@ function masteryConceptId(exercise={}){
   return null;
 }
 function masteryDimension(exercise={}){
+  if(exercise._masteryDimension)return exercise._masteryDimension;
   if(exercise.type==='listen'||exercise.type==='minimalPair'||exercise.type==='dictation')return 'listen';
   if(exercise.type==='recall')return 'recall';
   if(exercise.type==='cloze'||exercise.type==='transfer'||exercise.type==='wordbank')return 'transfer';
@@ -40,21 +43,20 @@ function masteryScore(concept,dimension){
   return masteryCell(concept,dimension)?.score||0;
 }
 function conceptMastery(concept){
-  const cells=state.masteryEvidence?.[concept]||{};
-  const scores=MASTERY_DIMENSIONS.map(d=>cells[d]?.score).filter(x=>Number.isFinite(x));
-  if(!scores.length)return 0;
-  const avg=scores.reduce((a,b)=>a+b,0)/scores.length;
-  const floor=Math.min(...scores);
+  const cells=state.masteryEvidence?.[concept]||{},dims=masteryDimensionsForConcept(concept);
+  const observed=dims.map(d=>cells[d]?.score).filter(x=>Number.isFinite(x));if(!observed.length)return 0;
+  const scores=String(concept).startsWith('grammar:')?dims.map(d=>Number.isFinite(cells[d]?.score)?cells[d].score:0):observed;
+  const avg=scores.reduce((a,b)=>a+b,0)/scores.length,floor=Math.min(...scores);
   return Math.round(avg*.65+floor*.35);
 }
 function conceptBreakdown(concept){
-  return MASTERY_DIMENSIONS.map(d=>({dimension:d,score:masteryScore(concept,d),attempts:masteryCell(concept,d)?.attempts||0}));
+  return masteryDimensionsForConcept(concept).map(d=>({dimension:d,score:masteryScore(concept,d),attempts:masteryCell(concept,d)?.attempts||0}));
 }
 function masteryWeakEdges(limit=8,conceptPrefix=null){
   const rows=[];
   for(const [concept,cells] of Object.entries(state.masteryEvidence||{})){
     if(conceptPrefix&&!concept.startsWith(conceptPrefix))continue;
-    for(const dimension of MASTERY_DIMENSIONS){
+    for(const dimension of masteryDimensionsForConcept(concept)){
       const cell=cells[dimension];if(!cell)continue;
       const confidence=Math.min(1,(cell.attempts||0)/3);
       rows.push({concept,dimension,score:cell.score,attempts:cell.attempts||0,priority:(100-cell.score)*(0.65+confidence*.35)});
@@ -92,7 +94,7 @@ function unitMasteryStatus(unit){
   return {status,score,coverage,required};
 }
 function methodForWeakDimension(dimension){
-  return {recognize:'discover',recall:'freeRecall',listen:'dictation',transfer:'transfer',produce:'roleplay'}[dimension]||null;
+  return {recognize:'discover',recall:'freeRecall',listen:'dictation',mechanism:'mechanism',contrast:'contrast',transfer:'transfer',produce:'roleplay'}[dimension]||null;
 }
 function masteryMethodHints(unit){
   const concepts=new Set(unitConcepts(unit));
@@ -110,7 +112,7 @@ function unitMasteryGaps(unit,limit=6){
   const gaps=[];
   for(const concept of concepts){
     const cells=state.masteryEvidence?.[concept]||{};
-    for(const dimension of MASTERY_DIMENSIONS){
+    for(const dimension of masteryDimensionsForConcept(concept)){
       const cell=cells[dimension];
       if(!cell){
         if(required.has(concept)||concept.startsWith('unit:'))gaps.push({concept,dimension,score:0,attempts:0,priority:required.has(concept)?120:90,unseen:true});

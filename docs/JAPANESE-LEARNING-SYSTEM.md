@@ -171,6 +171,22 @@ O botão de revisão direta monta uma sessão curta de `Study + retrieval` usand
 
 Princípio de desbloqueio: conteúdo futuro permanece oculto mesmo existindo no catálogo. A biblioteca cresce junto com a jornada do aluno.
 
+## Domínio conceitual de gramática · P5
+
+Gramática usa um mastery profile próprio com cinco dimensões observáveis:
+
+1. `recognize` — reconhecer a função do padrão;
+2. `mechanism` — compreender o modelo mental e prever por que a estrutura funciona;
+3. `contrast` — distinguir o padrão de uma alternativa próxima ou misconception comum;
+4. `transfer` — aplicar a estrutura fora do exemplo em que foi ensinada;
+5. `produce` — produzir a estrutura dentro de uma resposta funcional.
+
+Reconhecimento isolado não pode produzir domínio alto. Para gramática, dimensões ainda sem evidência entram como lacunas no cálculo de mastery. Vocabulário, kana, kanji e demais conceitos mantêm suas dimensões anteriores.
+
+As lições estruturadas coletam evidência explícita de mecanismo e contraste e atribuem transferência/produção ao conceito gramatical quando a prática usa a gramática da unidade. O Grammar Notebook exibe os cinco eixos e a revisão direta mira automaticamente o eixo mais fraco.
+
+A profundidade do Study adaptativo também usa esse perfil: uma estrutura reconhecida mas conceitualmente incompleta continua recebendo explicação em vez de ser promovida prematuramente para prática sem apoio.
+
 ## Gramática
 
 A gramática é ensinada como função comunicativa.

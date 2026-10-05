@@ -5,8 +5,8 @@ import assert from 'node:assert/strict';
 const state={
   foundationComplete:true,day:10,pathProgress:34,
   masteryEvidence:{
-    'grammar:P:locationNi':{recognize:{attempts:3,score:82},recall:{attempts:2,score:68}},
-    'grammar:P:requestKudasai':{recognize:{attempts:3,score:91},recall:{attempts:3,score:87},transfer:{attempts:2,score:84}}
+    'grammar:P:locationNi':{recognize:{attempts:3,score:82},mechanism:{attempts:2,score:66},contrast:{attempts:2,score:62},transfer:{attempts:1,score:58}},
+    'grammar:P:requestKudasai':{recognize:{attempts:3,score:91},mechanism:{attempts:3,score:88},contrast:{attempts:3,score:86},transfer:{attempts:2,score:84},produce:{attempts:2,score:85}}
   },
   reviewItems:{
     'grammar:P:locationNi':{type:'grammar',key:'P:locationNi',due:0,reps:1,interval:1,ease:2.3,lapses:1}
@@ -25,6 +25,7 @@ for(const file of [
   'data/grammar-pedagogy.js',
   'core/review-scheduler.js',
   'core/mastery-graph.js',
+  'core/learning-methods.js',
   'core/course-engine.js',
   'features/grammar-notebook.js'
 ])vm.runInContext(fs.readFileSync(file,'utf8'),ctx,{filename:file});
@@ -38,7 +39,9 @@ assert.equal(ni.level,'N5');
 assert.equal(ni.due,true);
 assert.equal(ni.misconceptions,1);
 assert.ok(ni.mastery>0&&ni.mastery<80);
-assert.equal(ni.status,'developing');
+assert.ok(['fragile','developing'].includes(ni.status));
+assert.equal(ni.dimensions.length,5);
+assert.equal(ni.dimensions.find(x=>x.dimension==='produce').score,0);
 assert.ok(ni.mentalModel.includes('destino'));
 assert.ok(ni.examples.length>=2);
 
@@ -58,6 +61,7 @@ assert.equal(review[0].type,'study');
 assert.equal(review[0].mode,'notebook');
 assert.equal(review[1]._reviewType,'grammar');
 assert.equal(review[1]._reviewKey,'P:locationNi');
+assert.equal(review[1]._masteryDimension,'produce','direct review should target the weakest conceptual dimension');
 
 const html=fs.readFileSync('index.html','utf8');
 assert.ok(html.includes('id="grammarNotebook"'),'Practice Hub needs Grammar Notebook mount point');
