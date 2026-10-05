@@ -270,6 +270,13 @@ Regras:
 - mobile-first para estudo rápido;
 - animação ambiente discreta.
 
+### 11.2 Primeiro uso · primeira vitória em ~10 minutos
+**Status:** em implementação.
+
+O onboarding para zero absoluto deve provar valor antes de apresentar o sistema inteiro. A entrada principal leva diretamente a uma sessão curta com quatro movimentos: ouvir → reconhecer → entender em contexto → falar. Escrita, métricas e detalhes de método aparecem depois da primeira experiência.
+
+**Critério de aceite:** quem escolhe “começando do zero” entra diretamente em uma sessão de no máximo 10 minutos, sem precisar navegar pela Home ou compreender Mastery Graph, XP, trilha, score ou ferramentas antes de aprender algo.
+
 ### 12. Robustez antes de escala
 - migração/versionamento de estado local ✅;
 - export/import do progresso ✅;

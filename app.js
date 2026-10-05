@@ -467,11 +467,12 @@ if('serviceWorker' in navigator){
  navigator.serviceWorker.addEventListener('controllerchange',()=>{const banner=document.getElementById('updateBanner');if(banner)banner.hidden=true;if(monReloadForUpdate)window.location.reload()});
  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(watchMonUpdate).catch(()=>{}));
 }
-function finishOnboarding(mode){
+async function finishOnboarding(mode){
  localStorage.setItem('mon-onboarded','1');
  const shell=document.getElementById('onboardingShell');if(shell)shell.hidden=true;
- if(mode==='diagnostic')startDiagnostic();
- else {go('home');setTimeout(()=>runJourneyPrimary(),120);}
+ if(mode==='diagnostic')return startDiagnostic();
+ await ensureFeatureRuntime('session');
+ return startFoundationSession(state.foundationDay||1,false,true);
 }
 function initOnboarding(){
  const shell=document.getElementById('onboardingShell');
