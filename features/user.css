@@ -9,3 +9,5 @@
 .user-auth-gate>p{margin:0;color:#52606f;font-size:14px;line-height:1.6}
 .user-auth-gate .user-data-note{margin-top:20px;background:#f7f8f9}
 .user-profile-shell[hidden]{display:none!important}
+
+.user-auth-gate>.eyebrow{color:#5b4925}
