@@ -245,19 +245,20 @@ Além dos budgets de bytes:
 
 Definir budgets de latência somente depois de coletar baseline real em navegadores/dispositivos representativos.
 
-### 11. UI/UX de alta fidelidade — primeira fatia P8 implementada ✅
+### 11. UI/UX de alta fidelidade — P8.2 Core Experience em andamento ✅
 **Pode avançar em paralelo, sem quebrar os gates.**
 
-**Fatia atual:** Home, Lesson e Practice receberam refinamento responsivo; a Fundação Zero ganhou variação determinística entre lições iniciais, introduções visuais de bloco e um atlas persistente de referência; energia inicial sobe para 30 e passa a ser consumida apenas em erros. Japan Journal, Survival Missions, Listening/Pronunciation e Kanji Atlas também receberam uma segunda leva responsiva com touch targets, hierarquia e estados de interação mais robustos. O Quality Gate cobre esses comportamentos em desktop, tablet e mobile.
+**P8.1:** Home, Lesson e Practice receberam refinamento responsivo; a Fundação Zero ganhou variação determinística entre lições iniciais, introduções visuais de bloco e um atlas persistente de referência. Japan Journal, Survival Missions, Listening/Pronunciation e Kanji Atlas também receberam uma segunda leva responsiva.
 
-Superfícies prioritárias:
-1. Home adaptativa;
-2. Lesson UI;
-3. Practice Hub;
-4. Japan Journal;
-5. Mission UI;
-6. Listening Lab;
-7. Kanji Lab.
+**P8.2 · Core Experience:** consolida a linguagem visual em torno de uma tese de “portal editorial, não dashboard”: Home com uma ação dominante e rail secundário mais silencioso; Jornada como timeline contínua de capacidades; Lesson com maior foco tipográfico, menos ruído e controles mais confortáveis em desktop e mobile.
+
+Próximas superfícies:
+1. Practice Hub;
+2. Progress como mapa de capacidades;
+3. Mission UI em linguagem de conversa;
+4. Explorar com menos grade uniforme;
+5. Listening Lab;
+6. Kanji Lab.
 
 Regras:
 - uma ação principal por superfície;
