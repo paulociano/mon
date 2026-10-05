@@ -21,12 +21,22 @@ Deno.serve(async (req: Request) => {
   if (!authorization?.startsWith('Bearer ')) return json({ error: 'unauthorized' }, 401)
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
-  const publishableKey =
-    Deno.env.get('SUPABASE_PUBLISHABLE_KEY') ||
-    Deno.env.get('SUPABASE_ANON_KEY')
-  const secretKey =
-    Deno.env.get('SUPABASE_SECRET_KEY') ||
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+
+  const envKey = (modernName: string, legacyName: string) => {
+    const modern = Deno.env.get(modernName)
+    if (modern) {
+      try {
+        const parsed = JSON.parse(modern)
+        if (parsed?.default) return parsed.default
+      } catch {
+        console.error('delete-account: invalid '+modernName+' configuration')
+      }
+    }
+    return Deno.env.get(legacyName)
+  }
+
+  const publishableKey = envKey('SUPABASE_PUBLISHABLE_KEYS', 'SUPABASE_ANON_KEY')
+  const secretKey = envKey('SUPABASE_SECRET_KEYS', 'SUPABASE_SERVICE_ROLE_KEY')
 
   if (!supabaseUrl || !publishableKey || !secretKey) {
     console.error('delete-account: missing Supabase server configuration')
@@ -45,7 +55,8 @@ Deno.serve(async (req: Request) => {
     global: { headers: { Authorization: authorization } },
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
   })
-  const { data: userData, error: userError } = await userClient.auth.getUser()
+  const token = authorization.replace('Bearer ', '')
+  const { data: userData, error: userError } = await userClient.auth.getUser(token)
   const user = userData?.user
   if (userError || !user) return json({ error: 'unauthorized' }, 401)
 

@@ -10,8 +10,10 @@ A Conta MON não deve ser aberta ao público enquanto qualquer gate P0 permanece
 - [ ] revisão jurídica dos Termos e Política de Privacidade;
 - [ ] decidir política de idade;
 - [x] implementar exclusão completa da identidade de autenticação por backend/Edge Function no repositório;
-- [ ] deployar e testar a Edge Function `delete-account` no projeto Supabase de produção/staging;
-- [ ] validar região, DPA/termos e transferência internacional do Supabase;
+- [x] deployar a Edge Function `delete-account` no projeto Supabase MON (`sa-east-1`);
+- [ ] testar exclusão completa ponta a ponta com usuário autenticado real;
+- [x] provisionar o projeto Supabase MON em `sa-east-1`;
+- [ ] validar DPA/termos e transferência internacional do Supabase;
 - [ ] confirmar hosting/CDN de produção e respectivos logs/retention;
 - [ ] publicar links visíveis para Termos e Privacidade na superfície de conta.
 
