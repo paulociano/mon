@@ -27,4 +27,19 @@ assert.equal(unsupported,'日本','kanji without a contextual reading must not b
 const hidden=context.renderJapaneseReading('みず','みず',{mode:'hide'});
 assert.match(hidden,/romaji-hide/);
 
+const beginner=context.renderJapaneseReading('駅','えき',{state:{romajiMode:'auto',foundationDay:4,foundationComplete:false}});
+assert.match(beginner,/>eki<\/rt>/);
+assert.match(beginner,/data-reading-kind="romaji"/);
+
+const transition=context.renderJapaneseReading('駅','えき',{state:{romajiMode:'auto',foundationDay:10,foundationComplete:false}});
+assert.match(transition,/romaji-auto-faded/);
+
+const graduated=context.renderJapaneseReading('駅','えき',{state:{romajiMode:'auto',foundationDay:24,foundationComplete:true}});
+assert.match(graduated,/>えき<\/rt>/);
+assert.match(graduated,/reading-furigana/);
+assert.match(graduated,/data-reading-kind="furigana"/);
+
+const kanaAfterFoundation=context.renderJapaneseReading('みず','みず',{state:{romajiMode:'auto',foundationDay:24,foundationComplete:true}});
+assert.equal(kanaAfterFoundation,'みず','kana-only text should stop showing redundant reading support after foundation');
+
 console.log('reading support contracts: ok');
