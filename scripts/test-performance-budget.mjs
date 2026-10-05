@@ -28,7 +28,7 @@ const beginnerScaffoldingScripts=['core/beginner-scaffolding.js'];
 const openRemediationScripts=['features/open-production-remediation.js'];
 const accountScripts=['core/account.js','features/user.js','features/offline.js'];
 const accountPrivacyScripts=['features/account-privacy.js'];
-const accountAuthScripts=['features/account-auth.js'];
+const accountAuthScripts=['features/account-auth.js','features/auth-page.js'];
 const multiDeviceSyncScripts=['core/multi-device-sync.js','core/supabase-sync.js'];
 const learningEvidenceScripts=['core/learning-evidence.js'];
 const mistakeScripts=['core/mistakes.js'];
@@ -75,7 +75,7 @@ const learningValidationJs=learningValidationScripts.reduce((n,p)=>n+size(p),0);
 const n4CapabilityJs=n4CapabilityScripts.reduce((n,p)=>n+size(p),0);
 const n4BaseJs=n4BaseScripts.reduce((n,p)=>n+size(p),0),n4SocialJs=n4SocialScripts.reduce((n,p)=>n+size(p),0),n4UrbanJs=n4UrbanScripts.reduce((n,p)=>n+size(p),0),n4ConversationJs=n4ConversationScripts.reduce((n,p)=>n+size(p),0);
 const n4ExtensionJs=n4ExtensionScripts.reduce((n,p)=>n+size(p),0);
-const css=size('styles.css'),journeyCss=size('features/journey.css'),featureCss=size('features/foundation.css'),lessonCss=size('features/lesson.css'),beginnerScaffoldingCss=size('features/beginner-scaffolding.css'),practiceCss=size('features/practice.css'),grammarNotebookCss=size('features/grammar-notebook.css'),journalCss=size('features/journal.css'),videoCss=size('features/videos.css'),pronunciationCss=size('features/pronunciation.css'),kanjiMemoryCss=size('features/kanji-memory.css'),missionsV2Css=size('features/missions-v2.css'),html=size('index.html');
+const authCss=size('features/auth.css'),css=size('styles.css'),journeyCss=size('features/journey.css'),featureCss=size('features/foundation.css'),lessonCss=size('features/lesson.css'),beginnerScaffoldingCss=size('features/beginner-scaffolding.css'),practiceCss=size('features/practice.css'),grammarNotebookCss=size('features/grammar-notebook.css'),journalCss=size('features/journal.css'),videoCss=size('features/videos.css'),pronunciationCss=size('features/pronunciation.css'),kanjiMemoryCss=size('features/kanji-memory.css'),missionsV2Css=size('features/missions-v2.css'),html=size('index.html');
 const hero=size('assets/scene/mon-home-banner.webp'),side=size('assets/scene/mon-sidebar-bg.webp');
 
 assert.ok(eagerJs<=72*1024,`eager JS budget exceeded: ${kb(eagerJs)} KB`);
@@ -111,7 +111,8 @@ assert.ok(missionWorldJs<=4*1024,`Mission world-state JS budget exceeded: ${kb(m
 assert.ok(missionsV2Css<=10*1024,`Survival Missions 2.0 CSS budget exceeded: ${kb(missionsV2Css)} KB`);
 assert.ok(accountJs<=14*1024,`account and backup JS budget exceeded: ${kb(accountJs)} KB`);
 assert.ok(accountPrivacyJs<=6*1024,`account privacy JS budget exceeded: ${kb(accountPrivacyJs)} KB`);
-assert.ok(accountAuthJs<=4*1024,`account auth JS budget exceeded: ${kb(accountAuthJs)} KB`);
+assert.ok(accountAuthJs<=7*1024,`account auth JS budget exceeded: ${kb(accountAuthJs)} KB`);
+assert.ok(authCss<=5*1024,`account auth CSS budget exceeded: ${kb(authCss)} KB`);
 assert.ok(multiDeviceSyncJs<=12*1024,`multi-device sync JS budget exceeded: ${kb(multiDeviceSyncJs)} KB`);
 assert.ok(learningEvidenceJs<=4*1024,`learning evidence JS budget exceeded: ${kb(learningEvidenceJs)} KB`);
 assert.ok(mistakesJs<=11*1024,`mistake remediation JS budget exceeded: ${kb(mistakesJs)} KB`);

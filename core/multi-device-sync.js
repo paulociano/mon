@@ -78,18 +78,20 @@ async function renderCloudAccountPanel(){
  if(typeof ensureMonPrivacyControls==='function')ensureMonPrivacyControls();
  if(!panel)return;
  if(!monCloudAvailable()&&typeof monEnsureCloudConfig==='function'){try{await monEnsureCloudConfig()}catch{}}
- if(!monCloudAvailable()){panel.innerHTML='<b>Conta MON</b><br>Sync indisponível. Progresso salvo neste navegador.';return}
+ if(!monCloudAvailable()){panel.innerHTML='<b>Conta MON</b><br>Sync indisponível. Progresso local salvo.';return}
  try{
   const session=await monCloudSession();
   if(!session){
+   setMonUserAuthState(false);
    panel.innerHTML='<b>Conta MON</b><br><label class="user-field"><span>E-mail</span><input id="userCloudEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><label class="user-field"><span>Senha</span><input id="userCloudPassword" type="password" autocomplete="current-password" minlength="8" placeholder="mínimo 8 caracteres"></label><div class="user-actions"><button class="user-save" onclick="signInMonCloud()">entrar</button><button class="user-secondary" onclick="signUpMonCloud()">criar conta</button></div><div class="user-data-note">No primeiro cadastro, confirme seu e-mail. Depois, o login é direto com e-mail e senha.</div>';
    return;
   }
+  setMonUserAuthState(true);
   monRememberSession(session);const badge=document.getElementById('userAccountBadge');if(badge)badge.textContent='conta conectada';
   const result=await monCloudReconcile();
   if(badge)badge.textContent=result.status==='conflict'?'conflito de progresso':monLocalSyncDirty()?'envio pendente':'conta sincronizada';
   if(result.status==='conflict'){
-   panel.innerHTML='<b>Conflito de progresso</b><br>Dispositivo e nuvem mudaram. Escolha qual versão manter; há backup local.<div class="user-actions"><button class="user-save" onclick="resolveMonCloudConflict(\'local\')">usar este dispositivo</button><button class="user-secondary" onclick="resolveMonCloudConflict(\'cloud\')">usar nuvem</button></div>';
+   panel.innerHTML='<b>Conflito de progresso</b><br>Dispositivo e nuvem mudaram. Escolha qual versão manter.<div class="user-actions"><button class="user-save" onclick="resolveMonCloudConflict(\'local\')">usar este dispositivo</button><button class="user-secondary" onclick="resolveMonCloudConflict(\'cloud\')">usar nuvem</button></div>';
    return;
   }
   const account=loadMonAccount(),syncText=account.lastSyncedAt?'último sync '+new Date(account.lastSyncedAt).toLocaleString():'sync pronto';

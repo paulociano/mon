@@ -17,7 +17,7 @@ try{
    class StalledIntersectionObserver{observe(){}unobserve(){}disconnect(){}}
    Object.defineProperty(window,'IntersectionObserver',{value:StalledIntersectionObserver,writable:true});
   });
-  await page.goto(base,{waitUntil:'networkidle'});
+  await page.goto(base+'?view=home',{waitUntil:'networkidle'});
   await page.waitForSelector('#home.active',{state:'visible'});
   await assertNoOverflow(page,viewport.name+' home');
   const shellLayout=await page.evaluate(()=>({

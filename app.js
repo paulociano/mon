@@ -1,12 +1,29 @@
-const viewNames={home:'Hoje',journey:'Jornada',practice:'Praticar',explore:'Explorar',progress:'Progresso',user:'Minha área',lesson:'Lição',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Mapa acadêmico',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos',pronunciation:'Pronúncia'};
+const MON_AUTH_RESET_MARKER='mon-auth-reset-password-v1';
+function resetLegacyMonAuthClientOnce(){
+ try{
+  if(localStorage.getItem(MON_AUTH_RESET_MARKER)==='1')return false;
+  const exact=['mon-account','mon-cloud-linked','mon-cloud-conflict-last','mon-sync-dirty-at','sb-gpmobddlexssivfxzzjw-auth-token'];
+  exact.forEach(k=>localStorage.removeItem(k));
+  for(const store of [localStorage,sessionStorage]){
+   for(let i=store.length-1;i>=0;i--){const k=store.key(i)||'';if(k.startsWith('sb-gpmobddlexssivfxzzjw-'))store.removeItem(k)}
+  }
+  localStorage.setItem(MON_AUTH_RESET_MARKER,'1');
+  if('caches'in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('mon-japanese-os-')).map(k=>caches.delete(k)))).catch(()=>{});
+  return true;
+ }catch{return false}
+}
+resetLegacyMonAuthClientOnce();
+const viewNames={auth:'Acesso',home:'Hoje',journey:'Jornada',practice:'Praticar',explore:'Explorar',progress:'Progresso',user:'Minha área',lesson:'Lição',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Mapa acadêmico',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos',pronunciation:'Pronúncia'};
 let currentKanji=0;
 function shellLocalDateKey(date=new Date()){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600)}
 function shuffleArray(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function speak(text,rate=.86){if(!('speechSynthesis'in window)){toast('Áudio indisponível neste navegador');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(text||''));u.lang='ja-JP';u.rate=rate;const ja=speechSynthesis.getVoices().find(v=>String(v.lang).toLowerCase().startsWith('ja'));if(ja)u.voice=ja;speechSynthesis.speak(u)}
-const NAV_PARENT={lesson:'home',session:'home',curriculum:'journey',foundation:'explore',kanji:'explore',missions:'explore',reading:'explore',speaking:'explore',culture:'explore',writing:'explore',journal:'explore',videos:'explore',pronunciation:'explore',league:'explore',shop:'explore',user:'user'};
+const NAV_PARENT={auth:'auth',lesson:'home',session:'home',curriculum:'journey',foundation:'explore',kanji:'explore',missions:'explore',reading:'explore',speaking:'explore',culture:'explore',writing:'explore',journal:'explore',videos:'explore',pronunciation:'explore',league:'explore',shop:'explore',user:'user'};
 function navParentForView(id){return NAV_PARENT[id]||id}
 function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${navParentForView(id)}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+let authRuntimePromise=null;
+function ensureAuthRuntime(){return authRuntimePromise||(authRuntimePromise=(async()=>{for(const src of ['./config/cloud.js','./core/supabase-sync.js','./features/account-auth.js'])await loadRuntimeScript(src)})().catch(err=>{authRuntimePromise=null;throw err}))}
 let accountRuntimePromise=null;
 function ensureAccountRuntime(){return accountRuntimePromise||(accountRuntimePromise=(async()=>{for(const src of ['./core/account.js','./config/cloud.js','./core/supabase-sync.js','./core/multi-device-sync.js','./features/offline.js','./features/account-privacy.js','./features/account-auth.js','./features/user.js'])await loadRuntimeScript(src)})().catch(err=>{accountRuntimePromise=null;throw err}))}
 const LE='./core/learning-evidence.js';
@@ -39,6 +56,7 @@ function ensureContentPack(level='N5'){
  return contentPackPromises[resolved];
 }
 const FEATURE_RUNTIME_SCRIPTS={
+ auth:['./features/auth-page.js'],
  foundation:['./data/kana.js','./data/foundation.js','./features/foundation.js'],
  session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./data/narrative.js','./core/next-best-lesson.js','./features/foundation.js','./features/session.js'],
  kanji:['./data/kanji.js','./data/kanji-memory.js','./features/kanji.js','./features/kanji-memory.js'],
@@ -86,7 +104,7 @@ function loadRuntimeStyle(href){
    link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>{link.remove();reject(new Error('Falha ao carregar '+href))};document.head.appendChild(link);
  });
 }
-const FEATURE_RUNTIME_STYLES={journey:['./features/journey.css'],explore:['./features/journey.css'],progress:['./features/journey.css'],user:['./features/user.css'],foundation:['./features/foundation.css'],lesson:['./features/lesson.css','./features/beginner-scaffolding.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
+const FEATURE_RUNTIME_STYLES={auth:['./features/auth.css'],journey:['./features/journey.css'],explore:['./features/journey.css'],progress:['./features/journey.css'],user:['./features/user.css'],foundation:['./features/foundation.css'],lesson:['./features/lesson.css','./features/beginner-scaffolding.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
 async function ensureLearningRuntime(){
  const level=contentPackLevelForDay();
  await ensureContentPack(level);
@@ -106,8 +124,8 @@ function setRouteBusy(on,label='Carregando'){
 }
 let routeRequestId=0;
 const ROUTABLE_VIEWS=new Set(Object.keys(viewNames));
-function routeFromLocation(){const id=new URL(location.href).searchParams.get('view');return id&&ROUTABLE_VIEWS.has(id)?id:'home'}
-function routeUrl(id){const url=new URL(location.href);if(id==='home')url.searchParams.delete('view');else url.searchParams.set('view',id);return url.pathname+url.search+url.hash}
+function routeFromLocation(){const id=new URL(location.href).searchParams.get('view');return id&&ROUTABLE_VIEWS.has(id)?id:'auth'}
+function routeUrl(id){const url=new URL(location.href);if(id==='auth')url.searchParams.delete('view');else url.searchParams.set('view',id);return url.pathname+url.search+url.hash}
 function commitRouteUrl(id,replace=false){const next=routeUrl(id);if(next===location.pathname+location.search+location.hash)return;history[replace?'replaceState':'pushState']({monView:id},'',next)}
 async function go(id,options={}){
  if(!ROUTABLE_VIEWS.has(id))id='home';
@@ -116,6 +134,7 @@ async function go(id,options={}){
  const viewStart=typeof perfStart==='function'?perfStart('view:'+id):null;
  const busyTimer=setTimeout(()=>{if(requestId===routeRequestId)setRouteBusy(true,'Abrindo '+(viewNames[id]||id))},90);
  try{
+   if(id==='auth'){await ensureAuthRuntime();await ensureFeatureRuntime('auth');ensureAuthPage();}
    if(id==='user'){await ensureAccountRuntime();ensureUserArea();}
    if(['journey','explore','progress','user'].includes(id))await ensureFeatureRuntime(id);
    if(id==='foundation')await ensureFeatureRuntime('foundation');
@@ -127,12 +146,14 @@ async function go(id,options={}){
    if(id==='videos')await ensureFeatureRuntime('videos');
    if(id==='pronunciation')await ensureFeatureRuntime('pronunciation');
    if(requestId!==routeRequestId)return false;
+   document.body.classList.toggle('auth-route',id==='auth');
    document.body.classList.toggle('focus-session',id==='session');
    document.body.classList.toggle('quick-focus',id==='lesson');
    document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
    document.querySelectorAll('[data-view]').forEach(b=>{const active=b.dataset.view===navParentForView(id);b.classList.toggle('active',active);if(b.matches('#desktopNav [data-view]')){if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')}});
    const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;
-   if(id==='home')renderGameHome();
+   if(id==='auth')await renderAuthPage();
+   else if(id==='home')renderGameHome();
    else if(id==='journey')renderJourney();
    else if(id==='progress')renderProgressHub();
    else if(id==='user')renderUserArea();
@@ -151,7 +172,7 @@ async function go(id,options={}){
    else if(id==='pronunciation'&&typeof renderPronunciation==='function')renderPronunciation();
    if(options.history!==false)commitRouteUrl(id,options.replace===true);
    keepActiveNavVisible(id);
-   const activeView=document.getElementById(id);if(activeView){activeView.setAttribute('tabindex','-1');activeView.focus({preventScroll:true})}
+   const activeView=document.getElementById(id);if(activeView&&id!=='auth'){activeView.setAttribute('tabindex','-1');activeView.focus({preventScroll:true})}
    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
    if(viewStart!==null&&typeof perfEnd==='function')perfEnd('view:'+id,viewStart);
  }catch(err){
@@ -462,8 +483,7 @@ const reasonToggle=document.getElementById('todayReasonToggle');
 if(reasonToggle)reasonToggle.addEventListener('click',toggleTodayReason);
 updateMetrics();renderGameHome();initOnboarding();
 const initialRoute=routeFromLocation();
-if(initialRoute!=='home')go(initialRoute,{history:false}).catch(()=>{});
-else history.replaceState({monView:'home'},'',routeUrl('home'));
+go(initialRoute,{history:false,replace:true}).catch(()=>{});
 for(const name of ['kanji','reading','missions','speaking','curriculum','journal','videos','pronunciation']){
  const nav=document.querySelector(`[data-view="${name}"]`);
  if(nav)nav.addEventListener('pointerover',()=>ensureFeatureRuntime(name).catch(()=>{}),{passive:true,once:true});

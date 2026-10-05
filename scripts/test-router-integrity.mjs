@@ -10,3 +10,4 @@ assert.ok(route.trimEnd().endsWith('}'),'router must close before listeners are 
 assert.ok(app.includes("addEventListener('click',()=>go(b.dataset.view))"),'primary navigation listeners missing');
 assert.ok(app.includes("addEventListener('popstate'"),'browser history listener missing');
 console.log('MON router structural integrity passed');
+assert.ok(app.includes("?id:'auth'" )||app.includes("id&&ROUTABLE_VIEWS.has(id)?id:'auth'"),'root route must default to auth');

@@ -7,7 +7,7 @@ const page=await browser.newPage({viewport:{width:1280,height:900}});
 
 try{
  await page.addInitScript(()=>{localStorage.setItem('mon-onboarded','1');localStorage.removeItem('mon_perf_v1')});
- await page.goto(base+'?debug=1',{waitUntil:'networkidle'});
+ await page.goto(base+'?view=home&debug=1',{waitUntil:'networkidle'});
  await page.waitForSelector('#home.active',{state:'visible'});
 
  for(let i=0;i<6;i++){
@@ -20,7 +20,10 @@ try{
   const start=perfStart();await go('lesson');renderQuickExercise();perfEnd('lesson:interactive',start,{mode:'baseline'});
   await go('home');
  });
- await page.waitForTimeout(150);
+ await page.waitForFunction(()=>{
+  const snapshot=performanceSnapshot();
+  return ['view:progress','view:home','lesson:interactive'].every(name=>snapshot[name]?.samples>=1);
+ },null,{timeout:2500});
  const snapshot=await page.evaluate(()=>performanceSnapshot());
 
  for(const name of ['view:progress','view:home','lesson:interactive']){
