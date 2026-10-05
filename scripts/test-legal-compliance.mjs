@@ -32,8 +32,25 @@ for(const requiredText of [
 const account=fs.readFileSync('core/account.js','utf8');
 for(const requiredText of [
  'async function deleteMonCloudData',
+ 'async function deleteMonAccount',
+ 'Excluir Conta MON',
  ".delete().eq('user_id',session.user.id)",
  'Excluir dados da nuvem'
 ])if(!account.includes(requiredText))throw new Error('account deletion surface missing: '+requiredText);
+
+const deleteFn=fs.readFileSync('supabase/functions/delete-account/index.ts','utf8');
+for(const requiredText of [
+ "auth.admin.deleteUser(user.id, false)",
+ "userClient.auth.getUser()",
+ "DELETE_MY_ACCOUNT",
+ "SUPABASE_SECRET_KEY",
+ "SUPABASE_SERVICE_ROLE_KEY"
+])if(!deleteFn.includes(requiredText))throw new Error('server-side account deletion control missing: '+requiredText);
+
+const cloud=fs.readFileSync('core/supabase-sync.js','utf8');
+for(const requiredText of [
+ "client.functions.invoke('delete-account'",
+ "scope:'local'"
+])if(!cloud.includes(requiredText))throw new Error('client account deletion integration missing: '+requiredText);
 
 console.log('legal/compliance baseline ok');

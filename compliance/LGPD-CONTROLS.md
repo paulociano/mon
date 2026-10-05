@@ -10,7 +10,7 @@
 | transparência | política e termos versionados | implementado como draft |
 | exportação | backup JSON | implementado |
 | exclusão de estado cloud | delete próprio com RLS | implementado nesta baseline |
-| exclusão completa da conta | requer função server-side/admin segura | **gate aberto** |
+| exclusão completa da conta | Edge Function autenticada + admin delete; deploy/teste ainda pendentes | implementação preparada; **gate de produção aberto** |
 | inventário de dados | DATA-INVENTORY.md | implementado |
 | registro de tratamento | PROCESSING-REGISTER.md | baseline |
 | retenção | DATA-RETENTION.md | baseline, prazos jurídicos a validar |
