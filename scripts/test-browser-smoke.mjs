@@ -39,6 +39,10 @@ try{
   throw new Error(`MON smoke navigation failed: status=${response?.status()??'none'} url=${page.url()}`);
  }
  try{
+  await waitVisible('#auth.active');
+  assert.equal(await page.locator('#authEmail').count(),1,'root route must expose login email field');
+  assert.equal(await page.locator('#authPassword').count(),1,'root route must expose login password field');
+  await page.evaluate(async()=>await go('home',{replace:true}));
   await waitVisible('#home.active');
  }catch(error){
   const title=await page.title().catch(()=> '');
