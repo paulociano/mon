@@ -2,15 +2,15 @@
 
 **Versão:** 0.1 — baseline pré-produção  
 **Atualização:** 5 de outubro de 2026  
-**Status:** requer revisão jurídica, identificação do controlador e validação de fornecedores antes do lançamento público.
+**Status:** requer revisão jurídica, complementação cadastral do controlador, canais de contato e validação final dos gates antes do lançamento público.
 
 ## 1. Controlador
 
-Controlador: **[NOME/RAZÃO SOCIAL DO RESPONSÁVEL]**  
-CPF/CNPJ: **[PREENCHER]**  
-Contato de privacidade: **[E-MAIL DE PRIVACIDADE]**
+Controlador: **Paulo Henrique Graciano**  
+CPF/CNPJ:  
+Contato de privacidade:  
 
-O canal acima deve ser preenchido e testado antes da ativação pública da Conta MON.
+O documento cadastral e o canal de privacidade permanecem em aberto e devem ser definidos e testados antes da ativação pública definitiva da Conta MON.
 
 ## 2. Princípios do MON
 
@@ -140,17 +140,19 @@ O MON utiliza mecanismos automatizados para organizar e recomendar atividades pe
 
 Esses mecanismos não tomam decisões sobre crédito, emprego, saúde, acesso a direitos ou outras matérias de alto impacto. Ainda assim, o usuário deve receber explicação clara de que a recomendação deriva de sinais como revisões vencidas, erros, domínio observado, retenção e transferência.
 
-Quando menores forem admitidos no produto, o perfilamento/adaptação deve passar pela avaliação específica prevista no gate de crianças e adolescentes.
+O MON adota política sem restrição etária. Por isso, o perfilamento/adaptação precisa passar pela avaliação específica prevista no gate de crianças e adolescentes antes da abertura pública definitiva.
 
 ## 12. Crianças e adolescentes
 
-A política de idade ainda é gate de produção.
+O MON adota **política sem restrição etária** e, portanto, admite a possibilidade de uso por crianças e adolescentes.
 
-Até a decisão formal:
-- o MON não deve promover cadastro de menores;
-- não deve usar dados de menores para publicidade direcionada;
-- qualquer lançamento que envolva acesso provável por crianças ou adolescentes deve revisar o produto sob a Lei nº 15.211/2025, LGPD e regulamentação aplicável;
-- configurações relevantes de privacidade devem permanecer protetivas por padrão.
+Essa decisão não encerra o gate de proteção de menores. Antes da abertura pública definitiva, o produto deve concluir a avaliação específica de acesso provável, tratamento de dados e adaptação pedagógica para menores, com proteção por padrão, linguagem adequada à idade e demais salvaguardas aplicáveis.
+
+Enquanto esse gate permanecer aberto:
+- não usar dados de menores para publicidade direcionada;
+- manter configurações relevantes de privacidade protetivas por padrão;
+- não converter sinais pedagógicos em avaliação psicológica, de saúde ou de elegibilidade;
+- não adicionar social graph, mensagens entre usuários ou publicação pública de perfil sem nova análise.
 
 ## 13. Alterações
 
@@ -158,4 +160,4 @@ Mudanças materiais nesta Política devem ser versionadas e acompanhadas da corr
 
 ## 14. Contato
 
-Privacidade: **[E-MAIL DE PRIVACIDADE]**
+Privacidade:
