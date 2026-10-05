@@ -17,14 +17,15 @@ for(const key of ['eki','doko']){
     for(let i=0;i<8;i++)vm.runInContext(`recordMasteryEvidence({_reviewType:'vocabulary',_reviewKey:'${key}',type:'${dim==='recognize'?'choice':dim==='recall'?'recall':dim==='listen'?'dictation':dim==='transfer'?'transfer':'roleplay'}'},true,{hintUsed:false})`,ctx);
   }
 }
-for(const dim of ['recognize','recall','listen','transfer','produce']){
-  for(let i=0;i<8;i++)vm.runInContext(`recordMasteryEvidence({_reviewType:'grammar',_reviewKey:'P:locationWaDoko',type:'${dim==='recognize'?'choice':dim==='recall'?'recall':dim==='listen'?'dictation':dim==='transfer'?'transfer':'roleplay'}'},true,{hintUsed:false})`,ctx);
+for(const grammar of ['locationWaDoko','locationNi']){
+  for(const dim of ['recognize','mechanism','contrast','transfer','produce']){
+    for(let i=0;i<8;i++)vm.runInContext(`recordMasteryEvidence({_reviewType:'grammar',_reviewKey:'P:${grammar}',type:'choice',_masteryDimension:'${dim}'},true,{hintUsed:false})`,ctx);
+  }
 }
 // Add enough evidence for other unit concepts so coverage clears the contract.
 for(const key of ['deguchi','iriguchi','migi','hidari','massugu','sumimasen','mouichido']){
   for(let i=0;i<3;i++)vm.runInContext(`recordMasteryEvidence({_reviewType:'vocabulary',_reviewKey:'${key}',type:'choice'},true,{hintUsed:false})`,ctx);
 }
-vm.runInContext("for(let i=0;i<3;i++)recordMasteryEvidence({_reviewType:'grammar',_reviewKey:'P:locationNi',type:'choice'},true,{hintUsed:false})",ctx);
 
 d=vm.runInContext("progressionDecision({day:25,type:'lesson'},{unitId:'n5-station'},92)",ctx);
 assert.equal(d.action,'advance','mastery plus sufficient lesson accuracy should advance');
