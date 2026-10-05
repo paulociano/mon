@@ -85,7 +85,22 @@ function compileMONMethod(unit,method,index=0){
       options:methodOptions(g.item.function,Object.values(grammarCatalog).map(x=>x.function)),
       answer:g.item.function,why:`${g.item.form} · ${g.item.pt}`,
       bridge:g.item.mentalModel||grammarBridge(g.id,g.item),
-      _reviewType:'grammar',_reviewKey:'P:'+g.id,method:'discover'};
+      _reviewType:'grammar',_reviewKey:'P:'+g.id,_masteryDimension:'recognize',method:'discover'};
+  }
+  if(method==='mechanism'&&g.item){
+    const pool=Object.values(grammarCatalog).map(x=>x.mentalModel).filter(Boolean);
+    return {type:'choice',prompt:`Qual modelo mental explica melhor ${g.item.form}?`,jp:g.item.form,
+      options:methodOptions(g.item.mentalModel,pool),answer:g.item.mentalModel,
+      why:g.item.explanation,bridge:'Entender o mecanismo significa prever o uso sem depender de uma tradução fixa.',
+      _reviewType:'grammar',_reviewKey:'P:'+g.id,_masteryDimension:'mechanism',method:'mechanism'};
+  }
+  if(method==='contrast'&&g.item){
+    const pool=Object.values(grammarCatalog).map(x=>x.contrast).filter(Boolean);
+    return {type:'choice',prompt:`Qual contraste evita confundir ${g.item.form} com uma estrutura próxima?`,jp:g.item.form,
+      options:methodOptions(g.item.contrast,pool),answer:g.item.contrast,
+      why:g.item.commonMistakes?.[0]?.explanation||g.item.contrast,
+      bridge:'O boundary correto vale mais do que decorar uma tradução isolada.',
+      _reviewType:'grammar',_reviewKey:'P:'+g.id,_masteryDimension:'contrast',method:'contrast'};
   }
   if(method==='freeRecall'&&v.item){
     return {type:'recall',prompt:'Sem alternativas: recupere em japonês.',cue:v.item.pt,target:v.item.jp,
@@ -110,11 +125,13 @@ function compileMONMethod(unit,method,index=0){
   if(method==='transfer'&&s){
     return {type:'transfer',prompt:'Transferência: você está nessa situação. Produza a resposta sem modelo.',
       cue:`${s.npcPt} → ${s.replyPt}`,target:s.reply.replace(/[。！？!?]/g,''),accepted:[s.reply,s.reply.replace(/[。！？!?]/g,'')],
-      why:`${s.reply} · ${s.replyPt}`,bridge:'A mesma estrutura precisa sobreviver fora do exercício em que foi apresentada.',method:'transfer'};
+      why:`${s.reply} · ${s.replyPt}`,bridge:'A mesma estrutura precisa sobreviver fora do exercício em que foi apresentada.',
+      _reviewType:g.item?'grammar':null,_reviewKey:g.item?'P:'+g.id:null,_masteryDimension:g.item?'transfer':null,method:'transfer'};
   }
   if(method==='roleplay'&&s){
     return {type:'roleplay',prompt:'Roleplay sem legenda da resposta.',npc:s.npc,npcPt:s.pt,target:s.reply,pt:s.replyPt,
-      why:`${s.reply} · ${s.replyPt}`,bridge:'Primeiro responda. O modelo só aparece depois da tentativa.',method:'produce'};
+      why:`${s.reply} · ${s.replyPt}`,bridge:'Primeiro responda. O modelo só aparece depois da tentativa.',
+      _reviewType:g.item?'grammar':null,_reviewKey:g.item?'P:'+g.id:null,_masteryDimension:g.item?'produce':null,method:'produce'};
   }
   if(method==='minimalPair'){
     const p=pronunciationContrasts[index%pronunciationContrasts.length];
@@ -162,6 +179,10 @@ function adaptiveMethodSequence(unit){
   }
   if(weakTransfer)ordered=['cloze','transfer',...ordered];
   if(strongProduce)ordered=ordered.filter((x,i)=>x!=='discover'||i===0);
+  if((unit.grammar||[]).length){
+    const conceptual=['discover','mechanism','contrast','transfer','roleplay'];
+    ordered=[...conceptual,...ordered.filter(x=>!conceptual.includes(x))];
+  }
   return [...new Set(ordered)].slice(0,6);
 }
 function compileAdaptiveMONSequence(unit){
