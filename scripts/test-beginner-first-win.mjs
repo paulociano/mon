@@ -14,7 +14,7 @@ try{
   assert.ok(response?.ok(),'beginner onboarding page must load');
   await page.waitForSelector('#onboardingShell',{state:'visible'});
   assert.match(await page.locator('#onboardingTitle').innerText(),/Comece usando japonês/i);
-  assert.equal(await page.locator('.onboarding-promise span').count(),3,'onboarding must explain only three simple promises');
+  assert.equal(await page.locator('#onboardingShell .course-badge').count(),3,'onboarding must explain only three simple promises');
   assert.match(await page.locator('#onboardingShell').innerText(),/10 minutos/i);
 
   await page.getByRole('button',{name:/Começar minha primeira sessão/i}).click();
