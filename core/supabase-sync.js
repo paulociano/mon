@@ -10,18 +10,12 @@ async function ensureSupabaseSdk(){
 async function getMonSupabase(){
  if(monSupabaseClient)return monSupabaseClient;
  if(monSupabaseClientPromise)return monSupabaseClientPromise;
- monSupabaseClientPromise=(async()=>{
-  if(!monCloudConfigured()&&typeof monEnsureCloudConfig==='function'){try{await monEnsureCloudConfig()}catch{}}
+ return monSupabaseClientPromise=(async()=>{
+  if(!monCloudConfigured()&&typeof monEnsureCloudConfig==='function')try{await monEnsureCloudConfig()}catch{}
   if(!monCloudConfigured())return null;
   const sdk=await ensureSupabaseSdk(),c=monCloudConfig();
-  return sdk.createClient(c.url,c.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
- })();
- try{
-  monSupabaseClient=await monSupabaseClientPromise;
-  return monSupabaseClient;
- }finally{
-  monSupabaseClientPromise=null;
- }
+  return monSupabaseClient=sdk.createClient(c.url,c.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+ })().finally(()=>monSupabaseClientPromise=null);
 }
 async function monCloudSession(){const client=await getMonSupabase();if(!client)return null;const {data}=await client.auth.getSession();return data.session||null}
 async function monCloudSignIn(email){const client=await getMonSupabase();if(!client)throw new Error('Nuvem MON ainda não configurada');const redirectTo=location.href.split('#')[0];const {error}=await client.auth.signInWithOtp({email,options:{emailRedirectTo:redirectTo}});if(error)throw error;return true}
