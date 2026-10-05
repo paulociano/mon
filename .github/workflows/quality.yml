@@ -90,6 +90,8 @@ jobs:
         run: node scripts/test-mastery-graph.mjs
       - name: Conceptual grammar mastery
         run: node scripts/test-grammar-conceptual-mastery.mjs
+      - name: Contrastive grammar interleaving
+        run: node scripts/test-grammar-contrast-interleaving.mjs
       - name: Learning evidence behavior
         run: node scripts/test-learning-evidence.mjs
       - name: Learning metrics semantics

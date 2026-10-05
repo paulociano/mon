@@ -134,7 +134,10 @@ function scheduledReviewExercise(item){
   }
   if(item.type==='grammar'){
     if(String(item.key).startsWith('P:')){
-      const g=grammarCatalog?.[String(item.key).slice(2)];if(!g)return null;
+      const id=String(item.key).slice(2),g=grammarCatalog?.[id];if(!g)return null;
+      const partner=typeof grammarContrastPartner==='function'?grammarContrastPartner(id):null;
+      const contrast=typeof masteryScore==='function'?masteryScore('grammar:P:'+id,'contrast'):0;
+      if(partner&&(contrast<70||(typeof grammarContrastConfusion==='function'&&grammarContrastConfusion(id,partner).open>0)))return grammarContrastExercise(id,partner);
       return {type:'choice',prompt:'Revisão espaçada: qual função descreve este padrão?',jp:g.form,options:engineShuffledOptions(g.function,Object.values(grammarCatalog).map(x=>x.function)),answer:g.function,why:`${g.form} · ${g.pt}`,_reviewType:'grammar',_reviewKey:item.key};
     }
     const day=Number(String(item.key).replace(/^F/,'')),p=foundationSessionPlans[day-1];if(!p)return null;

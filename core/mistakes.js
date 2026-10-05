@@ -17,9 +17,10 @@ function mistakeKey(exercise={}){
   return 'm'+(h>>>0).toString(36);
 }
 function safeExerciseSnapshot(exercise={}){
-  const out={type:exercise.type,prompt:exercise.prompt||'',why:exercise.why||'',bridge:exercise.bridge||'',method:exercise.method||'',jp:exercise.jp||'',audio:exercise.audio||'',answer:exercise.answer||'',target:exercise.target||'',pt:exercise.pt||'',cue:exercise.cue||'',npc:exercise.npc||'',npcPt:exercise.npcPt||'',_reviewType:exercise._reviewType||null,_reviewKey:exercise._reviewKey||null,_unitId:exercise._unitId||exercise.unitId||null};
+  const out={type:exercise.type,prompt:exercise.prompt||'',why:exercise.why||'',bridge:exercise.bridge||'',method:exercise.method||'',jp:exercise.jp||'',audio:exercise.audio||'',answer:exercise.answer||'',target:exercise.target||'',pt:exercise.pt||'',cue:exercise.cue||'',npc:exercise.npc||'',npcPt:exercise.npcPt||'',_reviewType:exercise._reviewType||null,_reviewKey:exercise._reviewKey||null,_unitId:exercise._unitId||exercise.unitId||null,_masteryDimension:exercise._masteryDimension||null};
   if(Array.isArray(exercise.accepted))out.accepted=exercise.accepted.slice(0,6);
   if(Array.isArray(exercise.examples))out.examples=exercise.examples.slice(0,4);
+  if(Array.isArray(exercise._contrastPair))out._contrastPair=exercise._contrastPair.slice(0,2);
   if(Array.isArray(exercise.options))out.options=exercise.options.slice(0,8);
   if(Array.isArray(exercise.tokens))out.tokens=exercise.tokens.slice(0,16);
   if(Array.isArray(exercise.pairs))out.pairs=exercise.pairs.slice(0,8);
@@ -113,3 +114,22 @@ function queueGrammarRepair(run,exercise,chosen,mistake){
   if(repair.length)run.pack.exercises.splice(run.step+1,0,...repair);
 }
 
+function grammarContrastId(a,b){return [String(a||''),String(b||'')].sort().join('|')}
+function grammarContrastConfusion(a,b,learnerState=state){
+  const id=grammarContrastId(a,b),x=learnerState.grammarConfusions?.[id]||{};
+  const errors=Number(x.errors||0),recoveries=Number(x.recoveries||0),open=Math.max(0,errors-recoveries);
+  const age=x.lastAt?Math.max(0,Date.now()-x.lastAt):Infinity,recency=Number.isFinite(age)?Math.max(0,14-age/86400000):0;
+  return {id,a,b,errors,recoveries,open,lastAt:Number(x.lastAt||0),priority:open*100+errors*8+recency};
+}
+function recordGrammarContrastOutcome(exercise={},ok=false){
+  const pair=exercise._contrastPair;if(!Array.isArray(pair)||pair.length<2)return null;
+  state.grammarConfusions=state.grammarConfusions||{};
+  const [a,b]=pair,id=grammarContrastId(a,b),old=state.grammarConfusions[id]||{errors:0,recoveries:0};
+  const next={...old,target:a,rival:b,errors:Number(old.errors||0)+(ok?0:1),
+    recoveries:Number(old.recoveries||0)+(ok&&Number(old.errors||0)>Number(old.recoveries||0)?1:0),lastAt:Date.now()};
+  state.grammarConfusions[id]=next;return grammarContrastConfusion(a,b);
+}
+function grammarContrastQueue(limit=6,learnerState=state){
+  return Object.values(learnerState.grammarConfusions||{}).map(x=>grammarContrastConfusion(x.target,x.rival,learnerState))
+    .filter(x=>x.open>0).sort((a,b)=>b.priority-a.priority||b.lastAt-a.lastAt).slice(0,limit);
+}

@@ -187,6 +187,26 @@ As lições estruturadas coletam evidência explícita de mecanismo e contraste 
 
 A profundidade do Study adaptativo também usa esse perfil: uma estrutura reconhecida mas conceitualmente incompleta continua recebendo explicação em vez de ser promovida prematuramente para prática sem apoio.
 
+## Interleaving contrastivo · P6
+
+O MON mantém um grafo canônico de estruturas que costumam competir pela mesma decisão funcional, por exemplo `に × で`, `は × が`, `から × ので` e `けど × のに`.
+
+A seleção do rival usa três sinais:
+
+1. **confusão observada** — erros reais em exercícios A × B;
+2. **domínio de contraste** — score baixo em `contrast` aumenta prioridade;
+3. **progressão** — uma estrutura futura ainda não encontrada não pode ser introduzida apenas porque pertence ao grafo.
+
+Cada erro de discriminação abre uma dívida em `grammarConfusions`; um acerto posterior recupera uma unidade dessa dívida. Lição adaptativa, revisão espaçada e Grammar Notebook usam o mesmo ranking.
+
+O exercício contrastivo pede uma decisão funcional entre duas formas próximas, em vez de apenas reconhecer uma descrição textual. A resposta continua sendo registrada como evidence de `contrast` para a estrutura-alvo.
+
+Princípios:
+- o grafo de pares pertence à pedagogia canônica, não à UI;
+- erros reais têm mais peso que heurísticas;
+- rival ainda não encontrado permanece oculto;
+- remediation específica continua usando o `grammarCatalog`, sem duplicar explicações.
+
 ## Gramática
 
 A gramática é ensinada como função comunicativa.
