@@ -1,4 +1,8 @@
 # MON Supabase local/deploy configuration.
-# Authenticated account deletion must keep JWT verification enabled.
+# Account deletion requires a user JWT. public-config intentionally exposes
+# only browser-safe public configuration and therefore does not require JWT.
 [functions.delete-account]
 verify_jwt = true
+
+[functions.public-config]
+verify_jwt = false
