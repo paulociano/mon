@@ -8,8 +8,8 @@
 | P02 | autenticação | e-mail/user id | acesso à Conta MON | Supabase Auth | Supabase | execução do serviço | enquanto conta existir |
 | P03 | sync | perfil/learning_state | multi-device e recovery | Supabase DB | Supabase | execução do serviço | enquanto sync/conta |
 | P04 | adaptação pedagógica | histórico, erros, mastery, retenção | recomendar próxima atividade | browser | nenhum; Supabase apenas como storage quando sync | execução do serviço / legítimo interesse a avaliar | junto ao estado |
-| P05 | reconhecimento de voz | áudio em trânsito/transcrição | shadowing e pista textual | browser/SO + MON | fornecedor do browser/SO | ação solicitada pelo usuário; validar enquadramento | áudio não armazenado pelo MON; transcrição junto ao estado |
-| P06 | vídeo externo | metadados técnicos | apoio educacional | YouTube | Google/YouTube | validar conforme configuração | conforme terceiro |
+| P05 | reconhecimento de voz | áudio em trânsito; transcrição transitória; alvo/score/timestamp | shadowing e pista textual | browser/SO + MON | fornecedor do browser/SO | ação solicitada pelo usuário; validar enquadramento | áudio e texto reconhecido não armazenados pelo MON; score/metadados junto ao estado |
+| P06 | vídeo externo | metadados técnicos após clique | apoio educacional | YouTube | Google/YouTube | validar conforme configuração | conforme terceiro; sem contato de thumbnail/player antes do clique |
 | P07 | segurança/incidente | metadados mínimos | proteger serviço e cumprir obrigações | infraestrutura a definir | fornecedores de infra | legítimo interesse/obrigação legal a validar | prazo definido por política |
 
 ## Cobertura desconhecida
