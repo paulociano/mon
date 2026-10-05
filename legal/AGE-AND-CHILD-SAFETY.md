@@ -1,28 +1,25 @@
 # MON — Gate de Idade, Crianças e Adolescentes
 
-**Status:** gate de produção aberto
+**Status:** decisão de produto tomada; gate de salvaguardas para menores permanece aberto
 
-## Decisão pendente
+## Decisão de produto
 
-O MON precisa escolher formalmente uma das estratégias:
+O MON adota **política sem restrição etária**. O produto, portanto, admite a possibilidade de uso por adultos, adolescentes e crianças.
 
-1. **produto destinado apenas a adultos**, com experiência, marketing e controles consistentes com essa decisão; ou
-2. **produto que admite menores**, com implementação completa das salvaguardas aplicáveis.
-
-Uma declaração nominal de “18+” não substitui avaliação de acesso provável quando o produto, na prática, for atraente e acessível a crianças ou adolescentes.
+Essa decisão não equivale a conclusão de conformidade. Como menores podem usar o produto, a abertura pública definitiva depende da implementação e revisão das salvaguardas específicas abaixo.
 
 ## Enquanto o gate estiver aberto
 
-- não promover criação de Conta MON por menores;
+- não direcionar campanhas especificamente a menores antes da conclusão da avaliação;
 - não adicionar publicidade comportamental;
 - manter privacidade protetiva por padrão;
 - não usar dados de aprendizagem de menores para finalidades incompatíveis;
 - não converter sinais pedagógicos em avaliação psicológica, de saúde ou de elegibilidade;
 - não adicionar social graph, mensagens entre usuários ou publicação pública de perfil sem nova análise.
 
-## Se menores forem admitidos
+## Salvaguardas obrigatórias antes da abertura pública definitiva
 
-Executar, antes do lançamento:
+Executar:
 - avaliação de acesso provável;
 - revisão da Lei nº 15.211/2025 e regulamentação vigente;
 - RIPD focado em menores;
@@ -33,3 +30,12 @@ Executar, antes do lançamento:
 - análise de aferição de idade proporcional ao risco;
 - avaliação de responsabilidades de responsáveis legais quando aplicável;
 - testes específicos de abuso e segurança.
+
+
+## Estado da decisão
+
+- restrição etária: **nenhuma**;
+- publicidade comportamental para menores: **não permitida no baseline**;
+- social graph/mensagens/perfil público: **não existentes no baseline**;
+- avaliação específica de menores: **pendente**;
+- revisão jurídica: **pendente**.
