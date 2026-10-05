@@ -239,7 +239,7 @@ function japaneseLearningContract(unit={}){
   const situation=unit.context||`${unit.title||'Situação prática'}: ${scenario.pt||canDo[0]||'use japonês para concluir a tarefa comunicativa.'}`;
   const repair={jp:'すみません、もう一度ゆっくりお願いします。',pt:'Desculpe, mais uma vez devagar, por favor.'};
   if(study){
-    const kanjiExamples=kanji.slice(0,2).map(x=>({jp:x.word,pt:x.meaning,note:`Kanji em contexto: ${x.k} · ${x.context}`}));
+    const kanjiExamples=kanji.slice(0,2).map(x=>({jp:x.word,reading:x.reading,pt:x.meaning,note:`Kanji em contexto: ${x.k} · ${x.context}`}));
     study.canDo=canDo;study.capabilities=capabilities;study.situation=situation;study.kanjiPreview=kanji;study.repair=repair;
     study.title=`${canDo[0]||unit.title||'Missão'} · ${study.title}`;
     study.explanation=`Situação: ${situation} ${study.explanation}`;
