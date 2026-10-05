@@ -235,8 +235,7 @@ function japaneseLearningContract(unit={}){
   const study=grammarStudyBlock(unit);
   const kanji=kanjiStudyForUnit(unit);
   const canDo=(unit.objectives||[]).filter(Boolean);
-  const capabilities=Array.isArray(unit.capabilities)?[...unit.capabilities]:
-    (typeof n4CapabilityContract==='function'?n4CapabilityContract(unit).map(x=>x.id):[]);
+  const capabilities=[...(unit.capabilities||[])];
   const situation=unit.context||`${unit.title||'Situação prática'}: ${scenario.pt||canDo[0]||'use japonês para concluir a tarefa comunicativa.'}`;
   const repair={jp:'すみません、もう一度ゆっくりお願いします。',pt:'Desculpe, mais uma vez devagar, por favor.'};
   if(study){
