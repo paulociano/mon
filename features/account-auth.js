@@ -1,4 +1,8 @@
 // MON account authentication actions. Loaded lazily with the account runtime.
+async function monAuthClient(){const client=await getMonSupabase();if(!client)throw new Error('Nuvem MON ainda não configurada');return client}
+async function monCloudSignUp(email,password){const client=await monAuthClient(),redirectTo=location.href.split('#')[0],{data,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:redirectTo}});if(error)throw error;return data}
+async function monCloudPasswordSignIn(email,password){const client=await monAuthClient(),{data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;return data}
+async function monCloudSetPassword(password){const client=await monAuthClient(),{data,error}=await client.auth.updateUser({password});if(error)throw error;return data}
 function monAuthCredentials(){
  const email=document.getElementById('userCloudEmail')?.value.trim()||'',password=document.getElementById('userCloudPassword')?.value||'';
  if(!email)throw new Error('Digite seu e-mail');
