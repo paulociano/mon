@@ -82,7 +82,7 @@ async function renderCloudAccountPanel(){
  try{
   const session=await monCloudSession();
   if(!session){
-   panel.innerHTML='<b>Sincronizar entre dispositivos</b><br><label class="user-field"><span>E-mail</span><input id="userCloudEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><div class="user-actions"><button class="user-save" onclick="connectMonCloud()">enviar link de acesso</button></div>';
+   panel.innerHTML='<b>Conta MON</b><br><label class="user-field"><span>E-mail</span><input id="userCloudEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><label class="user-field"><span>Senha</span><input id="userCloudPassword" type="password" autocomplete="current-password" minlength="8" placeholder="mínimo 8 caracteres"></label><div class="user-actions"><button class="user-save" onclick="signInMonCloud()">entrar</button><button class="user-secondary" onclick="signUpMonCloud()">criar conta</button></div><div class="user-data-note">No primeiro cadastro, confirme seu e-mail. Depois, o login é direto com e-mail e senha.</div>';
    return;
   }
   monRememberSession(session);const badge=document.getElementById('userAccountBadge');if(badge)badge.textContent='conta conectada';
@@ -93,7 +93,7 @@ async function renderCloudAccountPanel(){
    return;
   }
   const account=loadMonAccount(),syncText=account.lastSyncedAt?'último sync '+new Date(account.lastSyncedAt).toLocaleString():'sync pronto';
-  panel.innerHTML='<b>Conta MON conectada</b><br><span id="monCloudIdentity"></span> · revisão '+account.cloudRevision+' · '+syncText+'<div class="user-actions"><button class="user-save" onclick="syncMonNow()">sincronizar agora</button><button class="user-secondary" onclick="disconnectMonCloud()">sair</button></div>';
+  panel.innerHTML='<b>Conta MON conectada</b><br><span id="monCloudIdentity"></span> · revisão '+account.cloudRevision+' · '+syncText+'<label class="user-field"><span>Definir/alterar senha</span><input id="userCloudNewPassword" type="password" autocomplete="new-password" minlength="8" placeholder="mínimo 8 caracteres"></label><div class="user-actions"><button class="user-save" onclick="setMonCloudPassword()">salvar senha</button><button class="user-secondary" onclick="syncMonNow()">sincronizar agora</button><button class="user-secondary" onclick="disconnectMonCloud()">sair</button></div>';
   const identity=document.getElementById('monCloudIdentity');if(identity)identity.textContent=session.user.email||'usuário';
  }catch(e){panel.textContent='Conta MON indisponível: '+e.message}
 }
