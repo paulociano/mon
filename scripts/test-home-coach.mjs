@@ -9,6 +9,11 @@ const base={pathProgress:0,energy:20,reviewItems:{},mistakeStats:{},productionGa
 let d=homeCoachDecision({...base,remediation:{idx:0},reviewItems:{a:{due:0},b:{due:0},c:{due:0},d:{due:0}}},path,1000);
 assert.equal(d.kind,'repair');
 
+d=homeCoachDecision({...base,foundationSessions:1,foundationDay:2,foundationComplete:false},path,1000);
+assert.equal(d.kind,'return');
+assert.equal(d.action,'session');
+assert.match(d.title,/o que ficou/i);
+
 d=homeCoachDecision({...base,reviewItems:{a:{due:0},b:{due:0},c:{due:0},d:{due:0}}},path,1000);
 assert.equal(d.kind,'review');
 assert.equal(d.action,'practice');
