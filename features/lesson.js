@@ -83,11 +83,7 @@ function quickCheck(){
    quickRun.correct++;quickRun.xp+=quickRun.practiceOnly?5:(e.method?12:10);
    if(e._remediation)markMistakeRecovered(e);
    else if(e._reviewType&&e._reviewKey)gradeReview(e._reviewType,e._reviewKey,'good');
- }else{
-   const mistake=recordMistake(e,{node:quickRun.idx,chosen});
-   if(e._reviewType&&e._reviewKey&&e._reviewType!=='error')gradeReview(e._reviewType,e._reviewKey,'hard');
-   if(!e._grammarRepair){const r=grammarRemediationSequence(e,{chosen,mistake});if(r.length)quickRun.pack.exercises.splice(quickRun.step+1,0,...r)}
- }
+ }else{const mistake=recordMistake(e,{node:quickRun.idx,chosen});if(e._reviewType&&e._reviewKey&&e._reviewType!=='error')gradeReview(e._reviewType,e._reviewKey,'hard');if(!e._grammarRepair){const r=grammarRemediationSequence(e,{chosen,mistake});if(r.length)quickRun.pack.exercises.splice(quickRun.step+1,0,...r)}}
  if(e.method&&typeof recordMethodOutcome==='function')recordMethodOutcome(e,ok,{hintUsed:!!quickRun.hintUsed});
  if(typeof recordMasteryEvidence==='function')recordMasteryEvidence(e,ok,{hintUsed:!!quickRun.hintUsed});
  if(e.type==='openResponse'&&!ok&&!e._openRetry){const repair=buildOpenRemediation(e,quickRun.openResult||{});if(repair.length)quickRun.pack.exercises.splice(quickRun.step+1,0,...repair)}
