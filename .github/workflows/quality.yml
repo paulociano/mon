@@ -86,6 +86,8 @@ jobs:
         run: node scripts/test-grammar-notebook.mjs
       - name: Japanese learning cycle
         run: node scripts/test-japanese-learning-cycle.mjs
+      - name: Adaptive reading support
+        run: node scripts/test-reading-support.mjs
       - name: Foundation lesson variety
         run: node scripts/test-foundation-variety.mjs
       - name: Beginner reconstruction scaffolding
