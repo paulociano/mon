@@ -1,4 +1,6 @@
 // MON Practice Hub runtime · loaded only when practice opens
+let grammarNotebookPromise;
+async function ensureGrammarNotebook(){grammarNotebookPromise??=(async()=>{await loadRuntimeStyle('./features/grammar-notebook.css');await loadRuntimeScript('./features/grammar-notebook.js')})();await grammarNotebookPromise;renderGrammarNotebook()}
 function masteryLabel(concept){
   const [type,key]=concept.split(':',2);
   if(type==='vocabulary'){const v=vocabularyCatalog?.[key];return v?`${v.jp} · ${v.pt}`:key}
@@ -56,5 +58,5 @@ function renderPracticeCoach(){
  const r=practiceRecommendation();
  host.className='practice-coach '+r.tone;
  host.innerHTML=`<div class="practice-coach-mark" aria-hidden="true">復</div><div><span class="eyebrow">${r.eyebrow}</span><h3>${r.title}</h3><p>${r.copy}</p></div><button class="primary" onclick="${r.action}">${r.cta}</button>`;
- if(typeof renderGrammarNotebook==='function')renderGrammarNotebook();
+ ensureGrammarNotebook();
 }
