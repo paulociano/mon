@@ -32,5 +32,5 @@ const multi=fs.readFileSync('core/multi-device-sync.js','utf8');
 assert.ok(multi.includes("identity.textContent=session.user.email||'usuário'"),'account identity must render through textContent');
 assert.ok(!multi.includes('escapeHtml('),'account UI must not depend on an unloaded global escapeHtml helper');
 
-const userUi=fs.readFileSync('features/user.js','utf8');
-for(const token of ['signUpMonCloud','signInMonCloud','setMonCloudPassword','pelo menos 8 caracteres'])assert.ok(userUi.includes(token),'email/password account UX missing '+token);
+const authUi=fs.readFileSync('features/account-auth.js','utf8');
+for(const token of ['signUpMonCloud','signInMonCloud','setMonCloudPassword','pelo menos 8 caracteres'])assert.ok(authUi.includes(token),'email/password account UX missing '+token);
