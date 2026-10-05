@@ -14,3 +14,4 @@
 .video-recommendation h3{margin:5px 0 4px;font:500 21px/1.1 var(--serif)}.video-recommendation p{max-width:700px;color:#8d99a6;font-size:9px;line-height:1.55}
 .video-fallback{align-items:center;gap:10px}.video-practice{margin-right:auto;border:1px solid rgba(244,169,187,.18);border-radius:10px;background:rgba(230,77,61,.1);color:#efc1ba;padding:9px 12px;font-size:8px;font-weight:900}
 @media(max-width:680px){.video-recommendation{align-items:flex-start;flex-direction:column}.video-recommendation .primary{width:100%}}
+.video-poster{position:absolute;inset:0;display:grid;place-items:center;font:700 clamp(44px,8vw,82px) var(--jp);color:rgba(255,255,255,.16);background:radial-gradient(circle at 72% 20%,rgba(215,181,109,.14),transparent 34%),linear-gradient(135deg,#0a1626,#111f31)}
