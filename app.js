@@ -332,6 +332,7 @@ function runAdaptiveHomeAction(action){
 }
 function guideVisualState(decision){
  if(['repair','mistake'].includes(decision?.kind))return 'repair';
+ if(decision?.kind==='return')return 'review';
  if(['review','recover'].includes(decision?.kind))return 'review';
  if(decision?.kind==='story')return 'transfer';
  if(decision?.node?.type==='checkpoint')return 'checkpoint';
@@ -356,7 +357,7 @@ function renderAdaptiveHome(){
  if(reasonTitle)reasonTitle.textContent=d.title;
  if(reasonCopy)reasonCopy.textContent=d.copy+' Sinal principal: '+d.signal+'.';
  const guide=document.querySelector('.guide-card');
- if(guide&&['repair','review','recover','mistake','story'].includes(d.kind)){
+ if(guide&&['repair','review','recover','mistake','story','return'].includes(d.kind)){
    set('guideTitle',d.title);set('guideCopy',d.copy);
  }
  return d;

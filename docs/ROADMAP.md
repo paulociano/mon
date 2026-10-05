@@ -270,12 +270,19 @@ Regras:
 - mobile-first para estudo rápido;
 - animação ambiente discreta.
 
-### 11.2 Primeiro uso · primeira vitória em ~10 minutos
-**Status:** em implementação.
+### 11.2 Primeiro uso · primeira vitória em ~10 minutos ✅
+**Status:** implementado e protegido por browser gate.
 
-O onboarding para zero absoluto deve provar valor antes de apresentar o sistema inteiro. A entrada principal leva diretamente a uma sessão curta com quatro movimentos: ouvir → reconhecer → entender em contexto → falar. Escrita, métricas e detalhes de método aparecem depois da primeira experiência.
+O onboarding para zero absoluto prova valor antes de apresentar o sistema inteiro. A entrada principal leva diretamente a uma sessão curta com quatro movimentos: ouvir → reconhecer → entender em contexto → falar. Escrita, métricas e detalhes de método aparecem depois da primeira experiência.
 
 **Critério de aceite:** quem escolhe “começando do zero” entra diretamente em uma sessão de no máximo 10 minutos, sem precisar navegar pela Home ou compreender Mastery Graph, XP, trilha, score ou ferramentas antes de aprender algo.
+
+### 11.3 Retorno inicial · provar que algo ficou
+**Status:** em implementação.
+
+Depois da primeira sessão, a Home deve reconhecer que o aluno ainda está formando hábito e confiança. Em vez de usar linguagem de dashboard, o retorno prioriza uma pergunta simples: “o que ficou?”. A segunda sessão retoma som e kana antes de acrescentar novidade.
+
+**Critério de aceite:** enquanto houver exatamente uma sessão da Fundação concluída, a Home apresenta uma ação dominante de recuperação e o CTA continua diretamente na sessão 2.
 
 ### 12. Robustez antes de escala
 - migração/versionamento de estado local ✅;
