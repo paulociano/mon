@@ -13,6 +13,9 @@ A Conta MON não deve ser aberta ao público enquanto qualquer gate P0 permanece
 - [x] deployar a Edge Function `delete-account` no projeto Supabase MON (`sa-east-1`);
 - [x] disponibilizar a publishable key ao frontend por runtime público controlado (`public-config`), sem expor secret/service-role;
 - [ ] configurar Site URL + Redirect URL do Supabase Auth para `https://paulociano.github.io/mon/`;
+- [x] validar isolamento RLS transacional entre usuários sintéticos, sem persistir contas de teste;
+- [x] validar optimistic concurrency por `revision` (CAS), incluindo rejeição de revisão obsoleta;
+- [x] validar `ON DELETE CASCADE` de `auth.users` para `mon_user_state` em transação com rollback;
 - [ ] testar exclusão completa ponta a ponta com usuário autenticado real;
 - [x] provisionar o projeto Supabase MON em `sa-east-1`;
 - [x] revisar região, DPA e lista oficial de subprocessadores do Supabase;
