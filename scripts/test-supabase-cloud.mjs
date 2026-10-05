@@ -21,3 +21,10 @@ for(const token of ['SUPABASE_PUBLISHABLE_KEYS','sb_publishable_','Cache-Control
 assert.ok(!publicConfigFn.includes('SUPABASE_SECRET_KEYS')&&!publicConfigFn.includes('SUPABASE_SERVICE_ROLE_KEY'),'public config must never expose privileged key material');
 assert.ok(fs.readFileSync('supabase/config.toml','utf8').includes('[functions.public-config]\nverify_jwt = false'),'public config must be intentionally unauthenticated');
 console.log('MON Supabase cloud contracts passed');
+
+const syncAdapter=fs.readFileSync('core/supabase-sync.js','utf8');
+assert.ok(syncAdapter.includes('monSupabaseClientPromise'),'Supabase client creation must be single-flight');
+assert.ok(syncAdapter.includes('if(monSupabaseClientPromise)return monSupabaseClientPromise'),'concurrent account bootstrap must reuse the same client promise');
+const multi=fs.readFileSync('core/multi-device-sync.js','utf8');
+assert.ok(multi.includes('function monEscapeHtml'),'account UI must own its HTML escaping helper');
+assert.ok(!multi.includes('email=escapeHtml('),'account UI must not depend on an unloaded global escapeHtml helper');
