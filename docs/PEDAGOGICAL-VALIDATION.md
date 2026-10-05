@@ -114,3 +114,10 @@ Uma mudança curricular N4 não está concluída se:
 - o runtime deixar de registrar evidência conceitual, de transferência ou produção.
 
 A validação humana deve ser tratada como revisão de conteúdo e de progressão, não como substituto dos testes estruturais.
+
+
+## Reconstrução guiada para iniciantes
+
+Exercícios de montagem não devem introduzir uma forma nova como quebra-cabeça de caracteres. Na Fundação Zero, a sequência esperada é: exposição e compreensão da intenção; reconstrução com pista semântica; blocos linguísticos reais; pista progressiva opcional; e recuperação posterior sem apoio por listening, recall ou produção oral.
+
+O uso de pista deve ser registrado como evidência assistida (hintUsed) para não ser confundido com recuperação independente. Este gate valida estrutura pedagógica, não eficácia causal em aprendizes reais.

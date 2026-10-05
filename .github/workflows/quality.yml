@@ -88,6 +88,8 @@ jobs:
         run: node scripts/test-japanese-learning-cycle.mjs
       - name: Foundation lesson variety
         run: node scripts/test-foundation-variety.mjs
+      - name: Beginner reconstruction scaffolding
+        run: node scripts/test-beginner-scaffolding.mjs
       - name: Foundation block introductions
         run: node scripts/test-foundation-block-intros.mjs
       - name: Energy policy
