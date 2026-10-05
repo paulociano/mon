@@ -45,6 +45,12 @@ assert.equal(repair[1]._remediation,true);
 assert.equal(repair[1]._grammarRepair,true);
 assert.equal(repair[1]._reviewKey,'P:locationNi');
 
+const queued=vm.runInContext("remediationExercises(1)",ctx);
+assert.equal(Array.from(queued).length,2,'mistake notebook should preserve study + retry for grammar');
+assert.equal(queued[0].type,'study');
+assert.equal(queued[0].mode,'repair');
+assert.equal(queued[1]._remediation,true);
+
 vm.runInContext("recordMistake(base,{chosen:'marcar local da ação',node:24})",ctx);
 const recurrent=vm.runInContext("grammarRemediationSequence(base,{chosen:'marcar local da ação',mistake:state.mistakeStats[mistakeKey(base)]})",ctx);
 assert.equal(recurrent[0].mode,'contrastive','repeated grammar errors should escalate to contrastive remediation');
