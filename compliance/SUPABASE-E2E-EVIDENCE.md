@@ -71,8 +71,7 @@ The following still require real browser-session checks or a destructive test:
 - real client pull on a second device;
 - real two-account cross-access denial through browser sessions;
 - cloud-data deletion through the UI;
-- `delete-account` invocation with a real user JWT;
-- browser-side sign-out/local cleanup;
+- browser-side local cleanup after deletion;
 - post-operation log review.
 
 
@@ -89,3 +88,20 @@ Observed after the new email/password account was created:
 - the historical cloud row disappeared through the existing cascade.
 
 Result: **PASS — session persistence and legacy-account cleanup**
+
+
+## Real authenticated account deletion
+
+The current production account was deleted through the MON UI by the authenticated user.
+
+Fresh backend readback after the operation showed:
+
+- Auth users: 0;
+- Auth sessions: 0;
+- `mon_user_state` rows: 0.
+
+This verifies removal of the Auth identity, server-side session cleanup, and cascade deletion of the cloud learning state.
+
+The Supabase log-query backend returned an error when attempting post-operation log inspection, so log review remains open.
+
+Result: **PASS — full real account deletion**
