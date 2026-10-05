@@ -46,6 +46,8 @@ try{
     await go('home');
   });
   await page.waitForSelector('#home.active',{state:'visible'});
+  assert.ok(await page.locator('body').evaluate(el=>el.classList.contains('beginner-mode')),'early learner should get progressive disclosure');
+  assert.equal(await page.locator('.xp-pill').evaluate(el=>getComputedStyle(el).display),'none','XP should not compete with the first return');
   assert.match(await page.locator('#homeAdaptiveTitle').innerText(),/o que ficou/i,'first return should explain the memory goal');
   assert.match(await page.locator('#homeAdaptiveCopy').innerText(),/retome som e kana/i);
   assert.match(await page.locator('#homeAdaptivePrimary').innerText(),/o que eu lembro/i);

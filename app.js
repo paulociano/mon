@@ -346,6 +346,7 @@ function renderGuideVisual(decision){
  return mood;
 }
 function renderAdaptiveHome(){
+ document.body.classList.toggle('beginner-mode',!state.foundationComplete&&Number(state.foundationSessions||0)<3);
  const d=homeCoachDecision(state,flatPath),banner=document.querySelector('.course-banner');
  if(banner)banner.dataset.adaptive=d.kind;
  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
