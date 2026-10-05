@@ -84,7 +84,7 @@ if(!app.includes('homeCoachDecision(state,flatPath)'))throw new Error('Home runt
 if(!html.includes('id="routeLoader"'))throw new Error('Missing route loading feedback')
 if(!html.includes('aria-live="polite"'))throw new Error('Lesson feedback should expose a polite live region')
 if(!app.includes("lesson:['./features/open-production-remediation.js','./features/lesson.js']"))throw new Error('Lesson UI and remediation must stay lazy')
-if(!app.includes("practice:['./features/practice.js']"))throw new Error('Practice Hub must stay lazy')
+if(!app.includes("practice:['./features/grammar-notebook.js','./features/practice.js']"))throw new Error('Practice Hub and Grammar Notebook must stay lazy')
 const narrative=read('data/narrative.js');
 if(!narrative.includes('narrativeEpisodeForUnit'))throw new Error('Narrative network missing')
 if(!narrative.includes('narrativeEchoExercise'))throw new Error('Narrative transfer exercise missing')
