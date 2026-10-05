@@ -15,7 +15,7 @@ Usuário
      ├─ erros/revisões
      ├─ mastery/learning evidence
      ├─ journal/missões
-     └─ pronúncia/transcrição
+     └─ pronúncia/score e metadados
 ```
 
 ### Conta e sincronização
@@ -39,17 +39,17 @@ ação explícita
   → SpeechRecognition do browser/SO
   → processamento conforme fornecedor
   → transcrição retornada ao MON
-  → estado local
-  → cloud somente se Conta MON + sync
+  → exibição transitória na tela
+  → somente alvo/score/timestamp podem ir ao estado local/cloud
 ```
 
 ### Vídeo
 
 ```text
 grade MON
-  → thumbnail externa
+  → poster local, sem request ao YouTube
 clique do usuário
-  → youtube-nocookie player
+  → youtube-nocookie player sem autoplay
   → tratamento definido pelo terceiro
 ```
 
@@ -61,8 +61,8 @@ clique do usuário
 | nome de perfil | pessoal | usuário | local/cloud | Supabase se sync |
 | progresso de estudo | pessoal comportamental | uso | local/cloud | Supabase se sync |
 | erros e mastery | pessoal comportamental | uso | local/cloud | Supabase se sync |
-| journal | potencialmente pessoal por conteúdo livre/estruturado | uso | local/cloud | Supabase se sync |
-| transcrição | pessoal/contextual; pode conter conteúdo livre | fala | local/cloud | fornecedor de reconhecimento + Supabase se sync |
+| journal narrativo | progresso estruturado de episódios/missões | uso | local/cloud | Supabase se sync |
+| transcrição de voz | pessoal/contextual; pode conter conteúdo livre | fala | transitória na UI; não persistida pelo MON | fornecedor de reconhecimento do browser/SO |
 | áudio bruto | sensível ao contexto, mas não persistido pelo MON | microfone | não armazenado pelo MON | pode ser processado pelo fornecedor do reconhecimento |
 | timestamps | metadado | sistema | local/cloud | Supabase se sync |
 
