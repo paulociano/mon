@@ -64,10 +64,10 @@ assert.ok(html.includes('id="grammarNotebook"'),'Practice Hub needs Grammar Note
 assert.ok(html.includes('文法'),'Notebook should be visible as grammar study surface');
 
 const app=fs.readFileSync('app.js','utf8');
-assert.ok(app.includes("'./features/grammar-notebook.js'"),'Grammar Notebook must load lazily with Practice');
-assert.ok(app.includes("'./features/grammar-notebook.css'"),'Grammar Notebook styles must remain lazy');
-
+assert.ok(!app.includes('grammar-notebook'),'Grammar Notebook must stay out of the eager shell');
 const practice=fs.readFileSync('features/practice.js','utf8');
-assert.ok(practice.includes('renderGrammarNotebook'),'Practice rerenders the notebook on revisit');
+assert.ok(practice.includes("loadRuntimeScript('./features/grammar-notebook.js')"),'Practice must lazy-load Grammar Notebook JS');
+assert.ok(practice.includes("loadRuntimeStyle('./features/grammar-notebook.css')"),'Practice must lazy-load Grammar Notebook CSS');
+assert.ok(practice.includes('renderGrammarNotebook()'),'Practice rerenders the notebook on revisit');
 
 console.log('MON Grammar Notebook contracts passed:',entries.length,'encountered structures');
