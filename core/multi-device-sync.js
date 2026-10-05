@@ -73,7 +73,7 @@ function scheduleMonCloudSync(){
 async function monCloudBootstrap(){try{return await monCloudReconcile()}catch(e){return {status:'error',error:e}}}
 
 async function renderCloudAccountPanel(){
- const panel=document.getElementById('userCloudPanel'),profileShell=document.getElementById('userProfileShell'),authGate=document.getElementById('userAuthGate');
+ const panel=document.getElementById('userCloudPanel');
  if(typeof ensureMonBackupImportControl==='function')ensureMonBackupImportControl();
  if(typeof ensureMonPrivacyControls==='function')ensureMonPrivacyControls();
  if(!panel)return;
@@ -82,11 +82,11 @@ async function renderCloudAccountPanel(){
  try{
   const session=await monCloudSession();
   if(!session){
-   if(profileShell)profileShell.hidden=true;if(authGate)authGate.classList.add('signed-out');
+   setMonUserAuthState(false);
    panel.innerHTML='<b>Conta MON</b><br><label class="user-field"><span>E-mail</span><input id="userCloudEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><label class="user-field"><span>Senha</span><input id="userCloudPassword" type="password" autocomplete="current-password" minlength="8" placeholder="mínimo 8 caracteres"></label><div class="user-actions"><button class="user-save" onclick="signInMonCloud()">entrar</button><button class="user-secondary" onclick="signUpMonCloud()">criar conta</button></div><div class="user-data-note">No primeiro cadastro, confirme seu e-mail. Depois, o login é direto com e-mail e senha.</div>';
    return;
   }
-  if(profileShell)profileShell.hidden=false;if(authGate)authGate.classList.remove('signed-out');
+  setMonUserAuthState(true);
   monRememberSession(session);const badge=document.getElementById('userAccountBadge');if(badge)badge.textContent='conta conectada';
   const result=await monCloudReconcile();
   if(badge)badge.textContent=result.status==='conflict'?'conflito de progresso':monLocalSyncDirty()?'envio pendente':'conta sincronizada';
