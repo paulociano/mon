@@ -1,4 +1,5 @@
 function mistakeCategory(exercise={}){
+  if(exercise._reviewType==='grammar')return 'gramática';
   const prompt=(exercise.prompt||'').toLowerCase();
   if(exercise.type==='listen') return 'escuta';
   if(exercise.type==='speak') return 'fala';
@@ -16,7 +17,7 @@ function mistakeKey(exercise={}){
   return 'm'+(h>>>0).toString(36);
 }
 function safeExerciseSnapshot(exercise={}){
-  const out={type:exercise.type,prompt:exercise.prompt||'',why:exercise.why||'',bridge:exercise.bridge||'',method:exercise.method||'',jp:exercise.jp||'',audio:exercise.audio||'',answer:exercise.answer||'',target:exercise.target||'',pt:exercise.pt||'',cue:exercise.cue||'',npc:exercise.npc||'',npcPt:exercise.npcPt||''};
+  const out={type:exercise.type,prompt:exercise.prompt||'',why:exercise.why||'',bridge:exercise.bridge||'',method:exercise.method||'',jp:exercise.jp||'',audio:exercise.audio||'',answer:exercise.answer||'',target:exercise.target||'',pt:exercise.pt||'',cue:exercise.cue||'',npc:exercise.npc||'',npcPt:exercise.npcPt||'',_reviewType:exercise._reviewType||null,_reviewKey:exercise._reviewKey||null,_unitId:exercise._unitId||exercise.unitId||null};
   if(Array.isArray(exercise.accepted))out.accepted=exercise.accepted.slice(0,6);
   if(Array.isArray(exercise.examples))out.examples=exercise.examples.slice(0,4);
   if(Array.isArray(exercise.options))out.options=exercise.options.slice(0,8);
@@ -24,14 +25,16 @@ function safeExerciseSnapshot(exercise={}){
   if(Array.isArray(exercise.pairs))out.pairs=exercise.pairs.slice(0,8);
   return out;
 }
-function mistakeEvidence(kind,key,context,at){if(typeof recordLearningEvidence==='function')recordLearningEvidence({source:'mistake',kind,concept:key,ok:kind!=='mistake',context,at})}
+function mistakeEvidence(kind,key,context,at){if(typeof recordLearningEvidence==='function')recordLearningEvidence({source:'mistake',kind,concept:key,ok:!['mistake','misconception'].includes(kind),context,at})}
+function grammarConceptId(exercise={}){return exercise._reviewType==='grammar'&&String(exercise._reviewKey||'').startsWith('P:')?String(exercise._reviewKey).slice(2):null}
 function recordMistake(exercise={},context={}){
   state.mistakeStats=state.mistakeStats||{};
   state.mistakes=Array.isArray(state.mistakes)?state.mistakes:[];
   const key=mistakeKey(exercise),now=Date.now(),prev=state.mistakeStats[key]||{count:0,recovered:0};
+  const grammarId=grammarConceptId(exercise),concept=grammarId?'grammar:P:'+grammarId:null;
   const entry={
-    key,category:mistakeCategory(exercise),count:(prev.count||0)+1,recovered:prev.recovered||0,
-    firstAt:prev.firstAt||now,lastAt:now,node:context.node??prev.node??null,
+    key,category:mistakeCategory(exercise),concept,count:(prev.count||0)+1,recovered:prev.recovered||0,
+    firstAt:prev.firstAt||now,lastAt:now,node:context.node??prev.node??null,lastChosen:context.chosen??prev.lastChosen??null,
     title:exercise.prompt||'Erro de prática',why:exercise.why||'',exercise:safeExerciseSnapshot(exercise)
   };
   state.mistakeStats[key]=entry;
@@ -39,6 +42,7 @@ function recordMistake(exercise={},context={}){
   state.mistakes.unshift({at:now,key,category:entry.category,title:entry.title,node:entry.node});
   state.mistakes=state.mistakes.slice(0,60);
   mistakeEvidence('mistake',key,entry.category,now);
+  if(concept)mistakeEvidence('misconception',concept,{grammarId,chosen:entry.lastChosen,key},now);
   return entry;
 }
 function markMistakeRecovered(exercise={}){
@@ -71,3 +75,29 @@ function remediationExercises(limit=6){
     return false;
   });
 }
+function grammarRemediationStudy(exercise={},context={}){
+  const id=grammarConceptId(exercise),g=id&&typeof grammarCatalog!=='undefined'?grammarCatalog[id]:null;
+  if(!g)return null;
+  const mistake=context.mistake||state.mistakeStats?.[mistakeKey(exercise)]||null,count=Number(mistake?.count||1);
+  const misconception=(g.commonMistakes||[])[0];
+  const chosen=context.chosen??mistake?.lastChosen??null;
+  const mode=count>=2?'contrastive':'repair';
+  const correction=misconception?misconception.explanation:g.contrast;
+  const explanation=mode==='contrastive'
+    ?`Este padrão já causou ${count} erros. ${g.explanation} Erro a desmontar: ${misconception?.wrong||'escolher pela tradução'}. ${correction}`
+    :`${chosen?`Você escolheu “${chosen}”. `:''}${correction} Reative o modelo antes de tentar novamente.`;
+  return {
+    type:'study',mode,title:`Reparo · ${g.form}`,mentalModel:g.mentalModel,explanation,
+    examples:(g.examples||[]).slice(0,mode==='contrastive'?3:2),contrast:g.contrast,
+    commonMistakes:[...(g.commonMistakes||[])],realWorldUse:g.realWorldUse,
+    _grammarRepair:true,_grammarId:id,_mistakeKey:mistake?.key||mistakeKey(exercise)
+  };
+}
+function grammarRemediationSequence(exercise={},context={}){
+  if(exercise._grammarRepair)return [];
+  const study=grammarRemediationStudy(exercise,context);if(!study)return [];
+  const retry={...exercise,_remediation:true,_grammarRepair:true,_mistakeKey:study._mistakeKey,
+    bridge:`Agora aplique ${grammarCatalog?.[study._grammarId]?.form||'a estrutura'} sem escolher pela tradução.`};
+  return [study,retry];
+}
+
