@@ -25,3 +25,14 @@ assert.ok(!profileSummary.includes('ensureUserArea('),'profile summary must not 
 
 assert.ok(sync.includes("identity.textContent=session.user.email||'usuário'"),'account identity must render without HTML interpolation');
 assert.ok(!sync.includes('escapeHtml('),'account sync UI must not reference undefined escapeHtml');
+
+assert.ok(app.includes("const MON_AUTH_RESET_MARKER='mon-auth-reset-password-v1'"),'fresh password auth rollout must have a one-time client reset marker');
+for(const key of ['mon-account','mon-cloud-linked','mon-cloud-conflict-last','mon-sync-dirty-at','sb-gpmobddlexssivfxzzjw-auth-token'])assert.ok(app.includes(key),'auth reset must clear '+key);
+assert.ok(!app.includes("localStorage.removeItem('mon-state')"),'auth reset must preserve learning state');
+assert.ok(!app.includes("localStorage.removeItem('mon-profile')"),'auth reset must preserve local profile');
+assert.ok(app.includes("k.startsWith('mon-japanese-os-')"),'auth reset must clear MON-owned PWA caches');
+const userSource=fs.readFileSync('features/user.js','utf8');
+assert.ok(userSource.includes('id="userAuthGate"'),'user route must expose an auth-first gate');
+assert.ok(userSource.includes('id="userProfileShell" class="user-profile-shell" hidden'),'profile shell must start hidden until session verification');
+assert.ok(sync.includes('profileShell.hidden=true'),'signed-out state must keep profile hidden');
+assert.ok(sync.includes('profileShell.hidden=false'),'valid session must reveal profile');
