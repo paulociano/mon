@@ -97,10 +97,19 @@ async function renderCloudAccountPanel(){
   const identity=document.getElementById('monCloudIdentity');if(identity)identity.textContent=session.user.email||'usuário';
  }catch(e){panel.textContent='Conta MON indisponível: '+e.message}
 }
+let monOtpCooldownUntil=0;
 async function connectMonCloud(){
- const email=document.getElementById('userCloudEmail')?.value.trim();
+ const email=document.getElementById('userCloudEmail')?.value.trim(),now=Date.now();
  if(!email){toast('Digite seu e-mail');return}
- try{await monCloudSignIn(email);toast('Link enviado ao seu e-mail')}catch(e){toast(e.message)}
+ if(now<monOtpCooldownUntil){toast('Aguarde alguns segundos antes de pedir outro link');return}
+ try{
+  monOtpCooldownUntil=now+60000;
+  await monCloudSignIn(email);
+  toast('Link enviado ao seu e-mail');
+ }catch(e){
+  if(e?.status===429||/rate|seconds|60/i.test(e?.message||'')){monOtpCooldownUntil=Date.now()+60000;toast('Muitos pedidos de acesso. Aguarde 60 segundos e tente novamente.');return}
+  monOtpCooldownUntil=0;toast(e.message);
+ }
 }
 async function disconnectMonCloud(){
  try{
