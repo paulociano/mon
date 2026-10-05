@@ -58,9 +58,9 @@ function ensureContentPack(level='N5'){
 }
 const FEATURE_RUNTIME_SCRIPTS={
  auth:['./features/auth-page.js'],
- foundation:['./data/kana.js','./core/reading-support.js','./data/foundation.js','./features/foundation.js'],
+ foundation:['./data/kana.js','./data/foundation.js','./features/foundation.js'],
  session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./data/narrative.js','./core/next-best-lesson.js','./features/foundation.js','./features/session.js'],
- kanji:['./data/kanji.js','./data/kana.js','./core/reading-support.js','./data/kanji-memory.js','./features/kanji.js','./features/kanji-memory.js'],
+ kanji:['./data/kanji.js','./data/kana.js','./data/kanji-memory.js','./features/kanji.js','./features/kanji-memory.js'],
  reading:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
  missions:[LE,'./data/kana.js','./data/experiences.js','./data/missions-v2.js','./data/missions-dialogues.js','./features/experiences.js','./features/missions-reactions.js','./features/missions-world.js','./features/missions-dialogue.js','./features/missions-v2.js'],
  speaking:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
@@ -77,7 +77,7 @@ async function ensureFeatureRuntime(name){
  if(featureRuntimePromises[name])return featureRuntimePromises[name];
  const started=typeof perfStart==='function'?perfStart('feature:'+name):null;
  const scripts=FEATURE_RUNTIME_SCRIPTS[name]||[];
- featureRuntimePromises[name]=(async()=>{for(const href of FEATURE_RUNTIME_STYLES[name]||[])await loadRuntimeStyle(href);for(const src of scripts)await loadRuntimeScript(src);if(started!==null&&typeof perfEnd==='function')perfEnd('feature:'+name,started)})().catch(err=>{delete featureRuntimePromises[name];throw err});
+ featureRuntimePromises[name]=(async()=>{for(const href of FEATURE_RUNTIME_STYLES[name]||[])await loadRuntimeStyle(href);if(name==='foundation'||name==='kanji')await loadRuntimeScript('./core/reading-support.js');for(const src of scripts)await loadRuntimeScript(src);if(started!==null&&typeof perfEnd==='function')perfEnd('feature:'+name,started)})().catch(err=>{delete featureRuntimePromises[name];throw err});
  return featureRuntimePromises[name];
 }
 let learningRuntimePromise=null;
