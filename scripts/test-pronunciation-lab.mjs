@@ -34,3 +34,8 @@ assert.ok(css.includes('.shadow-lab'));
 assert.ok(state.includes('pronunciation:{sessions:0'));
 
 console.log('MON Listening & Pronunciation Lab contracts passed');
+
+assert.ok(js.includes("ps.lastTranscript={target,match,at:Date.now()}"),'recognized voice text must not be persisted');
+assert.ok(!js.includes('text:txt'),'recognized transcript text must not enter persisted state');
+assert.ok(js.includes("delete ps.lastTranscript.text"),'legacy transcript text must be purged');
+assert.ok(js.includes('não é salva nem sincronizada'),'voice UI must disclose transient transcript handling');
