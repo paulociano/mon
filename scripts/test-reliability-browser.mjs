@@ -23,8 +23,10 @@ try{
   assert.equal(await loaderPage.evaluate(()=>go('user')),true);
   await loaderPage.waitForSelector('#user.active');
  }finally{await loaderContext.close()}
- await page.evaluate(async()=>{await go('user');setMonUserAuthState(true)});
+ await page.evaluate(()=>go('user'));
  await page.waitForSelector('#user.active');
+ await page.waitForFunction(()=>document.getElementById('userCloudPanel')?.textContent.length>0);
+ await page.evaluate(()=>setMonUserAuthState(true));
  await page.fill('#userNameInput','Teste de rotina');
  await page.click('button[onclick="saveUserArea()"]');
  assert.equal(await page.locator('#userNameHero').innerText(),'Teste de rotina');
@@ -52,7 +54,9 @@ try{
  await page.evaluate(()=>go('pronunciation'));
  await page.evaluate(()=>ratePron(2));
  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('mon-state')).pronunciation.selfRatings[0].rating),2);
- await page.evaluate(async()=>{await go('user');setMonUserAuthState(true)});
+ await page.evaluate(()=>go('user'));
+ await page.waitForFunction(()=>document.getElementById('userCloudPanel')?.textContent.length>0);
+ await page.evaluate(()=>setMonUserAuthState(true));
  await page.click('#prepareOffline');
  await page.waitForFunction(()=>document.getElementById('offlineStatus').textContent.startsWith('Lições,'));
  await context.setOffline(true);
