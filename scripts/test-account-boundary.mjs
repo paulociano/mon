@@ -8,7 +8,7 @@ for(const token of ['monCloudAvailable','monCloudReconcile','scheduleMonCloudSyn
 assert.ok(app.includes("'./core/account.js'"),'account runtime must be loaded');
 assert.ok(app.includes("'./core/multi-device-sync.js'"),'multi-device coordinator must be lazy-loaded with account runtime');
 assert.ok(app.includes("localStorage.getItem('mon-cloud-linked')"),'linked devices should resume sync lazily');
-assert.ok(app.includes('monAccountStatus()'),'user area must expose account state');
+assert.ok(fs.readFileSync('features/user.js','utf8').includes('monAccountStatus()'),'user area must expose account state');
 assert.ok(core.includes('function exportMonBackup()')&&core.includes('monSyncPayload('),'backup must use versioned sync payload');
 assert.ok(core.includes('ensureMonBackupImportControl'),'lazy account runtime must mount validated backup import');
 for(const token of ['exportMonBackup'])assert.ok(core.includes(token),'account action must stay lazy '+token);

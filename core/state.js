@@ -2,6 +2,31 @@ const MON_STATE_KEY='mon-state';
 const MON_STATE_BACKUP_KEY='mon-state-backup';
 const MON_STATE_CORRUPT_KEY='mon-state-corrupt-last';
 const MON_SAVE_VERSION=3;
+let monSaveFailed=false;
+function monMarkLocalDirty(){
+ localStorage.setItem('mon-sync-dirty-at',Date.now());
+ if(typeof scheduleMonCloudSync==='function')scheduleMonCloudSync();
+}
+function monStorageRead(key){try{return localStorage.getItem(key)}catch{monSaveFailed=true;return null}}
+function monSaveFeedback(failed){
+ monSaveFailed=failed;
+ if(typeof document==='undefined')return;
+ let box=document.getElementById('saveFailure');
+ if(failed&&!box){
+  box=document.createElement('aside');box.id='saveFailure';box.className='save-failure';box.setAttribute('role','alert');
+  box.innerHTML='<b>Seu progresso ainda não foi salvo.</b><p>Mantenha esta página aberta. Tente salvar novamente ou baixe um backup antes de sair.</p><button type="button">tentar salvar</button><button type="button">baixar backup</button>';
+  box.querySelectorAll('button')[0].onclick=()=>save();
+  box.querySelectorAll('button')[1].onclick=exportMonEmergencyBackup;
+  document.body.appendChild(box);
+ }
+ if(box)box.hidden=!failed;
+}
+function exportMonEmergencyBackup(){
+ let profile={};try{profile=JSON.parse(localStorage.getItem('mon-profile')||'{}')}catch{}
+ const payload={syncVersion:1,updatedAt:new Date().toISOString(),profile,learningState:normalizeState(state)};
+ const url=URL.createObjectURL(new Blob([JSON.stringify(payload)],{type:'application/json'})),a=document.createElement('a');
+ a.href=url;a.download='mon-emergency-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 const defaultState={saveVersion:MON_SAVE_VERSION,xp:120,streak:1,reviews:{},kanaMastery:{},kanaReviews:{},speech:0,day:1,sessions:0,foundationDay:1,foundationComplete:false,foundationSessions:0,romajiMode:'auto',grammarOpened:{},grammarRecall:{},sentenceSolved:0,soundWins:0,lastStudyDate:null,history:[],diagnostic:null,energy:30,maxEnergy:30,gems:350,pathProgress:null,quests:{date:null,lessons:0,xp:0,accuracy:false},streakFreeze:0,xpBoostUntil:0,chests:{},leagueXp:0,perfectLessons:0,mistakes:[],mistakeStats:{},reviewItems:{},methodStats:{},masteryEvidence:{},unitMastery:{},remediation:null,narrative:{episodes:{},characters:{},arcs:{},lastEpisode:null},pronunciation:{sessions:0,plays:0,shadowAttempts:0,selfRatings:[],tracks:{}},kanjiLab:{attempts:0,correct:0,modes:{},last:null},survivalMissions:{completed:{},attempts:{},repairs:0},videoLearning:{opened:{},practice:{},last:null},productionGaps:{},functionalMastery:{}};
 
 function normalizeState(raw={}){
@@ -37,7 +62,7 @@ function rememberCorruptState(raw){
  try{localStorage.setItem(MON_STATE_CORRUPT_KEY,raw)}catch(e){}
 }
 function loadState(){
- const primaryRaw=localStorage.getItem(MON_STATE_KEY);
+ const primaryRaw=monStorageRead(MON_STATE_KEY);
  if(primaryRaw){
   try{
    const parsed=JSON.parse(primaryRaw),loaded=migrateState(parsed),from=Number(parsed.saveVersion||0);
@@ -45,7 +70,7 @@ function loadState(){
    return loaded;
   }catch(e){rememberCorruptState(primaryRaw)}
  }
- const backupRaw=localStorage.getItem(MON_STATE_BACKUP_KEY);
+ const backupRaw=monStorageRead(MON_STATE_BACKUP_KEY);
  if(backupRaw){
   try{
    const recovered=parseStoredState(backupRaw);
@@ -56,6 +81,10 @@ function loadState(){
  return normalizeState(defaultState);
 }
 let state=loadState();
+if(typeof window!=='undefined'){
+ window.addEventListener('beforeunload',e=>{if(monSaveFailed){e.preventDefault();e.returnValue=''}});
+ window.addEventListener('DOMContentLoaded',()=>{if(monSaveFailed)monSaveFeedback(true)});
+}
 function save(){
  try{
   const next=normalizeState(state);
@@ -67,7 +96,9 @@ function save(){
   }
   localStorage.setItem(MON_STATE_KEY,serialized);
   state=next;
-  try{localStorage.setItem('mon-sync-dirty-at',Date.now());typeof scheduleMonCloudSync==='function'&&scheduleMonCloudSync()}catch(e){}
- }catch(e){}
+  monMarkLocalDirty();
+  monSaveFeedback(false);
+ }catch(e){monSaveFeedback(true);updateMetrics();return false}
  updateMetrics();
+ return true;
 }

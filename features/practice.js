@@ -1,6 +1,6 @@
 // MON Practice Hub runtime · loaded only when practice opens
 let grammarNotebookPromise;
-async function ensureGrammarNotebook(){grammarNotebookPromise??=(async()=>{await loadRuntimeStyle('./features/grammar-notebook.css');await loadRuntimeScript('./features/grammar-notebook.js')})();await grammarNotebookPromise;renderGrammarNotebook()}
+async function ensureGrammarNotebook(){grammarNotebookPromise??=(async()=>{await loadRuntimeStyle('./features/grammar-notebook.css');await loadRuntimeScript('./features/grammar-notebook.js')})().catch(e=>{grammarNotebookPromise=null;throw e});await grammarNotebookPromise;renderGrammarNotebook()}
 function masteryLabel(concept){
   const [type,key]=concept.split(':',2);
   if(type==='vocabulary'){const v=vocabularyCatalog?.[key];return v?`${v.jp} · ${v.pt}`:key}

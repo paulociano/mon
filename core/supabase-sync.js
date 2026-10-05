@@ -4,7 +4,7 @@ function monCloudConfig(){return globalThis.MON_CLOUD_CONFIG||{}}
 function monCloudConfigured(){const c=monCloudConfig();return /^https:\/\/.+\.supabase\.co$/.test(c.url||'')&&!!c.publishableKey}
 async function ensureSupabaseSdk(){
  if(globalThis.supabase?.createClient)return globalThis.supabase;
- await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.crossOrigin='anonymous';s.onload=resolve;s.onerror=()=>reject(new Error('Falha ao carregar Supabase'));document.head.appendChild(s)});
+ await loadRuntimeScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2');
  return globalThis.supabase;
 }
 async function getMonSupabase(){

@@ -40,7 +40,7 @@ assert.match(workflow,/actions\/checkout@[0-9a-f]{40}/,'checkout action must be 
 const textExtensions=new Set(['.js','.mjs','.html','.css','.md','.json','.yml','.yaml','.svg']);
 function walk(dir){
   for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
-    if(entry.name==='.git')continue;
+    if(['.git','node_modules','test-results'].includes(entry.name))continue;
     const full=path.join(dir,entry.name);
     if(entry.isDirectory())walk(full);
     else if(textExtensions.has(path.extname(entry.name))){

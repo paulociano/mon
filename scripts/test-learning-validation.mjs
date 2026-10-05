@@ -84,3 +84,12 @@ assert.equal(sparse.retention[0].status,'sparse');
 assert.equal(sparse.transfer.trend.status,'insufficient');
 
 console.log('MON longitudinal learning validation contracts passed');
+
+{
+ const missing=[null,undefined,'',false,'30',NaN,Infinity,-1,101].map(autonomy=>({kind:'mission_complete',autonomy}));
+ const report=ctx.__report({},missing,now);
+ assert.equal(report.autonomy.samples,0);
+ assert.equal(report.autonomy.value,null);
+ const valid=ctx.__report({},[...missing,{kind:'mission_complete',autonomy:0},{kind:'mission_complete',autonomy:100}],now);
+ assert.equal(valid.autonomy.samples,2);assert.equal(valid.autonomy.value,50);
+}

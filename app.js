@@ -1,477 +1,14 @@
-const viewNames={home:'Hoje',journey:'Jornada',practice:'Praticar',explore:'Explorar',progress:'Progresso',user:'Minha Ã¡rea',lesson:'LiÃ§Ã£o',league:'Liga',shop:'Loja',foundation:'Kana & gramÃ¡tica',session:'SessÃ£o longa',curriculum:'Mapa acadÃªmico',kanji:'Kanji Atlas',missions:'MissÃµes',reading:'HistÃ³rias',speaking:'ConversaÃ§Ã£o',culture:'Cultura',writing:'Escrita',journal:'DiÃ¡rio no JapÃ£o',videos:'VÃ­deos',pronunciation:'PronÃºncia'};
-let currentKanji=0;
-function shellLocalDateKey(date=new Date()){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600)}
-function shuffleArray(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function speak(text,rate=.86){if(!('speechSynthesis'in window)){toast('Ãudio indisponÃ­vel neste navegador');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(text||''));u.lang='ja-JP';u.rate=rate;const ja=speechSynthesis.getVoices().find(v=>String(v.lang).toLowerCase().startsWith('ja'));if(ja)u.voice=ja;speechSynthesis.speak(u)}
-const NAV_PARENT={lesson:'home',session:'home',curriculum:'journey',foundation:'explore',kanji:'explore',missions:'explore',reading:'explore',speaking:'explore',culture:'explore',writing:'explore',journal:'explore',videos:'explore',pronunciation:'explore',league:'explore',shop:'explore',user:'user'};
-function navParentForView(id){return NAV_PARENT[id]||id}
-function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${navParentForView(id)}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
-let accountRuntimePromise=null;
-function ensureAccountRuntime(){return accountRuntimePromise||(accountRuntimePromise=(async()=>{for(const src of ['./core/account.js','./config/cloud.js','./core/supabase-sync.js','./core/multi-device-sync.js'])await loadRuntimeScript(src)})())}
-const LE='./core/learning-evidence.js';
-const LEARNING_RUNTIME_SCRIPTS=[
- './data/kanji.js',
- './data/kana.js',
- './data/experiences.js',
- './data/foundation.js',
- './data/session.js',
- './data/narrative.js',
- './core/narrative-state.js',
- './core/next-best-lesson.js',
- './core/mistakes.js',
- LE,
- './core/mastery-graph.js',
- './data/grammar-pedagogy.js',
- './core/learning-methods.js',
- './core/course-engine.js',
- './core/progression-engine.js'
-];
-const N5='./data/content-packs-n5.js',N4=['./data/content-packs-n4.js','./data/content-packs-n4-61-70.js','./data/content-packs-n4-71-80.js','./data/content-packs-n4-81-90.js'],N4_CAP='./data/n4-capabilities.js';
-const CONTENT_PACK_SCRIPTS={N5:[N5],N4A:[N5,...N4.slice(0,1)],N4B:[N5,...N4.slice(0,2)],N4C:[N5,...N4.slice(0,3)],N4D:[N5,...N4]};
-const contentPackPromises={};
-function ensureContentPack(level='N5'){
- const resolved=CONTENT_PACK_SCRIPTS[level]?level:'N5';
- if(contentPackPromises[resolved])return contentPackPromises[resolved];
- const sources=resolved==='N5'?CONTENT_PACK_SCRIPTS.N5:[...CONTENT_PACK_SCRIPTS[resolved],N4_CAP];
- contentPackPromises[resolved]=(async()=>{for(const src of sources)await loadRuntimeScript(src);if(resolved!=='N5'&&typeof applyN4CapabilityContracts==='function')applyN4CapabilityContracts()})().catch(err=>{delete contentPackPromises[resolved];throw err});
- return contentPackPromises[resolved];
-}
-const FEATURE_RUNTIME_SCRIPTS={
- foundation:['./data/kana.js','./data/foundation.js','./features/foundation.js'],
- session:['./data/kanji.js','./data/kana.js','./data/experiences.js','./data/foundation.js','./data/session.js','./data/narrative.js','./core/next-best-lesson.js','./features/foundation.js','./features/session.js'],
- kanji:['./data/kanji.js','./data/kanji-memory.js','./features/kanji.js','./features/kanji-memory.js'],
- reading:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
- missions:[LE,'./data/kana.js','./data/experiences.js','./data/missions-v2.js','./data/missions-dialogues.js','./features/experiences.js','./features/missions-reactions.js','./features/missions-world.js','./features/missions-dialogue.js','./features/missions-v2.js'],
- speaking:['./data/kana.js','./data/experiences.js','./features/experiences.js'],
- progress:[LE,'./core/learning-metrics.js','./core/learning-validation.js','./features/progress.js'],
- curriculum:['./data/curriculum.js'],
- lesson:['./features/open-production-remediation.js','./features/lesson.js'],
- practice:['./features/practice.js'],
- journal:['./data/narrative.js','./core/narrative-state.js','./features/journal.js'],
- videos:['./features/videos.js'],
- pronunciation:['./data/pronunciation.js','./features/pronunciation.js']
-};
-const featureRuntimePromises={};
-async function ensureFeatureRuntime(name){
- if(featureRuntimePromises[name])return featureRuntimePromises[name];
- const started=typeof perfStart==='function'?perfStart('feature:'+name):null;
- const scripts=FEATURE_RUNTIME_SCRIPTS[name]||[];
- featureRuntimePromises[name]=(async()=>{for(const href of FEATURE_RUNTIME_STYLES[name]||[])await loadRuntimeStyle(href);for(const src of scripts)await loadRuntimeScript(src);if(started!==null&&typeof perfEnd==='function')perfEnd('feature:'+name,started)})().catch(err=>{delete featureRuntimePromises[name];throw err});
- return featureRuntimePromises[name];
-}
-let learningRuntimePromise=null;
-function contentPackLevelForDay(day=state.day){
- const d=Number(day||1);
- if(d>=81&&d<=90)return 'N4D';
- if(d>=71)return 'N4C';
- if(d>=61)return 'N4B';
- if(d>=55)return 'N4A';
- return 'N5';
-}
-function loadRuntimeScript(src){
- return new Promise((resolve,reject)=>{
-   const existing=document.querySelector(`script[data-runtime-src="${src}"]`);
-   if(existing){if(existing.dataset.ready==='1')return resolve();existing.addEventListener('load',()=>resolve(),{once:true});existing.addEventListener('error',()=>reject(new Error('Falha ao carregar '+src)),{once:true});return}
-   const s=document.createElement('script');s.src=src;s.async=false;s.dataset.runtimeSrc=src;
-   s.onload=()=>{s.dataset.ready='1';resolve()};s.onerror=()=>reject(new Error('Falha ao carregar '+src));document.body.appendChild(s);
- });
-}
-function loadRuntimeStyle(href){
- return new Promise((resolve,reject)=>{
-   const existing=document.querySelector(`link[data-runtime-href="${href}"]`);
-   if(existing){if(existing.dataset.ready==='1')return resolve();existing.addEventListener('load',()=>resolve(),{once:true});existing.addEventListener('error',()=>reject(new Error('Falha ao carregar '+href)),{once:true});return}
-   const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.dataset.runtimeHref=href;
-   link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>reject(new Error('Falha ao carregar '+href));document.head.appendChild(link);
- });
-}
-const FEATURE_RUNTIME_STYLES={journey:['./features/journey.css'],explore:['./features/journey.css'],progress:['./features/journey.css'],user:['./features/user.css'],foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
-async function ensureLearningRuntime(){
- const level=contentPackLevelForDay();
- await ensureContentPack(level);
- if(learningRuntimePromise)return learningRuntimePromise;
- const started=typeof perfStart==='function'?perfStart('runtime:learning'):null;
- document.body.classList.add('learning-runtime-loading');
- learningRuntimePromise=(async()=>{for(const src of LEARNING_RUNTIME_SCRIPTS)await loadRuntimeScript(src);document.body.classList.add('learning-runtime-ready');if(started!==null&&typeof perfEnd==='function')perfEnd('runtime:learning',started)})()
-   .catch(err=>{learningRuntimePromise=null;toast('NÃ£o consegui carregar o motor de aprendizagem');throw err})
-   .finally(()=>document.body.classList.remove('learning-runtime-loading'));
- return learningRuntimePromise;
-}
-const hydratedViews=new Set(['home']);
-function setRouteBusy(on,label='Carregando'){
- const loader=document.getElementById('routeLoader'),main=document.querySelector('main');
- document.body.classList.toggle('route-busy',on);if(main)main.setAttribute('aria-busy',on?'true':'false');
- if(loader){loader.setAttribute('aria-hidden',on?'false':'true');loader.setAttribute('aria-label',label);loader.dataset.label=label}
-}
-let routeRequestId=0;
-const ROUTABLE_VIEWS=new Set(Object.keys(viewNames));
-function routeFromLocation(){const id=new URL(location.href).searchParams.get('view');return id&&ROUTABLE_VIEWS.has(id)?id:'home'}
-function routeUrl(id){const url=new URL(location.href);if(id==='home')url.searchParams.delete('view');else url.searchParams.set('view',id);return url.pathname+url.search+url.hash}
-function commitRouteUrl(id,replace=false){const next=routeUrl(id);if(next===location.pathname+location.search+location.hash)return;history[replace?'replaceState':'pushState']({monView:id},'',next)}
-async function go(id,options={}){
- if(!ROUTABLE_VIEWS.has(id))id='home';
- const requestId=++routeRequestId;
- const previous=document.querySelector('.view.active')?.id||'home';
- const viewStart=typeof perfStart==='function'?perfStart('view:'+id):null;
- const busyTimer=setTimeout(()=>{if(requestId===routeRequestId)setRouteBusy(true,'Abrindo '+(viewNames[id]||id))},90);
- try{
-   if(id==='user'){ensureUserArea();await ensureAccountRuntime();}
-   if(['journey','explore','progress','user'].includes(id))await ensureFeatureRuntime(id);
-   if(id==='foundation')await ensureFeatureRuntime('foundation');
-   if(id==='curriculum')await ensureFeatureRuntime('curriculum');
-   if(id==='kanji')await ensureFeatureRuntime('kanji');
-   if(id==='reading'||id==='missions'||id==='speaking')await ensureFeatureRuntime(id);
-   if(id==='practice'){await ensureLearningRuntime();await ensureFeatureRuntime('practice');}
-   if(id==='journal')await ensureFeatureRuntime('journal');
-   if(id==='videos')await ensureFeatureRuntime('videos');
-   if(id==='pronunciation')await ensureFeatureRuntime('pronunciation');
-   if(requestId!==routeRequestId)return false;
-   document.body.classList.toggle('focus-session',id==='session');
-   document.body.classList.toggle('quick-focus',id==='lesson');
-   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
-   document.querySelectorAll('[data-view]').forEach(b=>{const active=b.dataset.view===navParentForView(id);b.classList.toggle('active',active);if(b.matches('#desktopNav [data-view]')){if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')}});
-   const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[id]||id;
-   if(id==='home')renderGameHome();
-   else if(id==='journey')renderJourney();
-   else if(id==='progress')renderProgressHub();
-   else if(id==='user')renderUserArea();
-   else if(id==='curriculum')renderCurriculum(curriculumLevel||currentPlan().level);
-   else if(id==='foundation')renderFoundation();
-   else if(id==='kanji'){ensureKanjiAtlas();renderKanjiAtlas()}
-   else if(id==='writing'){ensureDrawingCanvases()}
-   else if(id==='reading'){if(typeof hydrateReading==='function')hydrateReading()}
-   else if(id==='missions'){if(typeof renderMissionGridV2==='function'){renderMissionGridV2();renderMissionV2()}else hydrateMissionGrid();}
-   else if(id==='speaking')hydrateSurvivalPhrases();
-   else if(id==='league')renderLeague();
-   else if(id==='shop')renderShop();
-   else if(id==='practice'){renderPracticeCoach();renderMasteryMap();renderReviewDeck();renderMistakeNotebook()}
-   else if(id==='journal')renderJournal();
-   else if(id==='videos'&&typeof renderVideos==='function')renderVideos();
-   else if(id==='pronunciation'&&typeof renderPronunciation==='function')renderPronunciation();
-   if(options.history!==false)commitRouteUrl(id,options.replace===true);
-   keepActiveNavVisible(id);
-   const activeView=document.getElementById(id);if(activeView){activeView.setAttribute('tabindex','-1');activeView.focus({preventScroll:true})}
-   window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
-   if(viewStart!==null&&typeof perfEnd==='function')perfEnd('view:'+id,viewStart);
- }catch(err){
-   console.error('MON route failed',id,err);
-   if(requestId===routeRequestId){
-     document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===previous));
-     document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===navParentForView(previous)));
-     const crumb=document.getElementById('crumb');if(crumb)crumb.textContent=viewNames[previous]||previous;
-     toast('NÃ£o consegui abrir '+(viewNames[id]||id)+'. Tente novamente.');
-   }
-   return false;
- }finally{
-   clearTimeout(busyTimer);
-   if(requestId===routeRequestId)setRouteBusy(false);
- }
- return requestId===routeRequestId;
-}
-document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
-window.addEventListener('popstate',()=>go(routeFromLocation(),{history:false}));
-const MON_PROFILE_KEY='mon-profile';
-function loadLocalProfile(){try{return {...{name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'},...JSON.parse(localStorage.getItem(MON_PROFILE_KEY)||'{}')}}catch(e){return {name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'}}}
-function saveLocalProfile(p){localStorage.setItem(MON_PROFILE_KEY,JSON.stringify(p));localStorage.setItem('mon-sync-dirty-at',1)}
-function userAreaMarkup(){
- return '<div class="user-shell"><div class="user-hero"><div class="user-identity"><div class="user-avatar" id="userAvatar">é–€</div><div><span class="eyebrow">Minha Ã¡rea Â· ç§</span><h2 id="userNameHero">Estudante MON</h2><p id="userPlanHero">Seu progresso e suas preferÃªncias neste dispositivo.</p></div></div><span class="user-local-badge" id="userAccountBadge">perfil local</span></div><div class="user-grid"><section class="user-card"><h3>Seu aprendizado</h3><p>Uma leitura rÃ¡pida do seu momento, sem transformar estudo em painel de vaidade.</p><div class="user-stats"><div class="user-stat"><span>nÃ­vel</span><b id="userLevel">N5</b></div><div class="user-stat"><span>sequÃªncia</span><b id="userStreak">1 dia</b></div><div class="user-stat"><span>XP</span><b id="userXp">0</b></div></div><div class="user-progress-line"><i id="userJourneyBar"></i></div><div class="user-data-note" id="userJourneyText"></div><div class="user-actions"><button class="user-secondary" onclick="go(\'progress\')">ver progresso</button><button class="user-secondary" onclick="go(\'journey\')">abrir jornada</button></div></section><section class="user-card"><h3>Perfil e rotina</h3><p>PreferÃªncias simples para o MON adaptar a experiÃªncia sem exigir uma conta.</p><label class="user-field"><span>Como quer ser chamado</span><input id="userNameInput" maxlength="32" autocomplete="nickname"></label><label class="user-field"><span>Meta diÃ¡ria</span><select id="userGoalInput"><option value="10">10 min Â· leve</option><option value="20">20 min Â· consistente</option><option value="30">30 min Â· intenso</option></select></label><label class="user-field"><span>Ritmo preferido</span><select id="userModeInput"><option value="equilibrado">Equilibrado</option><option value="revisao">Mais revisÃ£o</option><option value="desafio">Mais desafio</option></select></label><div class="user-actions"><button class="user-save" onclick="saveUserArea()">salvar preferÃªncias</button><button class="user-secondary" onclick="exportMonBackup()">exportar backup</button></div><div class="user-data-note" id="userCloudPanel"></div><div class="user-data-note" id="userAccountNote">Seus dados ficam salvos localmente neste navegador. Exportar um backup protege seu progresso antes de trocar de dispositivo ou limpar os dados do site.</div></section></div></div>';
-}
-function ensureUserArea(){let view=document.getElementById('user');if(view)return view;view=document.createElement('section');view.id='user';view.className='view';view.innerHTML=userAreaMarkup();document.querySelector('.content')?.appendChild(view);return view}
-function renderUserArea(){
- ensureUserArea();const profile=loadLocalProfile(),p=currentPlan(),stage=JOURNEY_STAGES[journeyStageIndex()],pct=Math.round(journeyStageProgress()*100);
- const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};set('userNameHero',profile.name);set('userLevel',(p.displayLevel||p.level)+' Â· dia '+p.localDay+'/'+p.total);set('userStreak',(state.streak||0)+' '+((state.streak||0)===1?'dia':'dias'));set('userXp',state.xp||0);set('userJourneyText',stage.name+' Â· '+stage.title+' Â· '+pct+'% da etapa');const bar=document.getElementById('userJourneyBar');if(bar)bar.style.width=pct+'%';const name=document.getElementById('userNameInput'),goal=document.getElementById('userGoalInput'),mode=document.getElementById('userModeInput');if(name)name.value=profile.name;if(goal)goal.value=String(profile.dailyGoal);if(mode)mode.value=profile.studyMode;const avatar=document.getElementById('userAvatar');if(avatar)avatar.textContent=(profile.name.trim()[0]||'é–€').toUpperCase();const account=loadMonAccount(),badge=document.getElementById('userAccountBadge'),note=document.getElementById('userAccountNote');if(badge)badge.textContent=monAccountStatus()==='connected'?'conta sincronizada':'perfil local';if(note)note.textContent=typeof monCloudConfigured==='function'&&monCloudConfigured()?'Conta MON disponÃ­vel. Entre por link seguro enviado ao seu e-mail para sincronizar entre dispositivos.':'Este perfil tem um ID local estÃ¡vel, mas a nuvem ainda precisa da URL e chave publicÃ¡vel do projeto Supabase.';renderCloudAccountPanel();
-}
-function saveUserArea(){const name=(document.getElementById('userNameInput')?.value||'Estudante MON').trim().slice(0,32)||'Estudante MON',dailyGoal=Number(document.getElementById('userGoalInput')?.value||20),studyMode=document.getElementById('userModeInput')?.value||'equilibrado';saveLocalProfile({name,dailyGoal,studyMode});renderUserArea();toast('PreferÃªncias salvas neste dispositivo')}
-function showProfileSummary(){ensureUserArea();go('user')}
-function currentPlan(){const d=Number(state.day||1);if(d<=30)return{level:'N5',displayLevel:'N5',phase:'n5',localDay:d,total:30,label:'sobrevivÃªncia',start:1};if(d<=54)return{level:'N4',displayLevel:'PONTE',phase:'bridge',localDay:d-30,total:24,label:'consolidaÃ§Ã£o N5 â†’ N4',start:31};if(d<=90)return{level:'N4',displayLevel:'N4',phase:'n4',localDay:d-54,total:36,label:'autonomia',start:55};return{level:'N3',displayLevel:'N3',phase:'n3',localDay:Math.min(90,d-90),total:90,label:'integraÃ§Ã£o',start:91}}
-const JOURNEY_STAGES=[
- {name:'Abrir o portÃ£o',title:'Reconhecer sons e comeÃ§ar a ler.',copy:'Som, ritmo, kana e primeiras frases funcionais.'},
- {name:'Sobreviver',title:'Pedir, perguntar e se locomover.',copy:'SituaÃ§Ãµes essenciais de estaÃ§Ã£o, compras, comida e direÃ§Ã£o.'},
- {name:'Viver',title:'Resolver sua rotina.',copy:'Casa, agenda, bairro, serviÃ§os e trabalho bÃ¡sico.'},
- {name:'Interagir',title:'Manter conversas curtas e reparar falhas.',copy:'Listening, resposta espontÃ¢nea e estratÃ©gias de reparo.'},
- {name:'Ganhar autonomia',title:'Resolver situaÃ§Ãµes novas.',copy:'TransferÃªncia, produÃ§Ã£o e leitura funcional com menos pistas.'}
-];
-function journeyStageIndex(){
- if(!state.foundationComplete)return 0;
- const d=Number(state.day||1);
- if(d<=30)return 1;
- if(d<=60)return 2;
- if(d<=90)return 3;
- return 4;
-}
-function journeyStageProgress(){
- const stage=journeyStageIndex();
- if(stage===0)return Math.max(0,Math.min(1,((state.foundationDay||1)-1)/Math.max(1,SHELL_FOUNDATION_TOTAL)));
- if(stage===1)return Math.max(0,Math.min(1,(Math.min(30,state.day||1)-1)/29));
- if(stage===2)return Math.max(0,Math.min(1,((Math.min(60,state.day||31)-31))/29));
- if(stage===3)return Math.max(0,Math.min(1,((Math.min(90,state.day||61)-61))/29));
- return Math.max(0,Math.min(1,((Math.min(180,state.day||91)-91))/89));
-}
-function runJourneyPrimary(){
- const d=homeCoachDecision(state,flatPath);
- return runAdaptiveHomeAction(d.action);
-}
-function renderJourney(){
- const current=journeyStageIndex();
- document.querySelectorAll('.journey-stage').forEach((el,i)=>{
-   el.classList.toggle('done',i<current);
-   el.classList.toggle('current',i===current);
-   el.classList.toggle('locked',i>current);
-   const status=el.querySelector('.journey-stage-status');
-   if(status)status.textContent=i<current?'conquistado':i===current?'agora':'depois';
- });
-}
-function averageMasteryDimension(dimension){
- const vals=[];
- for(const cells of Object.values(state.masteryEvidence||{})){
-   const score=Number(cells?.[dimension]?.score);
-   if(Number.isFinite(score))vals.push(score);
- }
- return vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):0;
-}
-function renderProgressHub(){
- const stage=journeyStageIndex(),meta=JOURNEY_STAGES[stage],pct=Math.round(journeyStageProgress()*100);
- const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
- set('progressCapabilityTitle',meta.name+' Â· '+meta.title);
- set('progressCapabilityCopy',meta.copy);
- set('progressJourneyPct',pct+'%');const ring=document.querySelector('.progress-ring-large');if(ring)ring.style.setProperty('--progress',pct+'%');
- set('journeyStageMini',meta.name);
- set('journeyCapabilityMini',meta.title);
- const due=Object.values(state.reviewItems||{}).filter(x=>(x?.due||0)<=Date.now()).length;
- const mistakes=Object.values(state.mistakeStats||{}).filter(x=>(x?.count||0)>(x?.recovered||0)).length;
- const dims=[
-   ['Reconhecer',averageMasteryDimension('recognize'),'identificar com apoio'],
-   ['Recuperar',averageMasteryDimension('recall'),'lembrar sem pista'],
-   ['Escutar',averageMasteryDimension('listen'),'transformar som em sentido'],
-   ['Produzir',averageMasteryDimension('produce'),'responder e construir']
- ];
- const grid=document.getElementById('progressEvidenceGrid');
- if(grid)grid.innerHTML=dims.map(([name,score,desc])=>`<article class="progress-evidence"><span>${name}</span><b>${score||'â€”'}${score?'%':''}</b><small>${desc}</small><i><em style="width:${score||0}%"></em></i></article>`).join('');
- const nextTitle=document.getElementById('progressNextTitle'),nextCopy=document.getElementById('progressNextCopy');
- if(nextTitle&&nextCopy){
-   if(due>=4){nextTitle.textContent='Revisar antes de empilhar novidade.';nextCopy.textContent=`${due} itens chegaram ao ponto ideal de recuperaÃ§Ã£o espaÃ§ada.`;}
-   else if(mistakes>=3){nextTitle.textContent='Corrigir o padrÃ£o que estÃ¡ voltando.';nextCopy.textContent=`${mistakes} padrÃµes ainda aparecem como erros recorrentes.`;}
-   else {nextTitle.textContent='Transferir o que vocÃª jÃ¡ sabe.';nextCopy.textContent='O prÃ³ximo avanÃ§o vem de usar linguagem conhecida em um contexto um pouco diferente.';}
- }
-}
-function updateMetrics(){
- const mastered=Object.values(state.reviews).filter(r=>(r.interval||0)>=7&&(r.reps||0)>=3).length;
- const reviewedKanji=new Set(Object.keys(state.reviews||{}));
- const dueReviewed=Object.values(state.reviewItems||{}).filter(r=>r?.type==='kanji'&&(r.due||0)<=Date.now()).length;
- const due=Math.max(0,SHELL_KANJI_COUNT-reviewedKanji.size)+dueReviewed;
- const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v}, width=(id,v)=>{const e=document.getElementById(id);if(e)e.style.width=v};
- set('masteredMetric',mastered);set('dueMetric',due);width('masteredBar',Math.min(100,mastered/Math.max(1,SHELL_KANJI_COUNT)*100)+'%');set('xpTop',state.xp);set('streakSidebar',state.streak);set('streakTop',state.streak);set('energyTop',Math.max(0,state.energy));set('quickEnergy',Math.max(0,state.energy));set('gemsTop',state.gems);set('speechMetric',(state.speech||0)+'%');width('speechBar',(state.speech||0)+'%');
- const p=currentPlan(),zeroPending=!state.foundationComplete;const plan=document.getElementById('planTop');if(plan)plan.textContent=zeroPending?`ZERO Â· sessÃ£o ${Math.min(SHELL_FOUNDATION_TOTAL,state.foundationDay||1)}/${SHELL_FOUNDATION_TOTAL}`:`${p.displayLevel||p.level} Â· dia ${p.localDay}/${p.total}`;const hero=document.getElementById('sessionDayHero');if(hero)hero.textContent=zeroPending?`fundaÃ§Ã£o ${Math.min(SHELL_FOUNDATION_TOTAL,state.foundationDay||1)}/${SHELL_FOUNDATION_TOTAL}`:`dia ${state.day}`;const dd=document.getElementById('dailyDueCount');if(dd)dd.textContent=zeroPending?(typeof countKanaInTraining==='function'?countKanaInTraining():0):due;const pc=document.getElementById('pathCurrentLevel');if(pc)pc.textContent=zeroPending?'ZERO':(p.displayLevel||p.level);const pd=document.getElementById('pathCurrentDay');if(pd)pd.textContent=zeroPending?`sessÃ£o ${Math.min(SHELL_FOUNDATION_TOTAL,state.foundationDay||1)} Â· base sonora, escrita e gramÃ¡tica`:`dia ${p.localDay} Â· ${p.label}`;const pr=document.getElementById('pathRingFill');if(pr)pr.style.width=zeroPending?Math.min(100,((state.foundationDay||1)-1)/SHELL_FOUNDATION_TOTAL*100)+'%':Math.min(100,p.localDay/p.total*100)+'%';updateDailyCommand();if(typeof renderFoundationProgress==='function')renderFoundationProgress();renderGameHome();
-}
-let curriculumLevel='N5';
-function renderCurriculum(level=curriculumLevel){curriculumLevel=level;document.querySelectorAll('[data-level]').forEach(b=>b.classList.toggle('active',b.dataset.level===level));const data=curriculumData.find(x=>x.level===level)||curriculumData[0];const p=currentPlan();const same=p.level===level;document.getElementById('curriculumSummary').innerHTML=`<div class="curriculum-stat"><span>promessa</span><b>${data.promise}</b></div><div class="curriculum-stat"><span>kanji alvo</span><b>${data.kanji}</b></div><div class="curriculum-stat"><span>gramÃ¡tica funcional</span><b>${data.grammar}</b></div><div class="curriculum-stat"><span>missÃµes</span><b>${data.missions}</b></div>`;document.getElementById('curriculumGrid').innerHTML=data.units.map((u,i)=>{const span=u.days.split('â€“').map(Number),absStart=span[0],absEnd=span[1];const done=state.day>absEnd, current=same&&state.day>=absStart&&state.day<=absEnd, locked=state.day<absStart&&level!=='N5';return `<article class="unit-card ${done?'done':''} ${current?'current':''} ${locked?'locked':''}" data-kanji="${u.kanji}"><div class="unit-index"><span>${data.level} Â· dias ${u.days}</span><i></i></div><h4>${u.title}</h4><p>${u.desc}</p><div class="unit-meta">${u.meta.map(m=>`<span>${m}</span>`).join('')}</div><button class="unit-action" onclick="${current||done?`startSession()`:`toast('Este bloco abre conforme vocÃª demonstra domÃ­nio')`}">${current?'continuar daqui â†’':done?'revisar bloco â†’':'prÃ©via bloqueada'}</button></article>`}).join('')}
-document.querySelectorAll('[data-level]').forEach(b=>b.addEventListener('click',()=>renderCurriculum(b.dataset.level)));
-function updateDailyCommand(){if(!document.getElementById('dailyMissionTitle'))return;const profile=loadLocalProfile(),goal=[10,20,30].includes(Number(profile.dailyGoal))?Number(profile.dailyGoal):20,steps=goal===10?4:goal===30?7:6,mode={equilibrado:'equilÃ­brio',revisao:'mais revisÃ£o',desafio:'mais desafio'}[profile.studyMode]||'equilÃ­brio',label=document.getElementById('dailyGoalLabel'),count=document.getElementById('dailyStepCount'),ring=document.getElementById('dailyPlanRing'),bar=document.getElementById('dailyPlanBar');if(label)label.textContent=`${goal} min Â· ${steps} blocos`;if(count)count.textContent=steps;if(ring)ring.style.setProperty('--goal',(goal/30*100)+'%');if(bar)bar.style.width=(goal/30*100)+'%';if(!state.foundationComplete){const u=shellFoundationOutline[Math.max(0,Math.min(SHELL_FOUNDATION_TOTAL-1,(state.foundationDay||1)-1))];document.getElementById('dailyMissionTitle').textContent='Hoje vocÃª vai automatizar '+u.title.toLowerCase();document.getElementById('dailyMissionCopy').textContent=`SessÃ£o ${u.n}/${SHELL_FOUNDATION_TOTAL} Â· ${u.desc}. Ritmo: ${mode}. A meta diÃ¡ria passa a definir o tamanho real da sessÃ£o.`;return}const i=Math.min(shellMissionOutline.length-1,Math.floor(((state.day||1)-1)%30/5)),m=shellMissionOutline[i];document.getElementById('dailyMissionTitle').textContent='Hoje vocÃª vai conseguir: '+m.title.toLowerCase();document.getElementById('dailyMissionCopy').textContent=`MissÃ£o ${i+1}/6 Â· ${m.desc}. O MON comeÃ§a pelo que estÃ¡ vencendo na memÃ³ria e fecha com uso ativo. Ritmo: ${mode}.`}
-function normalizeJP(s){return(s||'').replace(/[\sã€‚ã€ï¼ï¼Ÿ,.!?]/g,'').replace(/ã¨ã†ãã‚‡ã†/g,'æ±äº¬').replace(/ãˆã/g,'é§…').toLowerCase()}
-function similarity(a,b){a=normalizeJP(a);b=normalizeJP(b);if(!a||!b)return 0;let same=0;for(const ch of new Set(a)){same+=Math.min(a.split(ch).length-1,b.split(ch).length-1)}return Math.max(0,Math.min(100,Math.round((same/Math.max(a.length,b.length))*115)))}
-function shuffledOptions(correct, pool, count=4){const vals=[correct,...pool.filter(x=>x!==correct)].filter((x,i,a)=>a.indexOf(x)===i);for(let i=vals.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[vals[i],vals[j]]=[vals[j],vals[i]]}const sliced=vals.slice(0,count);if(!sliced.includes(correct))sliced[Math.floor(Math.random()*sliced.length)]=correct;return sliced}
-async function startSession(){await ensureFeatureRuntime('session');return window.startSession()}
-async function startDiagnostic(){await ensureFeatureRuntime('session');return window.startDiagnostic()}
-async function startFoundationSession(...args){await ensureFeatureRuntime('session');return window.startFoundationSession(...args)}
-function setupCanvas(canvas){const ctx=canvas.getContext('2d');let drawing=false,last=null;function resize(){const r=canvas.parentElement.getBoundingClientRect();const dpr=window.devicePixelRatio||1;canvas.width=Math.floor(r.width*dpr);canvas.height=Math.floor(r.height*dpr);canvas.style.width=r.width+'px';canvas.style.height=r.height+'px';ctx.setTransform(dpr,0,0,dpr,0,0);ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#101726';ctx.lineWidth=7}function p(e){const r=canvas.getBoundingClientRect();const t=e.touches?.[0]||e;return{x:t.clientX-r.left,y:t.clientY-r.top}}function start(e){e.preventDefault();drawing=true;last=p(e)}function move(e){if(!drawing)return;e.preventDefault();const n=p(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(n.x,n.y);ctx.stroke();last=n}function end(){drawing=false;last=null}canvas.addEventListener('pointerdown',start);canvas.addEventListener('pointermove',move);window.addEventListener('pointerup',end);resize();window.addEventListener('resize',resize);return ctx}
-function clearDraw(ctx,canvas){ctx.clearRect(0,0,canvas.width,canvas.height)}
-let drawCanvas=null,drawCtx=null,freeCanvas=null,freeCtx=null;
-function ensureDrawingCanvases(){
- if(drawCtx&&freeCtx)return;
- drawCanvas=document.getElementById('drawCanvas');freeCanvas=document.getElementById('freeCanvas');
- if(drawCanvas&&!drawCtx)drawCtx=setupCanvas(drawCanvas);
- if(freeCanvas&&!freeCtx)freeCtx=setupCanvas(freeCanvas);
- const clear=document.getElementById('clearCanvas'),freeClear=document.getElementById('freeClear'),guide=document.getElementById('toggleGuide');
- if(clear&&!clear.dataset.bound){clear.dataset.bound='1';clear.onclick=()=>clearDraw(drawCtx,drawCanvas)}
- if(freeClear&&!freeClear.dataset.bound){freeClear.dataset.bound='1';freeClear.onclick=()=>clearDraw(freeCtx,freeCanvas)}
- if(guide&&!guide.dataset.bound){guide.dataset.bound='1';guide.onclick=e=>{document.getElementById('ghostKanji').classList.toggle('hidden');e.target.textContent=document.getElementById('ghostKanji').classList.contains('hidden')?'mostrar guia':'ocultar guia'}}
-}
-const globalSearch=document.getElementById('globalSearch');
-if(globalSearch){globalSearch.addEventListener('keydown',async e=>{if(e.key==='Enter'&&e.target.value.trim()){await go('kanji');const q=e.target.value.trim();const ks=document.getElementById('kanjiSearch');ks.value=q;renderKanjiList('all',q);setTimeout(()=>ks.focus(),220)}})}
-if(matchMedia('(pointer:fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelectorAll('.experience-card,.mission').forEach(card=>{card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.setProperty('--rx',(-y*4)+'deg');card.style.setProperty('--ry',(x*5)+'deg')});card.addEventListener('pointerleave',()=>{card.style.setProperty('--rx','0deg');card.style.setProperty('--ry','0deg')})})}
-const pathUnits=[
- {title:'PortÃ£o 1 Â· Sons que cabem na boca',sub:'vogais, mora e primeiro hiragana',nodes:[['lesson','Vogais','ã‚',1],['lesson','K + S','ã—',2],['story','Primeiras palavras','æœ¬',2],['chest','BaÃº','ç®±',0],['checkpoint','Checkpoint','é–€',3]]},
- {title:'PortÃ£o 2 Â· Hiragana automÃ¡tico',sub:'linhas restantes, dakuten e combinaÃ§Ãµes',nodes:[['lesson','T + N','ã¤',3],['lesson','H + M','ãµ',4],['lesson','Y + R + W','ã‚‰',5],['lesson','Dakuten','ãŒ',6],['checkpoint','Checkpoint','é–€',7]]},
- {title:'PortÃ£o 3 Â· Ritmo e Katakana',sub:'ã£, yÅon, palavras estrangeiras e duraÃ§Ã£o',nodes:[['lesson','YÅon & ã£','ãã‚‡',7],['lesson','Katakana Aâ€“S','ã‚¢',8],['lesson','Katakana Tâ€“H','ãƒ„',9],['story','Cidade em katakana','è¡—',10],['chest','BaÃº','ç®±',0],['lesson','Katakana Mâ€“N','ãƒ³',10],['checkpoint','DuraÃ§Ã£o','ãƒ¼',11]]},
- {title:'PortÃ£o 4 Â· A mÃ¡quina da frase',sub:'kana misto, tÃ³pico, pergunta e partÃ­culas nucleares',nodes:[['lesson','Escrita mista','å­—',12],['lesson','A ã¯ B ã§ã™','ã¯',13],['lesson','ã¯ãƒ»ãŒãƒ»ã‚’','ã‚’',14],['story','ConheÃ§a alguÃ©m','ä¼š',13],['lesson','ã«ãƒ»ã§ãƒ»ã¸','ã«',15],['checkpoint','PartÃ­culas','é–€',16]]},
- {title:'PortÃ£o 5 Â· Verbos para sobreviver',sub:'aÃ§Ã£o polida, tempo, pedidos e descriÃ§Ã£o',nodes:[['lesson','ã®ãƒ»ã¨ãƒ»ã‚‚ãƒ»ã‹','ã®',16],['lesson','Verbos ã¾ã™','ã¾ã™',17],['lesson','Passado & negativo','ãŸ',18],['chest','BaÃº','ç®±',0],['lesson','Forma ã¦','ã¦',19],['checkpoint','Pedidos','é–€',19]]},
- {title:'PortÃ£o 6 Â· Descrever o mundo',sub:'adjetivos, existÃªncia, horas e formas simples',nodes:[['lesson','Adjetivos','ã„',20],['lesson','ã‚ã‚Šã¾ã™ / ã„ã¾ã™','ã‚ã‚‹',21],['lesson','Horas & contadores','æ™‚',22],['story','Um dia no JapÃ£o','æ—¥',22],['lesson','Forma simples','ã‹ã‚‰',23],['checkpoint','FundaÃ§Ã£o concluÃ­da','é–€',24]]},
- {title:'SeÃ§Ã£o N5 Â· SobrevivÃªncia urbana',sub:'estaÃ§Ã£o, konbini, comida e pedidos reais',nodes:[['lesson','EstaÃ§Ã£o','é§…',25],['lesson','Compras','åº—',26],['story','No konbini','æœ¬',26],['lesson','Restaurante','é£Ÿ',27],['chest','BaÃº','ç®±',0],['checkpoint','SobrevivÃªncia','æ—…',28]]},
- {title:'SeÃ§Ã£o N5 Â· Rotina & autonomia',sub:'endereÃ§o, trabalho, saÃºde e leitura funcional',nodes:[['lesson','EndereÃ§o','ä½',29],['lesson','Trabalho','åƒ',30],['lesson','SaÃºde','ç—…',31],['story','Meu primeiro mÃªs','æœ¬',31],['lesson','RevisÃ£o N5','å¾©',32],['checkpoint','N5 essencial','å† ',33]]},
- {title:'N5 Â· Casa & tempo',sub:'localizaÃ§Ã£o, horÃ¡rios e deslocamento cotidiano',nodes:[['lesson','Casa','å®¶',34],['lesson','Horas','æ™‚',35],['lesson','Transporte','é›»',36],['checkpoint','Mover-se sozinho','é–€',36]]},
- {title:'N5 Â· Mundo ao redor',sub:'clima, convites, gostos e descriÃ§Ãµes',nodes:[['lesson','Clima','å¤©',37],['lesson','Convites','å‹',38],['lesson','PreferÃªncias','å¥½',39],['lesson','DescriÃ§Ã£o','å¤§',40],['checkpoint','Vida social bÃ¡sica','é–€',40]]},
- {title:'N5 Â· Existir, contar e pedir',sub:'existÃªncia, quantidades, pedidos e regras',nodes:[['lesson','ExistÃªncia','åœ¨',41],['lesson','Contadores','æ•°',42],['lesson','Pedidos','å¾…',43],['lesson','PermissÃ£o','å¯',44],['checkpoint','Agir no espaÃ§o pÃºblico','é–€',44]]},
- {title:'N5 Â· Desejo & rotina',sub:'querer, rotina e frequÃªncia sem roteiro pronto',nodes:[['lesson','Desejos','æœ›',45],['lesson','Rotina','æ—¥',46],['lesson','FrequÃªncia','æ™‚',47],['story','Um dia comum','æœ¬',47],['checkpoint','Rotina independente','é–€',47]]},
- {title:'N5 Â· Passado & explicaÃ§Ã£o',sub:'contar o que aconteceu, ordenar aÃ§Ãµes e dar motivos',nodes:[['lesson','Passado','æ˜¨',48],['lesson','Antes e depois','å‰',49],['lesson','Motivos','ç†',50],['checkpoint','Contar & explicar','é–€',50]]},
- {title:'N5 Â· InformaÃ§Ã£o & serviÃ§os',sub:'perguntas abertas, status, telefone e autonomia',nodes:[['lesson','Perguntas abertas','ä½•',51],['lesson','JÃ¡ & ainda','æœª',52],['lesson','Telefone & serviÃ§os','è©±',53],['story','Resolver um dia','æœ¬',53],['checkpoint','Autonomia N5','å† ',54]]}
-];
-const flatPath=[];pathUnits.forEach((u,ui)=>u.nodes.forEach((n,ni)=>flatPath.push({unit:ui,local:ni,type:n[0],label:n[1],icon:n[2],day:n[3]})));
-function todayQuestState(){const d=shellLocalDateKey();if(state.quests.date!==d)state.quests={date:d,lessons:0,xp:0,accuracy:false};return state.quests}
-function runAdaptiveHomeAction(action){
- const idx=Math.max(0,Math.min(flatPath.length-1,state.pathProgress||0));
- if(action==='repair')return startMasteryRepair(idx);
- if(action==='practice')return go('practice');
- if(action==='journal')return go('journal');
- if(action==='session')return startSession();
- if(action==='chest')return claimPathChest(idx);
- return startQuickLesson(idx);
-}
-function guideVisualState(decision){
- if(['repair','mistake'].includes(decision?.kind))return 'repair';
- if(['review','recover'].includes(decision?.kind))return 'review';
- if(decision?.kind==='story')return 'transfer';
- if(decision?.node?.type==='checkpoint')return 'checkpoint';
- return 'learn';
-}
-function renderGuideVisual(decision){
- const mood=guideVisualState(decision),guide=document.querySelector('.guide-card'),visual=document.getElementById('guideVisual'),label=document.getElementById('guideStateLabel');
- if(guide)guide.dataset.state=mood==='transfer'?'story':mood;
- if(visual)visual.dataset.mood=mood;
- if(label)label.textContent=({learn:'aprender',review:'revisar',repair:'reparar',transfer:'transferir',checkpoint:'checkpoint'})[mood]||'agora';
- return mood;
-}
-function renderAdaptiveHome(){
- const d=homeCoachDecision(state,flatPath),banner=document.querySelector('.course-banner');
- if(banner)banner.dataset.adaptive=d.kind;
- const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
- set('homeAdaptiveEyebrow',d.eyebrow);set('homeAdaptiveTitle',d.title);set('homeAdaptiveCopy',d.copy);set('homeAdaptiveSignal',d.signal);
- const primary=document.getElementById('homeAdaptivePrimary'),secondary=document.getElementById('homeAdaptiveSecondary');
- if(primary){primary.textContent=d.cta;primary.onclick=()=>runAdaptiveHomeAction(d.action)}
- if(secondary){secondary.textContent='por que esta sessÃ£o?';secondary.onclick=toggleTodayReason}
- const reasonTitle=document.getElementById('todayReasonTitle'),reasonCopy=document.getElementById('todayReasonCopy');
- if(reasonTitle)reasonTitle.textContent=d.title;
- if(reasonCopy)reasonCopy.textContent=d.copy+' Sinal principal: '+d.signal+'.';
- const guide=document.querySelector('.guide-card');
- if(guide&&['repair','review','recover','mistake','story'].includes(d.kind)){
-   set('guideTitle',d.title);set('guideCopy',d.copy);
- }
- return d;
-}
-function renderGameHome(){
- const wrap=document.getElementById('learningPath');if(!wrap)return;
- const q=todayQuestState(),total=flatPath.length,progress=Math.max(0,Math.min(total,state.pathProgress||0));
- let gi=0;
- wrap.innerHTML=pathUnits.map((u,ui)=>{
-   const startIndex=gi;
-   const html=u.nodes.map((n,ni)=>{
-     const idx=gi++,type=n[0],done=idx<progress,current=idx===progress,locked=idx>progress,repairing=current&&state.remediation?.idx===idx;
-     const cls=`${type} ${done?'done':''} ${current?'current':''} ${repairing?'reinforcing':''} ${locked?'locked':''}`;
-     const click=locked?`toast('Complete o cÃ­rculo anterior primeiro')`:repairing?`startMasteryRepair(${idx})`:type==='chest'?`claimPathChest(${idx})`:`startQuickLesson(${idx})`;
-     const label=repairing?`â†» reforÃ§ar Â· ${n[1]}`:n[1];
-     const typeLabel={lesson:'liÃ§Ã£o',story:'histÃ³ria',checkpoint:'checkpoint',chest:'recompensa'}[type]||type;
-     return `<div class="path-node-wrap ${current?'is-current':''} ${done?'is-done':''}" data-node-index="${idx}">
-       <button class="path-node ${cls}" onclick="${click}" aria-label="${label}" ${current?'aria-current="step"':''}>
-         <span class="node-halo" aria-hidden="true"></span>
-         <span class="node-icon">${done?'âœ“':repairing?'å¾©':n[2]}</span>
-         <span class="node-type">${typeLabel}</span>
-         <small>${label}</small>
-       </button>
-     </div>`;
-   }).join('');
-   const count=u.nodes.length,endIndex=gi-1,doneCount=Math.max(0,Math.min(count,progress-startIndex));
-   const unitPct=Math.round(doneCount/count*100);
-   const currentUnit=progress>=startIndex&&progress<=endIndex;
-   const unitDone=progress>endIndex;
-   const unitLocked=progress<startIndex;
-   const status=unitDone?'concluÃ­da':currentUnit?'em curso':'bloqueada';
-   return `<section class="path-unit ${currentUnit?'current-unit':''} ${unitDone?'done-unit':''} ${unitLocked?'locked-unit':''}" data-unit-index="${ui}">
-     <div class="path-unit-head">
-       <div class="unit-heading"><span>unidade ${String(ui+1).padStart(2,'0')}</span><b>${u.title}</b><small>${u.sub}</small></div>
-       <div class="unit-status"><strong>${status}</strong><span>${doneCount}/${count} etapas</span></div>
-       <div class="unit-progress" aria-label="${unitPct}% concluÃ­do"><i style="width:${unitPct}%"></i></div>
-     </div>
-     <div class="lesson-path">${html}</div>
-   </section>`;
- }).join('');
- const pct=Math.round(progress/total*100),unit=(flatPath[Math.min(progress,total-1)]||{unit:0}).unit;
- const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
- el('courseSectionLabel',`SeÃ§Ã£o ${unit+1}`);el('courseScore',Math.round((state.xp||0)/10));el('coursePct',pct+'%');el('leagueMiniText',`${state.leagueXp||0} XP esta semana`);
- const goal=Math.min(100,Math.round((q.xp||0)/30*100)),ring=document.getElementById('dailyRing');if(ring)ring.style.setProperty('--goal',goal+'%');el('dailyGoalPct',goal+'%');
- renderQuests();renderHomeJournalSummary();const adaptive=renderAdaptiveHome();
- const stage=journeyStageIndex(),stageMeta=JOURNEY_STAGES[stage];el('journeyStageMini',stageMeta.name);el('journeyCapabilityMini',stageMeta.title);
- const g=flatPath[Math.min(progress,total-1)];
- if(g&& !['repair','review','recover','mistake','story'].includes(adaptive?.kind)){
-   const repair=state.remediation?.idx===progress,guide=document.querySelector('.guide-card');
-   if(guide){guide.dataset.state=repair?'repair':g.type==='checkpoint'?'checkpoint':g.type==='story'?'story':'learn'}
-   el('guideTitle',repair?'FortaleÃ§a a aresta fraca.':g.type==='checkpoint'?'Prepare-se para provar domÃ­nio.':g.type==='story'?'Leia para integrar o que aprendeu.':g.day<=12?'Automatize o kana.':g.day<=24?'Monte frases, nÃ£o traduÃ§Ãµes.':'Use japonÃªs em contexto.');
-   el('guideCopy',repair?'VocÃª concluiu a atividade, mas o Mastery Graph ainda encontrou uma habilidade crÃ­tica instÃ¡vel. O reforÃ§o Ã© curto, direcionado e nÃ£o consome Energia.':g.type==='checkpoint'?'O checkpoint mistura competÃªncias da unidade. Ele nÃ£o mede velocidade, mede se vocÃª consegue recuperar e transferir sem pista.':g.type==='story'?'HistÃ³rias conectam vocabulÃ¡rio e gramÃ¡tica em contexto contÃ­nuo. Leia primeiro pelo sentido geral, depois volte aos detalhes.':g.day<=12?'Leia, ouÃ§a e recupere a forma. O romaji some conforme seu cÃ©rebro para de precisar dele.':g.day<=24?'PartÃ­culas mostram o papel dos blocos. Espere o predicado antes de fechar o sentido.':'Agora o curso mistura kana, gramÃ¡tica, kanji, Ã¡udio e situaÃ§Ãµes reais no mesmo circuito.');
- }
- renderGuideVisual(adaptive);
- queueHomePolish();
-}
-function queueHomePolish(){
- const home=document.getElementById('home');if(!home||!home.classList.contains('active'))return;
- const items=[...home.querySelectorAll('.course-banner,.path-toolbar,.path-unit,.learn-rail>.rail-card')];
- items.forEach((el,i)=>{el.classList.add('home-reveal');el.style.setProperty('--reveal-delay',Math.min(i,7)*35+'ms')});
- if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){items.forEach(el=>el.classList.add('is-visible'));return}
- if(!('IntersectionObserver' in window)){items.forEach(el=>el.classList.add('is-visible'));return}
- window.__homeObserver?.disconnect?.();
- window.__homeObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');window.__homeObserver.unobserve(entry.target)}}),{threshold:.08,rootMargin:'40px 0px -30px'});
- items.forEach(el=>window.__homeObserver.observe(el));
-}
-function renderHomeJournalSummary(){
- const ns=state.narrative||{},episodes=Object.values(ns.episodes||{}),chars=Object.values(ns.characters||{}),resolved=episodes.filter(x=>x.resolved).length,last=ns.lastEpisode;
- const title=document.getElementById('journalMiniTitle'),meta=document.getElementById('journalMiniMeta'),stat=document.getElementById('journalMiniStat');
- if(title)title.textContent=last?last.title:'Seu diÃ¡rio comeÃ§a no N5';
- if(meta)meta.textContent=last?`${last.characterName} Â· ${last.placeName}`:'Personagens e lugares reaparecem conforme vocÃª avanÃ§a.';
- if(stat)stat.textContent=`${resolved} resolvidas Â· ${chars.length} pessoas`;
-}
-function renderQuests(){const q=todayQuestState(),items=[{icon:'é“',name:'Complete 1 liÃ§Ã£o',now:q.lessons||0,max:1},{icon:'âœ¦',name:'Ganhe 30 XP',now:q.xp||0,max:30},{icon:'æ­£',name:'FaÃ§a uma liÃ§Ã£o com 80%+',now:q.accuracy?1:0,max:1}];const w=document.getElementById('questList');if(!w)return;w.innerHTML=items.map(x=>{const pct=Math.min(100,Math.round(x.now/x.max*100)),done=x.now>=x.max;return `<div class="quest-row ${done?'done':''}"><div class="quest-icon">${x.icon}</div><div><b>${x.name}</b><span>${Math.min(x.now,x.max)}/${x.max}</span><div class="quest-progress"><i style="width:${pct}%"></i></div></div><div class="quest-check">${done?'âœ“':'â—† 10'}</div></div>`}).join('')}
-function claimPathChest(idx){if(idx>state.pathProgress)return toast('Este baÃº ainda estÃ¡ bloqueado');if(state.chests[idx])return toast('BaÃº jÃ¡ aberto');state.chests[idx]=true;state.gems+=40;state.energy=Math.min(state.maxEnergy,state.energy+4);if(idx===state.pathProgress)state.pathProgress++;save();toast('BaÃº aberto Â· +40 cristais Â· +4 energia');renderGameHome()}
-let quickRun=null;
-async function startQuickLesson(idx){const lessonStart=typeof perfStart==='function'?perfStart():null;if(idx>state.pathProgress)return toast('Complete o cÃ­rculo anterior primeiro');const node=flatPath[idx];if(!node)return;if(node.type==='chest')return claimPathChest(idx);await ensureLearningRuntime();await ensureFeatureRuntime('lesson');if(state.remediation?.idx===idx)return startMasteryRepair(idx);if((state.energy||0)<=0){go('practice');toast('Energia vazia Â· pratique para recarregar ou use a Loja');return}const pack=buildLesson(node,state);quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false};await go('lesson');renderQuickExercise();if(lessonStart!==null&&typeof perfEnd==='function')perfEnd('lesson:interactive',lessonStart,{mode:'standard'});updateMetrics()}
-async function startMasteryRepair(idx){await ensureLearningRuntime();await ensureFeatureRuntime('lesson');if(idx!==state.pathProgress)return toast('O reforÃ§o pertence ao nÃ³ atual');const node=flatPath[idx];if(!node)return;const pack=buildMasteryRemediation(node);if(!pack.exercises.length)return toast('Sem lacunas observÃ¡veis para reforÃ§ar agora');quickRun={idx,node,pack,step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false,practiceOnly:true,masteryRepair:true};go('lesson');renderQuickExercise();updateMetrics()}
-function updateGameStreak(){const today=shellLocalDateKey(),last=state.lastStudyDate;if(last===today)return;if(last){const y=new Date();y.setDate(y.getDate()-1);if(last===shellLocalDateKey(y))state.streak=(state.streak||0)+1;else if((state.streakFreeze||0)>0){state.streakFreeze--;state.streak=(state.streak||1)+1}else state.streak=1}else state.streak=Math.max(1,state.streak||1);state.lastStudyDate=today}
-function renderLeague(){const base=[['Aiko','2.480'],['Kenji','2.130'],['Mina','1.860'],['Rui','1.420'],['Sora','980'],['Emi','720'],['Tomo','510']].map(x=>({name:x[0],xp:Number(x[1].replace('.','')),demo:true}));base.push({name:'VocÃª',xp:state.leagueXp||0,you:true});base.sort((a,b)=>b.xp-a.xp);const w=document.getElementById('leagueBoard');if(w)w.innerHTML=base.map((x,i)=>`<div class="league-row ${x.you?'you':''}"><div class="league-rank">${i+1}</div><div class="league-user"><b>${x.name}</b><small>${x.you?'seu progresso local':'avatar demonstrativo'}</small></div><div class="league-xp">${x.xp.toLocaleString('pt-BR')} XP</div></div>`).join('')}
-function renderShop(){updateMetrics()}
-function buyItem(type){const costs={freeze:100,energy:60,boost:180},cost=costs[type];if(state.gems<cost)return toast('Cristais insuficientes');state.gems-=cost;if(type==='freeze'){state.streakFreeze=(state.streakFreeze||0)+1;toast('Amuleto equipado')}if(type==='energy'){state.energy=state.maxEnergy;toast('Energia recarregada')}if(type==='boost'){state.xpBoostUntil=Date.now()+15*60*1000;toast('2Ã— XP ativo por 15 min')}save()}
-let monUpdateWorker=null,monReloadForUpdate=false;
-function showMonUpdate(worker){
- monUpdateWorker=worker;
- const banner=document.getElementById('updateBanner');
- if(banner)banner.hidden=false;
-}
-function applyMonUpdate(){
- if(!monUpdateWorker)return;
- monReloadForUpdate=true;
- monUpdateWorker.postMessage({type:'SKIP_WAITING'});
-}
-function watchMonUpdate(reg){
- if(reg.waiting&&navigator.serviceWorker.controller)showMonUpdate(reg.waiting);
- reg.addEventListener('updatefound',()=>{
-  const worker=reg.installing;if(!worker)return;
-  worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)showMonUpdate(worker)});
- });
-}
-if('serviceWorker' in navigator){
- navigator.serviceWorker.addEventListener('controllerchange',()=>{if(monReloadForUpdate)window.location.reload()});
- window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(watchMonUpdate).catch(()=>{}));
-}
-function finishOnboarding(mode){
- localStorage.setItem('mon-onboarded','1');
- const shell=document.getElementById('onboardingShell');if(shell)shell.hidden=true;
- if(mode==='diagnostic')startDiagnostic();
- else {go('home');setTimeout(()=>runJourneyPrimary(),120);}
-}
-function initOnboarding(){
- const shell=document.getElementById('onboardingShell');
- if(!shell)return;
- const seen=localStorage.getItem('mon-onboarded')==='1'||(state.sessions||0)>0||(state.foundationDay||1)>1;
- shell.hidden=seen;
-}
-function toggleTodayReason(){const panel=document.getElementById('todayReason'),toggle=document.getElementById('todayReasonToggle');if(!panel||!toggle)return;const open=panel.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open))}
-const reasonToggle=document.getElementById('todayReasonToggle');
-if(reasonToggle)reasonToggle.addEventListener('click',toggleTodayReason);
-updateMetrics();renderGameHome();initOnboarding();
-const initialRoute=routeFromLocation();
-if(initialRoute!=='home')go(initialRoute,{history:false}).catch(()=>{});
-else history.replaceState({monView:'home'},'',routeUrl('home'));
-for(const name of ['kanji','reading','missions','speaking','curriculum','journal','videos','pronunciation']){
- const nav=document.querySelector(`[data-view="${name}"]`);
- if(nav)nav.addEventListener('pointerover',()=>ensureFeatureRuntime(name).catch(()=>{}),{passive:true,once:true});
-}
-const foundationNav=document.querySelector('[data-view="foundation"]');
-if(foundationNav)foundationNav.addEventListener('pointerover',()=>ensureFeatureRuntime('foundation').catch(()=>{}),{passive:true,once:true});
-const pathWarm=document.getElementById('learningPath');
-if(pathWarm)pathWarm.addEventListener('pointerover',e=>{if(e.target.closest('.path-node.current'))ensureLearningRuntime().catch(()=>{})},{passive:true});
-if(localStorage.getItem('mon-cloud-linked')||location.search.includes('code='))setTimeout(()=>ensureAccountRuntime().then(monCloudBootstrap),500);
+YªçŠx-®éÜj×¢ëiºÚ+Š§j[h‘éÜ¢éí×­8İ:-jZ.¶›­–)Ş³V6öç7Bf–WtæÖW3×¶†öÖS¢t†ö¦RrÆ¦÷W&æW“¢t¦÷&æFrÇ&7F–6S¢u&F–6"rÆW‡Æ÷&S¢tW‡Æ÷&"rÇ&öw&W73¢u&öw&W76òrÇW6W#¢tÖ–æ†:&VrÆÆW76öã¢tÆœ:|:6òrÆÆVwVS¢tÆ–vrÇ6†÷¢tÆö¦rÆf÷VæFF–öã¢t¶æbw&Ü:F–6rÇ6W76–öã¢u6W7<:6òÆöævrÆ7W'&–7VÇVÓ¢tÖ6L:¦Ö–6òrÆ¶æ¦“¢t¶æ¦’FÆ2rÆÖ—76–öç3¢tÖ—7<;VW2rÇ&VF–æs¢t†—7L;7&–2rÇ7V¶–æs¢t6öçfW'6:|:6òrÆ7VÇGW&S¢t7VÇGW&rÇw&—F–æs¢tW67&—FrÆ¦÷W&æÃ¢tFœ:&–òæò¦:6òrÇf–FV÷3¢ul:ÖFV÷2rÇ&öçVæ6–F–öã¢u&öì;¦æ6–wÓ°¦ÆWB7W'&VçD¶æ¦“Ó°¦gVæ7F–öâ6†VÆÄÆö6ÄFFT¶W’†FFSÖæWrFFR‚’—·&WGW&â¶FFRævWDgVÆÅ–V"‚’Å7G&–ær†FFRævWDÖöçF‚‚’³’çE7F'Bƒ"Âsr’Å7G&–ær†FFRævWDFFR‚’’çE7F'Bƒ"Âsr•Òæ¦ö–â‚rÒr—Ğ¦gVæ7F–öâFö7B†×6r—¶6öç7BCÖFö7VÖVçBævWDVÆVÖVçD'”–B‚wFö7Br“·BçFW‡D6öçFVçCÖ×6s·Bæ6Æ74Æ—7BæFB‚w6†÷rr“¶6ÆV%F–ÖV÷WB‡v–æF÷råõ÷Fö7B“·v–æF÷råõ÷Fö7C×6WEF–ÖV÷WB‚‚“ÓçBæ6Æ74Æ—7Bç&VÖ÷fR‚w6†÷rr’Ãc—Ğ¦gVæ7F–öâ6‡VffÆT'&’†—¶Õ²ââæÓ¶f÷"†ÆWB“ÖæÆVæwF‚Ó¶“ã¶’ÒÒ—¶6öç7B£ÔÖF‚æfÆö÷"„ÖF‚ç&æFöÒ‚’¢†’³’“µ¶¶•ÒÆ¶¥ÕÓÕ¶¶¥ÒÆ¶•Õ××&WGW&âĞ¦gVæ7F–öâ7V²‡FW‡BÇ&FSÒãƒb—¶–b‚‚w7VV6…7–çF†W6—2v–âv–æF÷r’—·Fö7B‚|8VF–ò–æF—7öì:×fVÂæW7FRæfVvF÷"r“·&WGW&ç×7VV6…7–çF†W6—2æ6æ6VÂ‚“¶6öç7BSÖæWr7VV6…7–çF†W6—5WGFW&æ6R…7G&–ær‡FW‡GÇÂrr’“·RæÆæsÒv¦Ô¥s·Rç&FS×&FS¶6öç7B¦×7VV6…7–çF†W6—2ævWEfö–6W2‚’æf–æB‡cÓå7G&–ær‡bæÆær’çFôÆ÷vW$66R‚’ç7F'G5v—F‚‚v¦r’“¶–b†¦—Rçfö–6SÖ¦·7VV6…7–çF†W6—2ç7V²‡R—Ğ¦6öç7Bäeõ$TåC×¶ÆW76öã¢v†öÖRrÇ6W76–öã¢v†öÖRrÆ7W'&–7VÇVÓ¢v¦÷W&æW’rÆf÷VæFF–öã¢vW‡Æ÷&RrÆ¶æ¦“¢vW‡Æ÷&RrÆÖ—76–öç3¢vW‡Æ÷&RrÇ&VF–æs¢vW‡Æ÷&RrÇ7V¶–æs¢vW‡Æ÷&RrÆ7VÇGW&S¢vW‡Æ÷&RrÇw&—F–æs¢vW‡Æ÷&RrÆ¦÷W&æÃ¢vW‡Æ÷&RrÇf–FV÷3¢vW‡Æ÷&RrÇ&öçVæ6–F–öã¢vW‡Æ÷&RrÆÆVwVS¢vW‡Æ÷&RrÇ6†÷¢vW‡Æ÷&RrÇW6W#¢wW6W"wÓ°¦gVæ7F–öâæe&VçDf÷%f–Wr†–B—·&WGW&âäeõ$TåE¶–E×ÇÆ–GĞ¦gVæ7F–öâ¶VW7F—fTæef—6–&ÆR†–B—¶6öç7BæcÖFö7VÖVçBævWDVÆVÖVçD'”–B‚vFW6·F÷æbr’Æ7F—fSÖæcòçVW'•6VÆV7F÷"†¶FF×f–WsÒ"G¶æe&VçDf÷%f–Wr†–B—Ò%Ö“¶–b‚ægÇÂ7F—fWÇÆæbç67&öÆÄ†V–v‡CÃÖæbæ6Æ–VçD†V–v‡B—&WGW&ã¶6öç7BF÷Ö7F—fRæöfg6WEF÷Öæbæöfg6WEF÷Æ&÷GFöÓ×F÷¶7F—fRæöfg6WD†V–v‡BÇ6ögCÓƒ¶ÆWBF&vWCÖçVÆÃ¶–b‡F÷Ææbç67&öÆÅF÷·6ögB—F&vWCÔÖF‚æÖ‚ƒÇF÷×6ögB“¶VÇ6R–b†&÷GFöÓææbç67&öÆÅF÷¶æbæ6Æ–VçD†V–v‡B×6ögB—F&vWCÖ&÷GFöÒÖæbæ6Æ–VçD†V–v‡B·6ögC¶–b‡F&vWBÓÖçVÆÂ–æbç67&öÆÅFò‡·F÷§F&vWBÆ&V†f–÷#¦ÖF6„ÖVF–‚r‡&VfW'2×&VGV6VBÖÖ÷F–öã¢&VGV6R’r’æÖF6†W3òvWFòs¢w6Öö÷F‚wÒ—Ğ¦ÆWB66÷VçE'VçF–ÖU&öÖ—6SÖçVÆÃ°¦gVæ7F–öâVç7W&T66÷VçE'VçF–ÖR‚—·&WGW&â66÷VçE'VçF–ÖU&öÖ—6WÇÂ†66÷VçE'VçF–ÖU&öÖ—6SÒ†7–æ2‚“Óç¶f÷"†6öç7B7&2öb²râö6÷&Rö66÷VçBæ§2rÂrâö6öæf–rö6Æ÷VBæ§2rÂrâö6÷&R÷7W&6R×7–æ2æ§2rÂrâö6÷&Rö×VÇF’ÖFWf–6R×7–æ2æ§2rÂrâöfVGW&W2ööffÆ–æRæ§2rÂrâöfVGW&W2÷W6W"æ§2uÒ–v—BÆöE'VçF–ÖU67&—B‡7&2—Ò’‚’æ6F6‚†SÓç¶66÷VçE'VçF–ÖU&öÖ—6SÖçVÆÃ·F‡&÷rWÒ’—Ğ¦6öç7BÄSÒrâö6÷&RöÆV&æ–ærÖWf–FVæ6Ræ§2s°¦6öç7BÄT$ä”äuõ%TåD”ÔUõ45$•E3Õ°¢râöFFö¶æ¦’æ§2rÀ¢râöFFö¶ææ§2rÀ¢râöFFöW‡W&–Væ6W2æ§2rÀ¢râöFFöf÷VæFF–öâæ§2rÀ¢râöFF÷6W76–öâæ§2rÀ¢râöFFöæ'&F—fRæ§2rÀ¢râö6÷&Röæ'&F—fR×7FFRæ§2rÀ¢râö6÷&RöæW‡BÖ&W7BÖÆW76öâæ§2rÀ¢râö6÷&RöÖ—7F¶W2æ§2rÀ¢ÄRÀ¢râö6÷&RöÖ7FW'’Öw&‚æ§2rÀ¢râöFFöw&ÖÖ"×VFvöw’æ§2rÀ¢râö6÷&RöÆV&æ–ærÖÖWF†öG2æ§2rÀ¢râö6÷&Rö6÷W'6RÖVæv–æRæ§2rÀ¢râö6÷&R÷&öw&W76–öâÖVæv–æRæ§2p¥Ó°¦6öç7BãSÒrâöFFö6öçFVçB×6·2ÖãRæ§2rÄãCÕ²râöFFö6öçFVçB×6·2ÖãBæ§2rÂrâöFFö6öçFVçB×6·2ÖãBÓcÓsæ§2rÂrâöFFö6öçFVçB×6·2ÖãBÓsÓƒæ§2rÂrâöFFö6öçFVçB×6·2ÖãBÓƒÓ“æ§2uÒÄãEô4ÒrâöFFöãBÖ6&–Æ—F–W2æ§2s°¦6öç7B4ôåDTåEõ4µõ45$•E3×´ãS¥´ãUÒÄãD¥´ãRÂââäãBç6Æ–6RƒÃ•ÒÄãD#¥´ãRÂââäãBç6Æ–6RƒÃ"•ÒÄãD3¥´ãRÂââäãBç6Æ–6RƒÃ2•ÒÄãDC¥´ãRÂââäãE×Ó°¦6öç7B6öçFVçE6µ&öÖ—6W3×·Ó°¦gVæ7F–öâVç7W&T6öçFVçE6²†ÆWfVÃÒtãRr—°¢6öç7B&W6öÇfVCÔ4ôåDTåEõ4µõ45$•E5¶ÆWfVÅÓöÆWfVÃ¢tãRs°¢–b†6öçFVçE6µ&öÖ—6W5·&W6öÇfVEÒ—&WGW&â6öçFVçE6µ&öÖ—6W5·&W6öÇfVEÓ°¢6öç7B6÷W&6W3×&W6öÇfVCÓÓÒtãRsô4ôåDTåEõ4µõ45$•E2äãS¥²ââä4ôåDTåEõ4µõ45$•E5·&W6öÇfVEÒÄãEô4Ó°¢6öçFVçE6µ&öÖ—6W5·&W6öÇfVEÓÒ†7–æ2‚“Óç¶f÷"†6öç7B7&2öb6÷W&6W2–v—BÆöE'VçF–ÖU67&—B‡7&2“¶–b‡&W6öÇfVBÓÒtãRrbgG—VöbÇ”ãD6&–Æ—G”6öçG&7G3ÓÓÒvgVæ7F–öâr–Ç”ãD6&–Æ—G”6öçG&7G2‚—Ò’‚’æ6F6‚†W'#Óç¶FVÆWFR6öçFVçE6µ&öÖ—6W5·&W6öÇfVEÓ·F‡&÷rW''Ò“°¢&WGW&â6öçFVçE6µ&öÖ—6W5·&W6öÇfVEÓ°§Ğ¦6öç7BdTEU$Uõ%TåD”ÔUõ45$•E3×°¢f÷VæFF–öã¥²râöFFö¶ææ§2rÂrâöFFöf÷VæFF–öâæ§2rÂrâöfVGW&W2öf÷VæFF–öâæ§2uÒÀ¢6W76–öã¥²râöFFö¶æ¦’æ§2rÂrâöFFö¶ææ§2rÂrâöFFöW‡W&–Væ6W2æ§2rÂrâöFFöf÷VæFF–öâæ§2rÂrâöFF÷6W76–öâæ§2rÂrâöFFöæ'&F—fRæ§2rÂrâö6÷&RöæW‡BÖ&W7BÖÆW76öâæ§2rÂrâöfVGW&W2öf÷VæFF–öâæ§2rÂrâöfVGW&W2÷6W76–öâæ§2uÒÀ¢¶æ¦“¥²râöFFö¶æ¦’æ§2rÂrâöFFö¶æ¦’ÖÖVÖ÷'’æ§2rÂrâöfVGW&W2ö¶æ¦’æ§2rÂrâöfVGW&W2ö¶æ¦’ÖÖVÖ÷'’æ§2uÒÀ¢&VF–æs¥²râöFFö¶ææ§2rÂrâöFFöW‡W&–Væ6W2æ§2rÂrâöfVGW&W2öW‡W&–Væ6W2æ§2uÒÀ¢Ö—76–öç3¥´ÄRÂrâöFFö¶ææ§2rÂrâöFFöW‡W&–Væ6W2æ§2rÂrâöFFöÖ—76–öç2×c"æ§2rÂrâöFFöÖ—76–öç2ÖF–ÆöwVW2æ§2rÂrâöfVGW&W2öW‡W&–Væ6W2æ§2rÂrâöfVGW&W2öÖ—76–öç2×&V7F–öç2æ§2rÂrâöfVGW&W2öÖ—76–öç2×v÷&ÆBæ§2rÂrâöfVGW&W2öÖ—76–öç2ÖF–ÆöwVRæ§2rÂrâöfVGW&W2öÖ—76–öç2×c"æ§2uÒÀ¢7V¶–æs¥²râöFFö¶ææ§2rÂrâöFFöW‡W&–Væ6W2æ§2rÂrâöfVGW&W2öW‡W&–Væ6W2æ§2uÒÀ¢&öw&W73¥´ÄRÂrâö6÷&RöÆV&æ–ærÖÖWG&–72æ§2rÂrâö6÷&RöÆV&æ–ær×fÆ–FF–öâæ§2rÂrâöfVGW&W2÷&öw&W72æ§2uÒÀ¢7W'&–7VÇVÓ¥²râöFFö7W'&–7VÇVÒæ§2uÒÀ¢ÆW76öã¥²râöfVGW&W2ö÷Vâ×&öGV7F–öâ×&VÖVF–F–öâæ§2rÂrâöfVGW&W2öÆW76öâæ§2uÒÀ¢&7F–6S¥²râöfVGW&W2÷&7F–6Ræ§2uÒÀ¢¦÷W&æÃ¥²râöFFöæ'&F—fRæ§2rÂrâö6÷&Röæ'&F—fR×7FFRæ§2rÂrâöfVGW&W2ö¦÷W&æÂæ§2uÒÀ¢f–FV÷3¥²râöfVGW&W2÷f–FV÷2æ§2uÒÀ¢&öçVæ6–F–öã¥²râöFF÷&öçVæ6–F–öâæ§2rÂrâöfVGW&W2÷&öçVæ6–F–öâæ§2uĞ§Ó°¦6öç7BfVGW&U'VçF–ÖU&öÖ—6W3×·Ó°¦7–æ2gVæ7F–öâVç7W&TfVGW&U'VçF–ÖR†æÖR—°¢–b†fVGW&U'VçF–ÖU&öÖ—6W5¶æÖUÒ—&WGW&âfVGW&U'VçF–ÖU&öÖ—6W5¶æÖUÓ°¢6öç7B7F'FVC×G—VöbW&e7F'CÓÓÒvgVæ7F–öâs÷W&e7F'B‚vfVGW&S¢r¶æÖR“¦çVÆÃ°¢6öç7B67&—G3ÔdTEU$Uõ%TåD”ÔUõ45$•E5¶æÖU×ÇÅµÓ°¢fVGW&U'VçF–ÖU&öÖ—6W5¶æÖUÓÒ†7–æ2‚“Óç¶f÷"†6öç7B‡&VböbdTEU$Uõ%TåD”ÔUõ5E”ÄU5¶æÖU×ÇÅµÒ–v—BÆöE'VçF–ÖU7G–ÆR†‡&Vb“¶f÷"†6öç7B7&2öb67&—G2–v—BÆöE'VçF–ÖU67&—B‡7&2“¶–b‡7F'FVBÓÖçVÆÂbgG—VöbW&dVæCÓÓÒvgVæ7F–öâr—W&dVæB‚vfVGW&S¢r¶æÖRÇ7F'FVB—Ò’‚’æ6F6‚†W'#Óç¶FVÆWFRfVGW&U'VçF–ÖU&öÖ—6W5¶æÖUÓ·F‡&÷rW''Ò“°¢&WGW&âfVGW&U'VçF–ÖU&öÖ—6W5¶æÖUÓ°§Ğ¦ÆWBÆV&æ–æu'VçF–ÖU&öÖ—6SÖçVÆÃ°¦gVæ7F–öâ6öçFVçE6´ÆWfVÄf÷$F’†F“×7FFRæF’—°¢6öç7BCÔçVÖ&W"†F—ÇÃ“°¢–b†CãÓƒbfCÃÓ“—&WGW&âtãDBs°¢–b†CãÓs—&WGW&âtãD2s°¢–b†CãÓc—&WGW&âtãD"s°¢–b†CãÓSR—&WGW&âtãDs°¢&WGW&âtãRs°§Ğ¦6öç7B'VçF–ÖTÆöG3ÖæWrÖ‚“°¦gVæ7F–öâÆöE'VçF–ÖT76WB‡W&ÂÇ7G–ÆSÖfÇ6R—°¢6öç7B¶W“Ò‡7G–ÆSòv773¢s¢v§3¢r’·W&Ã°¢–b‡'VçF–ÖTÆöG2æ†2†¶W’’—&WGW&â'VçF–ÖTÆöG2ævWB†¶W’“°¢6öç7BF6³ÖæWr&öÖ—6R‚‡&W6öÇfRÇ&V¦V7B“Óç°¢6öç7BVÃÖFö7VÖVçBæ7&VFTVÆVÖVçB‡7G–ÆSòvÆ–æ²s¢w67&—Br“°¢ÆWBF–ÖW#°¢6öç7Bf–æ—6ƒÖW'&÷#Óç¶6ÆV%F–ÖV÷WB‡F–ÖW"“¶VÂæöæÆöCÖVÂæöæW'&÷#ÖçVÆÃ¶–b†W'&÷"—¶VÂç&VÖ÷fR‚“·'VçF–ÖTÆöG2æFVÆWFR†¶W’“·&V¦V7B†W'&÷"—ÖVÇ6R&W6öÇfR‚—Ó°¢VÂæöæÆöCÒ‚“Óæf–æ—6‚‚“¶VÂæöæW'&÷#Ò‚“Óæf–æ—6‚†æWrW'&÷"‚tfÆ†ò6'&Vv"r·W&Â’“°¢F–ÖW#×6WEF–ÖV÷WB‚‚“Óæf–æ—6‚†æWrW'&÷"‚uFV×òW6v÷FFòò6'&Vv"r·W&Â’’ÃS“°¢–b‡7G–ÆR—¶VÂç&VÃÒw7G–ÆW6†VWBs¶VÂæ‡&Vc×W&ÇÖVÇ6W¶VÂç7&3×W&Ã¶VÂæ7–æ3ÖfÇ6WĞ¢‡7G–ÆSöFö7VÖVçBæ†VC¦Fö7VÖVçBæ&öG’’æVæD6†–ÆB†VÂ“°¢Ò“°¢'VçF–ÖTÆöG2ç6WB†¶W’ÇF6²“·&WGW&âF6³°§Ğ¦gVæ7F–öâÆöE'VçF–ÖU67&—B‡7&2—·&WGW&âÆöE'VçF–ÖT76WB‡7&2—Ğ¦gVæ7F–öâÆöE'VçF–ÖU7G–ÆR†‡&Vb—·&WGW&âÆöE'VçF–ÖT76WB†‡&VbÇG'VR—Ğ¦6öç7BdTEU$Uõ%TåD”ÔUõ5E”ÄU3×¶¦÷W&æW“¥²râöfVGW&W2ö¦÷W&æW’æ772uÒÆW‡Æ÷&S¥²râöfVGW&W2ö¦÷W&æW’æ772uÒÇ&öw&W73¥²râöfVGW&W2ö¦÷W&æW’æ772uÒÇW6W#¥²râöfVGW&W2÷W6W"æ772uÒÆf÷VæFF–öã¥²râöfVGW&W2öf÷VæFF–öâæ772uÒÆÆW76öã¥²râöfVGW&W2öÆW76öâæ772uÒÇ&7F–6S¥²râöfVGW&W2÷&7F–6Ræ772uÒÆ¦÷W&æÃ¥²râöfVGW&W2ö¦÷W&æÂæ772uÒÇf–FV÷3¥²râöfVGW&W2÷f–FV÷2æ772uÒÇ&öçVæ6–F–öã¥²râöfVGW&W2÷&öçVæ6–F–öâæ772uÒÆ¶æ¦“¥²râöfVGW&W2ö¶æ¦’ÖÖVÖ÷'’æ772uÒÆÖ—76–öç3¥²râöfVGW&W2öÖ—76–öç2×c"æ772u×Ó°¦7–æ2gVæ7F–öâVç7W&TÆV&æ–æu'VçF–ÖR‚—°¢6öç7BÆWfVÃÖ6öçFVçE6´ÆWfVÄf÷$F’‚“°¢v—BVç7W&T6öçFVçE6²†ÆWfVÂ“°¢–b†ÆV&æ–æu'VçF–ÖU&öÖ—6R—&WGW&âÆV&æ–æu'VçF–ÖU&öÖ—6S°¢6öç7B7F'FVC×G—VöbW&e7F'CÓÓÒvgVæ7F–öâs÷W&e7F'B‚w'VçF–ÖS¦ÆV&æ–ærr“¦çVÆÃ°¢Fö7VÖVçBæ&öG’æ6Æ74Æ—7BæFB‚vÆV&æ–ær×'VçF–ÖRÖÆöF–ærr“°¢ÆV&æ–æu'VçF–ÖU&öÖ—6SÒ†7–æ2‚“Óç¶f÷"†6öç7B7&2öbÄT$ä”äuõ%TåD”ÔUõ45$•E2–v—BÆöE'VçF–ÖU67&—B‡7&2“¶Fö7VÖVçBæ&öG’æ6Æ74Æ—7BæFB‚vÆV&æ–ær×'VçF–ÖR×&VG’r“¶–b‡7F'FVBÓÖçVÆÂbgG—VöbW&dVæCÓÓÒvgVæ7F–öâr—W&dVæB‚w'VçF–ÖS¦ÆV&æ–ærrÇ7F'FVB—Ò’‚¢æ6F6‚†W'#Óç¶ÆV&æ–æu'VçF–ÖU&öÖ—6SÖçVÆÃ·Fö7B‚tì:6ò6öç6VwV’6'&Vv"òÖ÷F÷"FR&VæF—¦vVÒr“·F‡&÷rW''Ò¢æf–æÆÇ’‚‚“ÓæFö7VÖVçBæ&öG’æ6Æ74Æ—7Bç&VÖ÷fR‚vÆV&æ–ær×'VçF–ÖRÖÆöF–ærr’“°¢&WGW&âÆV&æ–æu'VçF–ÖU&öÖ—6S°§Ğ¦6öç7B‡–G&FVEf–Ww3ÖæWr6WB…²v†öÖRuÒ“°¦gVæ7F–öâ6WE&÷WFT'W7’†öâÆÆ&VÃÒt6'&VvæFòr—°¢6öç7BÆöFW#ÖFö7VÖVçBævWDVÆVÖVçD'”–B‚w&÷WFTÆöFW"r’ÆÖ–ãÖFö7VÖVçBçVW'•6VÆV7F÷"‚vÖ–âr“°¢Fö7VÖVçBæ&öG’æ6Æ74Æ—7BçFövvÆR‚w&÷WFRÖ'W7’rÆöâ“¶–b†Ö–â–Ö–âç6WDGG&–'WFR‚v&–Ö'W7’rÆöãòwG'VRs¢vfÇ6Rr“°¢–b†ÆöFW"—¶ÆöFW"ç6WDGG&–'WFR‚v&–Ö†–FFVârÆöãòvfÇ6Rs¢wG'VRr“¶ÆöFW"ç6WDGG&–'WFR‚v&–ÖÆ&VÂrÆÆ&VÂ“¶ÆöFW"æFF6WBæÆ&VÃÖÆ&VÇĞ§Ğ¦ÆWB&÷WFU&WVW7D–CÓ°¦6öç7B$õUD$ÄUõd”Uu3ÖæWr6WB„ö&¦V7Bæ¶W—2‡f–WtæÖW2’“°¦gVæ7F–öâ&÷WFTg&öÔÆö6F–öâ‚—¶6öç7B–CÖæWrU$Â†Æö6F–öâæ‡&Vb’ç6V&6…&×2ævWB‚wf–Wrr“·&WGW&â–Bbe$õUD$ÄUõd”Uu2æ†2†–B“ö–C¢v†öÖRwĞ¦gVæ7F–öâ&÷WFUW&Â†–B—¶6öç7BW&ÃÖæWrU$Â†Æö6F–öâæ‡&Vb“¶–b†–CÓÓÒv†öÖRr—W&Âç6V&6…&×2æFVÆWFR‚wf–Wrr“¶VÇ6RW&Âç6V&6…&×2ç6WB‚wf–WrrÆ–B“·&WGW&âW&ÂçF†æÖR·W&Âç6V&6‚·W&Âæ†6‡Ğ¦gVæ7F–öâ6öÖÖ—E&÷WFUW&Â†–BÇ&WÆ6SÖfÇ6R—¶6öç7BæW‡C×&÷WFUW&Â†–B“¶–b†æW‡CÓÓÖÆö6F–öâçF†æÖR¶Æö6F–öâç6V&6‚¶Æö6F–öâæ†6‚—&WGW&ã¶†—7F÷'•·&WÆ6Sòw&WÆ6U7FFRs¢wW6…7FFRuÒ‡¶Ööåf–Ws¦–GÒÂrrÆæW‡B—Ğ¦7–æ2gVæ7F–öâvò†–BÆ÷F–öç3×·Ò—°¢–b‚$õUD$ÄUõd”Uu2æ†2†–B’––CÒv†öÖRs°¢6öç7B&WVW7D–CÒ²·&÷WFU&WVW7D–C°¢6öç7B&Wf–÷W3ÖFö7VÖVçBçVW'•6VÆV7F÷"‚rçf–Wræ7F—fRr“òæ–GÇÂv†öÖRs°¢6öç7Bf–Wu7F'C×G—VöbW&e7F'CÓÓÒvgVæ7F–öâs÷W&e7F'B‚wf–Ws¢r¶–B“¦çVÆÃ°¢6öç7B'W7•F–ÖW#×6WEF–ÖV÷WB‚‚“Óç¶–b‡&WVW7D–CÓÓ×&÷WFU&WVW7D–B—6WE&÷WFT'W7’‡G'VRÂt'&–æFòr²‡f–WtæÖW5¶–E×ÇÆ–B’—ÒÃ““°¢G'—°¢–b†–CÓÓÒwW6W"r—¶v—BVç7W&T66÷VçE'VçF–ÖR‚“¶Vç7W&UW6W$&V‚“·Ğ¢–b…²v¦÷W&æW’rÂvW‡Æ÷&RrÂw&öw&W72rÂwW6W"uÒæ–æ6ÇVFW2†–B’–v—BVç7W&TfVGW&U'VçF–ÖR†–B“°¢–b†–CÓÓÒvf÷VæFF–öâr–v—BVç7W&TfVGW&U'VçF–ÖR‚vf÷VæFF–öâr“°¢–b†–CÓÓÒv7W'&–7VÇVÒr–v—BVç7W&TfVGW&U'VçF–ÖR‚v7W'&–7VÇVÒr“°¢–b†–CÓÓÒv¶æ¦’r–v—BVç7W&TfVGW&U'VçF–ÖR‚v¶æ¦’r“°¢–b†–CÓÓÒw&VF–ærwÇÆ–CÓÓÒvÖ—76–öç2wÇÆ–CÓÓÒw7V¶–ærr–v—BVç7W&TfVGW&U'VçF–ÖR†–B“°¢–b†–CÓÓÒw&7F–6Rr—¶v—BVç7W&TÆV&æ–æu'VçF–ÖR‚“¶v—BVç7W&TfVGW&U'VçF–ÖR‚w&7F–6Rr“·Ğ¢–b†–CÓÓÒv¦÷W&æÂr–v—BVç7W&TfVGW&U'VçF–ÖR‚v¦÷W&æÂr“°¢–b†–CÓÓÒwf–FV÷2r–v—BVç7W&TfVGW&U'VçF–ÖR‚wf–FV÷2r“°¢–b†–CÓÓÒw&öçVæ6–F–öâr–v—BVç7W&TfVGW&U'VçF–ÖR‚w&öçVæ6–F–öâr“°¢–b‡&WVW7D–BÓ×&÷WFU&WVW7D–B—&WGW&âfÇ6S°¢Fö7VÖVçBæ&öG’æ6Æ74Æ—7BçFövvÆR‚vfö7W2×6W76–öârÆ–CÓÓÒw6W76–öâr“°¢Fö7VÖVçBæ&öG’æ6Æ74Æ—7BçFövvÆR‚wV–6²Öfö7W2rÆ–CÓÓÒvÆW76öâr“°¢Fö7VÖVçBçVW'•6VÆV7F÷$ÆÂ‚rçf–Wrr’æf÷$V6‚‡cÓçbæ6Æ74Æ—7BçFövvÆR‚v7F—fRrÇbæ–CÓÓÖ–B’“°¢Fö7VÖVçBçVW'•6VÆV7F÷$ÆÂ‚u¶FF×f–WuÒr’æf÷$V6‚†#Óç¶6öç7B7F—fSÖ"æFF6WBçf–WsÓÓÖæe&VçDf÷%f–Wr†–B“¶"æ6Æ74Æ—7BçFövvÆR‚v7F—fRrÆ7F—fR“¶–b†"æÖF6†W2‚r6FW6·F÷æb¶FF×f–WuÒr’—¶–b†7F—fR–"ç6WDGG&–'WFR‚v&–Ö7W'&VçBrÂwvRr“¶VÇ6R"ç&VÖ÷fTGG&–'WFR‚v&–Ö7W'&VçBr—×Ò“°¢6öç7B7'VÖ#ÖFö7VÖVçBævWDVÆVÖVçD'”–B‚v7'VÖ"r“¶–b†7'VÖ"–7'VÖ"çFW‡D6öçFVçC×f–WtæÖW5¶–E×ÇÆ–C°¢–b†–CÓÓÒv†öÖRr—&VæFW$vÖT†öÖR‚“°¢VÇ6R–b†–CÓÓÒv¦÷W&æW’r—&VæFW$¦÷W&æW’‚“°¢VÇ6R–b†–CÓÓÒw&öw&W72r—&VæFW%&öw&W74‡V"‚“°¢VÇ6R–b†–CÓÓÒwW6W"r—&VæFW%W6W$&V‚“°¢VÇ6R–b†–CÓÓÒv7W'&–7VÇVÒr—&VæFW$7W'&–7VÇVÒ†7W'&–7VÇVÔÆWfVÇÇÆ7W'&VçEÆâ‚’æÆWfVÂ“°¢VÇ6R–b†–CÓÓÒvf÷VæFF–öâr—&VæFW$f÷VæFF–öâ‚“°¢VÇ6R–b†–CÓÓÒv¶æ¦’r—¶Vç7W&T¶æ¦”FÆ2‚“·&VæFW$¶æ¦”FÆ2‚—Ğ¢VÇ6R–b†–CÓÓÒww&—F–ærr—¶Vç7W&TG&v–æt6çf6W2‚—Ğ¢VÇ6R–b†–CÓÓÒw&VF–ærr—¶–b‡G—Vöb‡–G&FU&VF–æsÓÓÒvgVæ7F–öâr–‡–G&FU&VF–ær‚—Ğ¢VÇ6R–b†–CÓÓÒvÖ—76–öç2r—¶–b‡G—Vöb&VæFW$Ö—76–öäw&–Ec#ÓÓÒvgVæ7F–öâr—·&VæFW$Ö—76–öäw&–Ec"‚“·&VæFW$Ö—76–öåc"‚—ÖVÇ6R‡–G&FTÖ—76–öäw&–B‚“·Ğ¢VÇ6R–b†–CÓÓÒw7V¶–ærr–‡–G&FU7W'f—fÅ‡&6W2‚“°¢VÇ6R–b†–CÓÓÒvÆVwVRr—&VæFW$ÆVwVR‚“°¢VÇ6R–b†–CÓÓÒw6†÷r—&VæFW%6†÷‚“°¢VÇ6R–b†–CÓÓÒw&7F–6Rr—·&VæFW%&7F–6T6ö6‚‚“·&VæFW$Ö7FW'”Ö‚“·&VæFW%&Wf–WtFV6²‚“·&VæFW$Ö—7F¶Tæ÷FV&öö²‚—Ğ¢VÇ6R–b†–CÓÓÒv¦÷W&æÂr—&VæFW$¦÷W&æÂ‚“°¢VÇ6R–b†–CÓÓÒwf–FV÷2rbgG—Vöb&VæFW%f–FV÷3ÓÓÒvgVæ7F–öâr—&VæFW%f–FV÷2‚“°¢VÇ6R–b†–CÓÓÒw&öçVæ6–F–öârbgG—Vöb&VæFW%&öçVæ6–F–öãÓÓÒvgVæ7F–öâr—&VæFW%&öçVæ6–F–öâ‚“°¢–b†÷F–öç2æ†—7F÷'’ÓÖfÇ6R–6öÖÖ—E&÷WFUW&Â†–BÆ÷F–öç2ç&WÆ6SÓÓ×G'VR“°¢¶VW7F—fTæef—6–&ÆR†–B“°¢6öç7B7F—fUf–WsÖFö7VÖVçBævWDVÆVÖVçD'”–B†–B“¶–b†7F—fUf–Wr—¶7F—fUf–Wrç6WDGG&–'WFR‚wF&–æFW‚rÂrÓr“¶7F—fUf–Wræfö7W2‡·&WfVçE67&öÆÃ§G'VWÒ—Ğ¢v–æF÷rç67&öÆÅFò‡·F÷£Æ&V†f–÷#¦ÖF6„ÖVF–‚r‡&VfW'2×&VGV6VBÖÖ÷F–öã¢&VGV6R’r’æÖF6†W3òvWFòs¢w6Öö÷F‚wÒ“°¢–b‡f–Wu7F'BÓÖçVÆÂbgG—VöbW&dVæCÓÓÒvgVæ7F–öâr—W&dVæB‚wf–Ws¢r¶–BÇf–Wu7F'B“°¢Ö6F6‚†W'"—°¢6öç6öÆRæW'&÷"‚tÔôâ&÷WFRf–ÆVBrÆ–BÆW'"“°¢–b‡&WVW7D–CÓÓ×&÷WFU&WVW7D–B—°¢Fö7VÖVçBçVW'•6VÆV7F÷$ÆÂ‚rçf–Wrr’æf÷$V6‚‡cÓçbæ6Æ74Æ—7BçFövvÆR‚v7F—fRrÇbæ–CÓÓ×&Wf–÷W2’“°¢Fö7VÖVçBçVW'•6VÆV7F÷$ÆÂ‚u¶FF×f–WuÒr’æf÷$V6‚†#Óæ"æ6Æ74Æ—7BçFövvÆR‚v7F—fRrÆ"æFF6WBçf–WsÓÓÖæe&VçDf÷%f–Wr‡&Wf–÷W2’’“°¢6öç7B7'VÖ#ÖFö7VÖVçBævWDVÆVÖVçD'”–B‚v7'VÖ"r“¶–b†7'VÖ"–7'VÖ"çFW‡D6öçFVçC×f–WtæÖW5·&Wf–÷W5×ÇÇ&Wf–÷W3°¢Fö7B‚tì:6ò6öç6VwV’'&—"r²‡f–WtæÖW5¶–E×ÇÆ–B’²râFVçFRæ÷fÖVçFRâr“°¢Ğ¢&WGW&âfÇ6S°¢Öf–æÆÇ—°¢6ÆV%F–ÖV÷WB†'W7•F–ÖW"“°¢–b‡&WVW7D–CÓÓ×&÷WFU&WVW7D–B—6WE&÷WFT'W7’†fÇ6R“°¢Ğ¢&WGW&â&WVW7D–CÓÓ×&÷WFU&WVW7D–C°§Ğ¦Fö7VÖVçBçVW'•6VÆV7F÷$ÆÂ‚u¶FF×f–WuÒr’æf÷$V6‚†#Óæ"æFDWfVçDÆ—7FVæW"‚v6Æ–6²rÂ‚“Óævò†"æFF6WBçf–Wr’’“°§v–æF÷ræFDWfVçDÆ—7FVæW"‚w÷7FFRrÂ‚“Óævò‡&÷WFTg&öÔÆö6F–öâ‚’Ç¶†—7F÷'“¦fÇ6WÒ’“°¦6öç7BÔôåõ$ôd”ÄUô´U“ÒvÖöâ×&öf–ÆRs°¦gVæ7F–öâÆöDÆö6Å&öf–ÆR‚—·G'—·&WGW&â²ââç¶æÖS¢tW7GVFçFRÔôârÆF–Ç”vöÃ£#Ç7GVG”ÖöFS¢vWV–Æ–'&FòwÒÂââä¥4ôâç'6R†Æö6Å7F÷&vRævWD—FVÒ„Ôôåõ$ôd”ÄUô´U’—ÇÂw·Òr—×Ö6F6‚†R—·&WGW&â¶æÖS¢tW7GVFçFRÔôârÆF–Ç”vöÃ£#Ç7GVG”ÖöFS¢vWV–Æ–'&Fòw××Ğ¦gVæ7F–öâ6fTÆö6Å&öf–ÆR‡—¶Æö6Å7F÷&vRç6WD—FVÒ„Ôôåõ$ôd”ÄUô´U’Ä¥4ôâç7G&–æv–g’‡’“¶ÖöäÖ&´Æö6ÄF—'G’‚—Ğ¦gVæ7F–öâ6†÷u&öf–ÆU7VÖÖ'’‚—¶vò‚wW6W"r—Ğ¦gVæ7F–öâ7W'&VçEÆâ‚—¶6öç7BCÔçVÖ&W"‡7FFRæF—ÇÃ“¶–b†CÃÓ3—&WGW&ç¶ÆWfVÃ¢tãRrÆF—7Æ”ÆWfVÃ¢tãRrÇ†6S¢vãRrÆÆö6ÄF“¦BÇF÷FÃ£3ÆÆ&VÃ¢w6ö'&Wf—l:¦æ6–rÇ7F'C£Ó¶–b†CÃÓSB—&WGW&ç¶ÆWfVÃ¢tãBrÆF—7Æ”ÆWfVÃ¢uôåDRrÇ†6S¢v'&–FvRrÆÆö6ÄF“¦BÓ3ÇF÷FÃ£#BÆÆ&VÃ¢v6öç6öÆ–F:|:6òãR(i"ãBrÇ7F'C£3Ó¶–b†CÃÓ“—&WGW&ç¶ÆWfVÃ¢tãBrÆF—7Æ”ÆWfVÃ¢tãBrÇ†6S¢vãBrÆÆö6ÄF“¦BÓSBÇF÷FÃ£3bÆÆ&VÃ¢vWFöæöÖ–rÇ7F'C£SWÓ·&WGW&ç¶ÆWfVÃ¢tã2rÆF—7Æ”ÆWfVÃ¢tã2rÇ†6S¢vã2rÆÆö6ÄF“¤ÖF‚æÖ–âƒ“ÆBÓ“’ÇF÷FÃ£“ÆÆ&VÃ¢v–çFVw&:|:6òrÇ7F'C£“×Ğ¦6öç7B¤õU$äU•õ5DtU3Õ°¢¶æÖS¢t'&—"ò÷'L:6òrÇF—FÆS¢u&V6öæ†V6W"6öç2R6öÖ\:v"ÆW"ârÆ6÷“¢u6öÒÂ&—FÖòÂ¶æR&–ÖV—&2g&6W2gVæ6–öæ—2âwÒÀ¢¶æÖS¢u6ö'&Wf—fW"rÇF—FÆS¢uVF—"ÂW&wVçF"R6RÆö6öÖ÷fW"ârÆ6÷“¢u6—GV:|;VW2W76Væ6–—2FRW7F:|:6òÂ6ö×&2Â6öÖ–FRF—&\:|:6òâwÒÀ¢¶æÖS¢uf—fW"rÇF—FÆS¢u&W6öÇfW"7V&÷F–æârÆ6÷“¢t66ÂvVæFÂ&—'&òÂ6W'fœ:v÷2RG&&Æ†ò,:6–6òâwÒÀ¢¶æÖS¢t–çFW&v—"rÇF—FÆS¢tÖçFW"6öçfW'627W'F2R&W&"fÆ†2ârÆ6÷“¢tÆ—7FVæ–ærÂ&W7÷7FW7öçL:&æVRW7G&L:–v–2FR&W&òâwÒÀ¢¶æÖS¢tvæ†"WFöæöÖ–rÇF—FÆS¢u&W6öÇfW"6—GV:|;VW2æ÷f2ârÆ6÷“¢uG&ç6fW,:¦æ6–Â&öG\:|:6òRÆV—GW&gVæ6–öæÂ6öÒÖVæ÷2—7F2âwĞ¥Ó°¦gVæ7F–öâ¦÷W&æW•7FvT–æFW‚‚—°¢–b‚7FFRæf÷VæFF–öä6ö×ÆWFR—&WGW&â°¢6öç7BCÔçVÖ&W"‡7FFRæF—ÇÃ“°¢–b†CÃÓ3—&WGW&â°¢–b†CÃÓc—&WGW&â#°¢–b†CÃÓ“—&WGW&â3°¢&WGW&âC°§Ğ¦gVæ7F–öâ¦÷W&æW•7FvU&öw&W72‚—°¢6öç7B7FvSÖ¦÷W&æW•7FvT–æFW‚‚“°¢–b‡7FvSÓÓÓ—&WGW&âÖF‚æÖ‚ƒÄÖF‚æÖ–âƒÂ‚‡7FFRæf÷VæFF–öäF—ÇÃ’Ó’ôÖF‚æÖ‚ƒÅ4„TÄÅôdõTäDD”ôåõDõDÂ’’“°¢–b‡7FvSÓÓÓ—&WGW&âÖF‚æÖ‚ƒÄÖF‚æÖ–âƒÂ„ÖF‚æÖ–âƒ3Ç7FFRæF—ÇÃ’Ó’ó#’’“°¢–b‡7FvSÓÓÓ"—&WGW&âÖF‚æÖ‚ƒÄÖF‚æÖ–âƒÂ‚„ÖF‚æÖ–âƒcÇ7FFRæF—ÇÃ3’Ó3’’ó#’’“°¢–b‡7FvSÓÓÓ2—&WGW&âÖF‚æÖ‚ƒÄÖF‚æÖ–âƒÂ‚„ÖF‚æÖ–âƒ“Ç7FFRæF—ÇÃc’Óc’’ó#’’“°¢&WGW&âÖF‚æÖ‚ƒÄÖF‚æÖ–âƒÂ‚„ÖF‚æÖ–âƒƒÇ7FFRæF—ÇÃ“’Ó“’’óƒ’’“°§Ğ¦gVæ7F–öâ'Vä¦÷W&æW•&–Ö'’‚—°¢6öç7BCÖ†öÖT6ö6„FV6—6–öâ‡7FFRÆfÆEF‚“°¢&WGW&â'VäFF—fT†öÖT7F–öâ†Bæ7F–öâ“°§Ğ¦gVæ7F–öâ&VæFW$¦÷W&æW’‚—°¢6öç7B7W'&VçCÖ¦÷W&æW•7FvT–æFW‚‚“°¢Fö7VÖVçBçVW'•6VÆV7F÷$ÆÂ‚ræ¦÷W&æW’×7FvRr’æf÷$V6‚‚†VÂÆ’“Óç°¢VÂæ6Æ74Æ—7BçFövvÆR‚vFöæRrÆ“Æ7W'&VçB“°¢VÂæ6Æ74Æ—7BçFövvÆR‚v7W'&VçBrÆ“ÓÓÖ7W'&VçB“°¢VÂæ6Æ74Æ—7BçFövvÆR‚vÆö6¶VBrÆ“æ7W'&VçB“°¢6öç7B7FGW3ÖVÂçVW'•6VÆV7F÷"‚ræ¦÷W&æW’×7FvR×7FGW2r“°¢–b‡7FGW2—7FGW2çFW‡D6öçFVçCÖ“Æ7W'&VçCòv6öçV—7FFòs¦“ÓÓÖ7W'&VçCòvv÷&s¢vFWö—2s°¢Ò“°§Ğ¦gVæ7F–öâfW&vTÖ7FW'”F–ÖVç6–öâ†F–ÖVç6–öâ—°¢6öç7BfÇ3ÕµÓ°¢f÷"†6öç7B6VÆÇ2öbö&¦V7BçfÇVW2‡7FFRæÖ7FW'”Wf–FVæ6WÇÇ·Ò’—°¢6öç7B66÷&SÔçVÖ&W"†6VÆÇ3òå¶F–ÖVç6–öåÓòç66÷&R“°¢–b„çVÖ&W"æ—4f–æ—FR‡66÷&R’—fÇ2çW6‚‡66÷&R“°¢Ğ¢&WGW&âfÇ2æÆVæwFƒôÖF‚ç&÷VæB‡fÇ2ç&VGV6R‚†Æ"“Óæ¶"Ã’÷fÇ2æÆVæwF‚“£°§Ğ¦gVæ7F–öâ&VæFW%&öw&W74‡V"‚—°¢6öç7B7FvSÖ¦÷W&æW•7FvT–æFW‚‚’ÆÖWFÔ¤õU$äU•õ5DtU5·7FvUÒÇ7CÔÖF‚ç&÷VæB†¦÷W&æW•7FvU&öw&W72‚’£“°¢6öç7B6WCÒ†–BÇb“Óç¶6öç7BVÃÖFö7VÖVçBævWDVÆVÖVçD'”–B†–B“¶–b†VÂ–VÂçFW‡D6öçFVçC×gÓ°¢6WB‚w&öw&W746&–Æ—G•F—FÆRrÆÖWFææÖR²r+rr¶ÖWFçF—FÆR“°¢6WB‚w&öw&W746&–Æ—G”6÷’rÆÖWFæ6÷’“°¢6WB‚w&öw&W74¦÷W&æW•7BrÇ7B²rRr“¶6öç7B&–æsÖFö7VÖVçBçVW'•6VÆV7F÷"‚rç&öw&W72×&–ærÖÆ&vRr“¶–b‡&–ær—&–ærç7G–ÆRç6WE&÷W'G’‚rÒ×&öw&W72rÇ7B²rRr“°¢6WB‚v¦÷W&æW•7FvTÖ–æ’rÆÖWFææÖR“°¢6WB‚v¦÷W&æW”6&–Æ—G”Ö–æ’rÆÖWFçF—FÆR“°¢6öç7BGVSÔö&¦V7BçfÇVW2‡7FFRç&Wf–Wt—FV×7ÇÇ·Ò’æf–ÇFW"‡ƒÓâ‡ƒòæGVWÇÃ“ÃÔFFRææ÷r‚’’æÆVæwFƒ°¢6öç7BÖ—7F¶W3Ôö&¦V7BçfÇVW2‡7FFRæÖ—7F¶U7FG7ÇÇ·Ò’æf–ÇFW"‡ƒÓâ‡ƒòæ6÷VçGÇÃ“â‡ƒòç&V6÷fW&VGÇÃ’’æÆVæwFƒ°¢6öç7BF–×3Õ°¢²u&V6öæ†V6W"rÆfW&vTÖ7FW'”F–ÖVç6–öâ‚w&V6övæ—¦Rr’Âv–FVçF–f–6"6öÒö–òuÒÀ¢²u&V7WW&"rÆfW&vTÖ7FW'”F–ÖVç6–öâ‚w&V6ÆÂr’ÂvÆVÖ'&"6VÒ—7FuÒÀ¢²tW67WF"rÆfW&vTÖ7FW'”F–ÖVç6–öâ‚vÆ—7FVâr’ÂwG&ç6f÷&Ö"6öÒVÒ6VçF–FòuÒÀ¢²u&öGW¦—"rÆfW&vTÖ7FW'”F–ÖVç6–öâ‚w&öGV6Rr’Âw&W7öæFW"R6öç7G'V—"uĞ¢Ó°¢6öç7Bw&–CÖFö7VÖVçBævWDVÆVÖVçD'”–B‚w&öw&W74Wf–FVæ6Tw&–Br“°¢–b†w&–B–w&–Bæ–ææW$…DÔÃÖF–×2æÖ‚…¶æÖRÇ66÷&RÆFW65Ò“ÓæÆ'F–6ÆR6Æ73Ò'&öw&W72ÖWf–FVæ6R#ãÇ7ãâG¶æÖWÓÂ÷7ããÆ#âG·66÷&WÇÂ~(	BwÒG·66÷&SòrRs¢rwÓÂö#ãÇ6ÖÆÃâG¶FW67ÓÂ÷6ÖÆÃãÆ“ãÆVÒ7G–ÆSÒ'v–GFƒ¢G·66÷&WÇÃÒR#ãÂöVÓãÂö“ãÂö'F–6ÆSæ’æ¦ö–â‚rr“°¢6öç7BæW‡EF—FÆSÖFö7VÖVçBævWDVÆVÖVçD'”–B‚w&öw&W74æW‡EF—FÆRr’ÆæW‡D6÷“ÖFö7VŞ4ã{h‘éì¶»§q«^w¼œ°Ÿ¦œ°ÈÕt±l±•ÍÍ½¸œ°½µÁÉ…Ìœ°Ÿ–ê\œ°ÈÙt±lÍÑ½Éäœ°9¼­½¹‰¥¹¤œ°Ÿšr°œ°ÈÙt±l±•ÍÍ½¸œ°I•ÍÑ…ÕÉ…¹Ñ”œ°Ÿ¦|œ°Èİt±l¡•ÍĞœ°	‡èœ°ŸºÄœ°Át±l¡•­Á½¥¹Ğœ°M½‰É•Ù¥Û©¹¥„œ°Ÿš^œ°Èáuuô°(íÑ¥Ñ±”èM—Ÿ¼8Ôƒ
+ÜI½Ñ¥¹„€˜…ÕÑ½¹½µ¥„œ±ÍÕˆè•¹‘•É—¼°ÑÉ…‰…±¡¼°Í‡é‘””±•¥ÑÕÉ„™Õ¹¥½¹…°œ±¹½‘•Ìéml±•ÍÍ½¸œ°¹‘•É—¼œ°Ÿ’ö<œ°Èåt±l±•ÍÍ½¸œ°QÉ…‰…±¡¼œ°Ÿ–4œ°ÌÁt±l±•ÍÍ½¸œ°M‡é‘”œ°Ÿ^œ°ÌÅt±lÍÑ½Éäœ°5•ÔÁÉ¥µ•¥É¼·©Ìœ°Ÿšr°œ°ÌÅt±l±•ÍÍ½¸œ°I•Ù¥Ï¼8Ôœ°Ÿ–ú¤œ°ÌÉt±l¡•­Á½¥¹Ğœ°8Ô•ÍÍ•¹¥…°œ°Ÿ–€œ°ÌÍuuô°(íÑ¥Ñ±”è8Ôƒ
+Ü…Í„€˜Ñ•µÁ¼œ±ÍÕˆè±½…±¥é‡Ÿ¼°¡½Ë…É¥½Ì”‘•Í±½…µ•¹Ñ¼½Ñ¥‘¥…¹¼œ±¹½‘•Ìéml±•ÍÍ½¸œ°…Í„œ°Ÿ–ºØœ°ÌÑt±l±•ÍÍ½¸œ°!½É…Ìœ°Ÿšfœ°ÌÕt±l±•ÍÍ½¸œ°QÉ…¹ÍÁ½ÉÑ”œ°Ÿ¦nìœ°ÌÙt±l¡•­Á½¥¹Ğœ°5½Ù•ÈµÍ”Í½é¥¹¡¼œ°Ÿ¦Z œ°ÌÙuuô°(íÑ¥Ñ±”è8Ôƒ
+Ü5Õ¹‘¼…¼É•‘½Èœ±ÍÕˆè±¥µ„°½¹Ù¥Ñ•Ì°½ÍÑ½Ì”‘•ÍÉ§ŸÕ•Ìœ±¹½‘•Ìéml±•ÍÍ½¸œ°±¥µ„œ°Ÿ–’¤œ°Ìİt±l±•ÍÍ½¸œ°½¹Ù¥Ñ•Ìœ°Ÿ–>,œ°Ìát±l±•ÍÍ½¸œ°AÉ•™•Ë©¹¥…Ìœ°Ÿ––ôœ°Ìåt±l±•ÍÍ½¸œ°•ÍÉ§Ÿ¼œ°Ÿ–’œœ°ĞÁt±l¡•­Á½¥¹Ğœ°Y¥‘„Í½¥…°‹…Í¥„œ°Ÿ¦Z œ°ĞÁuuô°(íÑ¥Ñ±”è8Ôƒ
+Üá¥ÍÑ¥È°½¹Ñ…È”Á•‘¥Èœ±ÍÕˆè•á¥ÍÓ©¹¥„°ÅÕ…¹Ñ¥‘…‘•Ì°Á•‘¥‘½Ì”É•É…Ìœ±¹½‘•Ìéml±•ÍÍ½¸œ°á¥ÍÓ©¹¥„œ°Ÿ–r œ°ĞÅt±l±•ÍÍ½¸œ°½¹Ñ…‘½É•Ìœ°ŸšVÀœ°ĞÉt±l±•ÍÍ½¸œ°A•‘¥‘½Ìœ°Ÿ–úœ°ĞÍt±l±•ÍÍ½¸œ°A•Éµ¥ÍÏ¼œ°Ÿ–>¼œ°ĞÑt±l¡•­Á½¥¹Ğœ°¥È¹¼•ÍÁ‡¼Ãé‰±¥¼œ°Ÿ¦Z œ°ĞÑuuô°(íÑ¥Ñ±”è8Ôƒ
+Ü•Í•©¼€˜É½Ñ¥¹„œ±ÍÕˆèÅÕ•É•È°É½Ñ¥¹„”™É•Å×©¹¥„Í•´É½Ñ•¥É¼ÁÉ½¹Ñ¼œ±¹½‘•Ìéml±•ÍÍ½¸œ°•Í•©½Ìœ°Ÿšrlœ°ĞÕt±l±•ÍÍ½¸œ°I½Ñ¥¹„œ°Ÿš^”œ°ĞÙt±l±•ÍÍ½¸œ°É•Å×©¹¥„œ°Ÿšfœ°Ğİt±lÍÑ½Éäœ°U´‘¥„½µÕ´œ°Ÿšr°œ°Ğİt±l¡•­Á½¥¹Ğœ°I½Ñ¥¹„¥¹‘•Á•¹‘•¹Ñ”œ°Ÿ¦Z œ°Ğİuuô°(íÑ¥Ñ±”è8Ôƒ
+ÜA…ÍÍ…‘¼€˜•áÁ±¥‡Ÿ¼œ±ÍÕˆè½¹Ñ…È¼ÅÕ”…½¹Ñ••Ô°½É‘•¹…È‡ŸÕ•Ì”‘…Èµ½Ñ¥Ù½Ìœ±¹½‘•Ìéml±•ÍÍ½¸œ°A…ÍÍ…‘¼œ°Ÿšb œ°Ğát±l±•ÍÍ½¸œ°¹Ñ•Ì”‘•Á½¥Ìœ°Ÿ–&4œ°Ğåt±l±•ÍÍ½¸œ°5½Ñ¥Ù½Ìœ°ŸBœ°ÔÁt±l¡•­Á½¥¹Ğœ°½¹Ñ…È€˜•áÁ±¥…Èœ°Ÿ¦Z œ°ÔÁuuô°(íÑ¥Ñ±”è8Ôƒ
+Ü%¹™½Éµ‡Ÿ¼€˜Í•ÉÙ§½Ìœ±ÍÕˆèÁ•ÉÕ¹Ñ…Ì…‰•ÉÑ…Ì°ÍÑ…ÑÕÌ°Ñ•±•™½¹””…ÕÑ½¹½µ¥„œ±¹½‘•Ìéml±•ÍÍ½¸œ°A•ÉÕ¹Ñ…Ì…‰•ÉÑ…Ìœ°Ÿ’öTœ°ÔÅt±l±•ÍÍ½¸œ°+„€˜…¥¹‘„œ°Ÿšr¨œ°ÔÉt±l±•ÍÍ½¸œ°Q•±•™½¹”€˜Í•ÉÙ§½Ìœ°Ÿ¢¦Äœ°ÔÍt±lÍÑ½Éäœ°I•Í½±Ù•ÈÕ´‘¥„œ°Ÿšr°œ°ÔÍt±l¡•­Á½¥¹Ğœ°ÕÑ½¹½µ¥„8Ôœ°Ÿ–€œ°ÔÑuuô)tì)½¹ÍĞ™±…ÑA…Ñ õmtíÁ…Ñ¡U¹¥ÑÌ¹™½É…  ¡Ô±Õ¤¤ôùÔ¹¹½‘•Ì¹™½É…  ¡¸±¹¤¤ôù™±…ÑA…Ñ ¹ÁÕÍ ¡íÕ¹¥ĞéÕ¤±±½…°é¹¤±ÑåÁ”é¹lÁt±±…‰•°é¹lÅt±¥½¸é¹lÉt±‘…äé¹lÍuô¤¤¤ì)™Õ¹Ñ¥½¸Ñ½‘…åEÕ•ÍÑMÑ…Ñ” ¥í½¹ÍĞõÍ¡•±±1½…±…Ñ•-•ä ¤í¥˜¡ÍÑ…Ñ”¹ÅÕ•ÍÑÌ¹‘…Ñ”„ôõ¥ÍÑ…Ñ”¹ÅÕ•ÍÑÌõí‘…Ñ”é±±•ÍÍ½¹ÌèÀ±áÀèÀ±…ÕÉ…äé™…±Í•ôíÉ•ÑÕÉ¸ÍÑ…Ñ”¹ÅÕ•ÍÑÍô)™Õ¹Ñ¥½¸ÉÕ¹‘…ÁÑ¥Ù•!½µ•Ñ¥½¸¡…Ñ¥½¸¥ì(½¹ÍĞ¥‘àõ5…Ñ ¹µ…à À±5…Ñ ¹µ¥¸¡™±…ÑA…Ñ ¹±•¹Ñ ´Ä±ÍÑ…Ñ”¹Á…Ñ¡AÉ½É•ÍÍñğÀ¤¤ì(¥˜¡…Ñ¥½¸ôôôÉ•Á…¥Èœ¥É•ÑÕÉ¸ÍÑ…ÉÑ5…ÍÑ•ÉåI•Á…¥È¡¥‘à¤ì(¥˜¡…Ñ¥½¸ôôôÁÉ…Ñ¥”œ¥É•ÑÕÉ¸¼ ÁÉ…Ñ¥”œ¤ì(¥˜¡…Ñ¥½¸ôôô©½ÕÉ¹…°œ¥É•ÑÕÉ¸¼ ©½ÕÉ¹…°œ¤ì(¥˜¡…Ñ¥½¸ôôôÍ•ÍÍ¥½¸œ¥É•ÑÕÉ¸ÍÑ…ÉÑM•ÍÍ¥½¸ ¤ì(¥˜¡…Ñ¥½¸ôôô¡•ÍĞœ¥É•ÑÕÉ¸±…¥µA…Ñ¡¡•ÍĞ¡¥‘à¤ì(É•ÑÕÉ¸ÍÑ…ÉÑEÕ¥­1•ÍÍ½¸¡¥‘à¤ì)ô)™Õ¹Ñ¥½¸Õ¥‘•Y¥ÍÕ…±MÑ…Ñ”¡‘•¥Í¥½¸¥ì(¥˜¡lÉ•Á…¥Èœ°µ¥ÍÑ…­”t¹¥¹±Õ‘•Ì¡‘•¥Í¥½¸ü¹­¥¹¤¥É•ÑÕÉ¸€É•Á…¥Èœì(¥˜¡lÉ•Ù¥•Üœ°É•½Ù•Èt¹¥¹±Õ‘•Ì¡‘•¥Í¥½¸ü¹­¥¹¤¥É•ÑÕÉ¸€É•Ù¥•Üœì(¥˜¡‘•¥Í¥½¸ü¹­¥¹ôôôÍÑ½Éäœ¥É•ÑÕÉ¸€ÑÉ…¹Í™•Èœì(¥˜¡‘•¥Í¥½¸ü¹¹½‘”ü¹ÑåÁ”ôôô¡•­Á½¥¹Ğœ¥É•ÑÕÉ¸€¡•­Á½¥¹Ğœì(É•ÑÕÉ¸€±•…É¸œì)ô)™Õ¹Ñ¥½¸É•¹‘•ÉÕ¥‘•Y¥ÍÕ…°¡‘•¥Í¥½¸¥ì(½¹ÍĞµ½½õÕ¥‘•Y¥ÍÕ…±MÑ…Ñ”¡‘•¥Í¥½¸¤±Õ¥‘”õ‘½Õµ•¹Ğ¹ÅÕ•ÉåM•±•Ñ½È œ¹Õ¥‘”µ…Éœ¤±Ù¥ÍÕ…°õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% Õ¥‘•Y¥ÍÕ…°œ¤±±…‰•°õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% Õ¥‘•MÑ…Ñ•1…‰•°œ¤ì(¥˜¡Õ¥‘”¥Õ¥‘”¹‘…Ñ…Í•Ğ¹ÍÑ…Ñ”õµ½½ôôôÑÉ…¹Í™•ÈœüÍÑ½Éäœéµ½½ì(¥˜¡Ù¥ÍÕ…°¥Ù¥ÍÕ…°¹‘…Ñ…Í•Ğ¹µ½½õµ½½ì(¥˜¡±…‰•°¥±…‰•°¹Ñ•áÑ½¹Ñ•¹Ğô¡í±•…É¸è…ÁÉ•¹‘•Èœ±É•Ù¥•ÜèÉ•Ù¥Í…Èœ±É•Á…¥ÈèÉ•Á…É…Èœ±ÑÉ…¹Í™•ÈèÑÉ…¹Í™•É¥Èœ±¡•­Á½¥¹Ğè¡•­Á½¥¹Ğô¥mµ½½‘uñğ…½É„œì(É•ÑÕÉ¸µ½½ì)ô)™Õ¹Ñ¥½¸É•¹‘•É‘…ÁÑ¥Ù•!½µ” ¥ì(½¹ÍĞõ¡½µ•½…¡•¥Í¥½¸¡ÍÑ…Ñ”±™±…ÑA…Ñ ¤±‰…¹¹•Èõ‘½Õµ•¹Ğ¹ÅÕ•ÉåM•±•Ñ½È œ¹½ÕÉÍ”µ‰…¹¹•Èœ¤ì(¥˜¡‰…¹¹•È¥‰…¹¹•È¹‘…Ñ…Í•Ğ¹…‘…ÁÑ¥Ù”õ¹­¥¹ì(½¹ÍĞÍ•Ğô¡¥±Ø¤ôùí½¹ÍĞ”õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å%¡¥¤í¥˜¡”¥”¹Ñ•áÑ½¹Ñ•¹ĞõÙôì(Í•Ğ ¡½µ•‘…ÁÑ¥Ù•å•‰É½Üœ±¹•å•‰É½Ü¤íÍ•Ğ ¡½µ•‘…ÁÑ¥Ù•Q¥Ñ±”œ±¹Ñ¥Ñ±”¤íÍ•Ğ ¡½µ•‘…ÁÑ¥Ù•½Áäœ±¹½Áä¤íÍ•Ğ ¡½µ•‘…ÁÑ¥Ù•M¥¹…°œ±¹Í¥¹…°¤ì(½¹ÍĞÁÉ¥µ…Éäõ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ¡½µ•‘…ÁÑ¥Ù•AÉ¥µ…Éäœ¤±Í•½¹‘…Éäõ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ¡½µ•‘…ÁÑ¥Ù•M•½¹‘…Éäœ¤ì(¥˜¡ÁÉ¥µ…Éä¥íÁÉ¥µ…Éä¹Ñ•áÑ½¹Ñ•¹Ğõ¹Ñ„íÁÉ¥µ…Éä¹½¹±¥¬ô ¤ôùÉÕ¹‘…ÁÑ¥Ù•!½µ•Ñ¥½¸¡¹…Ñ¥½¸¥ô(¥˜¡Í•½¹‘…Éä¥íÍ•½¹‘…Éä¹Ñ•áÑ½¹Ñ•¹ĞôÁ½ÈÅÕ”•ÍÑ„Í•ÍÏ¼üœíÍ•½¹‘…Éä¹½¹±¥¬õÑ½±•Q½‘…åI•…Í½¹ô(½¹ÍĞÉ•…Í½¹Q¥Ñ±”õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% Ñ½‘…åI•…Í½¹Q¥Ñ±”œ¤±É•…Í½¹½Áäõ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% Ñ½‘…åI•…Í½¹½Áäœ¤ì(¥˜¡É•…Í½¹Q¥Ñ±”¥É•…Í½¹Q¥Ñ±”¹Ñ•áÑ½¹Ñ•¹Ğõ¹Ñ¥Ñ±”ì(¥˜¡É•…Í½¹½Áä¥É•…Í½¹½Áä¹Ñ•áÑ½¹Ñ•¹Ğõ¹½Áä¬œM¥¹…°ÁÉ¥¹¥Á…°è€œ­¹Í¥¹…°¬œ¸œì(½¹ÍĞÕ¥‘”õ‘½Õµ•¹Ğ¹ÅÕ•ÉåM•±•Ñ½È œ¹Õ¥‘”µ…Éœ¤ì(¥˜¡Õ¥‘”˜™lÉ•Á…¥Èœ°É•Ù¥•Üœ°É•½Ù•Èœ°µ¥ÍÑ…­”œ°ÍÑ½Éät¹¥¹±Õ‘•Ì¡¹­¥¹¤¥ì(€€Í•Ğ Õ¥‘•Q¥Ñ±”œ±¹Ñ¥Ñ±”¤íÍ•Ğ Õ¥‘•½Áäœ±¹½Áä¤ì(ô(É•ÑÕÉ¸ì)ô)™Õ¹Ñ¥½¸É•¹‘•É…µ•!½µ” ¥ì(½¹ÍĞİÉ…Àõ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ±•…É¹¥¹A…Ñ œ¤í¥˜ …İÉ…À¥É•ÑÕÉ¸ì(½¹ÍĞÄõÑ½‘…åEÕ•ÍÑMÑ…Ñ” ¤±Ñ½Ñ…°õ™±…ÑA…Ñ ¹±•¹Ñ ±ÁÉ½É•ÍÌõ5…Ñ ¹µ…à À±5…Ñ ¹µ¥¸¡Ñ½Ñ…°±ÍÑ…Ñ”¹Á…Ñ¡AÉ½É•ÍÍñğÀ¤¤ì(±•Ğ¤ôÀì(İÉ…À¹¥¹¹•É!Q50õÁ…Ñ¡U¹¥ÑÌ¹µ…À ¡Ô±Õ¤¤ôùì(€€½¹ÍĞÍÑ…ÉÑ%¹‘•àõ¤ì(€€½¹ÍĞ¡Ñµ°õÔ¹¹½‘•Ì¹µ…À ¡¸±¹¤¤ôùì(€€€€½¹ÍĞ¥‘àõ¤¬¬±ÑåÁ”õ¹lÁt±‘½¹”õ¥‘àñÁÉ½É•ÍÌ±ÕÉÉ•¹Ğõ¥‘àôôõÁÉ½É•ÍÌ±±½­•õ¥‘àùÁÉ½É•ÍÌ±É•Á…¥É¥¹œõÕÉÉ•¹Ğ˜™ÍÑ…Ñ”¹É•µ•‘¥…Ñ¥½¸ü¹¥‘àôôõ¥‘àì(€€€€½¹ÍĞ±Ìõ€‘íÑåÁ•ô€‘í‘½¹”ü‘½¹”œèœô€‘íÕÉÉ•¹ĞüÕÉÉ•¹Ğœèœô€‘íÉ•Á…¥É¥¹œüÉ•¥¹™½É¥¹œœèœô€‘í±½­•ü±½­•œèœõ€ì(€€€€½¹ÍĞ±¥¬õ±½­•ıÑ½…ÍĞ ½µÁ±•Ñ”¼µÉÕ±¼…¹Ñ•É¥½ÈÁÉ¥µ•¥É¼œ¥€éÉ•Á…¥É¥¹œıÍÑ…ÉÑ5…ÍÑ•ÉåI•Á…¥È ‘í¥‘áô¥€éÑåÁ”ôôô¡•ÍĞœı±…¥µA…Ñ¡¡•ÍĞ ‘í¥‘áô¥€éÍÑ…ÉÑEÕ¥­1•ÍÍ½¸ ‘í¥‘áô¥€ì(€€€€½¹ÍĞ±…‰•°õÉ•Á…¥É¥¹œıƒŠìÉ•™½Ë…Èƒ
+Ü€‘í¹lÅuõ€é¹lÅtì(€€€€½¹ÍĞÑåÁ•1…‰•°õí±•ÍÍ½¸è±§Ÿ¼œ±ÍÑ½Éäè¡¥ÍÓÍÉ¥„œ±¡•­Á½¥¹Ğè¡•­Á½¥¹Ğœ±¡•ÍĞèÉ•½µÁ•¹Í„õmÑåÁ•uññÑåÁ”ì(€€€€É•ÑÕÉ¸€ñ‘¥Ø±…ÍÌô‰Á…Ñ µ¹½‘”µİÉ…À€‘íÕÉÉ•¹Ğü¥ÌµÕÉÉ•¹Ğœèœô€‘í‘½¹”ü¥Ìµ‘½¹”œèœôˆ‘…Ñ„µ¹½‘”µ¥¹‘•àôˆ‘í¥‘áôˆø(€€€€€€€ñ‰ÕÑÑ½¸±…ÍÌô‰Á…Ñ µ¹½‘”€‘í±Íôˆ½¹±¥¬ôˆ‘í±¥­ôˆ…É¥„µ±…‰•°ôˆ‘í±…‰•±ôˆ€‘íÕÉÉ•¹Ğü…É¥„µÕÉÉ•¹Ğô‰ÍÑ•Àˆœèœôø(€€€€€€€€€ñÍÁ…¸±…ÍÌô‰¹½‘”µ¡…±¼ˆ…É¥„µ¡¥‘‘•¸ô‰ÑÉÕ”ˆøğ½ÍÁ…¸ø(€€€€€€€€€ñÍÁ…¸±…ÍÌô‰¹½‘”µ¥½¸ˆø‘í‘½¹”üŸŠrLœéÉ•Á…¥É¥¹œüŸ–ú¤œé¹lÉuôğ½ÍÁ…¸ø(€€€€€€€€€ñÍÁ…¸±…ÍÌô‰¹½‘”µÑåÁ”ˆø‘íÑåÁ•1…‰•±ôğ½ÍÁ…¸ø(€€€€€€€€€ñÍµ…±°ø‘í±…‰•±ôğ½Íµ…±°ø(€€€€€€€ğ½‰ÕÑÑ½¸ø(€€€€€ğ½‘¥Øù€ì(€€ô¤¹©½¥¸ œœ¤ì(€€½¹ÍĞ½Õ¹ĞõÔ¹¹½‘•Ì¹±•¹Ñ ±•¹‘%¹‘•àõ¤´Ä±‘½¹•½Õ¹Ğõ5…Ñ ¹µ…à À±5…Ñ ¹µ¥¸¡½Õ¹Ğ±ÁÉ½É•ÍÌµÍÑ…ÉÑ%¹‘•à¤¤ì(€€½¹ÍĞÕ¹¥ÑAĞõ5…Ñ ¹É½Õ¹¡‘½¹•½Õ¹Ğ½½Õ¹Ğ¨ÄÀÀ¤ì(€€½¹ÍĞÕÉÉ•¹ÑU¹¥ĞõÁÉ½É•ÍÌøõÍÑ…ÉÑ%¹‘•à˜™ÁÉ½É•ÍÌğõ•¹‘%¹‘•àì(€€½¹ÍĞÕ¹¥Ñ½¹”õÁÉ½É•ÍÌù•¹‘%¹‘•àì(€€½¹ÍĞÕ¹¥Ñ1½­•õÁÉ½É•ÍÌñÍÑ…ÉÑ%¹‘•àì(€€½¹ÍĞÍÑ…ÑÕÌõÕ¹¥Ñ½¹”ü½¹±×µ‘„œéÕÉÉ•¹ÑU¹¥Ğü•´ÕÉÍ¼œè‰±½ÅÕ•…‘„œì(€€É•ÑÕÉ¸€ñÍ•Ñ¥½¸±…ÍÌô‰Á…Ñ µÕ¹¥Ğ€‘íÕÉÉ•¹ÑU¹¥ĞüÕÉÉ•¹ĞµÕ¹¥Ğœèœô€‘íÕ¹¥Ñ½¹”ü‘½¹”µÕ¹¥Ğœèœô€‘íÕ¹¥Ñ1½­•ü±½­•µÕ¹¥Ğœèœôˆ‘…Ñ„µÕ¹¥Ğµ¥¹‘•àôˆ‘íÕ¥ôˆø(€€€€€ñ‘¥Ø±…ÍÌô‰Á…Ñ µÕ¹¥Ğµ¡•…ˆø(€€€€€€€ñ‘¥Ø±…ÍÌô‰Õ¹¥Ğµ¡•…‘¥¹œˆøñÍÁ…¸ùÕ¹¥‘…‘”€‘íMÑÉ¥¹œ¡Õ¤¬Ä¤¹Á…‘MÑ…ÉĞ È°œÀœ¥ôğ½ÍÁ…¸øñˆø‘íÔ¹Ñ¥Ñ±•ôğ½ˆøñÍµ…±°ø‘íÔ¹ÍÕ‰ôğ½Íµ…±°øğ½‘¥Øø(€€€€€€€ñ‘¥Ø±…ÍÌô‰Õ¹¥ĞµÍÑ…ÑÕÌˆøñÍÑÉ½¹œø‘íÍÑ…ÑÕÍôğ½ÍÑÉ½¹œøñÍÁ…¸ø‘í‘½¹•½Õ¹Ñô¼‘í½Õ¹Ñô•Ñ…Á…Ìğ½ÍÁ…¸øğ½‘¥Øø(€€€€€€€ñ‘¥Ø±…ÍÌô‰Õ¹¥ĞµÁÉ½É•ÍÌˆ…É¥„µ±…‰•°ôˆ‘íÕ¹¥ÑAÑô”½¹±×µ‘¼ˆøñ¤ÍÑå±”ô‰İ¥‘Ñ è‘íÕ¹¥ÑAÑô”ˆøğ½¤øğ½‘¥Øø(€€€€€ğ½‘¥Øø(€€€€€ñ‘¥Ø±…ÍÌô‰±•ÍÍ½¸µÁ…Ñ ˆø‘í¡Ñµ±ôğ½‘¥Øø(€€€ğ½Í•Ñ¥½¸ù€ì(ô¤¹©½¥¸ œœ¤ì(½¹ÍĞÁĞõ5…Ñ ¹É½Õ¹¡ÁÉ½É•ÍÌ½Ñ½Ñ…°¨ÄÀÀ¤±Õ¹¥Ğô¡™±…ÑA…Ñ¡m5…Ñ ¹µ¥¸¡ÁÉ½É•ÍÌ±Ñ½Ñ…°´Ä¥uññíÕ¹¥ĞèÁô¤¹Õ¹¥Ğì(½¹ÍĞ•°ô¡¥±Ø¤ôùí½¹ÍĞ”õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å%¡¥¤í¥˜¡”¥”¹Ñ•áÑ½¹Ñ•¹ĞõÙôì(•° ½ÕÉÍ•M•Ñ¥½¹1…‰•°œ±M—Ÿ¼€‘íÕ¹¥Ğ¬Åõ€¤í•° ½ÕÉÍ•M½É”œ±5…Ñ ¹É½Õ¹ ¡ÍÑ…Ñ”¹áÁñğÀ¤¼ÄÀ¤¤í•° ½ÕÉÍ•AĞœ±ÁĞ¬œ”œ¤í•° ±•…Õ•5¥¹¥Q•áĞœ±€‘íÍÑ…Ñ”¹±•…Õ•aÁñğÁôa@•ÍÑ„Í•µ…¹…€¤ì(½¹ÍĞ½…°õ5…Ñ ¹µ¥¸ ÄÀÀ±5…Ñ ¹É½Õ¹ ¡Ä¹áÁñğÀ¤¼ÌÀ¨ÄÀÀ¤¤±É¥¹œõ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ‘…¥±åI¥¹œœ¤í¥˜¡É¥¹œ¥É¥¹œ¹ÍÑå±”¹Í•ÑAÉ½Á•ÉÑä œ´µ½…°œ±½…°¬œ”œ¤í•° ‘…¥±å½…±AĞœ±½…°¬œ”œ¤ì(É•¹‘•ÉEÕ•ÍÑÌ ¤íÉ•¹‘•É!½µ•)½ÕÉ¹…±MÕµµ…Éä ¤í½¹ÍĞ…‘…ÁÑ¥Ù”õÉ•¹‘•É‘…ÁÑ¥Ù•!½µ” ¤ì(½¹ÍĞÍÑ…”õ©½ÕÉ¹•åMÑ…•%¹‘•à ¤±ÍÑ…•5•Ñ„õ)=UI9e}MQMmÍÑ…•tí•° ©½ÕÉ¹•åMÑ…•5¥¹¤œ±ÍÑ…•5•Ñ„¹¹…µ”¤í•° ©½ÕÉ¹•å…Á…‰¥±¥Ñå5¥¹¤œ±ÍÑ…•5•Ñ„¹Ñ¥Ñ±”¤ì(½¹ÍĞœõ™±…ÑA…Ñ¡m5…Ñ ¹µ¥¸¡ÁÉ½É•ÍÌ±Ñ½Ñ…°´Ä¥tì(¥˜¡œ˜˜€…lÉ•Á…¥Èœ°É•Ù¥•Üœ°É•½Ù•Èœ°µ¥ÍÑ…­”œ°ÍÑ½Éät¹¥¹±Õ‘•Ì¡…‘…ÁÑ¥Ù”ü¹­¥¹¤¥ì(€€½¹ÍĞÉ•Á…¥ÈõÍÑ…Ñ”¹É•µ•‘¥…Ñ¥½¸ü¹¥‘àôôõÁÉ½É•ÍÌ±Õ¥‘”õ‘½Õµ•¹Ğ¹ÅÕ•ÉåM•±•Ñ½È œ¹Õ¥‘”µ…Éœ¤ì(€€¥˜¡Õ¥‘”¥íÕ¥‘”¹‘…Ñ…Í•Ğ¹ÍÑ…Ñ”õÉ•Á…¥ÈüÉ•Á…¥Èœéœ¹ÑåÁ”ôôô¡•­Á½¥¹Ğœü¡•­Á½¥¹Ğœéœ¹ÑåÁ”ôôôÍÑ½ÉäœüÍÑ½Éäœè±•…É¸ô(€€•° Õ¥‘•Q¥Ñ±”œ±É•Á…¥Èü½ÉÑ…±—„„…É•ÍÑ„™É…„¸œéœ¹ÑåÁ”ôôô¡•­Á½¥¹ĞœüAÉ•Á…É”µÍ”Á…É„ÁÉ½Ù…È‘½·µ¹¥¼¸œéœ¹ÑåÁ”ôôôÍÑ½Éäœü1•¥„Á…É„¥¹Ñ•É…È¼ÅÕ”…ÁÉ•¹‘•Ô¸œéœ¹‘…äğôÄÈüÕÑ½µ…Ñ¥é”¼­…¹„¸œéœ¹‘…äğôÈĞü5½¹Ñ”™É…Í•Ì°»¼ÑÉ…‘×ŸÕ•Ì¸œèUÍ”©…Á½»©Ì•´½¹Ñ•áÑ¼¸œ¤ì(€€•° Õ¥‘•½Áäœ±É•Á…¥ÈüY½¨½¹±Õ¥Ô„…Ñ¥Ù¥‘…‘”°µ…Ì¼5…ÍÑ•ÉäÉ…Á …¥¹‘„•¹½¹ÑÉ½ÔÕµ„¡…‰¥±¥‘…‘”ËµÑ¥„¥¹ÍÓ…Ù•°¸<É•™½Ë¼ƒ¤ÕÉÑ¼°‘¥É•¥½¹…‘¼”»¼½¹Í½µ”¹•É¥„¸œéœ¹ÑåÁ”ôôô¡•­Á½¥¹Ğœü<¡•­Á½¥¹Ğµ¥ÍÑÕÉ„½µÁ•Ó©¹¥…Ì‘„Õ¹¥‘…‘”¸±”»¼µ•‘”Ù•±½¥‘…‘”°µ•‘”Í”Ù½¨½¹Í•Õ”É•ÕÁ•É…È”ÑÉ…¹Í™•É¥ÈÍ•´Á¥ÍÑ„¸œéœ¹ÑåÁ”ôôôÍÑ½Éäœü!¥ÍÓÍÉ¥…Ì½¹•Ñ…´Ù½…‰Õ³…É¥¼”É…·…Ñ¥„•´½¹Ñ•áÑ¼½¹Óµ¹Õ¼¸1•¥„ÁÉ¥µ•¥É¼Á•±¼Í•¹Ñ¥‘¼•É…°°‘•Á½¥ÌÙ½±Ñ”…½Ì‘•Ñ…±¡•Ì¸œéœ¹‘…äğôÄÈü1•¥„°½×„”É•ÕÁ•É”„™½Éµ„¸<É½µ…©¤Í½µ”½¹™½Éµ”Í•Ô¥É•‰É¼Á…É„‘”ÁÉ•¥Í…È‘•±”¸œéœ¹‘…äğôÈĞüA…ÉÓµÕ±…Ìµ½ÍÑÉ…´¼Á…Á•°‘½Ì‰±½½Ì¸ÍÁ•É”¼ÁÉ•‘¥…‘¼…¹Ñ•Ì‘”™•¡…È¼Í•¹Ñ¥‘¼¸œè½É„¼ÕÉÍ¼µ¥ÍÑÕÉ„­…¹„°É…·…Ñ¥„°­…¹©¤°ƒ…Õ‘¥¼”Í¥ÑÕ‡ŸÕ•ÌÉ•…¥Ì¹¼µ•Íµ¼¥ÉÕ¥Ñ¼¸œ¤ì(ô(É•¹‘•ÉÕ¥‘•Y¥ÍÕ…°¡…‘…ÁÑ¥Ù”¤ì(ÅÕ•Õ•!½µ•A½±¥Í  ¤ì)ô)™Õ¹Ñ¥½¸ÅÕ•Õ•!½µ•A½±¥Í  ¥ì(½¹ÍĞ¡½µ”õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ¡½µ”œ¤í¥˜ …¡½µ•ñğ…¡½µ”¹±…ÍÍ1¥ÍĞ¹½¹Ñ…¥¹Ì …Ñ¥Ù”œ¤¥É•ÑÕÉ¸ì(½¹ÍĞ¥Ñ•µÌõl¸¸¹¡½µ”¹ÅÕ•ÉåM•±•Ñ½É±° œ¹½ÕÉÍ”µ‰…¹¹•È°¹Á…Ñ µÑ½½±‰…È°¹Á…Ñ µÕ¹¥Ğ°¹±•…É¸µÉ…¥°ø¹É…¥°µ…Éœ¥tì(¥Ñ•µÌ¹™½É…  ¡•°±¤¤ôùí•°¹±…ÍÍ1¥ÍĞ¹…‘ ¡½µ”µÉ•Ù•…°œ¤í•°¹ÍÑå±”¹Í•ÑAÉ½Á•ÉÑä œ´µÉ•Ù•…°µ‘•±…äœ±5…Ñ ¹µ¥¸¡¤°Ü¤¨ÌÔ¬µÌœ¥ô¤ì(¥˜¡İ¥¹‘½Ü¹µ…Ñ¡5•‘¥„ œ¡ÁÉ•™•ÉÌµÉ•‘Õ•µµ½Ñ¥½¸èÉ•‘Õ”¤œ¤¹µ…Ñ¡•Ì¥í¥Ñ•µÌ¹™½É… ¡•°ôù•°¹±…ÍÍ1¥ÍĞ¹…‘ ¥ÌµÙ¥Í¥‰±”œ¤¤íÉ•ÑÕÉ¹ô(¥˜ „ %¹Ñ•ÉÍ•Ñ¥½¹=‰Í•ÉÙ•Èœ¥¸İ¥¹‘½Ü¤¥í¥Ñ•µÌ¹™½É… ¡•°ôù•°¹±…ÍÍ1¥ÍĞ¹…‘ ¥ÌµÙ¥Í¥‰±”œ¤¤íÉ•ÑÕÉ¹ô(İ¥¹‘½Ü¹}}¡½µ•=‰Í•ÉÙ•Èü¹‘¥Í½¹¹•Ğü¸ ¤ì(İ¥¹‘½Ü¹}}¡½µ•=‰Í•ÉÙ•Èõ¹•Ü%¹Ñ•ÉÍ•Ñ¥½¹=‰Í•ÉÙ•È¡•¹ÑÉ¥•Ìôù•¹ÑÉ¥•Ì¹™½É… ¡•¹ÑÉäôùí¥˜¡•¹ÑÉä¹¥Í%¹Ñ•ÉÍ•Ñ¥¹œ¥í•¹ÑÉä¹Ñ…É•Ğ¹±…ÍÍ1¥ÍĞ¹…‘ ¥ÌµÙ¥Í¥‰±”œ¤íİ¥¹‘½Ü¹}}¡½µ•=‰Í•ÉÙ•È¹Õ¹½‰Í•ÉÙ”¡•¹ÑÉä¹Ñ…É•Ğ¥õô¤±íÑ¡É•Í¡½±è¸Àà±É½½Ñ5…É¥¸èœĞÁÁà€ÁÁà€´ÌÁÁàô¤ì(¥Ñ•µÌ¹™½É… ¡•°ôùİ¥¹‘½Ü¹}}¡½µ•=‰Í•ÉÙ•È¹½‰Í•ÉÙ”¡•°¤¤ì)ô)™Õ¹Ñ¥½¸É•¹‘•É!½µ•)½ÕÉ¹…±MÕµµ…Éä ¥ì(½¹ÍĞ¹ÌõÍÑ…Ñ”¹¹…ÉÉ…Ñ¥Ù•ññíô±•Á¥Í½‘•Ìõ=‰©•Ğ¹Ù…±Õ•Ì¡¹Ì¹•Á¥Í½‘•Íññíô¤±¡…ÉÌõ=‰©•Ğ¹Ù…±Õ•Ì¡¹Ì¹¡…É…Ñ•ÉÍññíô¤±É•Í½±Ù•õ•Á¥Í½‘•Ì¹™¥±Ñ•È¡àôùà¹É•Í½±Ù•¤¹±•¹Ñ ±±…ÍĞõ¹Ì¹±…ÍÑÁ¥Í½‘”ì(½¹ÍĞÑ¥Ñ±”õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ©½ÕÉ¹…±5¥¹¥Q¥Ñ±”œ¤±µ•Ñ„õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ©½ÕÉ¹…±5¥¹¥5•Ñ„œ¤±ÍÑ…Ğõ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ©½ÕÉ¹…±5¥¹¥MÑ…Ğœ¤ì(¥˜¡Ñ¥Ñ±”¥Ñ¥Ñ±”¹Ñ•áÑ½¹Ñ•¹Ğõ±…ÍĞı±…ÍĞ¹Ñ¥Ñ±”èM•Ô‘§…É¥¼½µ—„¹¼8Ôœì(¥˜¡µ•Ñ„¥µ•Ñ„¹Ñ•áÑ½¹Ñ•¹Ğõ±…ÍĞı€‘í±…ÍĞ¹¡…É…Ñ•É9…µ•ôƒ
+Ü€‘í±…ÍĞ¹Á±…•9…µ•õ€èA•ÉÍ½¹…•¹Ì”±Õ…É•ÌÉ•…Á…É••´½¹™½Éµ”Ù½¨…Ù…»„¸œì(¥˜¡ÍÑ…Ğ¥ÍÑ…Ğ¹Ñ•áÑ½¹Ñ•¹Ğõ€‘íÉ•Í½±Ù•‘ôÉ•Í½±Ù¥‘…Ìƒ
+Ü€‘í¡…ÉÌ¹±•¹Ñ¡ôÁ•ÍÍ½…Í€ì)ô)™Õ¹Ñ¥½¸É•¹‘•ÉEÕ•ÍÑÌ ¥í½¹ÍĞÄõÑ½‘…åEÕ•ÍÑMÑ…Ñ” ¤±¥Ñ•µÌõmí¥½¸èŸ¦Lœ±¹…µ”è½µÁ±•Ñ”€Ä±§Ÿ¼œ±¹½ÜéÄ¹±•ÍÍ½¹ÍñğÀ±µ…àèÅô±í¥½¸èŸŠr˜œ±¹…µ”è…¹¡”€ÌÀa@œ±¹½ÜéÄ¹áÁñğÀ±µ…àèÌÁô±í¥½¸èŸš¶Œœ±¹…µ”è‡„Õµ„±§Ÿ¼½´€àÀ”¬œ±¹½ÜéÄ¹…ÕÉ…äüÄèÀ±µ…àèÅõtí½¹ÍĞÜõ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ÅÕ•ÍÑ1¥ÍĞœ¤í¥˜ …Ü¥É•ÑÕÉ¸íÜ¹¥¹¹•É!Q50õ¥Ñ•µÌ¹µ…À¡àôùí½¹ÍĞÁĞõ5…Ñ ¹µ¥¸ ÄÀÀ±5…Ñ ¹É½Õ¹¡à¹¹½Ü½à¹µ…à¨ÄÀÀ¤¤±‘½¹”õà¹¹½Üøõà¹µ…àíÉ•ÑÕÉ¸€ñ‘¥Ø±…ÍÌô‰ÅÕ•ÍĞµÉ½Ü€‘í‘½¹”ü‘½¹”œèœôˆøñ‘¥Ø±…ÍÌô‰ÅÕ•ÍĞµ¥½¸ˆø‘íà¹¥½¹ôğ½‘¥Øøñ‘¥Øøñˆø‘íà¹¹…µ•ôğ½ˆøñÍÁ…¸ø‘í5…Ñ ¹µ¥¸¡à¹¹½Ü±à¹µ…à¥ô¼‘íà¹µ…áôğ½ÍÁ…¸øñ‘¥Ø±…ÍÌô‰ÅÕ•ÍĞµÁÉ½É•ÍÌˆøñ¤ÍÑå±”ô‰İ¥‘Ñ è‘íÁÑô”ˆøğ½¤øğ½‘¥Øøğ½‘¥Øøñ‘¥Ø±…ÍÌô‰ÅÕ•ÍĞµ¡•¬ˆø‘í‘½¹”üŸŠrLœèŸŠ^€ÄÀôğ½‘¥Øøğ½‘¥Øùô¤¹©½¥¸ œœ¥ô)™Õ¹Ñ¥½¸±…¥µA…Ñ¡¡•ÍĞ¡¥‘à¥í¥˜¡¥‘àùÍÑ…Ñ”¹Á…Ñ¡AÉ½É•ÍÌ¥É•ÑÕÉ¸Ñ½…ÍĞ ÍÑ”‰‡è…¥¹‘„•ÍÓ„‰±½ÅÕ•…‘¼œ¤í¥˜¡ÍÑ…Ñ”¹¡•ÍÑÍm¥‘át¥É•ÑÕÉ¸Ñ½…ÍĞ 	‡è«„…‰•ÉÑ¼œ¤íÍÑ…Ñ”¹¡•ÍÑÍm¥‘átõÑÉÕ”íÍÑ…Ñ”¹•µÌ¬ôĞÀíÍÑ…Ñ”¹•¹•Éäõ5…Ñ ¹µ¥¸¡ÍÑ…Ñ”¹µ…á¹•Éä±ÍÑ…Ñ”¹•¹•Éä¬Ğ¤í¥˜¡¥‘àôôõÍÑ…Ñ”¹Á…Ñ¡AÉ½É•ÍÌ¥ÍÑ…Ñ”¹Á…Ñ¡AÉ½É•ÍÌ¬¬íÍ…Ù” ¤íÑ½…ÍĞ 	‡è…‰•ÉÑ¼ƒ
+Ü€¬ĞÀÉ¥ÍÑ…¥Ìƒ
+Ü€¬Ğ•¹•É¥„œ¤íÉ•¹‘•É…µ•!½µ” ¥ô)±•ĞÅÕ¥­IÕ¸õ¹Õ±°ì)…Íå¹Œ™Õ¹Ñ¥½¸ÍÑ…ÉÑEÕ¥­1•ÍÍ½¸¡¥‘à¥í½¹ÍĞ±•ÍÍ½¹MÑ…ÉĞõÑåÁ•½˜Á•É™MÑ…ÉĞôôô™Õ¹Ñ¥½¸œıÁ•É™MÑ…ÉĞ ¤é¹Õ±°í¥˜¡¥‘àùÍÑ…Ñ”¹Á…Ñ¡AÉ½É•ÍÌ¥É•ÑÕÉ¸Ñ½…ÍĞ ½µÁ±•Ñ”¼µÉÕ±¼…¹Ñ•É¥½ÈÁÉ¥µ•¥É¼œ¤í½¹ÍĞ¹½‘”õ™±…ÑA…Ñ¡m¥‘átí¥˜ …¹½‘”¥É•ÑÕÉ¸í¥˜¡¹½‘”¹ÑåÁ”ôôô¡•ÍĞœ¥É•ÑÕÉ¸±…¥µA…Ñ¡¡•ÍĞ¡¥‘à¤í…İ…¥Ğ•¹ÍÕÉ•1•…É¹¥¹IÕ¹Ñ¥µ” ¤í…İ…¥Ğ•¹ÍÕÉ••…ÑÕÉ•IÕ¹Ñ¥µ” ±•ÍÍ½¸œ¤í¥˜¡ÍÑ…Ñ”¹É•µ•‘¥…Ñ¥½¸ü¹¥‘àôôõ¥‘à¥É•ÑÕÉ¸ÍÑ…ÉÑ5…ÍÑ•ÉåI•Á…¥È¡¥‘à¤í¥˜ ¡ÍÑ…Ñ”¹•¹•ÉåñğÀ¤ğôÀ¥í¼ ÁÉ…Ñ¥”œ¤íÑ½…ÍĞ ¹•É¥„Ù…é¥„ƒ
+ÜÁÉ…Ñ¥ÅÕ”Á…É„É•…ÉÉ•…È½ÔÕÍ”„1½©„œ¤íÉ•ÑÕÉ¹õ½¹ÍĞÁ…¬õ‰Õ¥±‘1•ÍÍ½¸¡¹½‘”±ÍÑ…Ñ”¤íÅÕ¥­IÕ¸õí¥‘à±¹½‘”±Á…¬±ÍÑ•ÀèÀ±½ÉÉ•ĞèÀ±…¹Íİ•É•èÀ±ÍÑÉ•…¬èÀ±áÀèÀ±Í•±•Ñ•é¹Õ±°±‰Õ¥±Ğémt±µ…Ñ¡•Ìémt±µ…Ñ¡A¥¬é¹Õ±°±¡•­•é™…±Í•ôí…İ…¥Ğ¼ ±•ÍÍ½¸œ¤íÉ•¹‘•ÉEÕ¥­á•É¥Í” ¤í¥˜¡±•ÍÍ½¹MÑ…ÉĞ„ôõ¹Õ±°˜™ÑåÁ•½˜Á•É™¹ôôô™Õ¹Ñ¥½¸œ¥Á•É™¹ ±•ÍÍ½¸é¥¹Ñ•É…Ñ¥Ù”œ±±•ÍÍ½¹MÑ…ÉĞ±íµ½‘”èÍÑ…¹‘…Éô¤íÕÁ‘…Ñ•5•ÑÉ¥Ì ¥ô)…Íå¹Œ™Õ¹Ñ¥½¸ÍÑ…ÉÑ5…ÍÑ•ÉåI•Á…¥È¡¥‘à¥í…İ…¥Ğ•¹ÍÕÉ•1•…É¹¥¹IÕ¹Ñ¥µ” ¤í…İ…¥Ğ•¹ÍÕÉ••…ÑÕÉ•IÕ¹Ñ¥µ” ±•ÍÍ½¸œ¤í¥˜¡¥‘à„ôõÍÑ…Ñ”¹Á…Ñ¡AÉ½É•ÍÌ¥É•ÑÕÉ¸Ñ½…ÍĞ <É•™½Ë¼Á•ÉÑ•¹”…¼»Ì…ÑÕ…°œ¤í½¹ÍĞ¹½‘”õ™±…ÑA…Ñ¡m¥‘átí¥˜ …¹½‘”¥É•ÑÕÉ¸í½¹ÍĞÁ…¬õ‰Õ¥±‘5…ÍÑ•ÉåI•µ•‘¥…Ñ¥½¸¡¹½‘”¤í¥˜ …Á…¬¹•á•É¥Í•Ì¹±•¹Ñ ¥É•ÑÕÉ¸Ñ½…ÍĞ M•´±…Õ¹…Ì½‰Í•ÉÛ…Ù•¥ÌÁ…É„É•™½Ë…È…½É„œ¤íÅÕ¥­IÕ¸õí¥‘à±¹½‘”±Á…¬±ÍÑ•ÀèÀ±½ÉÉ•ĞèÀ±…¹Íİ•É•èÀ±ÍÑÉ•…¬èÀ±áÀèÀ±Í•±•Ñ•é¹Õ±°±‰Õ¥±Ğémt±µ…Ñ¡•Ìémt±µ…Ñ¡A¥¬é¹Õ±°±¡•­•é™…±Í”±ÁÉ…Ñ¥•=¹±äéÑÉÕ”±µ…ÍÑ•ÉåI•Á…¥ÈéÑÉÕ•ôí¼ ±•ÍÍ½¸œ¤íÉ•¹‘•ÉEÕ¥­á•É¥Í” ¤íÕÁ‘…Ñ•5•ÑÉ¥Ì ¥ô)™Õ¹Ñ¥½¸ÕÁ‘…Ñ•…µ•MÑÉ•…¬ ¥í½¹ÍĞÑ½‘…äõÍ¡•±±1½…±…Ñ•-•ä ¤±±…ÍĞõÍÑ…Ñ”¹±…ÍÑMÑÕ‘å…Ñ”í¥˜¡±…ÍĞôôõÑ½‘…ä¥É•ÑÕÉ¸í¥˜¡±…ÍĞ¥í½¹ÍĞäõ¹•Ü…Ñ” ¤íä¹Í•Ñ…Ñ”¡ä¹•Ñ…Ñ” ¤´Ä¤í¥˜¡±…ÍĞôôõÍ¡•±±1½…±…Ñ•-•ä¡ä¤¥ÍÑ…Ñ”¹ÍÑÉ•…¬ô¡ÍÑ…Ñ”¹ÍÑÉ•…­ñğÀ¤¬Äí•±Í”¥˜ ¡ÍÑ…Ñ”¹ÍÑÉ•…­É••é•ñğÀ¤øÀ¥íÍÑ…Ñ”¹ÍÑÉ•…­É••é”´´íÍÑ…Ñ”¹ÍÑÉ•…¬ô¡ÍÑ…Ñ”¹ÍÑÉ•…­ñğÄ¤¬Åõ•±Í”ÍÑ…Ñ”¹ÍÑÉ•…¬ôÅõ•±Í”ÍÑ…Ñ”¹ÍÑÉ•…¬õ5…Ñ ¹µ…à Ä±ÍÑ…Ñ”¹ÍÑÉ•…­ñğÄ¤íÍÑ…Ñ”¹±…ÍÑMÑÕ‘å…Ñ”õÑ½‘…åô)™Õ¹Ñ¥½¸É•¹‘•É1•…Õ” ¥í½¹ÍĞ‰…Í”õml¥­¼œ°œÈ¸ĞàÀt±l-•¹©¤œ°œÈ¸ÄÌÀt±l5¥¹„œ°œÄ¸àØÀt±lIÕ¤œ°œÄ¸ĞÈÀt±lM½É„œ°œäàÀt±lµ¤œ°œÜÈÀt±lQ½µ¼œ°œÔÄÀut¹µ…À¡àôø¡í¹…µ”éálÁt±áÀé9Õµ‰•È¡álÅt¹É•Á±…” œ¸œ°œœ¤¤±‘•µ¼éÑÉÕ•ô¤¤í‰…Í”¹ÁÕÍ ¡í¹…µ”èY½¨œ±áÀéÍÑ…Ñ”¹±•…Õ•aÁñğÀ±å½ÔéÑÉÕ•ô¤í‰…Í”¹Í½ÉĞ ¡„±ˆ¤ôùˆ¹áÀµ„¹áÀ¤í½¹ÍĞÜõ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ±•…Õ•	½…Éœ¤í¥˜¡Ü¥Ü¹¥¹¹•É!Q50õ‰…Í”¹µ…À ¡à±¤¤ôù€ñ‘¥Ø±…ÍÌô‰±•…Õ”µÉ½Ü€‘íà¹å½Ôüå½Ôœèœôˆøñ‘¥Ø±…ÍÌô‰±•…Õ”µÉ…¹¬ˆø‘í¤¬Åôğ½‘¥Øøñ‘¥Ø±…ÍÌô‰±•…Õ”µÕÍ•Èˆøñˆø‘íà¹¹…µ•ôğ½ˆøñÍµ…±°ø‘íà¹å½ÔüÍ•ÔÁÉ½É•ÍÍ¼±½…°œè…Ù…Ñ…È‘•µ½¹ÍÑÉ…Ñ¥Ù¼ôğ½Íµ…±°øğ½‘¥Øøñ‘¥Ø±…ÍÌô‰±•…Õ”µáÀˆø‘íà¹áÀ¹Ñ½1½…±•MÑÉ¥¹œ ÁĞµ	Hœ¥ôa@ğ½‘¥Øøğ½‘¥Øù€¤¹©½¥¸ œœ¥ô)™Õ¹Ñ¥½¸É•¹‘•ÉM¡½À ¥íÕÁ‘…Ñ•5•ÑÉ¥Ì ¥ô)™Õ¹Ñ¥½¸‰Õå%Ñ•´¡ÑåÁ”¥í½¹ÍĞ½ÍÑÌõí™É••é”èÄÀÀ±•¹•ÉäèØÀ±‰½½ÍĞèÄàÁô±½ÍĞõ½ÍÑÍmÑåÁ•tí¥˜¡ÍÑ…Ñ”¹•µÌñ½ÍĞ¥É•ÑÕÉ¸Ñ½…ÍĞ É¥ÍÑ…¥Ì¥¹ÍÕ™¥¥•¹Ñ•Ìœ¤íÍÑ…Ñ”¹•µÌ´õ½ÍĞí¥˜¡ÑåÁ”ôôô™É••é”œ¥íÍÑ…Ñ”¹ÍÑÉ•…­É••é”ô¡ÍÑ…Ñ”¹ÍÑÉ•…­É••é•ñğÀ¤¬ÄíÑ½…ÍĞ µÕ±•Ñ¼•ÅÕ¥Á…‘¼œ¥õ¥˜¡ÑåÁ”ôôô•¹•Éäœ¥íÍÑ…Ñ”¹•¹•ÉäõÍÑ…Ñ”¹µ…á¹•ÉäíÑ½…ÍĞ ¹•É¥„É•…ÉÉ•…‘„œ¥õ¥˜¡ÑåÁ”ôôô‰½½ÍĞœ¥íÍÑ…Ñ”¹áÁ	½½ÍÑU¹Ñ¥°õ…Ñ”¹¹½Ü ¤¬ÄÔ¨ØÀ¨ÄÀÀÀíÑ½…ÍĞ œË\a@…Ñ¥Ù¼Á½È€ÄÔµ¥¸œ¥õÍ…Ù” ¥ô)±•Ğµ½¹UÁ‘…Ñ•]½É­•Èõ¹Õ±°±µ½¹I•±½…‘½ÉUÁ‘…Ñ”õ™…±Í”ì)™Õ¹Ñ¥½¸Í¡½İ5½¹UÁ‘…Ñ”¡İ½É­•È¥ì(µ½¹UÁ‘…Ñ•]½É­•Èõİ½É­•Èì(½¹ÍĞ‰…¹¹•Èõ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ÕÁ‘…Ñ•	…¹¹•Èœ¤ì(¥˜¡‰…¹¹•È¥‰…¹¹•È¹¡¥‘‘•¸õ™…±Í”ì)ô)™Õ¹Ñ¥½¸…ÁÁ±å5½¹UÁ‘…Ñ” ¥ì(¥˜ …µ½¹UÁ‘…Ñ•]½É­•È¥É•ÑÕÉ¸ì(¥˜¡‘½Õµ•¹Ğ¹ÅÕ•ÉåM•±•Ñ½È œ±•ÍÍ½¸¹…Ñ¥Ù”°Í•ÍÍ¥½¸¹…Ñ¥Ù”œ¤¥íÑ½…ÍĞ ½¹±Õ„„Í•ÍÏ¼…¹Ñ•Ì‘”…ÑÕ…±¥é…È¸œ¤íÉ•ÑÕÉ¹ô(¥˜ …Í…Ù” ¤¥É•ÑÕÉ¸ì(µ½¹I•±½…‘½ÉUÁ‘…Ñ”õÑÉÕ”ì(µ½¹UÁ‘…Ñ•]½É­•È¹Á½ÍÑ5•ÍÍ…”¡íÑåÁ”èM-%A}]%Q%9ô¤ì)ô)™Õ¹Ñ¥½¸İ…Ñ¡5½¹UÁ‘…Ñ”¡É•œ¥ì(¥˜¡É•œ¹İ…¥Ñ¥¹œ˜™¹…Ù¥…Ñ½È¹Í•ÉÙ¥•]½É­•È¹½¹ÑÉ½±±•È¥Í¡½İ5½¹UÁ‘…Ñ”¡É•œ¹İ…¥Ñ¥¹œ¤ì(É•œ¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ÕÁ‘…Ñ•™½Õ¹œ° ¤ôùì(€½¹ÍĞİ½É­•ÈõÉ•œ¹¥¹ÍÑ…±±¥¹œí¥˜ …İ½É­•È¥É•ÑÕÉ¸ì(€İ½É­•È¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ÍÑ…Ñ•¡…¹”œ° ¤ôùí¥˜¡İ½É­•È¹ÍÑ…Ñ”ôôô¥¹ÍÑ…±±•œ˜™¹…Ù¥…Ñ½È¹Í•ÉÙ¥•]½É­•È¹½¹ÑÉ½±±•È¥Í¡½İ5½¹UÁ‘…Ñ”¡İ½É­•È¥ô¤ì(ô¤ì)ô)¥˜ Í•ÉÙ¥•]½É­•Èœ¥¸¹…Ù¥…Ñ½È¥ì(¹…Ù¥…Ñ½È¹Í•ÉÙ¥•]½É­•È¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ½¹ÑÉ½±±•É¡…¹”œ° ¤ôùí¥˜¡µ½¹I•±½…‘½ÉUÁ‘…Ñ”¥İ¥¹‘½Ü¹±½…Ñ¥½¸¹É•±½… ¥ô¤ì(İ¥¹‘½Ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ±½…œ° ¤ôù¹…Ù¥…Ñ½È¹Í•ÉÙ¥•]½É­•È¹É•¥ÍÑ•È œ¸½ÍÜ¹©Ìœ¤¹Ñ¡•¸¡İ…Ñ¡5½¹UÁ‘…Ñ”¤¹…Ñ   ¤ôùíô¤¤ì)ô)™Õ¹Ñ¥½¸™¥¹¥Í¡=¹‰½…É‘¥¹œ¡µ½‘”¥ì(±½…±MÑ½É…”¹Í•Ñ%Ñ•´ µ½¸µ½¹‰½…É‘•œ°œÄœ¤ì(½¹ÍĞÍ¡•±°õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ½¹‰½…É‘¥¹M¡•±°œ¤í¥˜¡Í¡•±°¥Í¡•±°¹¡¥‘‘•¸õÑÉÕ”ì(¥˜¡µ½‘”ôôô‘¥…¹½ÍÑ¥Œœ¥ÍÑ…ÉÑ¥…¹½ÍÑ¥Œ ¤ì(•±Í”í¼ ¡½µ”œ¤íÍ•ÑQ¥µ•½ÕĞ  ¤ôùÉÕ¹)½ÕÉ¹•åAÉ¥µ…Éä ¤°ÄÈÀ¤íô)ô)™Õ¹Ñ¥½¸¥¹¥Ñ=¹‰½…É‘¥¹œ ¥ì(½¹ÍĞÍ¡•±°õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ½¹‰½…É‘¥¹M¡•±°œ¤ì(¥˜ …Í¡•±°¥É•ÑÕÉ¸ì(½¹ÍĞÍ••¸õ±½…±MÑ½É…”¹•Ñ%Ñ•´ µ½¸µ½¹‰½…É‘•œ¤ôôôœÄñğ¡ÍÑ…Ñ”¹Í•ÍÍ¥½¹ÍñğÀ¤øÁñğ¡ÍÑ…Ñ”¹™½Õ¹‘…Ñ¥½¹…åñğÄ¤øÄì(Í¡•±°¹¡¥‘‘•¸õÍ••¸ì)ô)™Õ¹Ñ¥½¸Ñ½±•Q½‘…åI•…Í½¸ ¥í½¹ÍĞÁ…¹•°õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% Ñ½‘…åI•…Í½¸œ¤±Ñ½±”õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% Ñ½‘…åI•…Í½¹Q½±”œ¤í¥˜ …Á…¹•±ñğ…Ñ½±”¥É•ÑÕÉ¸í½¹ÍĞ½Á•¸õÁ…¹•°¹±…ÍÍ1¥ÍĞ¹Ñ½±” ½Á•¸œ¤íÑ½±”¹Í•ÑÑÑÉ¥‰ÕÑ” …É¥„µ•áÁ…¹‘•œ±MÑÉ¥¹œ¡½Á•¸¤¥ô)½¹ÍĞÉ•…Í½¹Q½±”õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% Ñ½‘…åI•…Í½¹Q½±”œ¤ì)¥˜¡É•…Í½¹Q½±”¥É•…Í½¹Q½±”¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ±¥¬œ±Ñ½±•Q½‘…åI•…Í½¸¤ì)ÕÁ‘…Ñ•5•ÑÉ¥Ì ¤íÉ•¹‘•É…µ•!½µ” ¤í¥¹¥Ñ=¹‰½…É‘¥¹œ ¤ì)½¹ÍĞ¥¹¥Ñ¥…±I½ÕÑ”õÉ½ÕÑ•É½µ1½…Ñ¥½¸ ¤ì)¥˜¡¥¹¥Ñ¥…±I½ÕÑ”„ôô¡½µ”œ¥¼¡¥¹¥Ñ¥…±I½ÕÑ”±í¡¥ÍÑ½Éäé™…±Í•ô¤¹…Ñ   ¤ôùíô¤ì)•±Í”¡¥ÍÑ½Éä¹É•Á±…•MÑ…Ñ”¡íµ½¹Y¥•Üè¡½µ”ô°œœ±É½ÕÑ•UÉ° ¡½µ”œ¤¤ì)™½È¡½¹ÍĞ¹…µ”½˜l­…¹©¤œ°É•…‘¥¹œœ°µ¥ÍÍ¥½¹Ìœ°ÍÁ•…­¥¹œœ°ÕÉÉ¥Õ±Õ´œ°©½ÕÉ¹…°œ°Ù¥‘•½Ìœ°ÁÉ½¹Õ¹¥…Ñ¥½¸t¥ì(½¹ÍĞ¹…Øõ‘½Õµ•¹Ğ¹ÅÕ•ÉåM•±•Ñ½È¡m‘…Ñ„µÙ¥•Üôˆ‘í¹…µ•ô‰u€¤ì(¥˜¡¹…Ø¥¹…Ø¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È Á½¥¹Ñ•É½Ù•Èœ° ¤ôù•¹ÍÕÉ••…ÑÕÉ•IÕ¹Ñ¥µ”¡¹…µ”¤¹…Ñ   ¤ôùíô¤±íÁ…ÍÍ¥Ù”éÑÉÕ”±½¹”éÑÉÕ•ô¤ì)ô)½¹ÍĞ™½Õ¹‘…Ñ¥½¹9…Øõ‘½Õµ•¹Ğ¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µÙ¥•Üô‰™½Õ¹‘…Ñ¥½¸‰tœ¤ì)¥˜¡™½Õ¹‘…Ñ¥½¹9…Ø¥™½Õ¹‘…Ñ¥½¹9…Ø¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È Á½¥¹Ñ•É½Ù•Èœ° ¤ôù•¹ÍÕÉ••…ÑÕÉ•IÕ¹Ñ¥µ” ™½Õ¹‘…Ñ¥½¸œ¤¹…Ñ   ¤ôùíô¤±íÁ…ÍÍ¥Ù”éÑÉÕ”±½¹”éÑÉÕ•ô¤ì)½¹ÍĞÁ…Ñ¡]…É´õ‘½Õµ•¹Ğ¹•Ñ±•µ•¹Ñ	å% ±•…É¹¥¹A…Ñ œ¤ì)¥˜¡Á…Ñ¡]…É´¥Á…Ñ¡]…É´¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È Á½¥¹Ñ•É½Ù•Èœ±”ôùí¥˜¡”¹Ñ…É•Ğ¹±½Í•ÍĞ œ¹Á…Ñ µ¹½‘”¹ÕÉÉ•¹Ğœ¤¥•¹ÍÕÉ•1•…É¹¥¹IÕ¹Ñ¥µ” ¤¹…Ñ   ¤ôùíô¥ô±íÁ…ÍÍ¥Ù”éÑÉÕ•ô¤ì)¥˜¡±½…±MÑ½É…”¹•Ñ%Ñ•´ µ½¸µ±½Õµ±¥¹­•œ¥ññ±½…Ñ¥½¸¹Í•…É ¹¥¹±Õ‘•Ì ½‘”ôœ¤¥Í•ÑQ¥µ•½ÕĞ  ¤ôù•¹ÍÕÉ•½Õ¹ÑIÕ¹Ñ¥µ” ¤¹Ñ¡•¸¡µ½¹±½Õ‘	½½ÑÍÑÉ…À¤¹…Ñ   ¤ôùíô¤°ÔÀÀ¤
