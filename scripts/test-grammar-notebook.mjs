@@ -25,6 +25,7 @@ for(const file of [
   'data/grammar-pedagogy.js',
   'core/review-scheduler.js',
   'core/mastery-graph.js',
+  'core/learning-methods.js',
   'core/course-engine.js',
   'features/grammar-notebook.js'
 ])vm.runInContext(fs.readFileSync(file,'utf8'),ctx,{filename:file});
