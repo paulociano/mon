@@ -82,6 +82,8 @@ jobs:
         run: node scripts/test-japanese-learning-cycle.mjs
       - name: Foundation lesson variety
         run: node scripts/test-foundation-variety.mjs
+      - name: Foundation block introductions
+        run: node scripts/test-foundation-block-intros.mjs
       - name: Energy policy
         run: node scripts/test-energy-policy.mjs
       - name: Adaptive teaching mix
