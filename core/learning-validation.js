@@ -36,6 +36,16 @@ function retentionValidation(events=[]){
   return {id:w.id,label:w.label,value:validationPct(rows),samples:rows.length,status:validationEvidenceStatus(rows.length),minSpacingMs:w.minMs};
  });
 }
+function contrastRetentionValidation(learnerState={},now=Date.now()){
+ const rows=Object.values(learnerState.grammarConfusions||{}).filter(x=>Number(x.errors||0)>0);
+ const windows=VALIDATION_WINDOWS.map(w=>{
+  const eligible=rows.filter(x=>Number(x.lastErrorAt||0)>0&&now-Number(x.lastErrorAt)>=w.minMs);
+  const passed=eligible.filter(x=>!!x.retention?.[w.id]);
+  return {id:w.id,label:w.label,value:eligible.length?Math.round(passed.length/eligible.length*100):null,
+   samples:eligible.length,status:validationEvidenceStatus(eligible.length),retained:passed.length};
+ });
+ return {pairs:rows.length,retained:rows.filter(x=>!!x.retention?.d7).length,pending:rows.filter(x=>!x.retention?.d7).length,windows};
+}
 function hintDependenceValidation(events=[]){
  const rows=events.filter(x=>x.kind==='attempt'&&typeof x.ok==='boolean');
  const hinted=r=>Number(r.hintLevel||0)>0;
@@ -69,7 +79,7 @@ function recurrentErrorValidation(events=[]){
 }
 function learningValidationReport(state={},events=null,now=Date.now()){
  const rows=events||((typeof learningEvidenceState==='function'?learningEvidenceState().events:[])||[]);
- const retention=retentionValidation(rows),hints=hintDependenceValidation(rows),transfer=transferValidation(rows),autonomy=autonomyValidation(rows),errors=recurrentErrorValidation(rows);
+ const retention=retentionValidation(rows),contrastRetention=contrastRetentionValidation(state,now),hints=hintDependenceValidation(rows),transfer=transferValidation(rows),autonomy=autonomyValidation(rows),errors=recurrentErrorValidation(rows);
  const observed=[
   ...retention.map(x=>x.status==='observed'),
   hints.status==='observed',transfer.status==='observed',autonomy.status==='observed',errors.status==='observed'
@@ -77,6 +87,7 @@ function learningValidationReport(state={},events=null,now=Date.now()){
  return {
   generatedAt:now,
   retention,
+  contrastRetention,
   hintDependence:hints,
   transfer,
   autonomy,
