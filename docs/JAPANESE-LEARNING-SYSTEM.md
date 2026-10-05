@@ -124,6 +124,30 @@ Study Blocks, discovery, remediation e futuras superfícies de consulta devem le
 
 O arquivo `data/grammar-pedagogy.js` enriquece o catálogo em runtime e reaplica a hidratação quando novos chunks N4 são carregados. Essa operação é idempotente.
 
+## Remediation adaptativa · P3
+
+Quando uma resposta gramatical falha, o MON não repete a mesma pergunta às cegas. O erro é ligado ao conceito canônico por `_reviewType/_reviewKey`, preservando também a resposta escolhida.
+
+Fluxo:
+
+```text
+erro gramatical
+→ misconception evidence
+→ Study de reparo
+→ contraste + exemplos canônicos
+→ nova tentativa
+→ mistake recovery
+```
+
+A primeira falha usa modo `repair`, curto e específico. Se o mesmo padrão reaparece, o MON escala para `contrastive`, trazendo explicação mais completa e o boundary relevante. O Caderno de Erros preserva essa mesma sequência quando o item volta depois.
+
+Regras:
+- não criar uma segunda fonte de explicação;
+- remediation lê `mentalModel`, `contrast`, `examples` e `commonMistakes` do `grammarCatalog`;
+- retry assistido pode gerar evidência de mastery, mas não deve ser tratado como domínio independente;
+- um retry não injeta outro loop de remediation imediatamente;
+- erros não gramaticais continuam usando seus mecanismos próprios.
+
 ## Gramática
 
 A gramática é ensinada como função comunicativa.
