@@ -23,7 +23,7 @@ O produto é local-first e pode funcionar sem conta. Cloud é opcional e serve a
 | processamento externo de voz | médio | ação explícita + disclosure + sem áudio bruto no MON | manter disclosure por browser |
 | terceiros de vídeo/CDN | baixo/médio | carregamento parcial sob ação | validar necessidade e termos |
 | menores + perfilamento pedagógico | alto se aplicável | política protetiva, sem ads | decisão de idade + avaliação específica |
-| transferência internacional | médio/alto | inventário | confirmar região/mecanismo |
+| transferência internacional | médio/alto | projeto em `sa-east-1`; DPA e subprocessadores revisados | validar mecanismo contratual aplicável sob Res. CD/ANPD 19/2024 e transparência ao titular |
 
 ## Perfilamento/adaptação
 
@@ -36,6 +36,6 @@ Se menores forem admitidos, este fluxo deve ser reavaliado antes da produção s
 O desenho técnico apresenta bons controles de minimização e isolamento, mas a produção pública fica condicionada a:
 1. identificação do controlador e canais;
 2. exclusão completa da identidade;
-3. validação contratual/transferência internacional dos fornecedores;
+3. validação jurídica do mecanismo de transferência internacional e incorporação contratual necessária;
 4. decisão formal sobre menores;
 5. revisão jurídica dos documentos publicados.

@@ -12,7 +12,8 @@ const required=[
  'compliance/INCIDENT-RESPONSE.md',
  'compliance/LGPD-CONTROLS.md',
  'compliance/DPIA.md',
- 'compliance/RELEASE-GATES.md'
+ 'compliance/RELEASE-GATES.md',
+ 'compliance/SUPABASE-VENDOR-REVIEW.md'
 ];
 for(const file of required){
  if(!fs.existsSync(file))throw new Error('missing legal/compliance file: '+file);
