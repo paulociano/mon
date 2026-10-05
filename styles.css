@@ -422,9 +422,9 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 .view:not(.active){content-visibility:hidden}
 .learning-runtime-loading #practice::before{
   content:"Preparando prática adaptativa…";
-  display:block;margin:8px 0 18px;padding:12px 15px;border-radius:13px;
+  display:block;margin:8px 0 18px;padding:13px 15px;border-radius:15px;
   border:1px solid rgba(215,181,109,.14);background:rgba(215,181,109,.045);
-  color:#b7a786;font-size:8px;letter-spacing:.04em;
+  color:#b7a786;font-size:9px;letter-spacing:.04em;
 }
 .quick-main{contain:layout style}
 .match-grid,.quick-options,.word-bank{contain:layout style}
@@ -434,7 +434,7 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 @keyframes runtimePulse{50%{opacity:.55}}
 
 /* V16 · route loading feedback */
-.route-loader{position:fixed;top:0;left:0;right:0;height:3px;z-index:10000;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent,rgba(244,169,187,.9),rgba(230,77,61,.95),transparent);transform:translateX(-60%);transition:opacity .12s}
+.route-loader{position:fixed;top:0;left:0;right:0;height:4px;z-index:10000;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent,rgba(244,169,187,.9),rgba(230,77,61,.95),transparent);transform:translateX(-60%);transition:opacity .12s}
 .route-busy .route-loader{opacity:1;animation:routeLoad 1.05s ease-in-out infinite}
 .route-busy main{cursor:progress}
 @keyframes routeLoad{to{transform:translateX(60%)}}
@@ -466,7 +466,7 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 .kanji-atlas-hero>div{max-width:560px}.kanji-atlas-hero h3{font:500 38px/1.05 var(--display);margin:9px 0 10px;color:#fff}.kanji-atlas-hero p{max-width:470px;color:#c1c9d2;font-size:12px;line-height:1.6}
 @media(max-width:720px){.kanji-atlas-hero{min-height:250px;padding:28px 24px;background-position:58% center}.kanji-atlas-hero h3{font-size:28px}}
 
-.update-banner{position:fixed;right:18px;bottom:18px;z-index:32000;display:flex;align-items:center;gap:12px;max-width:min(420px,calc(100vw - 36px));padding:11px 12px 11px 15px;border:1px solid rgba(215,181,109,.24);border-radius:15px;background:#101b28;color:#dfe6ed;box-shadow:0 18px 55px rgba(0,0,0,.34);font-size:8px}
+.update-banner{position:fixed;right:18px;bottom:18px;z-index:32000;display:flex;align-items:center;gap:12px;max-width:min(420px,calc(100vw - 36px));padding:12px 13px 12px 15px;border:1px solid rgba(215,181,109,.24);border-radius:17px;background:#101b28;color:#dfe6ed;box-shadow:0 18px 55px rgba(0,0,0,.34);font-size:9px}
 .update-banner[hidden]{display:none}.update-banner button{border:0;border-radius:10px;padding:8px 10px;background:#d7b56d;color:#10151c;font-size:7px;font-weight:900;white-space:nowrap}
 .update-banner button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 @media(max-width:580px){.update-banner{left:12px;right:12px;bottom:76px;max-width:none;justify-content:space-between}}
@@ -488,5 +488,6 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 .onboarding-card p{color:#697582;font-size:10px;line-height:1.75;max-width:520px}
 .onboarding-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
 @media (max-width:680px){.onboarding-card{padding:25px}}
+
 
 

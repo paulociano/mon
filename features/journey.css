@@ -78,3 +78,35 @@
 .progress-evidence span{font-size:8px}.progress-evidence b{font-size:28px;margin:16px 0 7px}.progress-evidence small{font-size:9px;line-height:1.5}
 @media(max-width:1000px){#progress.view.active{grid-template-columns:1fr}#progress>.progress-capability-card,#progress>.progress-next-card{grid-column:1}.progress-evidence-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.progress-evidence,.progress-evidence[data-functional-mastery]{grid-column:auto}}
 @media(max-width:680px){.progress-capability-card{padding:22px}.progress-capability-card h3{font-size:26px}.progress-evidence-grid{grid-template-columns:1fr}.progress-evidence{min-height:0}#progress>.progress-next-card{padding:22px}}
+
+
+/* P8.4 · editorial Explore */
+#explore .hub-hero{padding:42px 44px;margin-bottom:30px}
+#explore .hub-groups{gap:30px}
+#explore .hub-groups>section{display:grid;grid-template-columns:210px minmax(0,1fr);gap:18px;align-items:start;padding:22px 0;border-top:1px solid rgba(10,22,38,.08)}
+#explore .hub-groups>section:first-child{border-top:0;padding-top:0}
+#explore .hub-group-head{display:block;position:sticky;top:92px;margin:0;padding-top:4px}
+#explore .hub-group-head span{display:block;font-size:24px;line-height:1.05}
+#explore .hub-group-head small{display:block;margin-top:8px;font-size:10px;line-height:1.5;max-width:150px}
+#explore .hub-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+#explore .hub-card{grid-column:span 2;min-height:180px;padding:22px;border-radius:22px}
+#explore .hub-card:nth-child(1){grid-column:span 4;min-height:220px;background:#172334;color:#fff}
+#explore .hub-card:nth-child(1) span{color:#fff}#explore .hub-card:nth-child(1) small{color:#aeb8c4}
+#explore .hub-card b{font-size:30px;margin-bottom:24px}#explore .hub-card span{font-size:18px}#explore .hub-card small{font-size:10px;line-height:1.6}
+#explore .hub-card.muted{opacity:.76}
+@media(max-width:1000px){#explore .hub-groups>section{grid-template-columns:1fr}.hub-group-head{position:static!important}#explore .hub-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#explore .hub-card,#explore .hub-card:nth-child(1){grid-column:auto;min-height:180px}}
+@media(max-width:680px){#explore .hub-hero{padding:30px 24px}#explore .hub-grid{grid-template-columns:1fr}#explore .hub-card,#explore .hub-card:nth-child(1){min-height:0;padding:20px}}
+
+
+/* P8.4 · semantic motion for capability surfaces */
+@media(prefers-reduced-motion:no-preference){
+ #journey.view.active .journey-stage.current{animation:capabilityArrive .34s cubic-bezier(.2,.78,.2,1) both}
+ #explore.view.active .hub-card{animation:catalogArrive .28s ease both}
+ #explore.view.active .hub-card:nth-child(2){animation-delay:.03s}
+ #explore.view.active .hub-card:nth-child(3){animation-delay:.06s}
+ #progress.view.active .progress-capability-card{animation:capabilityArrive .34s cubic-bezier(.2,.78,.2,1) both}
+ .progress-evidence i em{transition:width .42s cubic-bezier(.2,.75,.2,1)}
+}
+@keyframes capabilityArrive{from{opacity:.72;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes catalogArrive{from{opacity:.74;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#journey .journey-stage,#explore .hub-card,#progress .progress-capability-card{animation:none!important}.progress-evidence i em{transition:none}}

@@ -254,12 +254,13 @@ Definir budgets de latência somente depois de coletar baseline real em navegado
 
 **P8.3 · Practice, Progress & Missions:** o Practice Hub passa a priorizar decisão e reparo, o Progresso vira um mapa hierárquico de capacidades e evidências, e a Mission UI assume linguagem visual de conversa, com interlocutor e respostas ocupando lados distintos da cena.
 
+**P8.4 · Explore, system states & semantic motion:** Explorar deixa de ser uma grade homogênea e passa a organizar recursos por território e importância; estados de carregamento/atualização recebem tratamento visual mais consistente; motion é limitado a orientação, feedback e progresso, com fallback explícito para reduced motion.
+
 Próximas superfícies:
-1. Explorar com menos grade uniforme;
-2. Listening Lab;
-3. Kanji Lab;
-4. refinamento de estados vazios/loading/sucesso;
-5. motion semântico para avanço, reparo e domínio.
+1. Listening Lab;
+2. Kanji Lab;
+3. estados vazios e sucesso específicos por feature;
+4. revisão visual publicada em dispositivos reais.
 
 Regras:
 - uma ação principal por superfície;
