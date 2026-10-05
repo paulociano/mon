@@ -84,6 +84,26 @@ Toda unidade estruturada N5/N4 deve produzir um `japaneseLearningContract` com:
 
 A Fundação Zero usa o mesmo princípio. Dias 1–12 ensinam forma + som + expressão funcional antes do teste; dias 13–24 acrescentam gramática explícita.
 
+## Introduções de bloco e atlas de referência
+
+A Fundação Zero não deve cobrar um sistema novo antes de mostrar seu mapa. Nas transições principais, a primeira tela é um `study` não avaliado com `mode: block-intro`.
+
+Marcos atuais:
+- dia 1: mapa completo do hiragana básico;
+- dia 6: dakuten, handakuten e yōon;
+- dia 8: mapa completo do katakana básico;
+- dia 13: mapa da gramática-base e partículas;
+- dia 17: famílias verbais e formas essenciais;
+- dia 22: números, contadores e autonomia funcional.
+
+A sequência obrigatória nessas fronteiras é:
+
+```text
+Block Intro → Study do dia → prática
+```
+
+O atlas persistente da Fundação mantém hiragana, katakana, partículas, formas verbais e contadores disponíveis para consulta. O atlas é referência, não substituto de recuperação ativa.
+
 ## Study Block
 
 O Study Block não é avaliado e não gasta Energia.

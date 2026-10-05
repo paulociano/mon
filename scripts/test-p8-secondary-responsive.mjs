@@ -19,6 +19,12 @@ try{
   await page.addInitScript(()=>localStorage.setItem('mon-onboarded','1'));
   await page.goto(base,{waitUntil:'networkidle'});
 
+  await page.evaluate(async()=>await go('foundation'));
+  await page.waitForSelector('#foundation.active',{state:'visible'});
+  await page.waitForSelector('#foundationReferenceAtlas details',{state:'visible'});
+  await noOverflow(page,v.name+' foundation');
+  await target(page,'#foundationReferenceAtlas summary',v.name+' foundation atlas');
+
   await page.evaluate(async()=>await go('journal'));
   await page.waitForSelector('#journal.active',{state:'visible'});
   await page.waitForSelector('#journalContent',{state:'visible'});

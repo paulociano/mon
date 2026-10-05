@@ -172,3 +172,44 @@ function foundationStudyBlock(day){
     sources:day<=12?['Irodori','Meu Amigo Kanji']:['Irodori','Desvendando']
   };
 }
+
+function foundationBlockIntro(day){
+  const rows=a=>a.map(x=>x[0]).join(' · ');
+  const intros={
+    1:{title:'Antes de praticar · mapa completo do Hiragana',mentalModel:'Primeiro veja o sistema inteiro. Você não precisa memorizar 46 formas agora; precisa saber qual território vai percorrer.',explanation:'Hiragana é a base fonética usada em terminações gramaticais, partículas e muitas palavras. O bloco começa com o mapa completo das 46 formas básicas para que cada exercício tenha endereço dentro de um sistema, não pareça um símbolo aleatório.',examples:[
+      {jp:rows(kanaCourse.hira.basic.slice(0,15)),pt:'vogais + linhas K/S',note:'46 formas básicas no total; depois entram dakuten e combinações.'},
+      {jp:rows(kanaCourse.hira.basic.slice(15,30)),pt:'linhas T/N/H',note:'Leia por mora, não por letras portuguesas.'},
+      {jp:rows(kanaCourse.hira.basic.slice(30)),pt:'linhas M/Y/R/W + ん',note:'ん fecha o mapa básico e ocupa sua própria mora.'}
+    ],contrast:'O mapa completo é referência, não prova. A prática vai automatizar pequenos grupos e reencontrá-los com espaçamento.',realWorldUse:'Ler terminações, partículas, placas simples e palavras nativas.',referenceLabel:'Atlas Hiragana · 46 formas'},
+    6:{title:'Antes do próximo bloco · sons derivados e combinações',mentalModel:'Você já conhece a malha básica; agora aprende como marcas pequenas transformam sons conhecidos.',explanation:'Dakuten, handakuten e ゃゅょ pequenos não criam um segundo alfabeto. Eles modificam famílias que você já viu. Ver o conjunto antes da prática reduz a sensação de símbolos novos desconectados.',examples:[
+      {jp:rows(kanaCourse.hira.voiced.slice(0,10)),pt:'dakuten',note:'か→が, さ→ざ e famílias relacionadas.'},
+      {jp:rows(kanaCourse.hira.voiced.slice(-5)),pt:'handakuten',note:'は→ぱ cria a série P.'},
+      {jp:rows(kanaCourse.hira.yoon.slice(0,9)),pt:'yōon',note:'ゃゅょ pequenos formam uma mora combinada.'}
+    ],contrast:'きや e きゃ não são a mesma sequência rítmica.',realWorldUse:'Decodificar palavras reais sem depender de romaji.',referenceLabel:'Atlas de sons derivados'},
+    8:{title:'Antes de praticar · mapa completo do Katakana',mentalModel:'Katakana não é outro conjunto de sons: é outra roupa gráfica para quase a mesma malha sonora.',explanation:'Katakana aparece muito em nomes estrangeiros, marcas, cardápios, tecnologia e palavras emprestadas. Veja primeiro as 46 formas básicas completas e use o paralelismo com hiragana para reduzir carga de memória.',examples:[
+      {jp:rows(kanaCourse.kata.basic.slice(0,15)),pt:'vogais + linhas K/S',note:'Mesmos sons básicos, formas diferentes.'},
+      {jp:rows(kanaCourse.kata.basic.slice(15,30)),pt:'linhas T/N/H',note:'Observe especialmente シ・ツ.'},
+      {jp:rows(kanaCourse.kata.basic.slice(30)),pt:'linhas M/Y/R/W + ン',note:'Observe especialmente ソ・ン.'}
+    ],contrast:'Katakana não substitui hiragana; cada sistema tem funções recorrentes próprias.',realWorldUse:'Menus, nomes, lojas, estações, produtos e empréstimos.',referenceLabel:'Atlas Katakana · 46 formas'},
+    13:{title:'Antes de praticar · mapa da gramática-base',mentalModel:'Gramática japonesa funciona melhor como mapa de funções: tópico, foco, objeto, destino, palco da ação e predicado.',explanation:'Antes de resolver exercícios isolados, veja as peças que vão organizar as próximas sessões. Partículas não são traduções fixas e o verbo costuma fechar a oração. O objetivo do bloco é aprender a escolher a estrutura pela função comunicativa.',examples:[
+      {jp:'A は B です',pt:'apresentar / identificar',note:'は organiza o tópico; です fecha a informação polida.'},
+      {jp:'N を Vます',pt:'agir sobre um objeto',note:'を marca aquilo que recebe a ação.'},
+      {jp:'場所に行きます / 場所で食べます',pt:'destino × palco da ação',note:'に e で dependem da função do lugar.'}
+    ],contrast:'Não traduza partícula por partícula. Pergunte primeiro qual papel cada bloco exerce.',realWorldUse:'Apresentar-se, pedir, deslocar-se, localizar ações e compreender frases básicas.',referenceLabel:'Atlas de gramática · fundamentos'},
+    17:{title:'Antes do bloco verbal · como ações mudam de forma',mentalModel:'O verbo é o motor da oração. Em vez de decorar frases novas, aprenda famílias de transformação.',explanation:'Este bloco conecta forma polida, negativa, passada e forma て. As terminações mudam tempo, polaridade e conexão, enquanto os outros blocos da frase podem permanecer estáveis.',examples:[
+      {jp:'食べます → 食べません',pt:'afirmação → negação',note:'Muda o final, não a frase inteira.'},
+      {jp:'行きます → 行きました',pt:'não-passado → passado',note:'A terminação concentra a marca temporal.'},
+      {jp:'待つ → 待ってください',pt:'forma て + pedido',note:'A forma て conecta o verbo ao que vem depois.'}
+    ],contrast:'ます não é “presente” e て não é “passado”; cada forma participa de funções diferentes.',realWorldUse:'Rotina, agenda, pedidos, instruções e relatos.',referenceLabel:'Atlas verbal · formas essenciais'},
+    22:{title:'Antes do bloco final · números, existência e autonomia',mentalModel:'Agora você combina leitura, gramática e quantidade para resolver tarefas, não apenas frases de laboratório.',explanation:'O bloco final da Fundação junta números, horários, contadores, existência e estratégias de reparo. É uma ponte para o N5 funcional: entender o suficiente, perguntar quando necessário e completar uma tarefa.',examples:[
+      {jp:'七時です。',pt:'São sete horas.',note:'Horário é uma aplicação direta de números.'},
+      {jp:'三人です。',pt:'São três pessoas.',note:'Contadores mudam a forma de contar conforme a categoria.'},
+      {jp:'千円です。',pt:'São mil ienes.',note:'Preço conecta número a uma necessidade real.'}
+    ],contrast:'Saber contar de 1 a 10 não basta; o japonês usa contadores e leituras contextuais.',realWorldUse:'Horários, compras, pessoas, pedidos e serviços.',referenceLabel:'Atlas funcional · números e autonomia'}
+  };
+  const x=intros[day];return x?{type:'study',mode:'block-intro',...x,
+    canDo:['reconhecer as partes do novo bloco','localizar uma forma no mapa completo','explicar o que será praticado antes de responder'],
+    situation:`Transição da Fundação Zero · dia ${day}: veja o mapa do próximo sistema antes de praticar suas partes.`,
+    sources:day<13?['Irodori','Meu Amigo Kanji']:['Irodori','Desvendando']
+  }:null;
+}
