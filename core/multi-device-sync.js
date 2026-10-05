@@ -78,7 +78,7 @@ async function renderCloudAccountPanel(){
  if(typeof ensureMonPrivacyControls==='function')ensureMonPrivacyControls();
  if(!panel)return;
  if(!monCloudAvailable()&&typeof monEnsureCloudConfig==='function'){try{await monEnsureCloudConfig()}catch{}}
- if(!monCloudAvailable()){panel.innerHTML='<b>Conta MON</b><br>Sync indisponível. Progresso salvo neste navegador.';return}
+ if(!monCloudAvailable()){panel.innerHTML='<b>Conta MON</b><br>Sync indisponível. Progresso local salvo.';return}
  try{
   const session=await monCloudSession();
   if(!session){
@@ -91,7 +91,7 @@ async function renderCloudAccountPanel(){
   const result=await monCloudReconcile();
   if(badge)badge.textContent=result.status==='conflict'?'conflito de progresso':monLocalSyncDirty()?'envio pendente':'conta sincronizada';
   if(result.status==='conflict'){
-   panel.innerHTML='<b>Conflito de progresso</b><br>Dispositivo e nuvem mudaram. Escolha qual versão manter; há backup local.<div class="user-actions"><button class="user-save" onclick="resolveMonCloudConflict(\'local\')">usar este dispositivo</button><button class="user-secondary" onclick="resolveMonCloudConflict(\'cloud\')">usar nuvem</button></div>';
+   panel.innerHTML='<b>Conflito de progresso</b><br>Dispositivo e nuvem mudaram. Escolha qual versão manter.<div class="user-actions"><button class="user-save" onclick="resolveMonCloudConflict(\'local\')">usar este dispositivo</button><button class="user-secondary" onclick="resolveMonCloudConflict(\'cloud\')">usar nuvem</button></div>';
    return;
   }
   const account=loadMonAccount(),syncText=account.lastSyncedAt?'último sync '+new Date(account.lastSyncedAt).toLocaleString():'sync pronto';
