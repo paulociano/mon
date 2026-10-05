@@ -68,10 +68,24 @@ Result: **PASS — signup/login/client push**
 
 The following still require real browser-session checks or a destructive test:
 
-- persisted browser session after explicit reload;
-- real client pull after reload/second device;
+- real client pull on a second device;
 - real two-account cross-access denial through browser sessions;
 - cloud-data deletion through the UI;
 - `delete-account` invocation with a real user JWT;
 - browser-side sign-out/local cleanup;
 - post-operation log review.
+
+
+## Session persistence and legacy-account cleanup
+
+Observed after the new email/password account was created:
+
+- the user explicitly reloaded the production MON page and remained authenticated;
+- session persistence across reload therefore passed;
+- the earlier historical Auth identity was then deleted with explicit user approval;
+- readback after deletion showed exactly one Auth identity remaining;
+- readback showed exactly one `mon_user_state` row remaining;
+- the remaining row belongs to the current account and retained revision 2;
+- the historical cloud row disappeared through the existing cascade.
+
+Result: **PASS — session persistence and legacy-account cleanup**
