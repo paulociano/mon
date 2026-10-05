@@ -70,8 +70,9 @@ ctx.vocab=vocab;
 assert.deepEqual(Array.from(vm.runInContext("grammarRemediationSequence(vocab,{chosen:'x'})",ctx)),[],'non-grammar errors should not enter grammar remediation');
 
 const source=fs.readFileSync('features/lesson.js','utf8');
-assert.ok(source.includes('grammarRemediationSequence'),'lesson runtime must inject targeted grammar remediation');
+assert.ok(source.includes('queueGrammarRepair'),'lesson runtime must inject targeted grammar remediation');
 assert.ok(source.includes('mistake=recordMistake'),'lesson must pass fresh mistake evidence into remediation');
-assert.ok(source.includes("!e._grammarRepair"),'grammar retry must not recursively inject endless repair loops');
+const core=fs.readFileSync('core/mistakes.js','utf8');
+assert.ok(core.includes('if(exercise._grammarRepair)return'),'grammar retry must not recursively inject endless repair loops');
 
 console.log('MON adaptive grammar remediation contracts passed');
