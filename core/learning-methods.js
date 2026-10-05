@@ -247,10 +247,10 @@ function japaneseLearningContract(unit={}){
   };
 }
 function grammarEvidenceScore(id,learnerState={}){
-  const cells=learnerState.masteryEvidence?.['grammar:P:'+id]||{};
-  const rows=['recognize','recall','transfer','produce'].map(d=>cells[d]).filter(x=>Number.isFinite(x?.score));
-  if(!rows.length)return null;
-  return Math.round(rows.reduce((n,x)=>n+x.score,0)/rows.length);
+  const cells=learnerState.masteryEvidence?.['grammar:P:'+id]||{},dims=['recognize','mechanism','contrast','transfer','produce'];
+  const observed=dims.some(d=>Number.isFinite(cells[d]?.score));if(!observed)return null;
+  const scores=dims.map(d=>Number.isFinite(cells[d]?.score)?cells[d].score:0);
+  return Math.round(scores.reduce((n,x)=>n+x,0)/scores.length);
 }
 function adaptStudyForLearner(contract={},learnerState={}){
   const study=contract.study;if(!study)return null;
