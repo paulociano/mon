@@ -1,0 +1,18 @@
+import fs from'node:fs';import vm from'node:vm';import assert from'node:assert/strict';
+const state={foundationComplete:true,day:30,masteryEvidence:{'grammar:P:locationNi':{contrast:{attempts:2,score:42}},'grammar:P:deAction':{contrast:{attempts:2,score:48}}},reviewItems:{},mistakeStats:{},grammarConfusions:{},methodStats:{},functionalMastery:{}};
+const ctx=vm.createContext({state,console,Object,Set,Map,Number,String,Math,Array,Date});
+for(const f of['data/content-packs-n5.js','data/content-packs-n4.js','data/content-packs-n4-61-70.js','data/content-packs-n4-71-80.js','data/content-packs-n4-81-90.js','data/grammar-pedagogy.js','core/learning-evidence.js','core/review-scheduler.js','core/mistakes.js','core/mastery-graph.js','core/learning-methods.js','core/course-engine.js'])vm.runInContext(fs.readFileSync(f,'utf8'),ctx,{filename:f});
+assert.ok(Array.from(vm.runInContext("grammarContrastPartners('locationNi')",ctx)).includes('deAction'));
+assert.ok(Array.from(vm.runInContext("grammarContrastPartners('deAction')",ctx)).includes('locationNi'));
+assert.equal(vm.runInContext("grammarContrastPartner('locationNi',state)",ctx),'deAction');
+ctx.e=vm.runInContext("grammarContrastExercise('locationNi','deAction')",ctx);
+assert.equal(ctx.e._masteryDimension,'contrast');assert.equal(ctx.e.answer,vm.runInContext("grammarCatalog.locationNi.form",ctx));assert.equal(Array.from(ctx.e.options).length,2);
+vm.runInContext("recordMasteryEvidence(e,false,{})",ctx);vm.runInContext("recordMasteryEvidence(e,false,{})",ctx);
+let x=vm.runInContext("grammarContrastConfusion('locationNi','deAction')",ctx);assert.equal(x.errors,2);
+vm.runInContext("recordMasteryEvidence(e,true,{})",ctx);x=vm.runInContext("grammarContrastConfusion('locationNi','deAction')",ctx);assert.equal(x.recoveries,1);
+assert.equal(vm.runInContext("grammarContrastQueue(3)[0].b",ctx),'deAction');
+ctx.u=vm.runInContext("coursePacks.N5.units.find(x=>x.id==='n5-station')",ctx);assert.ok(vm.runInContext("compileMONMethod(u,'contrast',0)._contrastPair",ctx));
+state.reviewItems['grammar:P:locationNi']={type:'grammar',key:'P:locationNi',due:0,reps:1,interval:1,ease:2.3,lapses:2};assert.ok(vm.runInContext("scheduledReviewExercise(state.reviewItems['grammar:P:locationNi'])._contrastPair",ctx));
+ctx.clean={foundationComplete:true,day:1,masteryEvidence:{},reviewItems:{},mistakeStats:{},grammarConfusions:{}};assert.equal(vm.runInContext("grammarContrastPartner('reasonKara',clean)",ctx),null);
+assert.ok(vm.runInContext("grammarCatalog.locationNi.contrastWith.includes('deAction')",ctx));
+console.log('MON contrastive grammar interleaving contracts passed');
