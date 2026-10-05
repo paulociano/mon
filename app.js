@@ -105,7 +105,7 @@ function loadRuntimeStyle(href){
    link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>{link.remove();reject(new Error('Falha ao carregar '+href))};document.head.appendChild(link);
  });
 }
-const FEATURE_RUNTIME_STYLES={auth:['./features/auth.css'],journey:['./features/journey.css'],explore:['./features/journey.css'],progress:['./features/journey.css'],user:['./features/user.css'],foundation:['./features/foundation.css'],lesson:['./features/lesson.css','./features/beginner-scaffolding.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
+const FEATURE_RUNTIME_STYLES={auth:['./features/auth.css'],journey:['./features/journey.css'],explore:['./features/journey.css'],progress:['./features/journey.css'],user:['./features/user.css'],foundation:['./features/reading-support.css','./features/foundation.css'],lesson:['./features/reading-support.css','./features/lesson.css','./features/beginner-scaffolding.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/reading-support.css','./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
 async function ensureLearningRuntime(){
  const level=contentPackLevelForDay();
  await ensureContentPack(level);
