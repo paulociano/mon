@@ -1,0 +1,10 @@
+function authPageMarkup(){
+ return '<section id="auth" class="view"><div class="auth-shell"><div class="auth-brand"><img src="./assets/brand/mon-lockup.svg" alt="MON 門 Japanese OS"><span>Conta MON</span></div><div class="auth-card"><span class="eyebrow">Acesso · 入門</span><h1>Entre no seu caminho.</h1><p>Use sua conta MON para sincronizar progresso entre dispositivos.</p><label><span>E-mail</span><input id="authEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><label><span>Senha</span><input id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="mínimo 8 caracteres"></label><div class="auth-actions"><button class="auth-primary" onclick="signInMonCloud()">entrar</button><button class="auth-secondary" onclick="signUpMonCloud()">criar conta</button></div><div id="authStatus" class="auth-status" role="status" aria-live="polite"></div><small>Ao criar uma conta, seu progresso local continua preservado e pode ser sincronizado após o acesso.</small></div></div></section>';
+}
+function ensureAuthPage(){let view=document.getElementById('auth');if(view)return view;document.querySelector('.content')?.insertAdjacentHTML('afterbegin',authPageMarkup());return document.getElementById('auth')}
+function setAuthStatus(message=''){const el=document.getElementById('authStatus');if(el)el.textContent=message}
+async function renderAuthPage(){
+ ensureAuthPage();setAuthStatus('');
+ try{const session=await monCloudSession();if(session){await go('home',{replace:true});return}}catch{}
+ document.getElementById('authEmail')?.focus({preventScroll:true});
+}
