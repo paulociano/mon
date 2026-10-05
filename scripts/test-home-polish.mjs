@@ -8,17 +8,17 @@ const css=fs.readFileSync('styles.css','utf8');
 for(const token of ['current-unit','done-unit','locked-unit','unit-progress','unit-status','node-type','aria-current="step"']){
   assert.ok(app.includes(token),'missing path rendering token '+token);
 }
-for(const token of ['rail-card-label','guideMascot','guideStateLabel','kitsu-art','assets/brand/kitsu-mascot.webp','journey-mini','journeyStageMini','journeyCapabilityMini','todayReason']){
+for(const token of ['rail-card-label','guideVisual','guideStateLabel','guide-orbit','guide-glyph','journey-mini','journeyStageMini','journeyCapabilityMini','todayReason']){
   assert.ok(html.includes(token),'missing rail markup '+token);
 }
-for(const token of ['.path-node.checkpoint::after','.guide-card[data-state="checkpoint"]','.guide-card[data-state="review"]','.guide-mascot[data-mood="repair"]','.guide-mascot[data-mood="transfer"]','.home-reveal.is-visible']){
+for(const token of ['.path-node.checkpoint::after','.guide-card[data-state="checkpoint"]','.guide-card[data-state="review"]','.guide-visual[data-mood="repair"]','.guide-visual[data-mood="transfer"]','.home-reveal.is-visible']){
   assert.ok(css.includes(token),'missing visual state '+token);
 }
 assert.ok(app.includes("prefers-reduced-motion"),'motion must respect reduced-motion preference');
-for(const token of ['guideMascotState','renderGuideMascot',"'repair','mistake'","'review','recover'","decision?.kind==='story'","decision?.node?.type==='checkpoint'"]){
-  assert.ok(app.includes(token),'missing adaptive mascot contract '+token);
+for(const token of ['guideVisualState','renderGuideVisual',"'repair','mistake'","'review','recover'","decision?.kind==='story'","decision?.node?.type==='checkpoint'"]){
+  assert.ok(app.includes(token),'missing adaptive guide visual contract '+token);
 }
 assert.ok(app.includes("!['repair','review','recover','mistake','story'].includes(adaptive?.kind)"),'story coach copy must not be overwritten by generic path guidance');
-assert.ok(css.includes('@media(prefers-reduced-motion:reduce){.guide-mascot{animation:none}.kitsu-art{transition:none}'),'mascot asset must respect reduced motion');
-assert.ok(html.includes('width="160" height="160" decoding="async"'),'Kitsu asset needs intrinsic dimensions and async decoding');
+assert.ok(css.includes('@media(prefers-reduced-motion:reduce){.guide-visual::before,.guide-orbit{animation:none}'),'guide effect must respect reduced motion');
+assert.ok(!html.includes('kitsu-mascot.webp'),'legacy mascot asset must not render');
 console.log('MON home polish contracts passed');

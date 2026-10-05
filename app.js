@@ -316,17 +316,17 @@ function runAdaptiveHomeAction(action){
  if(action==='chest')return claimPathChest(idx);
  return startQuickLesson(idx);
 }
-function guideMascotState(decision){
+function guideVisualState(decision){
  if(['repair','mistake'].includes(decision?.kind))return 'repair';
  if(['review','recover'].includes(decision?.kind))return 'review';
  if(decision?.kind==='story')return 'transfer';
  if(decision?.node?.type==='checkpoint')return 'checkpoint';
  return 'learn';
 }
-function renderGuideMascot(decision){
- const mood=guideMascotState(decision),guide=document.querySelector('.guide-card'),mascot=document.getElementById('guideMascot'),label=document.getElementById('guideStateLabel');
+function renderGuideVisual(decision){
+ const mood=guideVisualState(decision),guide=document.querySelector('.guide-card'),visual=document.getElementById('guideVisual'),label=document.getElementById('guideStateLabel');
  if(guide)guide.dataset.state=mood==='transfer'?'story':mood;
- if(mascot)mascot.dataset.mood=mood;
+ if(visual)visual.dataset.mood=mood;
  if(label)label.textContent=({learn:'aprender',review:'revisar',repair:'reparar',transfer:'transferir',checkpoint:'checkpoint'})[mood]||'agora';
  return mood;
 }
@@ -396,7 +396,7 @@ function renderGameHome(){
    el('guideTitle',repair?'Fortaleça a aresta fraca.':g.type==='checkpoint'?'Prepare-se para provar domínio.':g.type==='story'?'Leia para integrar o que aprendeu.':g.day<=12?'Automatize o kana.':g.day<=24?'Monte frases, não traduções.':'Use japonês em contexto.');
    el('guideCopy',repair?'Você concluiu a atividade, mas o Mastery Graph ainda encontrou uma habilidade crítica instável. O reforço é curto, direcionado e não consome Energia.':g.type==='checkpoint'?'O checkpoint mistura competências da unidade. Ele não mede velocidade, mede se você consegue recuperar e transferir sem pista.':g.type==='story'?'Histórias conectam vocabulário e gramática em contexto contínuo. Leia primeiro pelo sentido geral, depois volte aos detalhes.':g.day<=12?'Leia, ouça e recupere a forma. O romaji some conforme seu cérebro para de precisar dele.':g.day<=24?'Partículas mostram o papel dos blocos. Espere o predicado antes de fechar o sentido.':'Agora o curso mistura kana, gramática, kanji, áudio e situações reais no mesmo circuito.');
  }
- renderGuideMascot(adaptive);
+ renderGuideVisual(adaptive);
  queueHomePolish();
 }
 function queueHomePolish(){
