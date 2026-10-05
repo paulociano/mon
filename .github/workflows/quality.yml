@@ -195,6 +195,8 @@ jobs:
           exit 1
       - name: Browser smoke
         run: node scripts/test-browser-smoke.mjs
+      - name: Beginner first-win onboarding
+        run: node scripts/test-beginner-first-win.mjs
       - name: Reliability and accessibility browser checks
         run: node scripts/test-reliability-browser.mjs
       - name: Latency baseline
