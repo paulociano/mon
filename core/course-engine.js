@@ -146,8 +146,15 @@ function scheduledReviewExercise(item){
   return null;
 }
 function scheduledReviewExercises(limit=6){
-  if(typeof getReviewQueue!=='function')return [];
   const seen=new Set(),out=[];
+  if(typeof grammarContrastRetentionQueue==='function'){
+    for(const q of grammarContrastRetentionQueue(limit)){
+      const e=grammarContrastRetentionExercise(q.a,q.b);if(!e)continue;
+      const key='retention:'+q.id+':'+q.stage;if(seen.has(key))continue;seen.add(key);out.push(e);
+      if(out.length>=limit)return out;
+    }
+  }
+  if(typeof getReviewQueue!=='function')return out;
   for(const item of getReviewQueue(limit*3)){
     const e=scheduledReviewExercise(item);if(!e)continue;
     const key=e._reviewType+':'+e._reviewKey;if(seen.has(key))continue;seen.add(key);out.push(e);
