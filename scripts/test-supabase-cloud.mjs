@@ -1,8 +1,12 @@
 import fs from 'node:fs';import assert from 'node:assert/strict';
 const adapter=fs.readFileSync('core/supabase-sync.js','utf8'),config=fs.readFileSync('config/cloud.js','utf8'),sql=fs.readFileSync('supabase/schema.sql','utf8'),app=fs.readFileSync('app.js','utf8');
-for(const token of ['monCloudConfigured','getMonSupabase','monCloudSignIn','monCloudSignOut','monCloudPush','monCloudPull','monSyncConflict'])assert.ok(adapter.includes(token),'missing Supabase adapter '+token);
+for(const token of ['monCloudConfigured','getMonSupabase','monCloudSignOut','monCloudPush','monCloudPull','monSyncConflict'])assert.ok(adapter.includes(token),'missing Supabase adapter '+token);
 assert.ok(adapter.includes('persistSession:true'),'browser auth session must persist');
-assert.ok(adapter.includes('signInWithOtp'),'Conta MON must use passwordless email auth');
+const authAdapter=fs.readFileSync('features/account-auth.js','utf8');
+assert.ok(authAdapter.includes('signUp({email,password'),'Conta MON must support email/password signup');
+assert.ok(authAdapter.includes('signInWithPassword({email,password}'),'Conta MON must support direct email/password login');
+assert.ok(authAdapter.includes('updateUser({password})'),'connected users must be able to set a password');
+assert.ok(!adapter.includes('signInWithOtp')&&!authAdapter.includes('signInWithOtp'),'magic link must not remain the primary MON login flow');
 assert.ok(!config.toLowerCase().includes('service_role'),'service role key must never appear in browser config');
 assert.ok(config.includes('mon-supabase-publishable-key'),'browser config must support deploy-time publishable-key injection');
 assert.ok(config.includes('MON_CLOUD_RUNTIME_CONFIG'),'browser config must support runtime override without committing a key');
@@ -29,5 +33,5 @@ const multi=fs.readFileSync('core/multi-device-sync.js','utf8');
 assert.ok(multi.includes("identity.textContent=session.user.email||'usuário'"),'account identity must render through textContent');
 assert.ok(!multi.includes('escapeHtml('),'account UI must not depend on an unloaded global escapeHtml helper');
 
-const userUi=fs.readFileSync('features/user.js','utf8');
-for(const token of ['monOtpCooldownUntil','e?.status===429','Aguarde 60 segundos'])assert.ok(userUi.includes(token),'OTP rate-limit UX missing '+token);
+const authUi=fs.readFileSync('features/account-auth.js','utf8');
+for(const token of ['signUpMonCloud','signInMonCloud','setMonCloudPassword','pelo menos 8 caracteres'])assert.ok(authUi.includes(token),'email/password account UX missing '+token);
