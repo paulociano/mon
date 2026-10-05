@@ -84,8 +84,12 @@ function quickCheck(){
    if(e._remediation)markMistakeRecovered(e);
    else if(e._reviewType&&e._reviewKey)gradeReview(e._reviewType,e._reviewKey,'good');
  }else{
-   recordMistake(e,{node:quickRun.idx,chosen});
+   const mistake=recordMistake(e,{node:quickRun.idx,chosen});
    if(e._reviewType&&e._reviewKey&&e._reviewType!=='error')gradeReview(e._reviewType,e._reviewKey,'hard');
+   if(!e._grammarRepair&&typeof grammarRemediationSequence==='function'){
+     const repair=grammarRemediationSequence(e,{chosen,mistake});
+     if(repair.length)quickRun.pack.exercises.splice(quickRun.step+1,0,...repair);
+   }
  }
  if(e.method&&typeof recordMethodOutcome==='function')recordMethodOutcome(e,ok,{hintUsed:!!quickRun.hintUsed});
  if(typeof recordMasteryEvidence==='function')recordMasteryEvidence(e,ok,{hintUsed:!!quickRun.hintUsed});
