@@ -74,6 +74,13 @@ function firstScenarioVocab(unit){
   return unitVocab(unit,0);
 }
 
+function grammarContrastCourseDay(s=state){return s.foundationComplete?24+Math.max(1,Number(s.day||1)):Math.max(1,Number(s.foundationDay||1))}
+function grammarContrastFirstDay(id){const d=(typeof grammarAllUnits==='function'?grammarAllUnits():[]).filter(u=>(u.grammar||[]).includes(id)).map(u=>Number(u.day||999));return d.length?Math.min(...d):999}
+function grammarContrastSeen(id,s=state){const c='grammar:P:'+id;return !!s.masteryEvidence?.[c]||!!s.reviewItems?.['grammar:P:'+id]||Object.values(s.mistakeStats||{}).some(x=>x.concept===c)||grammarContrastFirstDay(id)<=grammarContrastCourseDay(s)}
+function grammarContrastScore(id,s=state){return Number(s.masteryEvidence?.['grammar:P:'+id]?.contrast?.score||0)}
+function grammarContrastPartner(id,s=state){const rows=(typeof grammarContrastPartners==='function'?grammarContrastPartners(id):[]).filter(x=>grammarCatalog?.[x]&&grammarContrastSeen(x,s));if(!rows.length)return null;return rows.map(partner=>{const q=typeof grammarContrastConfusion==='function'?grammarContrastConfusion(id,partner,s):{priority:0,open:0};return {partner,score:q.open*200+q.priority+(100-grammarContrastScore(id,s))+(100-grammarContrastScore(partner,s))}}).sort((a,b)=>b.score-a.score)[0].partner}
+function grammarContrastExercise(id,partner){const g=grammarCatalog?.[id],r=grammarCatalog?.[partner];if(!g||!r)return null;return {type:'choice',prompt:`Qual estrutura resolve melhor esta intenção: ${g.function}?`,jp:g.form,options:methodShuffle([g.form,r.form]),answer:g.form,why:`${g.form}: ${g.function}. ${r.form}: ${r.function}. ${g.contrast}`,bridge:'Escolha pela função e pelo contraste, não pela tradução.',_reviewType:'grammar',_reviewKey:'P:'+id,_masteryDimension:'contrast',_contrastPair:[id,partner],method:'contrast'}}
+
 function compileMONMethod(unit,method,index=0){
   const s=unitScenario(unit),v=unitVocab(unit,index),g=unitGrammar(unit,index);
   if(method==='discover'&&g.item){
