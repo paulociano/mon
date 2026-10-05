@@ -37,7 +37,26 @@ try{
   assert.match(await page.locator('.session-card').innerText(),/Primeira vitória/i);
   assert.match(await page.locator('.session-card').innerText(),/quatro coisas/i);
 
-  console.log('MON beginner first-win onboarding passed');
+  await page.evaluate(async()=>{
+    state.foundationSessions=1;
+    state.foundationDay=2;
+    state.pathProgress=1;
+    state.foundationComplete=false;
+    save();
+    await go('home');
+  });
+  await page.waitForSelector('#home.active',{state:'visible'});
+  assert.match(await page.locator('#homeAdaptiveTitle').innerText(),/o que ficou/i,'first return should explain the memory goal');
+  assert.match(await page.locator('#homeAdaptiveCopy').innerText(),/retomando som e kana/i);
+  assert.match(await page.locator('#homeAdaptivePrimary').innerText(),/o que eu lembro/i);
+  await page.locator('#homeAdaptivePrimary').click();
+  await page.waitForSelector('#session.active',{state:'visible'});
+  const returnRun=await page.evaluate(()=>({mode:sessionRun?.mode,day:sessionRun?.foundationDay,firstWin:sessionRun?.firstWin}));
+  assert.equal(returnRun.mode,'foundation');
+  assert.equal(returnRun.day,2,'first return must continue with Foundation session 2');
+  assert.equal(returnRun.firstWin,false,'first-return session should use the normal Foundation cycle');
+
+  console.log('MON beginner first-win and return loop passed');
 }finally{
   await browser.close();
 }
