@@ -3,3 +3,4 @@
 @media(max-width:760px){.user-grid{grid-template-columns:1fr}.user-hero{align-items:flex-start}.user-local-badge{display:none}.user-stats{grid-template-columns:repeat(3,1fr)}}
 .user-card>p,.user-data-note,.user-field span{font-size:14px}.user-field input,.user-field select,.user-actions button{font-size:16px;min-height:44px}.user-actions button:disabled{opacity:.65;cursor:wait}.user-local-badge{font-size:12px}@media(max-width:760px){.user-hero{flex-wrap:wrap}.user-local-badge{display:block}}
 .user-card>p,.user-data-note{color:#52606f}.user-stat span{color:#6d5438;font-size:12px}.user-hero p{font-size:14px;line-height:1.5}
+.user-field input[type="password"]{letter-spacing:.03em}
