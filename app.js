@@ -170,7 +170,7 @@ async function go(id,options={}){
    else if(id==='pronunciation'&&typeof renderPronunciation==='function')renderPronunciation();
    if(options.history!==false)commitRouteUrl(id,options.replace===true);
    keepActiveNavVisible(id);
-   const activeView=document.getElementById(id);if(activeView){activeView.setAttribute('tabindex','-1');activeView.focus({preventScroll:true})}
+   const activeView=document.getElementById(id);if(activeView&&id!=='auth'){activeView.setAttribute('tabindex','-1');activeView.focus({preventScroll:true})}
    window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
    if(viewStart!==null&&typeof perfEnd==='function')perfEnd('view:'+id,viewStart);
  }catch(err){
