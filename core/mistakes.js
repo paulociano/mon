@@ -106,4 +106,9 @@ function grammarRemediationSequence(exercise={},context={}){
     bridge:`Agora aplique ${grammarCatalog?.[study._grammarId]?.form||'a estrutura'} sem escolher pela tradução.`};
   return [study,retry];
 }
+function queueGrammarRepair(run,exercise,chosen,mistake){
+  if(exercise._grammarRepair)return;
+  const repair=grammarRemediationSequence(exercise,{chosen,mistake});
+  if(repair.length)run.pack.exercises.splice(run.step+1,0,...repair);
+}
 
