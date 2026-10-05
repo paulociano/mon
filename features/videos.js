@@ -30,7 +30,7 @@ function renderVideos(){
  const host=document.getElementById('videoGrid');if(!host)return;
  const rows=videoFilter==='all'?MON_VIDEOS:MON_VIDEOS.filter(v=>v.cat===videoFilter);
  host.innerHTML=rows.map(v=>`<button class="video-card" onclick="openVideo('${v.id}')" aria-label="Assistir ${v.title}">
-   <div class="video-thumb"><img loading="lazy" decoding="async" src="https://i.ytimg.com/vi/${v.yt}/hqdefault.jpg" alt=""><span class="video-play">▶</span><em>${v.jp}</em></div>
+   <div class="video-thumb"><span class="video-poster" aria-hidden="true">${v.jp}</span><span class="video-play">▶</span><em>${v.jp}</em></div>
    <div class="video-body"><div class="video-meta"><span>${v.tag} · ${v.level}</span><small>externo · internet</small></div><h3>${v.title}</h3><p>${v.desc}</p><strong>${v.source}</strong></div>
  </button>`).join('');
 }
@@ -42,7 +42,7 @@ function openVideo(id){
  document.getElementById('videoModalTitle').textContent=v.title;document.getElementById('videoModalCopy').textContent=v.desc;
  if(external)external.href='https://www.youtube.com/watch?v='+encodeURIComponent(v.yt);
  if(practice){practice.textContent=(v.cat==='listen'||v.cat==='speak')?'praticar sem vídeo →':'aplicar sem vídeo →';practice.onclick=()=>startVideoPractice(id)}
- stage.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${v.yt}?autoplay=1&rel=0" title="${v.title}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+ stage.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${v.yt}?autoplay=0&rel=0" title="${v.title}" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
  modal.hidden=false;modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('video-open');document.getElementById('videoClose')?.focus();
 }
 function startVideoPractice(id){

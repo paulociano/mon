@@ -11,3 +11,4 @@ body.auth-route .content{padding:0;max-width:none}
 .auth-status{min-height:20px;margin-top:14px;color:#d6c397;font-size:11px;line-height:1.5}.auth-card small{display:block;margin-top:12px;color:#6f7d8c;font-size:9px;line-height:1.5}
 
 .auth-legal{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}.auth-legal a{color:#c9b37f;font:600 10px/1.4 var(--ui);text-underline-offset:3px}.auth-legal-note{margin-top:6px!important;color:#667789!important}
+.auth-minor-note{margin-top:12px!important;padding:10px 12px;border-radius:10px;background:rgba(215,181,109,.07);color:#a9b3bd!important;line-height:1.55!important}

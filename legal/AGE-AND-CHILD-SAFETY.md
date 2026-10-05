@@ -37,5 +37,27 @@ Executar:
 - restrição etária: **nenhuma**;
 - publicidade comportamental para menores: **não permitida no baseline**;
 - social graph/mensagens/perfil público: **não existentes no baseline**;
-- avaliação específica de menores: **pendente**;
+- baseline técnico protetivo: **implementado e testado**;
+- avaliação jurídica/regulatória específica de menores: **pendente**;
 - revisão jurídica: **pendente**.
+
+
+## Baseline técnico protetivo — 5 de outubro de 2026
+
+Controles implementados de forma universal, sem precisar identificar a idade do usuário:
+
+- cadastro sem coleta de data de nascimento, escola, endereço ou localização;
+- aviso simples para crianças/adolescentes e responsáveis na superfície de autenticação;
+- ausência de publicidade comportamental;
+- ausência de social graph, mensagens entre usuários e perfil público;
+- microfone apenas após ação explícita;
+- ausência de captura por `getUserMedia` ou gravação por `MediaRecorder`;
+- áudio bruto não persistido pelo MON;
+- texto reconhecido por voz exibido de forma transitória e não salvo/sincronizado;
+- migração que remove texto de transcrição legado do estado quando o laboratório de pronúncia é carregado;
+- grade de vídeos sem thumbnails remotos;
+- player externo criado somente após clique;
+- YouTube `youtube-nocookie` sem autoplay;
+- exclusão de dados cloud e exclusão integral da Conta MON disponíveis ao usuário.
+
+Esses controles reduzem coleta e contato com terceiros por padrão. Eles não substituem revisão jurídica, avaliação de melhor interesse, análise de aferição de idade ou responsabilidades de responsáveis legais.
