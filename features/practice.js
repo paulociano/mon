@@ -56,4 +56,5 @@ function renderPracticeCoach(){
  const r=practiceRecommendation();
  host.className='practice-coach '+r.tone;
  host.innerHTML=`<div class="practice-coach-mark" aria-hidden="true">復</div><div><span class="eyebrow">${r.eyebrow}</span><h3>${r.title}</h3><p>${r.copy}</p></div><button class="primary" onclick="${r.action}">${r.cta}</button>`;
+ if(typeof renderGrammarNotebook==='function')renderGrammarNotebook();
 }
