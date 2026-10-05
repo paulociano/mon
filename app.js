@@ -115,7 +115,7 @@ async function go(id,options={}){
  const viewStart=typeof perfStart==='function'?perfStart('view:'+id):null;
  const busyTimer=setTimeout(()=>{if(requestId===routeRequestId)setRouteBusy(true,'Abrindo '+(viewNames[id]||id))},90);
  try{
-   if(id==='user'){ensureUserArea();await ensureAccountRuntime();}
+   if(id==='user'){await ensureAccountRuntime();ensureUserArea();}
    if(['journey','explore','progress','user'].includes(id))await ensureFeatureRuntime(id);
    if(id==='foundation')await ensureFeatureRuntime('foundation');
    if(id==='curriculum')await ensureFeatureRuntime('curriculum');
