@@ -31,7 +31,6 @@ O navegador pode armazenar localmente:
 - evidências de domínio e retenção;
 - progresso de missões e journal;
 - uso de recursos de kanji, listening e pronúncia;
-- transcrições de reconhecimento de voz quando o usuário usa essa função;
 - timestamps e metadados necessários a backup, recovery e sincronização.
 
 Esses dados ficam no armazenamento local do navegador até serem apagados pelo usuário, pelo próprio navegador ou pelo fluxo de reset/exclusão do produto.
@@ -52,14 +51,15 @@ O MON usa `SpeechRecognition` / `webkitSpeechRecognition` quando disponível.
 O MON:
 - somente inicia reconhecimento após ação explícita do usuário;
 - não usa essa funcionalidade para gravar ou persistir áudio bruto;
-- recebe a transcrição retornada pelo navegador;
-- pode armazenar localmente ou sincronizar a frase-alvo, texto reconhecido, correspondência textual aproximada, timestamp e autoavaliação.
+- recebe a transcrição retornada pelo navegador e a exibe apenas durante a tentativa;
+- não persiste nem sincroniza o texto reconhecido;
+- pode armazenar a frase-alvo, a correspondência textual aproximada, timestamp e autoavaliação para continuidade pedagógica.
 
 O processamento de voz pode depender do navegador, sistema operacional ou fornecedor da plataforma. Portanto, o MON não afirma que o áudio permanece sempre no dispositivo.
 
 ### 3.4 Conteúdo de terceiros
 
-Quando o usuário abre um vídeo externo, o navegador pode comunicar-se com o serviço de vídeo. O MON utiliza incorporação com `youtube-nocookie.com` para os vídeos configurados atualmente e carrega o player apenas após ação do usuário. O terceiro poderá tratar dados técnicos de conexão conforme seus próprios termos.
+A grade de vídeos do MON não carrega thumbnails remotos. Somente após ação do usuário ao abrir um vídeo o navegador pode comunicar-se com o serviço de vídeo. O MON utiliza incorporação com `youtube-nocookie.com`, sem autoplay, para os vídeos configurados atualmente. O terceiro poderá tratar dados técnicos de conexão conforme seus próprios termos.
 
 ## 4. Finalidades
 
@@ -151,6 +151,9 @@ Essa decisão não encerra o gate de proteção de menores. Antes da abertura p�
 Enquanto esse gate permanecer aberto:
 - não usar dados de menores para publicidade direcionada;
 - manter configurações relevantes de privacidade protetivas por padrão;
+- não exigir data de nascimento, escola, endereço ou localização para criar a Conta MON;
+- não persistir texto de transcrição de voz no estado local/cloud;
+- não carregar thumbnails ou players de vídeo de terceiros antes da ação do usuário;
 - não converter sinais pedagógicos em avaliação psicológica, de saúde ou de elegibilidade;
 - não adicionar social graph, mensagens entre usuários ou publicação pública de perfil sem nova análise.
 
