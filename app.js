@@ -174,7 +174,7 @@ window.addEventListener('popstate',()=>go(routeFromLocation(),{history:false}));
 const MON_PROFILE_KEY='mon-profile';
 function loadLocalProfile(){try{return {...{name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'},...JSON.parse(localStorage.getItem(MON_PROFILE_KEY)||'{}')}}catch(e){return {name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'}}}
 function saveLocalProfile(p){localStorage.setItem(MON_PROFILE_KEY,JSON.stringify(p));localStorage.setItem('mon-sync-dirty-at',1)}
-function showProfileSummary(){ensureUserArea();go('user')}
+function showProfileSummary(){return go('user')}
 function currentPlan(){const d=Number(state.day||1);if(d<=30)return{level:'N5',displayLevel:'N5',phase:'n5',localDay:d,total:30,label:'sobrevivência',start:1};if(d<=54)return{level:'N4',displayLevel:'PONTE',phase:'bridge',localDay:d-30,total:24,label:'consolidação N5 → N4',start:31};if(d<=90)return{level:'N4',displayLevel:'N4',phase:'n4',localDay:d-54,total:36,label:'autonomia',start:55};return{level:'N3',displayLevel:'N3',phase:'n3',localDay:Math.min(90,d-90),total:90,label:'integração',start:91}}
 const JOURNEY_STAGES=[
  {name:'Abrir o portão',title:'Reconhecer sons e começar a ler.',copy:'Som, ritmo, kana e primeiras frases funcionais.'},
