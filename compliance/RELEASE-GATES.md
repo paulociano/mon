@@ -10,7 +10,8 @@ A Conta MON não deve ser aberta ao público enquanto qualquer gate P0 permanece
 - [ ] definir e testar e-mail de privacidade/titular (mantido em branco por decisão atual);
 - [ ] revisão jurídica dos Termos e Política de Privacidade;
 - [x] decidir política de idade: sem restrição etária;
-- [ ] concluir salvaguardas, avaliação específica e revisão para uso por crianças e adolescentes;
+- [x] implementar baseline técnico protetivo universal para uso provável por crianças e adolescentes;
+- [ ] concluir avaliação de melhor interesse, aferição de idade/responsáveis e revisão jurídica específica para menores;
 - [x] implementar exclusão completa da identidade de autenticação por backend/Edge Function no repositório;
 - [x] deployar a Edge Function `delete-account` no projeto Supabase MON (`sa-east-1`);
 - [x] disponibilizar a publishable key ao frontend por runtime público controlado (`public-config`), sem expor secret/service-role;
@@ -25,12 +26,12 @@ A Conta MON não deve ser aberta ao público enquanto qualquer gate P0 permanece
 - [ ] validar juridicamente o mecanismo contratual de transferência internacional aplicável sob a Resolução CD/ANPD nº 19/2024;
 - [x] confirmar GitHub Pages como hosting de produção (`https://paulociano.github.io/mon/`);
 - [ ] confirmar política concreta de logs/retention do hosting/CDN;
-- [ ] publicar links visíveis para Termos e Privacidade na superfície de conta.
+- [x] publicar links visíveis para Termos e Privacidade na autenticação e superfície de conta.
 
 ## P1
 
 - [ ] validar necessidade de jsDelivr em runtime ou empacotar SDK;
-- [ ] revisar comportamento de thumbnails/player do YouTube;
+- [x] revisar e endurecer thumbnails/player do YouTube: sem thumbnail remoto pré-clique, `youtube-nocookie`, sem autoplay;
 - [ ] definir procedimento operacional de incidentes e owner;
 - [ ] definir prazos concretos de logs/backups;
 - [ ] testar fluxo de exportação + exclusão cloud ponta a ponta.
