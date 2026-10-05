@@ -1,3 +1,18 @@
+const MON_AUTH_RESET_MARKER='mon-auth-reset-password-v1';
+function resetLegacyMonAuthClientOnce(){
+ try{
+  if(localStorage.getItem(MON_AUTH_RESET_MARKER)==='1')return false;
+  const exact=['mon-account','mon-cloud-linked','mon-cloud-conflict-last','mon-sync-dirty-at','sb-gpmobddlexssivfxzzjw-auth-token'];
+  exact.forEach(k=>localStorage.removeItem(k));
+  for(const store of [localStorage,sessionStorage]){
+   for(let i=store.length-1;i>=0;i--){const k=store.key(i)||'';if(k.startsWith('sb-gpmobddlexssivfxzzjw-'))store.removeItem(k)}
+  }
+  localStorage.setItem(MON_AUTH_RESET_MARKER,'1');
+  if('caches'in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('mon-japanese-os-')).map(k=>caches.delete(k)))).catch(()=>{});
+  return true;
+ }catch{return false}
+}
+resetLegacyMonAuthClientOnce();
 const viewNames={home:'Hoje',journey:'Jornada',practice:'Praticar',explore:'Explorar',progress:'Progresso',user:'Minha área',lesson:'Lição',league:'Liga',shop:'Loja',foundation:'Kana & gramática',session:'Sessão longa',curriculum:'Mapa acadêmico',kanji:'Kanji Atlas',missions:'Missões',reading:'Histórias',speaking:'Conversação',culture:'Cultura',writing:'Escrita',journal:'Diário no Japão',videos:'Vídeos',pronunciation:'Pronúncia'};
 let currentKanji=0;
 function shellLocalDateKey(date=new Date()){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')}
