@@ -49,15 +49,29 @@ Result: **PASS**
 
 ## Still unverified
 
-The following require a real authenticated browser session and remain open:
+## Real production Auth follow-up
 
-- magic-link email delivery and redirect;
-- persisted browser session;
-- real client push/pull;
-- real two-account interaction through Supabase Auth;
+A subsequent real production test verified:
+
+- email/password account creation;
+- email confirmation;
+- successful password sign-in;
+- creation of a matching `mon_user_state` row;
+- client-driven cloud revision reaching 2;
+- a cloud update occurring after the recorded login.
+
+At that point the project contained two real Auth identities and two cloud-state rows: one historical account and one newly created account. No email address or token is recorded here.
+
+Result: **PASS — signup/login/client push**
+
+## Still unverified
+
+The following still require real browser-session checks or a destructive test:
+
+- persisted browser session after explicit reload;
+- real client pull after reload/second device;
+- real two-account cross-access denial through browser sessions;
 - cloud-data deletion through the UI;
 - `delete-account` invocation with a real user JWT;
 - browser-side sign-out/local cleanup;
 - post-operation log review.
-
-No real Auth users existed in the project at the time of this test.
