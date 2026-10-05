@@ -60,3 +60,13 @@
  .ka-library.open{padding:14px}.ka-status-filters{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:380px){.ka-options{grid-template-columns:1fr}.ka-stepper button{min-width:105px}}
+
+
+/* P8.5 · Kanji Lab final hierarchy and states */
+.ka-focus{padding:30px;border-radius:28px;box-shadow:0 24px 64px rgba(0,0,0,.16)}.ka-glyph-card{min-height:245px}.ka-glyph{font-size:102px}
+.ka-focus-copy h1{font-size:42px}.ka-focus-copy>p{font-size:12px}.ka-word{padding:15px;border-radius:16px}.ka-word>b{font-size:25px}.ka-word span{font-size:11px}
+.ka-next,.ka-study,.ka-context{box-shadow:0 14px 38px rgba(20,31,47,.05)}.ka-challenge,.ka-writing{padding:28px}
+.km-feedback{margin-top:16px;padding:14px 16px;border-radius:14px;background:#f6f7f8;color:#6e7985;font-size:10px;line-height:1.55;border:1px solid #e8ebee}
+.km-feedback[data-state="success"]{background:#eef8f4;border-color:#cfe9dd;color:#3e765f}.km-feedback[data-state="error"]{background:#fbf1ef;border-color:#efd8d3;color:#8d554d}
+.km-feedback b{display:block;margin-bottom:3px;color:inherit}
+@media(max-width:650px){.ka-focus{padding:20px}.ka-glyph{font-size:82px}.ka-focus-copy h1{font-size:34px}.ka-challenge,.ka-writing{padding:20px}}

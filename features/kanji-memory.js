@@ -21,10 +21,10 @@ function renderKanjiMemoryLab(){
 }
 function setKanjiLabMode(mode){kanjiLabMode=mode;const s=kanjiLabState();s.modes[mode]=(s.modes[mode]||0)+1;save();renderKanjiMemoryLab()}
 function recordKanjiLab(ok,mode){const s=kanjiLabState();s.attempts++;if(ok)s.correct++;s.last={k:kanjiData[currentKanji].k,mode,ok,at:Date.now()};save();gradeKanji(kanjiData[currentKanji].k,ok?'good':'hard',true)}
-function answerKanjiMeaning(k){const x=kanjiData[currentKanji],ok=k===x.k;recordKanjiLab(ok,'meaning');document.getElementById('kanjiLabFeedback').innerHTML=ok?`<b>Correto.</b> Agora escreva ${x.k} sem guia.`:`<b>Não ainda.</b> Compare ${k} com ${x.k} e tente desenhar ${x.k} de memória.`}
-function answerKanjiReading(r){const x=kanjiData[currentKanji],ex=x.ex[0],ok=r===ex[1];recordKanjiLab(ok,'reading');document.getElementById('kanjiLabFeedback').innerHTML=ok?`<b>Correto.</b> ${ex[0]} → ${ex[1]} · ${ex[2]}`:`<b>Tente novamente.</b> Recupere a leitura dentro da palavra ${ex[0]}.`}
+function answerKanjiMeaning(k){const x=kanjiData[currentKanji],ok=k===x.k;recordKanjiLab(ok,'meaning');const f=document.getElementById('kanjiLabFeedback');f.dataset.state=ok?'success':'error';f.innerHTML=ok?`<b>Correto.</b> Agora escreva ${x.k} sem guia.`:`<b>Não ainda.</b> Compare ${k} com ${x.k} e tente desenhar ${x.k} de memória.`}
+function answerKanjiReading(r){const x=kanjiData[currentKanji],ex=x.ex[0],ok=r===ex[1];recordKanjiLab(ok,'reading');const f=document.getElementById('kanjiLabFeedback');f.dataset.state=ok?'success':'error';f.innerHTML=ok?`<b>Correto.</b> ${ex[0]} → ${ex[1]} · ${ex[2]}`:`<b>Tente novamente.</b> Recupere a leitura dentro da palavra ${ex[0]}.`}
 function startKanjiContrast(){const x=kanjiData[currentKanji],m=kanjiMemoryMeta(x.k),opts=[...new Set([x.k,...(m.contrast||[])])].slice(0,3);document.getElementById('kanjiLabChallenge').innerHTML=`<div class="km-contrast-test"><span>toque no caractere “${x.m}”</span><div>${opts.map(k=>`<button onclick="answerKanjiContrast('${k}')"><b lang="ja">${k}</b></button>`).join('')}</div></div>`}
-function answerKanjiContrast(k){const x=kanjiData[currentKanji],ok=k===x.k;recordKanjiLab(ok,'contrast');document.getElementById('kanjiLabChallenge').innerHTML=`<div class="km-feedback">${ok?'Boa discriminação.':'Observe a estrutura e tente novamente.'}</div>`}
+function answerKanjiContrast(k){const x=kanjiData[currentKanji],ok=k===x.k;recordKanjiLab(ok,'contrast');document.getElementById('kanjiLabChallenge').innerHTML=`<div class="km-feedback" data-state="${ok?'success':'error'}">${ok?'Boa discriminação.':'Observe a estrutura e tente novamente.'}</div>`}
 kanjiLabState();
 
 // UI orchestration lives in features/kanji.js; this file provides memory exercise engines.
