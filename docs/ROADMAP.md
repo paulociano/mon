@@ -256,11 +256,9 @@ Definir budgets de latência somente depois de coletar baseline real em navegado
 
 **P8.4 · Explore, system states & semantic motion:** Explorar deixa de ser uma grade homogênea e passa a organizar recursos por território e importância; estados de carregamento/atualização recebem tratamento visual mais consistente; motion é limitado a orientação, feedback e progresso, com fallback explícito para reduced motion.
 
-Próximas superfícies:
-1. Listening Lab;
-2. Kanji Lab;
-3. estados vazios e sucesso específicos por feature;
-4. revisão visual publicada em dispositivos reais.
+**P8.5 · Labs & feedback states:** Listening/Pronunciation e Kanji recebem a mesma hierarquia editorial das superfícies centrais. Estados de sucesso e erro deixam de depender apenas de texto e ganham sinal visual explícito, sem transformar correspondência de voz em avaliação fonética.
+
+**Status da P8:** linguagem visual principal concluída. Próxima etapa é validação visual publicada em dispositivos reais e correções residuais, não outro redesign amplo.
 
 Regras:
 - uma ação principal por superfície;
