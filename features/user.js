@@ -5,20 +5,39 @@ function userAreaMarkup(){
 function ensureUserArea(){let view=document.getElementById('user');if(view)return view;view=document.createElement('section');view.id='user';view.className='view';view.innerHTML=userAreaMarkup();document.querySelector('.content')?.appendChild(view);return view}
 function renderUserArea(){
  ensureUserArea();const profile=loadLocalProfile(),p=currentPlan(),stage=JOURNEY_STAGES[journeyStageIndex()],pct=Math.round(journeyStageProgress()*100);
- const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};set('userNameHero',profile.name);set('userLevel',(p.displayLevel||p.level)+' · dia '+p.localDay+'/'+p.total);set('userStreak',(state.streak||0)+' '+((state.streak||0)===1?'dia':'dias'));set('userXp',state.xp||0);set('userJourneyText',stage.name+' · '+stage.title+' · '+pct+'% da etapa');const bar=document.getElementById('userJourneyBar');if(bar)bar.style.width=pct+'%';const name=document.getElementById('userNameInput'),goal=document.getElementById('userGoalInput'),mode=document.getElementById('userModeInput');if(name)name.value=profile.name;if(goal)goal.value=String(profile.dailyGoal);if(mode)mode.value=profile.studyMode;const avatar=document.getElementById('userAvatar');if(avatar)avatar.textContent=(profile.name.trim()[0]||'門').toUpperCase();const account=loadMonAccount(),badge=document.getElementById('userAccountBadge'),note=document.getElementById('userAccountNote');if(badge)badge.textContent=monAccountStatus()==='connected'?'conta conectada':'perfil local';if(note)note.textContent=typeof monCloudConfigured==='function'&&monCloudConfigured()?'Conta MON disponível. Entre por link seguro enviado ao seu e-mail para sincronizar entre dispositivos.':'Seu progresso fica neste navegador. Exporte um backup antes de trocar de dispositivo.';renderCloudAccountPanel();renderOfflinePanel();
+ const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};set('userNameHero',profile.name);set('userLevel',(p.displayLevel||p.level)+' · dia '+p.localDay+'/'+p.total);set('userStreak',(state.streak||0)+' '+((state.streak||0)===1?'dia':'dias'));set('userXp',state.xp||0);set('userJourneyText',stage.name+' · '+stage.title+' · '+pct+'% da etapa');const bar=document.getElementById('userJourneyBar');if(bar)bar.style.width=pct+'%';const name=document.getElementById('userNameInput'),goal=document.getElementById('userGoalInput'),mode=document.getElementById('userModeInput');if(name)name.value=profile.name;if(goal)goal.value=String(profile.dailyGoal);if(mode)mode.value=profile.studyMode;const avatar=document.getElementById('userAvatar');if(avatar)avatar.textContent=(profile.name.trim()[0]||'門').toUpperCase();const account=loadMonAccount(),badge=document.getElementById('userAccountBadge'),note=document.getElementById('userAccountNote');if(badge)badge.textContent=monAccountStatus()==='connected'?'conta conectada':'perfil local';if(note)note.textContent=typeof monCloudConfigured==='function'&&monCloudConfigured()?'Conta MON disponível. Crie sua conta ou entre com e-mail e senha para sincronizar entre dispositivos.':'Seu progresso fica neste navegador. Exporte um backup antes de trocar de dispositivo.';renderCloudAccountPanel();renderOfflinePanel();
 }
 function saveUserArea(){const name=(document.getElementById('userNameInput')?.value||'Estudante MON').trim().slice(0,32)||'Estudante MON',dailyGoal=Number(document.getElementById('userGoalInput')?.value||20),studyMode=document.getElementById('userModeInput')?.value||'equilibrado';try{saveLocalProfile({name,dailyGoal,studyMode});renderUserArea();toast('Preferências salvas neste dispositivo')}catch{toast('Não foi possível salvar suas preferências. Tente novamente.')}}
 
 
 
-let monOtpCooldownUntil=0;
-async function connectMonCloud(){
- const email=document.getElementById('userCloudEmail')?.value.trim(),now=Date.now();
- if(!email){toast('Digite seu e-mail');return}
- if(now<monOtpCooldownUntil){toast('Aguarde antes de pedir outro link');return}
- try{monOtpCooldownUntil=now+60000;await monCloudSignIn(email);toast('Link enviado ao seu e-mail')}
- catch(e){
-  if(e?.status===429||/rate|seconds|60/i.test(e?.message||'')){monOtpCooldownUntil=Date.now()+60000;toast('Muitos pedidos. Aguarde 60 segundos.');return}
-  monOtpCooldownUntil=0;toast(e.message)
- }
+
+
+function monAuthCredentials(){
+ const email=document.getElementById('userCloudEmail')?.value.trim()||'';
+ const password=document.getElementById('userCloudPassword')?.value||'';
+ if(!email)throw new Error('Digite seu e-mail');
+ if(password.length<8)throw new Error('Use uma senha com pelo menos 8 caracteres');
+ return {email,password};
+}
+async function signUpMonCloud(){
+ try{
+  const {email,password}=monAuthCredentials(),data=await monCloudSignUp(email,password);
+  toast(data?.session?'Conta criada e conectada':'Conta criada. Confirme seu e-mail para entrar.');
+  await renderCloudAccountPanel();
+ }catch(e){toast(e.message)}
+}
+async function signInMonCloud(){
+ try{
+  const {email,password}=monAuthCredentials();
+  await monCloudPasswordSignIn(email,password);
+  await monCloudBootstrap();
+  await renderCloudAccountPanel();
+  toast('Conta MON conectada');
+ }catch(e){toast(e.message)}
+}
+async function setMonCloudPassword(){
+ const password=document.getElementById('userCloudNewPassword')?.value||'';
+ if(password.length<8){toast('Use uma senha com pelo menos 8 caracteres');return}
+ try{await monCloudSetPassword(password);toast('Senha da Conta MON atualizada')}catch(e){toast(e.message)}
 }
