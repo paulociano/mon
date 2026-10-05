@@ -21,3 +21,23 @@
  .mission-free textarea{min-height:120px;font-size:16px}.mission-free-actions{display:grid;grid-template-columns:1fr}.mission-free-actions button{width:100%}
  .mission-result{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mission-result>div{min-width:0}
 }
+
+
+/* P8.3 · mission conversation stage */
+#missions>.section-head:first-child h3{font-size:clamp(30px,4vw,42px)!important;line-height:1.05}#missions>.section-head:first-child p{font-size:12px;line-height:1.65;max-width:720px}
+#missionRunner{max-width:920px;margin:28px auto 0}
+.mission-run{padding:28px 30px;border-radius:28px;background:radial-gradient(circle at 82% 0,rgba(215,181,109,.08),transparent 26%),linear-gradient(145deg,#0c1724,#0a1320);box-shadow:0 28px 80px rgba(0,0,0,.2)}
+.mission-run-head{grid-template-columns:minmax(0,1fr) 220px;gap:24px;align-items:start}.mission-run h3{font-size:32px!important;line-height:1.08}.mission-run p{font-size:11px;line-height:1.65}
+.mission-goal{padding:16px;border-radius:18px;background:rgba(215,181,109,.065)}.mission-goal span{font-size:8px;letter-spacing:.12em}.mission-goal b{font-size:11px;line-height:1.55}
+.mission-npc{max-width:78%;margin:28px 0 18px;padding:22px 24px;border-radius:24px 24px 24px 8px;background:#122235;border-color:rgba(255,255,255,.075);box-shadow:0 18px 42px rgba(0,0,0,.16)}
+.mission-npc>span{font-size:8px;letter-spacing:.12em}.mission-npc>b{font-size:30px;line-height:1.45;margin:10px 0}.mission-npc button{font-size:9px;padding:9px 11px}
+.mission-choice-title{margin:26px 0 10px;text-align:right;font-size:9px;letter-spacing:.12em}
+.mission-choices{width:min(78%,700px);margin-left:auto;gap:10px}.mission-choices button{padding:16px 18px;border-radius:20px 20px 8px 20px;background:#17283a;border-color:rgba(255,255,255,.075);box-shadow:0 10px 26px rgba(0,0,0,.1)}
+.mission-choices button:hover{transform:translateY(-1px);border-color:rgba(244,169,187,.24);background:#1a2d41}.mission-choices b{font-size:18px;line-height:1.4}.mission-choices span{font-size:9px;line-height:1.5}
+.mission-feedback{width:min(78%,700px);margin:14px 0 0 auto;padding:13px 15px;border-radius:14px;font-size:10px;line-height:1.55}
+.mission-repair-note{width:min(78%,700px);margin:12px 0 0 auto;font-size:10px}
+.mission-free{width:min(78%,700px);margin:18px 0 10px auto}.mission-free textarea{min-height:128px;padding:16px;border-radius:18px;font-size:17px}.mission-free-actions button{font-size:9px;padding:10px 12px}
+.mission-readiness{margin-top:24px}.mission-readiness span{padding:14px;font-size:8px}.mission-readiness b{font-size:22px}
+.mission-complete{max-width:760px;margin:0 auto;padding:34px}.mission-complete h3{font-size:32px!important}.mission-complete p{font-size:11px}
+@media(max-width:700px){#missionRunner{margin-top:20px}.mission-run{padding:20px 16px}.mission-run-head{grid-template-columns:1fr}.mission-npc,.mission-choices,.mission-feedback,.mission-repair-note,.mission-free{width:92%;max-width:none}.mission-npc{margin-right:auto;padding:18px;border-radius:20px 20px 20px 7px}.mission-npc>b{font-size:25px}.mission-choices,.mission-feedback,.mission-repair-note,.mission-free{margin-left:auto}.mission-choices button{border-radius:18px 18px 7px 18px}.mission-choice-title{text-align:right}}
+@media(prefers-reduced-motion:reduce){.mission-choices button{transition:none}.mission-choices button:hover{transform:none}}
