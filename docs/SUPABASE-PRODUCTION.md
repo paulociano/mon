@@ -91,4 +91,8 @@ Observed against the production Supabase project after the auth-first login roll
 
 No email address or token value is recorded in this handoff.
 
-**Result:** real signup, confirmation, password login, and client-to-cloud state creation/update are verified. Browser session persistence across reload, real two-account cross-access, cloud-only deletion, full identity deletion, and post-operation log review remain open.
+**Result:** real signup, confirmation, password login, client-to-cloud state creation/update, and browser-session persistence across an explicit reload are verified.
+
+After the reload check, the historical Auth identity from the earlier magic-link tests was deleted with explicit user approval. Readback confirmed exactly one remaining Auth identity and exactly one remaining `mon_user_state` row, belonging to the current account. The old cloud row was removed by cascade.
+
+Real two-account cross-access, cloud-only deletion through the current UI, full deletion of the current identity through `delete-account`, and post-operation log review remain open.
