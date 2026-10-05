@@ -74,7 +74,7 @@ function loadRuntimeScript(src){
    const existing=document.querySelector(`script[data-runtime-src="${src}"]`);
    if(existing){if(existing.dataset.ready==='1')return resolve();existing.addEventListener('load',()=>resolve(),{once:true});existing.addEventListener('error',()=>reject(new Error('Falha ao carregar '+src)),{once:true});return}
    const s=document.createElement('script');s.src=src;s.async=false;s.dataset.runtimeSrc=src;
-   s.onload=()=>{s.dataset.ready='1';resolve()};s.onerror=()=>reject(new Error('Falha ao carregar '+src));document.body.appendChild(s);
+   s.onload=()=>{s.dataset.ready='1';resolve()};s.onerror=()=>{s.remove();reject(new Error('Falha ao carregar '+src))};document.body.appendChild(s);
  });
 }
 function loadRuntimeStyle(href){
@@ -82,7 +82,7 @@ function loadRuntimeStyle(href){
    const existing=document.querySelector(`link[data-runtime-href="${href}"]`);
    if(existing){if(existing.dataset.ready==='1')return resolve();existing.addEventListener('load',()=>resolve(),{once:true});existing.addEventListener('error',()=>reject(new Error('Falha ao carregar '+href)),{once:true});return}
    const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.dataset.runtimeHref=href;
-   link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>reject(new Error('Falha ao carregar '+href));document.head.appendChild(link);
+   link.onload=()=>{link.dataset.ready='1';resolve()};link.onerror=()=>{link.remove();reject(new Error('Falha ao carregar '+href))};document.head.appendChild(link);
  });
 }
 const FEATURE_RUNTIME_STYLES={journey:['./features/journey.css'],explore:['./features/journey.css'],progress:['./features/journey.css'],user:['./features/user.css'],foundation:['./features/foundation.css'],lesson:['./features/lesson.css'],practice:['./features/practice.css'],journal:['./features/journal.css'],videos:['./features/videos.css'],pronunciation:['./features/pronunciation.css'],kanji:['./features/kanji-memory.css'],missions:['./features/missions-v2.css']};
