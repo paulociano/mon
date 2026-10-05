@@ -4,11 +4,13 @@ A Conta MON não deve ser aberta ao público enquanto qualquer gate P0 permanece
 
 ## P0
 
-- [ ] identificar controlador (nome/razão social + CPF/CNPJ conforme aplicável);
-- [ ] definir e testar e-mail de suporte;
-- [ ] definir e testar e-mail de privacidade/titular;
+- [x] identificar nominalmente o controlador: Paulo Henrique Graciano;
+- [ ] complementar CPF/CNPJ do controlador, conforme aplicável;
+- [ ] definir e testar e-mail de suporte (mantido em branco por decisão atual);
+- [ ] definir e testar e-mail de privacidade/titular (mantido em branco por decisão atual);
 - [ ] revisão jurídica dos Termos e Política de Privacidade;
-- [ ] decidir política de idade;
+- [x] decidir política de idade: sem restrição etária;
+- [ ] concluir salvaguardas, avaliação específica e revisão para uso por crianças e adolescentes;
 - [x] implementar exclusão completa da identidade de autenticação por backend/Edge Function no repositório;
 - [x] deployar a Edge Function `delete-account` no projeto Supabase MON (`sa-east-1`);
 - [x] disponibilizar a publishable key ao frontend por runtime público controlado (`public-config`), sem expor secret/service-role;
