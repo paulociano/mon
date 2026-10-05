@@ -16,9 +16,14 @@
 
 Antes da produção ainda precisam ser confirmados:
 - controlador e canais;
-- região efetiva do Supabase;
-- termos/DPA e subprocessadores;
+- mecanismo contratual de transferência internacional aplicável ao Supabase sob a Resolução CD/ANPD nº 19/2024;
+- acompanhamento de mudanças na lista de subprocessadores do Supabase;
 - logs de hosting/CDN;
 - base legal final por operação;
 - política de idade;
 - mecanismo de exclusão completa da identidade.
+
+
+## Evidência de fornecedor atualizada
+
+Para P02/P03, já foram observados: projeto MON em `sa-east-1`, DPA vigente do Supabase, lista oficial de subprocessadores e identificação contratual da Supabase Pte. Ltd. como importador no anexo de SCCs. Permanece pendente a validação jurídica do mecanismo de transferência internacional aplicável ao controlador brasileiro.
