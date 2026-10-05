@@ -15,7 +15,8 @@ A Conta MON não deve ser aberta ao público enquanto qualquer gate P0 permanece
 - [ ] configurar Site URL + Redirect URL do Supabase Auth para `https://paulociano.github.io/mon/`;
 - [ ] testar exclusão completa ponta a ponta com usuário autenticado real;
 - [x] provisionar o projeto Supabase MON em `sa-east-1`;
-- [ ] validar DPA/termos e transferência internacional do Supabase;
+- [x] revisar região, DPA e lista oficial de subprocessadores do Supabase;
+- [ ] validar juridicamente o mecanismo contratual de transferência internacional aplicável sob a Resolução CD/ANPD nº 19/2024;
 - [x] confirmar GitHub Pages como hosting de produção (`https://paulociano.github.io/mon/`);
 - [ ] confirmar política concreta de logs/retention do hosting/CDN;
 - [ ] publicar links visíveis para Termos e Privacidade na superfície de conta.
