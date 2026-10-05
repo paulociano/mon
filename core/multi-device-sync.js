@@ -1,4 +1,3 @@
-// MON multi-device sync coordinator. Loaded lazily with account runtime.
 let monSyncTimer=null,monSyncInFlight=null;
 
 function monCloudAvailable(){return typeof monCloudConfigured==='function'&&monCloudConfigured()}
@@ -79,7 +78,7 @@ async function renderCloudAccountPanel(){
  if(typeof ensureMonPrivacyControls==='function')ensureMonPrivacyControls();
  if(!panel)return;
  if(!monCloudAvailable()&&typeof monEnsureCloudConfig==='function'){try{await monEnsureCloudConfig()}catch{}}
- if(!monCloudAvailable()){panel.innerHTML='<b>Conta MON</b><br>Seu progresso está neste navegador. A sincronização ainda não está disponível; exporte um backup para protegê-lo.';return}
+ if(!monCloudAvailable()){panel.innerHTML='<b>Conta MON</b><br>Sync indisponível. Seu progresso continua neste navegador; exporte um backup.';return}
  try{
   const session=await monCloudSession();
   if(!session){
@@ -90,7 +89,7 @@ async function renderCloudAccountPanel(){
   const result=await monCloudReconcile();
   if(badge)badge.textContent=result.status==='conflict'?'conflito de progresso':monLocalSyncDirty()?'envio pendente':'conta sincronizada';
   if(result.status==='conflict'){
-   panel.innerHTML='<b>Conflito de progresso</b><br>Este dispositivo e a nuvem mudaram desde o último sync. Escolha qual versão deve continuar. Um backup local é preservado antes de substituir dados.<div class="user-actions"><button class="user-save" onclick="resolveMonCloudConflict(\'local\')">usar este dispositivo</button><button class="user-secondary" onclick="resolveMonCloudConflict(\'cloud\')">usar nuvem</button></div>';
+   panel.innerHTML='<b>Conflito de progresso</b><br>Este dispositivo e a nuvem mudaram. Escolha qual versão deve continuar; o MON preserva um backup local.<div class="user-actions"><button class="user-save" onclick="resolveMonCloudConflict(\'local\')">usar este dispositivo</button><button class="user-secondary" onclick="resolveMonCloudConflict(\'cloud\')">usar nuvem</button></div>';
    return;
   }
   const account=loadMonAccount(),syncText=account.lastSyncedAt?'último sync '+new Date(account.lastSyncedAt).toLocaleString():'sync pronto';
@@ -115,18 +114,17 @@ async function disconnectMonCloud(){
 async function resolveMonCloudConflict(choice){
  try{
   const result=await monCloudReconcile({preference:choice});
-  if(result.status==='conflict'){await renderCloudAccountPanel();toast('O progresso mudou novamente. Revise as versões antes de escolher.');return}
+  if(result.status==='conflict'){await renderCloudAccountPanel();toast('O progresso mudou de novo. Revise antes de escolher.');return}
   if(typeof renderUserArea==='function')renderUserArea();
-  toast(result.status==='pulled'?'Progresso da nuvem aplicado':'Progresso deste dispositivo enviado');
+  toast(result.status==='pulled'?'Versão da nuvem aplicada':'Versão deste dispositivo enviada');
  }catch(e){toast(e.message)}
 }
 async function syncMonNow(){
  try{
   const result=await monCloudReconcile();
-  if(result.status==='conflict'){await renderCloudAccountPanel();toast('Há um conflito de progresso para resolver');return}
-  toast(result.status==='pulled'?'Progresso atualizado da nuvem':result.status==='pushed'?'Progresso enviado para a nuvem':'Progresso já sincronizado');
+  if(result.status==='conflict'){await renderCloudAccountPanel();toast('Há um conflito para resolver');return}
+  toast(result.status==='pulled'?'Nuvem aplicada':result.status==='pushed'?'Progresso enviado':'Já sincronizado');
   await renderCloudAccountPanel();
  }catch(e){toast(e.message)}
 }
-
 if(typeof window!=='undefined')window.addEventListener('online',scheduleMonCloudSync);
