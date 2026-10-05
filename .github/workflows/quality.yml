@@ -110,6 +110,8 @@ jobs:
         run: node scripts/test-n5-readiness.mjs
       - name: Home polish contracts
         run: node scripts/test-home-polish.mjs
+      - name: Abstract guide visual
+        run: node scripts/test-guide-visual.mjs
       - name: Guided learning journey
         run: node scripts/test-learning-journey.mjs
       - name: Deep-link navigation
