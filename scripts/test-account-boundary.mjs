@@ -19,3 +19,6 @@ console.log('MON account boundary contracts passed');
 const profileSummary=app.match(/function showProfileSummary\(\)\{([^}]*)\}/)?.[1]||'';
 assert.ok(profileSummary.includes("go('user')"),'profile summary must route through the user lazy boundary');
 assert.ok(!profileSummary.includes('ensureUserArea('),'profile summary must not touch lazy user symbols before account runtime loads');
+
+assert.ok(sync.includes('function monEscapeHtml'),'account sync UI needs a local HTML escaping helper');
+assert.ok(!sync.includes('email=escapeHtml('),'account sync UI must not reference undefined escapeHtml');
