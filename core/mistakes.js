@@ -114,22 +114,54 @@ function queueGrammarRepair(run,exercise,chosen,mistake){
   if(repair.length)run.pack.exercises.splice(run.step+1,0,...repair);
 }
 
+const GRAMMAR_RETENTION_WINDOWS=[{id:'d1',minMs:20*3600000},{id:'d3',minMs:60*3600000},{id:'d7',minMs:144*3600000}];
 function grammarContrastId(a,b){return [String(a||''),String(b||'')].sort().join('|')}
+function grammarContrastRetentionState(x={},now=Date.now()){
+  const marks=x.retention||{},base=Number(x.lastErrorAt||0);
+  const next=GRAMMAR_RETENTION_WINDOWS.find(w=>!marks[w.id])||null;
+  return {d1:!!marks.d1,d3:!!marks.d3,d7:!!marks.d7,status:marks.d7?'retained':Number(x.errors||0)?'pending':'empty',
+    next:next?.id||null,dueAt:next&&base?base+next.minMs:null};
+}
 function grammarContrastConfusion(a,b,learnerState=state){
-  const id=grammarContrastId(a,b),x=learnerState.grammarConfusions?.[id]||{};
-  const errors=Number(x.errors||0),recoveries=Number(x.recoveries||0),open=Math.max(0,errors-recoveries);
+  const id=grammarContrastId(a,b),x=learnerState.grammarConfusions?.[id]||{},retention=grammarContrastRetentionState(x);
+  const errors=Number(x.errors||0),recoveries=Number(x.recoveries||0);
+  const open=errors?(retention.status==='retained'?0:Math.max(1,errors-recoveries)):0;
   const age=x.lastAt?Math.max(0,Date.now()-x.lastAt):Infinity,recency=Number.isFinite(age)?Math.max(0,14-age/86400000):0;
-  return {id,a,b,errors,recoveries,open,lastAt:Number(x.lastAt||0),priority:open*100+errors*8+recency};
+  return {id,a,b,errors,recoveries,open,lastAt:Number(x.lastAt||0),lastErrorAt:Number(x.lastErrorAt||0),retention,
+    priority:open*100+errors*8+recency};
 }
 function recordGrammarContrastOutcome(exercise={},ok=false){
   const pair=exercise._contrastPair;if(!Array.isArray(pair)||pair.length<2)return null;
   state.grammarConfusions=state.grammarConfusions||{};
-  const [a,b]=pair,id=grammarContrastId(a,b),old=state.grammarConfusions[id]||{errors:0,recoveries:0};
-  const next={...old,target:a,rival:b,errors:Number(old.errors||0)+(ok?0:1),
-    recoveries:Number(old.recoveries||0)+(ok&&Number(old.errors||0)>Number(old.recoveries||0)?1:0),lastAt:Date.now()};
+  const [a,b]=pair,id=grammarContrastId(a,b),old=state.grammarConfusions[id]||{errors:0,recoveries:0,retention:{}},now=Date.now();
+  let retention={...(old.retention||{})},lastErrorAt=Number(old.lastErrorAt||0);
+  let errors=Number(old.errors||0),recoveries=Number(old.recoveries||0);
+  if(!ok){
+    errors++;lastErrorAt=now;retention={};
+  }else if(exercise._retentionStage){
+    const stage=exercise._retentionStage;
+    const due=GRAMMAR_RETENTION_WINDOWS.find(w=>w.id===stage);
+    if(due&&lastErrorAt&&now-lastErrorAt>=due.minMs)retention[stage]=true;
+  }else if(errors>recoveries)recoveries++;
+  const next={...old,target:a,rival:b,errors,recoveries,retention,lastErrorAt,lastAt:now};
   state.grammarConfusions[id]=next;return grammarContrastConfusion(a,b);
 }
 function grammarContrastQueue(limit=6,learnerState=state){
   return Object.values(learnerState.grammarConfusions||{}).map(x=>grammarContrastConfusion(x.target,x.rival,learnerState))
     .filter(x=>x.open>0).sort((a,b)=>b.priority-a.priority||b.lastAt-a.lastAt).slice(0,limit);
 }
+function grammarContrastRetentionQueue(limit=6,learnerState=state,now=Date.now()){
+  return Object.values(learnerState.grammarConfusions||{}).map(x=>{
+    const q=grammarContrastConfusion(x.target,x.rival,learnerState),stage=q.retention.next;
+    return {...q,stage,dueAt:q.retention.dueAt};
+  }).filter(x=>x.open>0&&x.stage&&Number(x.dueAt||Infinity)<=now)
+    .sort((a,b)=>a.dueAt-b.dueAt||b.priority-a.priority).slice(0,limit);
+}
+function grammarContrastRetentionExercise(a,b){
+  const q=grammarContrastConfusion(a,b),stage=q.retention.next;if(!stage)return null;
+  const e=typeof grammarContrastExercise==='function'?grammarContrastExercise(a,b):null;if(!e)return null;
+  const g=grammarCatalog?.[a],sample=(g?.examples||[])[1]||(g?.examples||[])[0];
+  return {...e,prompt:`Situação nova · retenção ${stage}: ${sample?.pt||g?.realWorldUse||g?.function} Qual estrutura mantém a função correta?`,
+    _retentionStage:stage,_retentionPair:q.id,method:'contrast-retention'};
+}
+
