@@ -12,6 +12,9 @@ function homeCoachDecision(state={},flatPath=[],now=Date.now()){
   if(state.remediation?.idx===idx){
     return {kind:'repair',eyebrow:'prioridade · domínio',title:'Fortaleça antes de abrir o próximo portão.',copy:'Você concluiu a atividade, mas a evidência ainda está frágil em uma habilidade crítica. O reforço é curto e direcionado.',cta:'fortalecer agora →',secondary:'ver prática adaptativa',action:'repair',secondaryAction:'practice',signal:'Mastery Graph',node};
   }
+  if(!state.foundationComplete&&Number(state.foundationSessions||0)===1&&Number(state.foundationDay||1)===2){
+    return {kind:'return',eyebrow:'seu segundo encontro · memória',title:'Você já abriu o portão. Agora descubra o que ficou.',copy:'A próxima sessão começa retomando som e kana antes de acrescentar uma peça nova. O objetivo é perceber que algo de ontem já exige menos esforço.',cta:'ver o que eu lembro →',secondary:'ver por que repetir ajuda',action:'session',secondaryAction:'foundation',signal:'1ª sessão concluída',node};
+  }
   if(due>=4){
     return {kind:'review',eyebrow:'prioridade · memória',title:`${due} revisões chegaram ao ponto certo.`,copy:'Recupere agora antes de empilhar conteúdo novo. O intervalo já amadureceu e a prática será curta.',cta:'revisar memória →',secondary:'continuar trilha mesmo assim',action:'practice',secondaryAction:'lesson',signal:`${due} itens vencendo`,node};
   }
