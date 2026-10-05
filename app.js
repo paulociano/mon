@@ -8,7 +8,7 @@ const NAV_PARENT={lesson:'home',session:'home',curriculum:'journey',foundation:'
 function navParentForView(id){return NAV_PARENT[id]||id}
 function keepActiveNavVisible(id){const nav=document.getElementById('desktopNav'),active=nav?.querySelector(`[data-view="${navParentForView(id)}"]`);if(!nav||!active||nav.scrollHeight<=nav.clientHeight)return;const top=active.offsetTop-nav.offsetTop,bottom=top+active.offsetHeight,soft=18;let target=null;if(top<nav.scrollTop+soft)target=Math.max(0,top-soft);else if(bottom>nav.scrollTop+nav.clientHeight-soft)target=bottom-nav.clientHeight+soft;if(target!==null)nav.scrollTo({top:target,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 let accountRuntimePromise=null;
-function ensureAccountRuntime(){return accountRuntimePromise||(accountRuntimePromise=(async()=>{for(const src of ['./core/account.js','./config/cloud.js','./core/supabase-sync.js','./core/multi-device-sync.js'])await loadRuntimeScript(src)})())}
+function ensureAccountRuntime(){return accountRuntimePromise||(accountRuntimePromise=(async()=>{for(const src of ['./core/account.js','./config/cloud.js','./core/supabase-sync.js','./core/multi-device-sync.js','./features/offline.js','./features/user.js'])await loadRuntimeScript(src)})().catch(err=>{accountRuntimePromise=null;throw err}))}
 const LE='./core/learning-evidence.js';
 const LEARNING_RUNTIME_SCRIPTS=[
  './data/kanji.js',
@@ -173,15 +173,6 @@ window.addEventListener('popstate',()=>go(routeFromLocation(),{history:false}));
 const MON_PROFILE_KEY='mon-profile';
 function loadLocalProfile(){try{return {...{name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'},...JSON.parse(localStorage.getItem(MON_PROFILE_KEY)||'{}')}}catch(e){return {name:'Estudante MON',dailyGoal:20,studyMode:'equilibrado'}}}
 function saveLocalProfile(p){localStorage.setItem(MON_PROFILE_KEY,JSON.stringify(p));localStorage.setItem('mon-sync-dirty-at',1)}
-function userAreaMarkup(){
- return '<div class="user-shell"><div class="user-hero"><div class="user-identity"><div class="user-avatar" id="userAvatar">門</div><div><span class="eyebrow">Minha área · 私</span><h2 id="userNameHero">Estudante MON</h2><p id="userPlanHero">Seu progresso e suas preferências neste dispositivo.</p></div></div><span class="user-local-badge" id="userAccountBadge">perfil local</span></div><div class="user-grid"><section class="user-card"><h3>Seu aprendizado</h3><p>Uma leitura rápida do seu momento, sem transformar estudo em painel de vaidade.</p><div class="user-stats"><div class="user-stat"><span>nível</span><b id="userLevel">N5</b></div><div class="user-stat"><span>sequência</span><b id="userStreak">1 dia</b></div><div class="user-stat"><span>XP</span><b id="userXp">0</b></div></div><div class="user-progress-line"><i id="userJourneyBar"></i></div><div class="user-data-note" id="userJourneyText"></div><div class="user-actions"><button class="user-secondary" onclick="go(\'progress\')">ver progresso</button><button class="user-secondary" onclick="go(\'journey\')">abrir jornada</button></div></section><section class="user-card"><h3>Perfil e rotina</h3><p>Preferências simples para o MON adaptar a experiência sem exigir uma conta.</p><label class="user-field"><span>Como quer ser chamado</span><input id="userNameInput" maxlength="32" autocomplete="nickname"></label><label class="user-field"><span>Meta diária</span><select id="userGoalInput"><option value="10">10 min · leve</option><option value="20">20 min · consistente</option><option value="30">30 min · intenso</option></select></label><label class="user-field"><span>Ritmo preferido</span><select id="userModeInput"><option value="equilibrado">Equilibrado</option><option value="revisao">Mais revisão</option><option value="desafio">Mais desafio</option></select></label><div class="user-actions"><button class="user-save" onclick="saveUserArea()">salvar preferências</button><button class="user-secondary" onclick="exportMonBackup()">exportar backup</button></div><div class="user-data-note" id="userCloudPanel"></div><div class="user-data-note" id="userAccountNote">Seus dados ficam salvos localmente neste navegador. Exportar um backup protege seu progresso antes de trocar de dispositivo ou limpar os dados do site.</div></section></div></div>';
-}
-function ensureUserArea(){let view=document.getElementById('user');if(view)return view;view=document.createElement('section');view.id='user';view.className='view';view.innerHTML=userAreaMarkup();document.querySelector('.content')?.appendChild(view);return view}
-function renderUserArea(){
- ensureUserArea();const profile=loadLocalProfile(),p=currentPlan(),stage=JOURNEY_STAGES[journeyStageIndex()],pct=Math.round(journeyStageProgress()*100);
- const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};set('userNameHero',profile.name);set('userLevel',(p.displayLevel||p.level)+' · dia '+p.localDay+'/'+p.total);set('userStreak',(state.streak||0)+' '+((state.streak||0)===1?'dia':'dias'));set('userXp',state.xp||0);set('userJourneyText',stage.name+' · '+stage.title+' · '+pct+'% da etapa');const bar=document.getElementById('userJourneyBar');if(bar)bar.style.width=pct+'%';const name=document.getElementById('userNameInput'),goal=document.getElementById('userGoalInput'),mode=document.getElementById('userModeInput');if(name)name.value=profile.name;if(goal)goal.value=String(profile.dailyGoal);if(mode)mode.value=profile.studyMode;const avatar=document.getElementById('userAvatar');if(avatar)avatar.textContent=(profile.name.trim()[0]||'門').toUpperCase();const account=loadMonAccount(),badge=document.getElementById('userAccountBadge'),note=document.getElementById('userAccountNote');if(badge)badge.textContent=monAccountStatus()==='connected'?'conta sincronizada':'perfil local';if(note)note.textContent=typeof monCloudConfigured==='function'&&monCloudConfigured()?'Conta MON disponível. Entre por link seguro enviado ao seu e-mail para sincronizar entre dispositivos.':'Este perfil tem um ID local estável, mas a nuvem ainda precisa da URL e chave publicável do projeto Supabase.';renderCloudAccountPanel();
-}
-function saveUserArea(){const name=(document.getElementById('userNameInput')?.value||'Estudante MON').trim().slice(0,32)||'Estudante MON',dailyGoal=Number(document.getElementById('userGoalInput')?.value||20),studyMode=document.getElementById('userModeInput')?.value||'equilibrado';saveLocalProfile({name,dailyGoal,studyMode});renderUserArea();toast('Preferências salvas neste dispositivo')}
 function showProfileSummary(){ensureUserArea();go('user')}
 function currentPlan(){const d=Number(state.day||1);if(d<=30)return{level:'N5',displayLevel:'N5',phase:'n5',localDay:d,total:30,label:'sobrevivência',start:1};if(d<=54)return{level:'N4',displayLevel:'PONTE',phase:'bridge',localDay:d-30,total:24,label:'consolidação N5 → N4',start:31};if(d<=90)return{level:'N4',displayLevel:'N4',phase:'n4',localDay:d-54,total:36,label:'autonomia',start:55};return{level:'N3',displayLevel:'N3',phase:'n3',localDay:Math.min(90,d-90),total:90,label:'integração',start:91}}
 const JOURNEY_STAGES=[
@@ -432,9 +423,12 @@ function showMonUpdate(worker){
  if(banner)banner.hidden=false;
 }
 function applyMonUpdate(){
- if(!monUpdateWorker)return;
+ if(!monUpdateWorker)return false;
+ const lessonActive=document.getElementById('lesson')?.classList.contains('active')||document.body.classList.contains('focus-session');
+ if(lessonActive){toast('Atualização pronta. Conclua a lição antes de recarregar.');return false}
  monReloadForUpdate=true;
  monUpdateWorker.postMessage({type:'SKIP_WAITING'});
+ return true;
 }
 function watchMonUpdate(reg){
  if(reg.waiting&&navigator.serviceWorker.controller)showMonUpdate(reg.waiting);
