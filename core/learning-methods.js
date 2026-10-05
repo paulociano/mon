@@ -179,11 +179,12 @@ function adaptiveMethodSequence(unit){
   }
   if(weakTransfer)ordered=['cloze','transfer',...ordered];
   if(strongProduce)ordered=ordered.filter((x,i)=>x!=='discover'||i===0);
+  ordered=[...new Set(ordered)];
   if((unit.grammar||[]).length){
-    const conceptual=['discover','mechanism','contrast','transfer','roleplay'];
-    ordered=[...conceptual,...ordered.filter(x=>!conceptual.includes(x))];
+    const at=ordered[0]==='freeRecall'?1:Math.max(0,ordered.indexOf('discover')+1);
+    ordered=[...ordered.slice(0,at),'mechanism','contrast',...ordered.slice(at)];
   }
-  return [...new Set(ordered)].slice(0,6);
+  return [...new Set(ordered)].slice(0,(unit.grammar||[]).length?9:6);
 }
 function compileAdaptiveMONSequence(unit){
   return adaptiveMethodSequence(unit).map((m,i)=>compileMONMethod(unit,m,i)).filter(Boolean);
