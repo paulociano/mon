@@ -9,11 +9,12 @@ for(const file of ['data/kana.js','data/foundation.js','data/session.js','core/c
 const signatures=[];
 for(let day=1;day<=8;day++){
  const plan=vm.runInContext(`lessonPlanFromNode({day:${day},label:'Foundation ${day}'})`,ctx);
- const sig=Array.from(plan.exercises,e=>e.type+':'+e.prompt).join('|');
+ const practice=Array.from(plan.exercises).filter(e=>e.type!=='study');
+ const sig=practice.map(e=>e.type+':'+e.prompt).join('|');
  signatures.push(sig);
- assert.equal(plan.exercises.length,8,'foundation lesson '+day+' should keep eight exercises');
- assert.equal(plan.exercises[0].type,'listen','foundation lesson '+day+' must still begin with listening');
- assert.equal(plan.exercises.at(-1).type,'speak','foundation lesson '+day+' must still finish with production');
+ assert.equal(practice.length,8,'foundation lesson '+day+' should keep eight practice exercises');
+ assert.equal(practice[0].type,'listen','foundation practice '+day+' must still begin with listening');
+ assert.equal(practice.at(-1).type,'speak','foundation lesson '+day+' must still finish with production');
 }
 for(let i=1;i<signatures.length;i++)assert.notEqual(signatures[i],signatures[i-1],'adjacent early lessons must not repeat the same exercise sequence and prompts');
 assert.ok(new Set(signatures.slice(0,6)).size>=3,'early foundation should expose multiple lesson shapes');
