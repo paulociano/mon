@@ -67,11 +67,17 @@ function mistakeSummary(){
   return {open:queue.length,events:(state.mistakes||[]).length,by,top:queue.slice(0,5)};
 }
 function remediationExercises(limit=6){
-  return getMistakeQueue(limit).map(x=>({...x.exercise,_mistakeKey:x.key,_remediation:true})).filter(e=>{
-    if(e.type==='choice'||e.type==='listen')return Array.isArray(e.options)&&e.answer;
+  return getMistakeQueue(limit).flatMap(x=>{
+    const e={...x.exercise,_mistakeKey:x.key,_remediation:true};
+    const grammarRepair=grammarRemediationSequence(e,{chosen:x.lastChosen,mistake:x});
+    return grammarRepair.length?grammarRepair:[e];
+  }).filter(e=>{
+    if(e.type==='study')return true;
+    if(e.type==='choice'||e.type==='listen'||e.type==='discovery'||e.type==='minimalPair')return Array.isArray(e.options)&&e.answer;
+    if(e.type==='recall'||e.type==='dictation'||e.type==='cloze'||e.type==='transfer')return !!e.target;
     if(e.type==='wordbank')return Array.isArray(e.tokens)&&e.target;
     if(e.type==='match')return Array.isArray(e.pairs)&&e.pairs.length;
-    if(e.type==='speak')return !!e.target;
+    if(e.type==='speak'||e.type==='roleplay')return !!e.target;
     return false;
   });
 }
