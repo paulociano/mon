@@ -11,12 +11,12 @@ const phrases = [
  ['すみません。','sumimasen','Com licença / desculpe.'],['もう一度お願いします。','mou ichido onegaishimasu','Mais uma vez, por favor.'],['ゆっくりお願いします。','yukkuri onegaishimasu','Mais devagar, por favor.'],['日本語がまだよく分かりません。','nihongo ga mada yoku wakarimasen','Ainda não entendo bem japonês.'],['どういう意味ですか。','dou iu imi desu ka','O que isso significa?'],['書いてもらえますか。','kaite moraemasu ka','Pode escrever para mim?'],['ちょっと待ってください。','chotto matte kudasai','Espere um instante, por favor.'],['分かりました。','wakarimashita','Entendi.'],['これはいくらですか。','kore wa ikura desu ka','Quanto custa isto?'],['これをください。','kore o kudasai','Quero isto / isto, por favor.'],['駅はどこですか。','eki wa doko desu ka','Onde fica a estação?'],['大丈夫です。','daijoubu desu','Está tudo bem / não preciso.']
 ];
 const missionSpeech = [
- {npc:'どこまで行きますか。',npcPt:'Até onde você vai?',target:'東京駅までお願いします。',pt:'Até a Estação de Tóquio, por favor.'},
- {npc:'袋はご利用ですか。',npcPt:'Vai precisar de sacola?',target:'いいえ、袋はいりません。',pt:'Não, não preciso de sacola.'},
- {npc:'ご注文はお決まりですか。',npcPt:'Já decidiu o pedido?',target:'これをお願いします。',pt:'Este, por favor.'},
- {npc:'ご住所をお願いします。',npcPt:'Seu endereço, por favor.',target:'ここに書けばいいですか。',pt:'É só escrever aqui?'},
- {npc:'今日からよろしくお願いします。',npcPt:'Conto com você a partir de hoje.',target:'こちらこそ、よろしくお願いします。',pt:'Igualmente, prazer e conto com você.'},
- {npc:'どうしましたか。',npcPt:'O que houve?',target:'頭が痛いです。',pt:'Minha cabeça dói.'}
+ {npc:'どこまで行きますか。',npcReading:'どこまでいきますか。',npcPt:'Até onde você vai?',target:'東京駅までお願いします。',targetReading:'とうきょうえきまでおねがいします。',pt:'Até a Estação de Tóquio, por favor.'},
+ {npc:'袋はご利用ですか。',npcReading:'ふくろはごりようですか。',npcPt:'Vai precisar de sacola?',target:'いいえ、袋はいりません。',targetReading:'いいえ、ふくろはいりません。',pt:'Não, não preciso de sacola.'},
+ {npc:'ご注文はお決まりですか。',npcReading:'ごちゅうもんはおきまりですか。',npcPt:'Já decidiu o pedido?',target:'これをお願いします。',targetReading:'これをおねがいします。',pt:'Este, por favor.'},
+ {npc:'ご住所をお願いします。',npcReading:'ごじゅうしょをおねがいします。',npcPt:'Seu endereço, por favor.',target:'ここに書けばいいですか。',targetReading:'ここにかけばいいですか。',pt:'É só escrever aqui?'},
+ {npc:'今日からよろしくお願いします。',npcReading:'きょうからよろしくおねがいします。',npcPt:'Conto com você a partir de hoje.',target:'こちらこそ、よろしくお願いします。',targetReading:'こちらこそ、よろしくおねがいします。',pt:'Igualmente, prazer e conto com você.'},
+ {npc:'どうしましたか。',npcReading:'どうしましたか。',npcPt:'O que houve?',target:'頭が痛いです。',targetReading:'あたまがいたいです。',pt:'Minha cabeça dói.'}
 ];
 
 const bookData=[
