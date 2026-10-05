@@ -33,4 +33,4 @@ assert.ok(multi.includes("identity.textContent=session.user.email||'usuário'"),
 assert.ok(!multi.includes('escapeHtml('),'account UI must not depend on an unloaded global escapeHtml helper');
 
 const userUi=fs.readFileSync('features/user.js','utf8');
-for(const token of ['signUpMonCloud','signInMonCloud','setMonCloudPassword','mínimo 8 caracteres'])assert.ok(userUi.includes(token),'email/password account UX missing '+token);
+for(const token of ['signUpMonCloud','signInMonCloud','setMonCloudPassword','pelo menos 8 caracteres'])assert.ok(userUi.includes(token),'email/password account UX missing '+token);
