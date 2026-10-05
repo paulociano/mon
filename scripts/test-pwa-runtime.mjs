@@ -16,8 +16,9 @@ for(const lazy of ['./data/content-packs.js','./features/session.js','./features
   assert.ok(!core.includes(`'${lazy}'`),'lazy runtime must not be install-precache '+lazy);
 }
 const installBlock=sw.match(/self\.addEventListener\('install'[\s\S]*?\n}\);/)?.[0]||'';
-assert.ok(installBlock.includes("if(CRITICAL_SHELL_UPGRADE)await self.skipWaiting()"),'v35 critical shell recovery must activate immediately');
-assert.ok(sw.includes("const CRITICAL_SHELL_UPGRADE=CACHE_VERSION==='v35'"),'forced activation must be explicitly scoped to v35 only');
+assert.ok(installBlock.includes("if(CRITICAL_SHELL_UPGRADE)await self.skipWaiting()"),'critical shell recovery must activate immediately');
+assert.ok(sw.includes("const CACHE_VERSION='v37'"),'profile-shell recovery must bump the MON cache version');
+assert.ok(sw.includes("const CRITICAL_SHELL_UPGRADE=CACHE_VERSION==='v37'"),'forced activation must be explicitly scoped to v37 only');
 assert.ok(!sw.includes('client.navigate('),'service worker activation must not trigger navigation reload loops');
 assert.ok(sw.includes("event.data?.type==='SKIP_WAITING'"),'service worker needs explicit update activation message');
 assert.ok(sw.includes("const CACHE_PREFIX='mon-japanese-os-'"),'service worker cache namespace missing');
