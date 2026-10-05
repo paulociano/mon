@@ -148,6 +148,29 @@ Regras:
 - um retry não injeta outro loop de remediation imediatamente;
 - erros não gramaticais continuam usando seus mecanismos próprios.
 
+## Grammar Notebook · P4
+
+O Grammar Notebook / 文法 é uma projeção navegável do `grammarCatalog`, nunca uma segunda base de conteúdo.
+
+Ele mostra apenas estruturas já encontradas pelo aluno, inferidas por progressão curricular ou por evidência observada. Cada entrada combina:
+
+- forma e função;
+- modelo mental;
+- explicação;
+- exemplos trabalhados;
+- contraste;
+- erro comum;
+- uso real;
+- domínio observado;
+- estado de revisão;
+- misconceptions ainda abertas.
+
+Filtros mínimos: todas, frágeis, revisar, N5 e N4. A busca percorre forma, função, explicação, contraste e exemplos.
+
+O botão de revisão direta monta uma sessão curta de `Study + retrieval` usando o mesmo catálogo e o mesmo scheduler. O Notebook não cria exercícios proprietários nem duplica explicações.
+
+Princípio de desbloqueio: conteúdo futuro permanece oculto mesmo existindo no catálogo. A biblioteca cresce junto com a jornada do aluno.
+
 ## Gramática
 
 A gramática é ensinada como função comunicativa.
