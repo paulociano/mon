@@ -44,7 +44,8 @@ assert.ok(grammarRows.some(x=>x._masteryDimension==='produce'),'lesson must attr
 const mech=grammarRows.find(x=>x._masteryDimension==='mechanism');
 assert.equal(mech.answer,vm.runInContext("grammarCatalog[mech._reviewKey.slice(2)].mentalModel",Object.assign(ctx,{mech})));
 const boundary=grammarRows.find(x=>x._masteryDimension==='contrast');
-assert.ok(boundary.answer.includes('で'),'locationNi contrast check should test the canonical に × で boundary');
+ctx.boundary=boundary;
+assert.equal(boundary.answer,vm.runInContext("grammarCatalog[boundary._reviewKey.slice(2)].contrast",ctx),'contrast check must use the canonical boundary');
 
 const hints=vm.runInContext("methodForWeakDimension('mechanism')",ctx);
 assert.equal(hints,'mechanism');
