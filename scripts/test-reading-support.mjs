@@ -48,4 +48,15 @@ assert.match(trustedRomaji,/>nihongo ga mada yoku wakarimasen<\/rt>/);
 const trustedRomajiAfterFoundation=context.renderJapaneseReading('日本語がまだよく分かりません。','',{romaji:'nihongo ga mada yoku wakarimasen',state:{romajiMode:'auto',foundationDay:24,foundationComplete:true}});
 assert.equal(trustedRomajiAfterFoundation,'日本語がまだよく分かりません。','romaji-only sources must not become fake furigana after foundation');
 
+const weakMastery={romajiMode:'auto',foundationDay:24,foundationComplete:true,masteryEvidence:{'reading:global':{recall:{attempts:4,score:42}}}};
+assert.match(context.renderJapaneseReading('駅','えき',{state:weakMastery}),/>eki<\/rt>/,'weak mastery should restore romaji');
+
+const developingMastery={romajiMode:'auto',foundationDay:4,foundationComplete:false,masteryEvidence:{'reading:global':{recall:{attempts:4,score:68}}}};
+const developingSupport=context.renderJapaneseReading('駅','えき',{state:developingMastery});
+assert.match(developingSupport,/>えき<\/rt>/,'developing mastery should graduate to furigana');
+assert.match(developingSupport,/data-reading-kind="furigana"/);
+
+const independentMastery={romajiMode:'auto',foundationDay:4,foundationComplete:false,masteryEvidence:{'reading:global':{recall:{attempts:5,score:84}}}};
+assert.equal(context.renderJapaneseReading('駅','えき',{state:independentMastery}),'駅','strong mastery should remove support');
+
 console.log('reading support contracts: ok');
