@@ -96,3 +96,17 @@
 #explore .hub-card.muted{opacity:.76}
 @media(max-width:1000px){#explore .hub-groups>section{grid-template-columns:1fr}.hub-group-head{position:static!important}#explore .hub-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#explore .hub-card,#explore .hub-card:nth-child(1){grid-column:auto;min-height:180px}}
 @media(max-width:680px){#explore .hub-hero{padding:30px 24px}#explore .hub-grid{grid-template-columns:1fr}#explore .hub-card,#explore .hub-card:nth-child(1){min-height:0;padding:20px}}
+
+
+/* P8.4 · semantic motion for capability surfaces */
+@media(prefers-reduced-motion:no-preference){
+ #journey.view.active .journey-stage.current{animation:capabilityArrive .34s cubic-bezier(.2,.78,.2,1) both}
+ #explore.view.active .hub-card{animation:catalogArrive .28s ease both}
+ #explore.view.active .hub-card:nth-child(2){animation-delay:.03s}
+ #explore.view.active .hub-card:nth-child(3){animation-delay:.06s}
+ #progress.view.active .progress-capability-card{animation:capabilityArrive .34s cubic-bezier(.2,.78,.2,1) both}
+ .progress-evidence i em{transition:width .42s cubic-bezier(.2,.75,.2,1)}
+}
+@keyframes capabilityArrive{from{opacity:.72;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes catalogArrive{from{opacity:.74;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#journey .journey-stage,#explore .hub-card,#progress .progress-capability-card{animation:none!important}.progress-evidence i em{transition:none}}
