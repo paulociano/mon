@@ -8,3 +8,5 @@
 .quick-jp .mon-reading rt,.study-examples .mon-reading rt,.method-examples .mon-reading rt{color:#e8bd77}
 .ka-word .mon-reading rt,.ka-examples .mon-reading rt,.ka-challenge .mon-reading rt{color:#d7b56d}
 @media(prefers-reduced-motion:reduce){.mon-reading rt{transition:none}}
+
+.mon-reading.reading-furigana rt{font-family:var(--jp);font-size:.42em;letter-spacing:.02em;text-transform:none;opacity:.82}
