@@ -68,6 +68,17 @@ assert.equal(report.recurrentErrors.trend.delta,-100);
 assert.ok(report.hintDependence.trend.delta<0,'hint dependence should fall in the synthetic improving cohort');
 assert.match(report.caveat,/não demonstram causalidade/);
 
+const contrastState={grammarConfusions:{
+ 'deAction|locationNi':{errors:2,recoveries:2,lastErrorAt:now-8*24*H,retention:{d1:true,d3:true,d7:true}},
+ 'gaState|topicDesu':{errors:1,recoveries:1,lastErrorAt:now-4*24*H,retention:{d1:true,d3:false}}
+}};
+const contrast=ctx.__report(contrastState,events,now).contrastRetention;
+assert.equal(contrast.pairs,2);
+assert.equal(contrast.retained,1);
+assert.equal(contrast.pending,1);
+assert.equal(contrast.windows.find(x=>x.id==='d1').value,100);
+assert.equal(contrast.windows.find(x=>x.id==='d3').value,50);
+
 const sparse=ctx.__report({},[{kind:'attempt',ok:true,spacingMs:24*H,at:now}],now);
 assert.equal(sparse.retention[0].status,'sparse');
 assert.equal(sparse.transfer.trend.status,'insufficient');
