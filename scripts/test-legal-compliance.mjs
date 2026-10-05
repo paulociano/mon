@@ -41,9 +41,9 @@ for(const requiredText of [
 const deleteFn=fs.readFileSync('supabase/functions/delete-account/index.ts','utf8');
 for(const requiredText of [
  "auth.admin.deleteUser(user.id, false)",
- "userClient.auth.getUser()",
+ "userClient.auth.getUser(token)",
  "DELETE_MY_ACCOUNT",
- "SUPABASE_SECRET_KEY",
+ "SUPABASE_SECRET_KEYS",
  "SUPABASE_SERVICE_ROLE_KEY"
 ])if(!deleteFn.includes(requiredText))throw new Error('server-side account deletion control missing: '+requiredText);
 
