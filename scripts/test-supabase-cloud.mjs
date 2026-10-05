@@ -4,6 +4,9 @@ for(const token of ['monCloudConfigured','getMonSupabase','monCloudSignIn','monC
 assert.ok(adapter.includes('persistSession:true'),'browser auth session must persist');
 assert.ok(adapter.includes('signInWithOtp'),'Conta MON must use passwordless email auth');
 assert.ok(!config.toLowerCase().includes('service_role'),'service role key must never appear in browser config');
+assert.ok(config.includes('mon-supabase-publishable-key'),'browser config must support deploy-time publishable-key injection');
+assert.ok(config.includes('MON_CLOUD_RUNTIME_CONFIG'),'browser config must support runtime override without committing a key');
+assert.ok(fs.readFileSync('index.html','utf8').includes('name="mon-supabase-publishable-key" content=""'),'static shell must expose an empty publishable-key injection point');
 assert.ok(sql.includes('enable row level security'),'cloud state table must enable RLS');
 assert.ok(sql.includes('revision bigint not null default 1'),'cloud state needs optimistic revision');
 assert.ok(adapter.includes(".eq('revision',Number(expectedRevision))"),'cloud updates must compare expected revision');

@@ -13,7 +13,7 @@ assert.ok(lesson.includes('bindLessonKeyboard'));
 assert.ok(lesson.includes('data-qopt'));
 assert.ok(app.includes("lesson:['./features/open-production-remediation.js','./features/lesson.js']"));
 assert.ok(fs.readFileSync('features/open-production-remediation.js','utf8').includes('buildOpenRemediation'));
-assert.ok(app.includes("lesson:['./features/lesson.css']"));
+assert.ok(app.includes("lesson:['./features/lesson.css','./features/beginner-scaffolding.css']"),'lesson route must lazy-load base and beginner scaffold styles');
 assert.ok(html.includes('role="progressbar"'));
 assert.ok(html.includes('aria-live="polite"'));
 assert.ok(css.includes('.quick-key'));

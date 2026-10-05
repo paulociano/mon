@@ -24,6 +24,7 @@ const practiceFeatureScripts=['features/practice.js'];
 const grammarNotebookScripts=['features/grammar-notebook.js'];
 const progressFeatureScripts=['features/progress.js'];
 const lessonFeatureScripts=['features/lesson.js'];
+const beginnerScaffoldingScripts=['core/beginner-scaffolding.js'];
 const openRemediationScripts=['features/open-production-remediation.js'];
 const accountScripts=['core/account.js','features/user.js','features/offline.js'];
 const accountPrivacyScripts=['features/account-privacy.js'];
@@ -42,6 +43,7 @@ const n4ExtensionScripts=[...n4BaseScripts,...n4SocialScripts,...n4UrbanScripts,
 const eagerJs=eagerScripts.reduce((n,p)=>n+size(p),0);
 const featureJs=featureScripts.reduce((n,p)=>n+size(p),0);
 const lessonJs=lessonFeatureScripts.reduce((n,p)=>n+size(p),0);
+const beginnerScaffoldingJs=beginnerScaffoldingScripts.reduce((n,p)=>n+size(p),0);
 const openRemediationJs=openRemediationScripts.reduce((n,p)=>n+size(p),0);
 const practiceJs=practiceFeatureScripts.reduce((n,p)=>n+size(p),0);
 const grammarNotebookJs=grammarNotebookScripts.reduce((n,p)=>n+size(p),0);
@@ -71,7 +73,7 @@ const learningValidationJs=learningValidationScripts.reduce((n,p)=>n+size(p),0);
 const n4CapabilityJs=n4CapabilityScripts.reduce((n,p)=>n+size(p),0);
 const n4BaseJs=n4BaseScripts.reduce((n,p)=>n+size(p),0),n4SocialJs=n4SocialScripts.reduce((n,p)=>n+size(p),0),n4UrbanJs=n4UrbanScripts.reduce((n,p)=>n+size(p),0),n4ConversationJs=n4ConversationScripts.reduce((n,p)=>n+size(p),0);
 const n4ExtensionJs=n4ExtensionScripts.reduce((n,p)=>n+size(p),0);
-const css=size('styles.css'),journeyCss=size('features/journey.css'),featureCss=size('features/foundation.css'),lessonCss=size('features/lesson.css'),practiceCss=size('features/practice.css'),grammarNotebookCss=size('features/grammar-notebook.css'),journalCss=size('features/journal.css'),videoCss=size('features/videos.css'),pronunciationCss=size('features/pronunciation.css'),kanjiMemoryCss=size('features/kanji-memory.css'),missionsV2Css=size('features/missions-v2.css'),html=size('index.html');
+const css=size('styles.css'),journeyCss=size('features/journey.css'),featureCss=size('features/foundation.css'),lessonCss=size('features/lesson.css'),beginnerScaffoldingCss=size('features/beginner-scaffolding.css'),practiceCss=size('features/practice.css'),grammarNotebookCss=size('features/grammar-notebook.css'),journalCss=size('features/journal.css'),videoCss=size('features/videos.css'),pronunciationCss=size('features/pronunciation.css'),kanjiMemoryCss=size('features/kanji-memory.css'),missionsV2Css=size('features/missions-v2.css'),html=size('index.html');
 const hero=size('assets/scene/mon-home-banner.webp'),side=size('assets/scene/mon-sidebar-bg.webp');
 
 assert.ok(eagerJs<=72*1024,`eager JS budget exceeded: ${kb(eagerJs)} KB`);
@@ -83,8 +85,10 @@ assert.ok(kanjiRouteJs<=11*1024,`Kanji route data budget exceeded: ${kb(kanjiRou
 assert.ok(narrativeJs<=18*1024,`narrative data budget exceeded: ${kb(narrativeJs)} KB`);
 assert.ok(featureJs<=158*1024,`feature runtime budget exceeded: ${kb(featureJs)} KB`);
 assert.ok(lessonJs<=20*1024,`lesson UI JS budget exceeded: ${kb(lessonJs)} KB`);
+assert.ok(beginnerScaffoldingJs<=5*1024,`beginner scaffolding JS budget exceeded: ${kb(beginnerScaffoldingJs)} KB`);
 assert.ok(openRemediationJs<=4*1024,`open remediation JS budget exceeded: ${kb(openRemediationJs)} KB`);
 assert.ok(lessonCss<=10*1024,`lesson UI CSS budget exceeded: ${kb(lessonCss)} KB`);
+assert.ok(beginnerScaffoldingCss<=2*1024,`beginner scaffolding CSS budget exceeded: ${kb(beginnerScaffoldingCss)} KB`);
 assert.ok(practiceJs<=10*1024,`Practice Hub JS budget exceeded: ${kb(practiceJs)} KB`);
 assert.ok(grammarNotebookJs<=8*1024,`Grammar Notebook JS budget exceeded: ${kb(grammarNotebookJs)} KB`);
 assert.ok(progressJs<=4*1024,`Progress functional mastery JS budget exceeded: ${kb(progressJs)} KB`);

@@ -24,7 +24,7 @@ function renderQuickExercise(){
    if(e.jp)h+=`<div class="quick-jp">${e.jp}</div>`;
    if(e.type==='listen'){h+=`<button class="quick-listen" onclick="speak('${e.audio.replaceAll("'","\\'")}')">▶</button>${quickOptions(e.options)}`}
    else if(e.type==='choice'){h+=quickOptions(e.options)}
-   else if(e.type==='wordbank'){h+=`<div class="word-built" id="wordBuilt"><span style="color:#607083;font-size:9px">toque nos blocos abaixo</span></div><div class="word-bank" id="wordBank">${shuffleArray(e.tokens.map((t,i)=>({t,i}))).map(x=>`<button class="word-token" data-wb="${x.i}" onclick="wordTap(${x.i},this)">${x.t}</button>`).join('')}</div>`}
+   else if(e.type==='wordbank'){h+=renderGuidedWordbank(e)}
    else if(e.type==='match'){const cards=[];e.pairs.forEach((p,i)=>{cards.push({text:p[0],id:i,side:'a'},{text:p[1],id:i,side:'b'})});h+=`<p class="quick-helper">Toque em um item de cada coluna mental. Pares corretos desaparecem.</p><div class="match-grid">${shuffleArray(cards).map(c=>`<button class="match-card" data-mid="${c.id}" data-side="${c.side}" onclick="matchTap(this)">${c.text}</button>`).join('')}</div>`}
    else if(e.type==='speak'){h+=`<button class="quick-listen" onclick="speak('${e.target.replaceAll("'","\\'")}')">▶</button><div class="quick-jp">${e.target}</div><p class="quick-helper">${e.pt}</p><div class="quick-options"><button class="quick-option" onclick="quickShadow(this)">Fiz shadowing em voz alta</button><button class="quick-option" onclick="quickSpeech(this)">● Usar microfone</button></div>`}
    else if(['recall','dictation','cloze','transfer'].includes(e.type)){

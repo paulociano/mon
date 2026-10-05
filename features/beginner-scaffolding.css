@@ -1,0 +1,6 @@
+/* Guided reconstruction · beginner scaffold */
+.wordbank-cue{margin:18px 0 8px;padding:13px 15px;border:1px solid rgba(215,181,109,.16);border-radius:14px;background:rgba(215,181,109,.055)}
+.wordbank-cue span{display:block;margin-bottom:4px;font-size:7px;text-transform:uppercase;letter-spacing:.12em;color:#d7b56d}
+.wordbank-cue strong{font-size:12px;line-height:1.5;color:#e7ebf0}.wordbank-empty{color:#607083;font-size:9px}
+.wordbank-hint-button{margin-top:18px}.wordbank-hint{display:none;margin-top:9px;padding:10px 12px;border-radius:11px;background:rgba(255,255,255,.035);color:#98a6b5;font-size:9px;line-height:1.6}
+.wordbank-hint.show{display:block}@media(max-width:560px){.wordbank-cue strong{font-size:13px}.wordbank-hint{font-size:10px}}
