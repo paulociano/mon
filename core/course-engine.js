@@ -21,6 +21,7 @@ function catalogDistractors(id,field='pt'){
   return [...new Set(rows.map(x=>x.v[field]))];
 }
 
+function safeWordbank(target,cue,prompt='Monte em blocos de sentido.'){target=String(target||'').replace(/[。！？!?、]/g,'');return{type:'wordbank',prompt,target,tokens:[target],cue,why:cue}}
 function exerciseFamily(e={}){
   if(['listen','dictation','minimalPair'].includes(e.type))return 'listen';
   if(['recall','transfer','speak','roleplay','openResponse','wordbank','cloze'].includes(e.type))return 'produce';
@@ -55,7 +56,7 @@ function compilePackExercise(unit,template,index){
   if(template==='reverseMeaning'&&v)return {type:'choice',prompt:`Como dizer “${v.pt}” neste bloco?`,options:engineShuffledOptions(v.jp,catalogDistractors(vocabId,'jp')),answer:v.jp,why:`${v.pt} → ${v.jp} · ${v.reading}`,_reviewType:'vocabulary',_reviewKey:vocabId};
   if(template==='reading'&&v)return {type:'choice',prompt:`Como se lê ${v.jp}?`,jp:v.jp,options:engineShuffledOptions(v.reading,catalogDistractors(vocabId,'reading')),answer:v.reading,why:`${v.jp} → ${v.reading}`,_reviewType:'vocabulary',_reviewKey:vocabId};
   if(template==='listenMeaning'&&v)return {type:'listen',prompt:'Ouça. Qual é o sentido?',audio:v.jp,options:engineShuffledOptions(v.pt,catalogDistractors(vocabId,'pt')),answer:v.pt,why:`${v.jp} · ${v.reading} · ${v.pt}`,_reviewType:'vocabulary',_reviewKey:vocabId};
-  if(template==='sentenceBuild'&&scenario)return guidedSentenceBuild(scenario);
+  if(template==='sentenceBuild'&&scenario)return typeof guidedSentenceBuild==='function'?guidedSentenceBuild(scenario):safeWordbank(scenario.reply,scenario.replyPt);
   if(template==='speak'&&scenario){if(unit.openProduction&&scenario.assessment)return {type:'openResponse',prompt:'Responda com suas próprias palavras.',npc:scenario.npc,npcPt:scenario.pt,target:scenario.reply,pt:scenario.replyPt,assessment:scenario.assessment,why:'O checkpoint avalia intenção e elementos essenciais, não cópia da frase-modelo.',method:'produce'};return {type:'speak',prompt:`Responda: ${scenario.npc}`,target:scenario.reply,pt:scenario.replyPt,why:'Produza a resposta inteira em um único fluxo.'}};
   return null;
 }
@@ -91,7 +92,7 @@ function foundationVariedExercises(day,p,pairs,wordChars,grammarTokens){
   {type:'choice',prompt:`${q[1]} “${p.roman}”?`,options:engineShuffledOptions(p.kana,day<=12?[...kanaCourse.hira.basic,...kanaCourse.kata.basic].map(x=>x[0]):foundationSessionPlans.slice(12).map(x=>x.kana)),answer:p.kana,why:p.concept},
   {type:'match',prompt:q[2],pairs},
   {type:'choice',prompt:`${q[3]} “${p.word}”?`,jp:p.word,options:engineShuffledOptions(p.pt,foundationSessionPlans.map(x=>x.pt)),answer:p.pt,why:`${p.word} · ${p.wordReading} · ${p.pt}`},
-  guidedFoundationBuild(day,p,q[4]),
+  typeof guidedFoundationBuild==='function'?guidedFoundationBuild(day,p,q[4]):safeWordbank(day<=12?p.word:p.phrase,day<=12?p.pt:p.phrasePt,q[4]),
   {type:'choice',prompt:q[5],options:p.conceptOptions,answer:p.concept,why:p.concept},
   {type:'listen',prompt:q[6],audio:p.phrase,options:engineShuffledOptions(p.phrasePt,foundationSessionPlans.map(x=>x.phrasePt)),answer:p.phrasePt,why:`${p.phrase} · ${p.phrasePt}`},
   {type:'speak',prompt:q[7],target:p.phrase,pt:p.phrasePt,why:'Faça shadowing: ouça, espere meio segundo e repita em um único ritmo.'}
@@ -104,7 +105,7 @@ function lessonPlanFromNode(node){let day=node.day||1;const structured=typeof co
   {type:'choice',prompt:`Qual kanji significa “${k.m.toLowerCase()}”?`,options:engineShuffledOptions(k.k,kanjiData.map(x=>x.k)),answer:k.k,why:`${k.k} · ${k.m}`},
   {type:'choice',prompt:`Como se lê ${ex[0]}?`,options:engineShuffledOptions(ex[1],kanjiData.flatMap(x=>x.ex.map(e=>e[1]))),answer:ex[1],why:`${ex[0]} → ${ex[1]} · ${ex[2]}`},
   {type:'choice',prompt:'Escolha a interpretação correta.',jp:rd.jp,options:engineShuffledOptions(rd.pt,microReadings.map(x=>x.pt)),answer:rd.pt,why:rd.insight},
-  guidedMissionBuild(sp),
+  typeof guidedMissionBuild==='function'?guidedMissionBuild(sp):safeWordbank(sp.target,sp.pt),
   {type:'listen',prompt:'Ouça de novo. Qual é a resposta mais natural?',audio:sp.npc,options:engineShuffledOptions(sp.target,missionSpeech.map(x=>x.target)),answer:sp.target,why:sp.pt},
   {type:'choice',prompt:`Qual palavra contém ${k.k}?`,options:engineShuffledOptions(ex[0],kanjiData.map(x=>x.ex[0][0])),answer:ex[0],why:`${ex[0]} · ${ex[2]}`},
   {type:'speak',prompt:'Responda em japonês.',target:sp.target,pt:sp.pt,why:'Produção fecha o circuito.'}
