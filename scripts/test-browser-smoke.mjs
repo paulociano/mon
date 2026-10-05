@@ -61,6 +61,13 @@ try{
  assert.equal(await page.evaluate(()=>document.activeElement?.id),'progress','keyboard navigation must move focus to the active view');
  await page.evaluate(async()=>await go('home'));
  await waitVisible('#home.active');
+ const profileButton=page.locator('button[aria-label="Ver resumo do perfil"]');
+ await profileButton.click();
+ await waitVisible('#user.active');
+ assert.equal(pageErrors.length,0,'profile summary lazy-account flow emitted page errors: '+pageErrors.join('\n'));
+ assert.equal(await page.evaluate(()=>typeof ensureUserArea),'function','profile summary must load the lazy user runtime before rendering');
+ await page.evaluate(async()=>await go('home'));
+ await waitVisible('#home.active');
  assert.equal(await page.evaluate(()=>typeof speak),'function','shared speak helper must exist at shell boot');
  assert.equal(await page.evaluate(()=>typeof shuffleArray),'function','shared shuffle helper must exist at shell boot');
 
