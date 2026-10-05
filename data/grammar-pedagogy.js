@@ -104,6 +104,23 @@ const grammarContrasts={
   compareYori:'Em AよりBのほうが, A é a referência e B recebe o destaque comparativo. Não inverta os papéis pela ordem portuguesa.'
 };
 
+const grammarContrastPairs=[
+  ['topicDesu','gaState'],['locationNi','deAction'],['existenceAru','existenceIru'],
+  ['adjectiveI','adjectiveNa'],['invitationMashou','invitationMasenka'],['requestKudasai','requestOnegai'],
+  ['teMoIi','teWaIkenai'],['reasonKara','reasonNode'],['conditionTara','ifBa'],
+  ['desireTai','planTsumori'],['hearsaySou','seemMitai'],['contrastKedo','contrastNonI'],
+  ['teIru','writtenTeAru']
+];
+function grammarContrastPartners(id){
+  return grammarContrastPairs.filter(p=>p.includes(id)).map(p=>p[0]===id?p[1]:p[0]);
+}
+function grammarContrastPair(a,b){
+  if(!a||!b)return null;
+  const ids=[a,b].sort(),ga=grammarCatalog?.[a],gb=grammarCatalog?.[b];
+  if(!ga||!gb)return null;
+  return {id:ids.join('|'),a,b,boundary:`${ga.form} × ${gb.form}: ${ga.contrast||grammarContrasts[a]||''} ${gb.contrast||grammarContrasts[b]||''}`};
+}
+
 const grammarMistakes={
   topicDesu:{wrong:'Tratar は como se significasse “é”.',explanation:'は marca o tópico; です fecha uma identificação ou descrição polida. A função vem do padrão inteiro.'},
   locationNi:{wrong:'Usar で em qualquer frase com lugar.',explanation:'Escolha pela função: に para destino/horário/existência; で para o lugar onde a ação acontece.'},
@@ -155,6 +172,7 @@ function applyGrammarPedagogy(){
       explanation:`${g.form||'Este padrão'} serve para ${g.function||'organizar a frase'}. Em uso, ${g.pt||'o sentido depende do contexto'}. ${mentalModel}`,
       examples:grammarExamplesFromCurriculum(id,g),
       contrast:grammarContrast(id,g),
+      contrastWith:grammarContrastPartners(id),
       commonMistakes:grammarCommonMistakes(id,g),
       realWorldUse:grammarRealWorldUse(id,g),
       sources:['Desvendando','Irodori']
