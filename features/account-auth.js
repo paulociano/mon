@@ -10,10 +10,10 @@ function monAuthCredentials(){
  return {email,password};
 }
 async function signUpMonCloud(){
- try{const {email,password}=monAuthCredentials(),data=await monCloudSignUp(email,password);if(data?.session){toast('Conta criada e conectada');await go('home',{replace:true})}else{setAuthStatus('Conta criada. Confirme seu e-mail e depois entre.');toast('Confirme seu e-mail')}}catch(e){setAuthStatus(e.message);toast(e.message)}
+ try{const {email,password}=monAuthCredentials(),data=await monCloudSignUp(email,password);if(data?.session){await ensureAccountRuntime();await monCloudBootstrap();toast('Conta criada e conectada');await go('home',{replace:true})}else{setAuthStatus('Conta criada. Confirme seu e-mail e depois entre.');toast('Confirme seu e-mail')}}catch(e){setAuthStatus(e.message);toast(e.message)}
 }
 async function signInMonCloud(){
- try{const {email,password}=monAuthCredentials();await monCloudPasswordSignIn(email,password);await monCloudBootstrap();toast('Conta MON conectada');await go('home',{replace:true})}catch(e){setAuthStatus(e.message);toast(e.message)}
+ try{const {email,password}=monAuthCredentials();await monCloudPasswordSignIn(email,password);await ensureAccountRuntime();await monCloudBootstrap();toast('Conta MON conectada');await go('home',{replace:true})}catch(e){setAuthStatus(e.message);toast(e.message)}
 }
 async function setMonCloudPassword(){
  const password=document.getElementById('userCloudNewPassword')?.value||'';
