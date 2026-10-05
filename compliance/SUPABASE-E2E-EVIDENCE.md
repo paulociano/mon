@@ -49,15 +49,59 @@ Result: **PASS**
 
 ## Still unverified
 
-The following require a real authenticated browser session and remain open:
+## Real production Auth follow-up
 
-- magic-link email delivery and redirect;
-- persisted browser session;
-- real client push/pull;
-- real two-account interaction through Supabase Auth;
+A subsequent real production test verified:
+
+- email/password account creation;
+- email confirmation;
+- successful password sign-in;
+- creation of a matching `mon_user_state` row;
+- client-driven cloud revision reaching 2;
+- a cloud update occurring after the recorded login.
+
+At that point the project contained two real Auth identities and two cloud-state rows: one historical account and one newly created account. No email address or token is recorded here.
+
+Result: **PASS — signup/login/client push**
+
+## Still unverified
+
+The following still require real browser-session checks or a destructive test:
+
+- real client pull on a second device;
+- real two-account cross-access denial through browser sessions;
 - cloud-data deletion through the UI;
-- `delete-account` invocation with a real user JWT;
-- browser-side sign-out/local cleanup;
+- browser-side local cleanup after deletion;
 - post-operation log review.
 
-No real Auth users existed in the project at the time of this test.
+
+## Session persistence and legacy-account cleanup
+
+Observed after the new email/password account was created:
+
+- the user explicitly reloaded the production MON page and remained authenticated;
+- session persistence across reload therefore passed;
+- the earlier historical Auth identity was then deleted with explicit user approval;
+- readback after deletion showed exactly one Auth identity remaining;
+- readback showed exactly one `mon_user_state` row remaining;
+- the remaining row belongs to the current account and retained revision 2;
+- the historical cloud row disappeared through the existing cascade.
+
+Result: **PASS — session persistence and legacy-account cleanup**
+
+
+## Real authenticated account deletion
+
+The current production account was deleted through the MON UI by the authenticated user.
+
+Fresh backend readback after the operation showed:
+
+- Auth users: 0;
+- Auth sessions: 0;
+- `mon_user_state` rows: 0.
+
+This verifies removal of the Auth identity, server-side session cleanup, and cascade deletion of the cloud learning state.
+
+The Supabase log-query backend returned an error when attempting post-operation log inspection, so log review remains open.
+
+Result: **PASS — full real account deletion**

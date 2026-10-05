@@ -12,11 +12,12 @@ A Conta MON não deve ser aberta ao público enquanto qualquer gate P0 permanece
 - [x] implementar exclusão completa da identidade de autenticação por backend/Edge Function no repositório;
 - [x] deployar a Edge Function `delete-account` no projeto Supabase MON (`sa-east-1`);
 - [x] disponibilizar a publishable key ao frontend por runtime público controlado (`public-config`), sem expor secret/service-role;
-- [ ] configurar Site URL + Redirect URL do Supabase Auth para `https://paulociano.github.io/mon/`;
+- [x] configurar Site URL + Redirect URL do Supabase Auth para `https://paulociano.github.io/mon/` e observar cadastro/confirmação/login reais em produção;
 - [x] validar isolamento RLS transacional entre usuários sintéticos, sem persistir contas de teste;
 - [x] validar optimistic concurrency por `revision` (CAS), incluindo rejeição de revisão obsoleta;
 - [x] validar `ON DELETE CASCADE` de `auth.users` para `mon_user_state` em transação com rollback;
-- [ ] testar exclusão completa ponta a ponta com usuário autenticado real;
+- [x] validar cadastro real, confirmação de e-mail, login por senha e criação/atualização de `mon_user_state` em produção;
+- [x] testar exclusão completa ponta a ponta com usuário autenticado real e confirmar `auth.users=0`, `auth.sessions=0` e `mon_user_state=0`;
 - [x] provisionar o projeto Supabase MON em `sa-east-1`;
 - [x] revisar região, DPA e lista oficial de subprocessadores do Supabase;
 - [ ] validar juridicamente o mecanismo contratual de transferência internacional aplicável sob a Resolução CD/ANPD nº 19/2024;

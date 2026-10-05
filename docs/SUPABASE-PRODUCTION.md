@@ -25,26 +25,26 @@ This removes the GitHub Pages key-injection blocker while preserving the ability
 
 ## Supabase Auth URL configuration
 
-For the hosted production project, configure in Authentication → URL Configuration:
+Hosted production configuration:
 
 - Site URL: `https://paulociano.github.io/mon/`
 - Allowed Redirect URL: `https://paulociano.github.io/mon/`
 
-MON currently calls `signInWithOtp` and supplies an `emailRedirectTo` based on the current page. The production site uses hash routing, so authentication should return to the same Pages root.
+The production flow now uses email + password as the primary authentication path. Account creation uses `signUp`, direct login uses `signInWithPassword`, and already-authenticated users can update their password through `updateUser`.
 
-Do not add wildcard production redirects when the exact URL is sufficient.
+On 5 October 2026, a new real production account was created, its email was confirmed, a password login was observed, and the corresponding `mon_user_state` row was written and advanced to revision 2. This provides runtime evidence that the configured production Auth URLs and account flow are operational.
 
 ## Verification still required
 
 After the Auth URLs are configured, use disposable test accounts and prove:
 
-1. magic-link sign-in creates a valid browser session;
+1. browser session survives an explicit reload and returns directly to the app;
 2. user A can create/read/update/delete only A's `mon_user_state`;
-3. user B cannot access A's row;
+3. user B cannot access A's row through real browser Auth sessions;
 4. optimistic revision conflicts are detected;
 5. cloud-data deletion removes the row while retaining local progress;
 6. full account deletion removes the Auth identity and cascades the cloud state;
-7. the browser session is cleared locally;
+7. the browser session is cleared locally after sign-out/deletion;
 8. function/database logs contain no leaked tokens or personal payloads.
 
 Do not mark these gates complete until the behavior is observed end to end.
@@ -74,4 +74,42 @@ Observed results:
 
 These checks validate database authorization and concurrency contracts. They do **not** replace a real browser Auth flow, email delivery, persisted session, client sync, or the deployed `delete-account` HTTP path.
 
-At the time of this verification the project had zero real Auth users, so the authenticated-user E2E gate remains open.
+That earlier database-only verification preceded the real Auth flow. See the real production evidence below.
+
+
+## Real Auth E2E evidence — 5 October 2026
+
+Observed against the production Supabase project after the auth-first login rollout:
+
+- a new real Auth identity was created at 07:34:08 UTC;
+- its email was confirmed at 07:34:20 UTC;
+- a real sign-in was recorded at 07:34:20 UTC;
+- a matching `mon_user_state` row exists;
+- the new row reached revision 2;
+- the cloud row was updated again at 07:35:02 UTC, after the recorded login;
+- the project currently contains two Auth identities and two cloud-state rows: one historical account and the newly created account.
+
+No email address or token value is recorded in this handoff.
+
+**Result:** real signup, confirmation, password login, client-to-cloud state creation/update, and browser-session persistence across an explicit reload are verified.
+
+After the reload check, the historical Auth identity from the earlier magic-link tests was deleted with explicit user approval. Readback confirmed exactly one remaining Auth identity and exactly one remaining `mon_user_state` row, belonging to the current account. The old cloud row was removed by cascade.
+
+Real two-account cross-access, cloud-only deletion through the current UI, and post-operation log review remain open.
+
+
+## Real account deletion E2E — 5 October 2026
+
+The current authenticated production account was deleted by the user through the MON account-deletion flow.
+
+Post-operation readback against the production Supabase project confirmed:
+
+- `auth.users`: 0 rows;
+- `auth.sessions`: 0 rows;
+- `public.mon_user_state`: 0 rows.
+
+This proves that the real Auth identity was removed, server-side sessions were cleared, and the cloud learning-state row was removed through the deletion cascade.
+
+The dedicated observability/log query returned a Supabase backend error during this verification, so post-operation log inspection remains open and is not claimed as complete.
+
+**Result:** **PASS — real authenticated account deletion, session removal, and cloud-state cascade**
