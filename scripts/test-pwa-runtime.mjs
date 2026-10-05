@@ -16,9 +16,9 @@ for(const lazy of ['./data/content-packs.js','./features/session.js','./features
   assert.ok(!core.includes(`'${lazy}'`),'lazy runtime must not be install-precache '+lazy);
 }
 const installBlock=sw.match(/self\.addEventListener\('install'[\s\S]*?\n}\);/)?.[0]||'';
-assert.ok(installBlock.includes("if(CRITICAL_SHELL_UPGRADE)await self.skipWaiting()"),'critical shell recovery must activate immediately');
-assert.ok(sw.includes("const CACHE_VERSION='v37'"),'profile-shell recovery must bump the MON cache version');
-assert.ok(sw.includes("const CRITICAL_SHELL_UPGRADE=CACHE_VERSION==='v37'"),'forced activation must be explicitly scoped to v37 only');
+assert.ok(installBlock.includes("if(CRITICAL_SHELL_UPGRADE)await self.skipWaiting()"),'controlled install hook must remain available');
+assert.ok(sw.includes("const CACHE_VERSION='v38'"),'account-runtime recovery must bump the MON cache version');
+assert.ok(sw.includes('const CRITICAL_SHELL_UPGRADE=false'),'updates must stay user-controlled after the v37 recovery');
 assert.ok(!sw.includes('client.navigate('),'service worker activation must not trigger navigation reload loops');
 assert.ok(sw.includes("event.data?.type==='SKIP_WAITING'"),'service worker needs explicit update activation message');
 assert.ok(sw.includes("const CACHE_PREFIX='mon-japanese-os-'"),'service worker cache namespace missing');
@@ -32,3 +32,6 @@ for(const token of ['showMonUpdate','applyMonUpdate','watchMonUpdate','reg.waiti
 assert.ok(html.includes('id="updateBanner"'),'update availability UI missing');
 assert.ok(html.includes('onclick="applyMonUpdate()"'),'update action missing');
 console.log('MON PWA shell and update contracts passed');
+assert.ok(app.includes("monUpdateWorker?.state==='installed'"),'update action must ignore stale non-waiting worker references');
+assert.ok(app.includes('reg?.waiting'),'update action must resolve the current waiting worker');
+assert.ok(app.includes('location.reload()'),'update action must recover when the worker already activated');
