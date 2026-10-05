@@ -60,3 +60,21 @@
  .progress-ring-large{width:92px;height:92px}
  .journey-footer-card,.progress-next-card{align-items:flex-start;flex-direction:column}
 }
+
+
+/* P8.3 · progress as capability map */
+#progress.view.active{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}
+#progress>.progress-hero,#progress>.progress-evidence-grid{grid-column:1/-1}
+#progress>.progress-capability-card{grid-column:1}
+#progress>.progress-next-card{grid-column:2;margin:0;min-height:100%;align-items:flex-start;flex-direction:column;justify-content:space-between;background:#172334;color:#fff}
+#progress>.progress-next-card h3{color:#fff;font-size:25px}#progress>.progress-next-card p{color:#aab5c0;font-size:12px}
+.progress-capability-card{padding:30px 32px;border-radius:26px;box-shadow:0 18px 48px rgba(20,31,47,.07)}
+.progress-capability-card h3{font-size:30px;letter-spacing:-.02em}.progress-capability-card p{font-size:12px;max-width:680px}
+.progress-ring-large{width:126px;height:126px}.progress-ring-large b{font-size:26px}.progress-ring-large span{font-size:9px}
+.progress-evidence-grid{grid-template-columns:repeat(12,minmax(0,1fr));gap:10px;margin-top:2px}
+.progress-evidence{grid-column:span 3;min-height:142px;padding:20px;border-radius:20px}
+.progress-evidence[data-functional-mastery]{grid-column:span 4;background:#fffdf8}
+.progress-evidence[data-learning-validation]{background:#f7f9fb}
+.progress-evidence span{font-size:8px}.progress-evidence b{font-size:28px;margin:16px 0 7px}.progress-evidence small{font-size:9px;line-height:1.5}
+@media(max-width:1000px){#progress.view.active{grid-template-columns:1fr}#progress>.progress-capability-card,#progress>.progress-next-card{grid-column:1}.progress-evidence-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.progress-evidence,.progress-evidence[data-functional-mastery]{grid-column:auto}}
+@media(max-width:680px){.progress-capability-card{padding:22px}.progress-capability-card h3{font-size:26px}.progress-evidence-grid{grid-template-columns:1fr}.progress-evidence{min-height:0}#progress>.progress-next-card{padding:22px}}

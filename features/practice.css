@@ -39,3 +39,24 @@
  .mastery-edges article{grid-template-columns:1fr;gap:7px}.mastery-meter{order:3}
  #practice .practice-tile{min-height:160px;padding:17px}
 }
+
+
+/* P8.3 · practice hierarchy */
+#practice.view.active{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);gap:16px;align-items:start}
+#practice>.section-head,#practice>.practice-coach,#practice>.practice-grid-v6,#practice>.grammar-notebook,#practice>.mistake-notebook{grid-column:1/-1}
+#practice>.section-head{margin-bottom:2px!important}
+#practice>.section-head h3{font-size:clamp(30px,4vw,42px)!important;line-height:1.05;margin-top:9px!important;max-width:720px}
+#practice>.section-head p{font-size:12px!important;line-height:1.65;max-width:720px}
+.practice-coach{grid-template-columns:68px minmax(0,1fr) auto;padding:26px 28px;margin-bottom:8px;border-radius:26px;background:linear-gradient(135deg,rgba(215,181,109,.09),rgba(255,255,255,.012));box-shadow:0 22px 60px rgba(0,0,0,.14)}
+.practice-coach-mark{width:62px;height:62px;border-radius:20px;font-size:29px}.practice-coach h3{font-size:28px;margin:7px 0}.practice-coach p{font-size:12px;line-height:1.65}
+.mastery-map,.review-deck{margin:0;min-height:100%;padding:24px;border-radius:22px}
+.mastery-map{grid-template-columns:1fr;gap:20px}.review-deck{grid-template-columns:1fr;gap:20px}
+.mastery-map h3,.review-deck h3{font-size:24px}.mastery-map p,.review-deck p{font-size:11px;line-height:1.65}
+.review-deck-stats{min-width:0;grid-template-columns:repeat(2,1fr)}.review-deck-stats .primary{min-height:46px}
+#practice .practice-grid-v6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:8px}
+#practice .practice-tile{min-height:185px;padding:18px;border-radius:20px}
+#practice .practice-tile:nth-child(1),#practice .practice-tile:nth-child(2){grid-column:span 2}
+#practice .practice-tile:nth-child(n+3){grid-column:span 1}
+#practice .practice-tile h3{font-size:17px;line-height:1.2}#practice .practice-tile p{font-size:10px;line-height:1.55}
+@media(max-width:1000px){#practice.view.active{grid-template-columns:1fr}.mastery-map,.review-deck{grid-column:1}.practice-coach{grid-template-columns:56px 1fr}.practice-coach .primary{grid-column:1/-1}#practice .practice-grid-v6{grid-template-columns:repeat(2,minmax(0,1fr))}#practice .practice-tile:nth-child(n){grid-column:auto}}
+@media(max-width:560px){#practice.view.active{gap:12px}.practice-coach{padding:18px}.practice-coach h3{font-size:24px}.practice-coach p{font-size:11px}#practice .practice-grid-v6{grid-template-columns:1fr}#practice .practice-tile{min-height:0;padding:18px}}

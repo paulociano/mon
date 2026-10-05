@@ -252,13 +252,14 @@ Definir budgets de latência somente depois de coletar baseline real em navegado
 
 **P8.2 · Core Experience:** consolida a linguagem visual em torno de uma tese de “portal editorial, não dashboard”: Home com uma ação dominante e rail secundário mais silencioso; Jornada como timeline contínua de capacidades; Lesson com maior foco tipográfico, menos ruído e controles mais confortáveis em desktop e mobile.
 
+**P8.3 · Practice, Progress & Missions:** o Practice Hub passa a priorizar decisão e reparo, o Progresso vira um mapa hierárquico de capacidades e evidências, e a Mission UI assume linguagem visual de conversa, com interlocutor e respostas ocupando lados distintos da cena.
+
 Próximas superfícies:
-1. Practice Hub;
-2. Progress como mapa de capacidades;
-3. Mission UI em linguagem de conversa;
-4. Explorar com menos grade uniforme;
-5. Listening Lab;
-6. Kanji Lab.
+1. Explorar com menos grade uniforme;
+2. Listening Lab;
+3. Kanji Lab;
+4. refinamento de estados vazios/loading/sucesso;
+5. motion semântico para avanço, reparo e domínio.
 
 Regras:
 - uma ação principal por superfície;
