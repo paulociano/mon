@@ -1,6 +1,6 @@
 const CACHE_PREFIX='mon-japanese-os-';
-const CACHE_VERSION='v37';
-const CRITICAL_SHELL_UPGRADE=CACHE_VERSION==='v37';
+const CACHE_VERSION='v38';
+const CRITICAL_SHELL_UPGRADE=false;
 const CACHE=CACHE_PREFIX+CACHE_VERSION;
 const CORE=['./','./index.html','./styles.css','./data/course-content.js','./core/state.js','./core/review-scheduler.js','./core/performance.js','./core/home-coach.js','./app.js','./manifest.json','./icon.svg','./assets/brand/mon-mark.svg','./assets/brand/mon-lockup.svg','./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp'];
 
