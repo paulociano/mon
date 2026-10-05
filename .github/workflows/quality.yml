@@ -74,6 +74,8 @@ jobs:
         run: node scripts/test-n5-grammar-study.mjs
       - name: Canonical grammar pedagogy
         run: node scripts/test-grammar-catalog-pedagogy.mjs
+      - name: Adaptive grammar remediation
+        run: node scripts/test-grammar-remediation.mjs
       - name: Japanese learning cycle
         run: node scripts/test-japanese-learning-cycle.mjs
       - name: Foundation lesson variety
