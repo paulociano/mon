@@ -27,6 +27,7 @@ const base=vm.runInContext(`({
 
 ctx.base=base;
 const first=vm.runInContext("recordMistake(base,{chosen:'marcar local da ação',node:24})",ctx);
+ctx.first=first;
 assert.equal(first.concept,'grammar:P:locationNi');
 assert.equal(first.lastChosen,'marcar local da ação');
 assert.equal(first.exercise._reviewType,'grammar');
