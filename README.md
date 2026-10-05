@@ -13,7 +13,7 @@
 
 # MON 門 Japanese OS
 
-O **MON** é uma aplicação web/PWA para aprender japonês desde o zero absoluto até situações reais do cotidiano. Em vez de organizar o estudo apenas como listas de palavras ou exercícios repetidos, o produto combina **Fundação Zero, SRS, Mastery Graph, narrativa recorrente, prática adaptativa, Kanji Memory Lab, listening, fala, missões de sobrevivência e validação longitudinal da aprendizagem**.
+O **MON** é uma aplicação web/PWA para aprender japonês desde o zero absoluto até situações reais do cotidiano. Em vez de organizar o estudo apenas como listas de palavras ou exercícios repetidos, o produto combina **Fundação Zero, SRS, Mastery Graph, leitura adaptativa com romaji/furigana, narrativa recorrente, prática adaptativa, Kanji Memory Lab, listening, fala, missões de sobrevivência e validação longitudinal da aprendizagem**.
 
 O sistema adapta a próxima sessão usando evidências reais do aluno, acompanha retenção e transferência ao longo do tempo e preserva uma arquitetura local-first, offline e orientada a performance. O motor de sincronização multi-device já está implementado com revisão otimista e conflitos explícitos; a ativação cloud depende da configuração do Supabase no ambiente publicado.
 
@@ -27,17 +27,18 @@ A interface segue uma identidade japonesa contemporânea: sumi/indigo, shu vermi
 
 | Área | O que faz |
 | --- | --- |
-| **Fundação Zero** | Som, hiragana, katakana, gramática inicial e saída gradual do romaji |
+| **Fundação Zero** | Som, hiragana, katakana, gramática inicial e retirada progressiva do suporte de leitura |
 | **Home Coach** | Escolhe uma próxima ação principal usando sinais reais do aluno |
 | **Next Best Lesson Engine** | Monta a próxima sessão a partir de revisão, erros, domínio, narrativa e, quando há evidência suficiente, sinais longitudinais |
 | **Daily Loop adaptativo** | Alterna ouvir, recuperar, aprender, aplicar, transferir e produzir |
 | **SRS + Caderno de Erros** | Agenda memória e reapresenta padrões que continuam falhando |
-| **Mastery Graph** | Separa evidência de reconhecimento, recall, listening e produção |
+| **Mastery Graph** | Separa evidência de reconhecimento, recall, listening, transferência e produção e alimenta decisões adaptativas |
 | **Learning Validation** | Mede retenção 1d+/3d+/7d+, dependência de pistas, transferência, autonomia e recuperação de erros sem inferir causalidade |
 | **P9/P10 Pedagogy Gate** | Exige que as 36 unidades N4 preservem Study Blocks, compreensão conceitual, capabilities, retrieval, transfer, production, repair e provenance |
+| **Adaptive Reading Support** | Usa romaji, furigana ou nenhum apoio conforme a fase e a evidência de autonomia de leitura; erros podem fazer o suporte reaparecer |
 | **Kanji Memory Lab 2.0** | Famílias visuais, contraste, sentido → forma, forma → leitura e escrita |
 | **Listening & Pronunciation Lab** | Mora, vogais longas, っ, ん, shadowing e autoavaliação |
-| **Survival Missions 2.0** | Cenários ramificados com reparo de conversa e objetivo observável |
+| **Survival Missions 3.0** | Cenários ramificados, autonomia funcional, reparo de conversa e objetivo observável |
 | **Diário no Japão** | Registra personagens, lugares, callbacks e situações resolvidas |
 | **Conta & Sync** | Estado versionado, revisão otimista, dirty tracking e resolução explícita de conflitos entre dispositivos |
 | **Vídeos** | Biblioteca de apoio visual lazy, com player externo somente no clique |
@@ -47,6 +48,7 @@ A interface segue uma identidade japonesa contemporânea: sumi/indigo, shu vermi
 ## Princípios pedagógicos
 
 - **recuperar antes de rever**;
+- retirar romaji e furigana conforme a autonomia aparece, mas permitir que o apoio retorne quando a evidência enfraquece;
 - avançar por **domínio demonstrado**, não apenas por conclusão;
 - intercalar reconhecimento, listening, recall, transferência e produção;
 - ensinar gramática com modelos mentais em português, evitando equivalências literais enganosas;
@@ -78,17 +80,20 @@ Algumas fronteiras importantes:
 - `core/home-coach.js` — próxima melhor ação da Home;
 - `core/next-best-lesson.js` — receita adaptativa e calibração conservadora da próxima sessão;
 - `core/review-scheduler.js` — revisão espaçada;
-- `core/mastery-graph.js` — evidência de domínio;
+- `core/mastery-graph.js` — evidência de domínio e autonomia de leitura;
+- `core/reading-support.js` — romaji/furigana adaptativos com fallback conservador;
 - `data/narrative.js` + `core/narrative-state.js` — memória narrativa;
 - `features/pronunciation.js` — Listening & Pronunciation Lab;
 - `features/kanji-memory.js` — Kanji Memory Lab 2.0;
-- `features/missions-v2.js` — Survival Missions 2.0.
+- `features/missions-v2.js` — Survival Missions 3.0.
 
 ## Adaptação por evidência
 
 O Next Best Lesson prioriza dívidas pedagógicas diretas antes de qualquer calibração longitudinal: remediation, revisões vencidas, gaps funcionais, erros abertos, fragilidade de domínio e narrativa pendente continuam tendo precedência.
 
-Sinais longitudinais só interferem quando existe amostra suficiente. Hoje, retenção 7d+ e transferência observada podem frear um avanço e puxar a sessão para `retrieve` ou `transfer`; dependência de pistas e autonomia permanecem observacionais até haver evidência melhor para transformá-las em política adaptativa.
+A ajuda de leitura também segue uma política conservadora. Enquanto existem poucas observações, o MON usa a fase da Fundação como fallback. Depois de evidência suficiente em leituras sem pista, a progressão passa a responder ao Mastery Graph: **romaji → furigana → sem apoio**. Se erros recorrentes derrubarem a evidência de autonomia, o suporte pode reaparecer automaticamente.
+
+Sinais longitudinais só interferem quando existe amostra suficiente. Retenção 7d+ e transferência observada podem frear um avanço e puxar a sessão para `retrieve` ou `transfer`; outras métricas continuam observacionais quando ainda não existe base suficiente para transformá-las em política adaptativa.
 
 A camada de validação longitudinal acompanha retenção após 1d+, 3d+ e 7d+, tendências de hints, transferência, autonomia e recuperação de erros recorrentes. Esses sinais descrevem o estado observado do aluno e **não são tratados como prova causal da eficácia de uma feature**.
 
@@ -139,7 +144,7 @@ O workflow `.github/workflows/quality.yml` verifica, entre outros:
 - review scheduler;
 - Gate Loop;
 - adaptive teaching;
-- Mastery Graph e Learning Evidence;
+- Mastery Graph, Reading Mastery e Learning Evidence;
 - validação longitudinal da aprendizagem;
 - narrativa e persistência;
 - Home Coach;
@@ -147,6 +152,7 @@ O workflow `.github/workflows/quality.yml` verifica, entre outros:
 - Daily Loop;
 - Pronunciation Lab;
 - Kanji Memory Lab;
+- Adaptive Reading Support;
 - Survival Missions;
 - lazy loading;
 - budgets de performance;
@@ -162,7 +168,7 @@ O roadmap operacional fica em [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 A ordem é por **dependência, risco e ganho de aprendizagem**, não por volume de funcionalidades. O **gate estrutural N5 está concluído**, o **N4 já possui contrato por capacidades**, a validação longitudinal e a calibração conservadora do NBL estão implementadas, e a camada multi-device já possui motor de conflitos explícitos.
 
-O foco atual é continuar validando retenção e transferência ao longo do tempo, calibrar gates funcionais com evidência real, avançar o refinamento P8 nas superfícies publicadas e transformar latência absoluta em gate somente quando houver baseline representativo fora do laboratório de CI.
+O foco atual é continuar validando retenção, transferência e autonomia de leitura ao longo do tempo, calibrar gates funcionais com evidência real, ampliar a cobertura do suporte adaptativo sem criar dependência de pistas, avançar o refinamento P8 nas superfícies publicadas e transformar latência absoluta em gate somente quando houver baseline representativo fora do laboratório de CI.
 
 ## Marca
 
