@@ -43,6 +43,7 @@ function recordMistake(exercise={},context={}){
   state.mistakes=state.mistakes.slice(0,60);
   mistakeEvidence('mistake',key,entry.category,now);
   if(concept)mistakeEvidence('misconception',concept,{grammarId,chosen:entry.lastChosen,key},now);
+  if(context.run)queueGrammarRepair(context.run,exercise,context.chosen,entry);
   return entry;
 }
 function markMistakeRecovered(exercise={}){
