@@ -48,13 +48,16 @@ function monKanaToRomaji(text){
 function monReadingMode(stateLike=typeof state!=='undefined'?state:null){
  const mode=stateLike?.romajiMode;return mode==='show'||mode==='hide'?mode:'auto';
 }
-function monReadingSupportClass(stateLike=typeof state!=='undefined'?state:null,mode=monReadingMode(stateLike)){
+function monReadingSupportClass(stateLike=typeof state!=='undefined'?state:null,mode=monReadingMode(stateLike),annotation='romaji'){
  if(mode==='show')return 'romaji-show';
  if(mode==='hide')return 'romaji-hide';
  const day=Math.max(1,Number(stateLike?.foundationDay||1));
- if(stateLike?.foundationComplete||day>12)return 'romaji-auto romaji-auto-hidden';
+ if(annotation==='furigana')return 'romaji-auto reading-furigana';
  if(day>8)return 'romaji-auto romaji-auto-faded';
  return 'romaji-auto';
+}
+function monContainsKanji(text){
+ return /[\u3400-\u4dbf\u4e00-\u9fff]/.test(String(text||''));
 }
 function monKanaOnlyReading(text){
  const value=String(text||'').trim();
@@ -63,10 +66,15 @@ function monKanaOnlyReading(text){
 function renderJapaneseReading(text,reading='',options={}){
  const jp=String(text??''),source=String(reading||monKanaOnlyReading(jp)||'');
  if(!source)return monEscapeReadingHtml(jp);
- const romaji=String(options.romaji||monKanaToRomaji(source)||'').trim();
- if(!romaji)return monEscapeReadingHtml(jp);
- const mode=options.mode||monReadingMode(options.state);
- const klass=monReadingSupportClass(options.state,mode);
- return `<ruby class="mon-reading ${klass}" data-reading-support="${mode}"><rb lang="ja">${monEscapeReadingHtml(jp)}</rb><rt aria-hidden="true">${monEscapeReadingHtml(romaji)}</rt></ruby>`;
+ const mode=options.mode||monReadingMode(options.state),stateLike=options.state||(typeof state!=='undefined'?state:null);
+ const day=Math.max(1,Number(stateLike?.foundationDay||1)),pastFoundation=!!stateLike?.foundationComplete||day>12;
+ let annotation='romaji',support=String(options.romaji||monKanaToRomaji(source)||'').trim();
+ if(mode==='auto'&&pastFoundation){
+  if(!monContainsKanji(jp))return monEscapeReadingHtml(jp);
+  annotation='furigana';support=source;
+ }
+ if(!support)return monEscapeReadingHtml(jp);
+ const klass=monReadingSupportClass(stateLike,mode,annotation);
+ return `<ruby class="mon-reading ${klass}" data-reading-support="${mode}" data-reading-kind="${annotation}"><rb lang="ja">${monEscapeReadingHtml(jp)}</rb><rt aria-hidden="true">${monEscapeReadingHtml(support)}</rt></ruby>`;
 }
-if(typeof window!=='undefined')Object.assign(window,{monKanaToRomaji,renderJapaneseReading,monReadingMode,monReadingSupportClass});
+if(typeof window!=='undefined')Object.assign(window,{monKanaToRomaji,renderJapaneseReading,monReadingMode,monReadingSupportClass,monContainsKanji});
