@@ -207,6 +207,39 @@ Princípios:
 - rival ainda não encontrado permanece oculto;
 - remediation específica continua usando o `grammarCatalog`, sem duplicar explicações.
 
+## Retenção contrastiva longitudinal · P7
+
+Uma misconception contrastiva não é considerada resolvida porque o aluno acertou logo após a correção.
+
+O MON usa três checkpoints temporais aproximados:
+
+- **d1** — 20h+ após o último erro;
+- **d3** — 60h+ após o último erro;
+- **d7** — 144h+ após o último erro.
+
+Fluxo:
+
+```text
+erro A × B
+→ repair imediato
+→ probe d1 em situação nova
+→ probe d3
+→ probe d7
+→ retained
+```
+
+O acerto imediato pode reduzir a dívida operacional, mas a confusão permanece aberta até existir evidência d7. Qualquer novo erro reinicia os checkpoints e atualiza `lastErrorAt`.
+
+Os probes entram na mesma fila de revisão usada pelas lições e são priorizados antes de revisões genéricas quando estão vencidos. Cada probe continua registrando evidence na dimensão `contrast`.
+
+O relatório de Learning Validation expõe retenção contrastiva separadamente da retenção geral, permitindo observar quantos pares estão pendentes e quantos sobreviveram aos checkpoints.
+
+Princípios:
+- correção imediata não equivale a retenção;
+- retenção precisa sobreviver ao tempo e a uma situação nova;
+- novo erro invalida a prova longitudinal anterior;
+- não criar scheduler paralelo: os probes usam a revisão existente do MON.
+
 ## Gramática
 
 A gramática é ensinada como função comunicativa.
