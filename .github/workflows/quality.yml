@@ -110,6 +110,10 @@ jobs:
         run: node scripts/test-n5-depth.mjs
       - name: N4 capability contracts
         run: node scripts/test-n4-capabilities.mjs
+      - name: P9 N4 pedagogy coverage
+        run: node scripts/test-n4-pedagogy.mjs
+      - name: P10 pedagogical validation
+        run: node scripts/test-pedagogical-validation.mjs
       - name: N5 readiness governance
         run: node scripts/test-n5-readiness.mjs
       - name: Home polish contracts

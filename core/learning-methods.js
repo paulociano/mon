@@ -235,11 +235,12 @@ function japaneseLearningContract(unit={}){
   const study=grammarStudyBlock(unit);
   const kanji=kanjiStudyForUnit(unit);
   const canDo=(unit.objectives||[]).filter(Boolean);
+  const capabilities=[...(unit.capabilities||[])];
   const situation=unit.context||`${unit.title||'Situação prática'}: ${scenario.pt||canDo[0]||'use japonês para concluir a tarefa comunicativa.'}`;
   const repair={jp:'すみません、もう一度ゆっくりお願いします。',pt:'Desculpe, mais uma vez devagar, por favor.'};
   if(study){
     const kanjiExamples=kanji.slice(0,2).map(x=>({jp:x.word,pt:x.meaning,note:`Kanji em contexto: ${x.k} · ${x.context}`}));
-    study.canDo=canDo;study.situation=situation;study.kanjiPreview=kanji;study.repair=repair;
+    study.canDo=canDo;study.capabilities=capabilities;study.situation=situation;study.kanjiPreview=kanji;study.repair=repair;
     study.title=`${canDo[0]||unit.title||'Missão'} · ${study.title}`;
     study.explanation=`Situação: ${situation} ${study.explanation}`;
     study.examples=[...(study.examples||[]),...kanjiExamples].slice(0,4);
@@ -248,6 +249,7 @@ function japaneseLearningContract(unit={}){
   return {
     unitId:unit.id||null,
     canDo,
+    capabilities,
     situation,
     input:{jp:scenario.npc||scenario.reply||'',pt:scenario.pt||scenario.replyPt||''},
     study,

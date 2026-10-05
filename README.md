@@ -34,6 +34,7 @@ A interface segue uma identidade japonesa contemporânea: sumi/indigo, shu vermi
 | **SRS + Caderno de Erros** | Agenda memória e reapresenta padrões que continuam falhando |
 | **Mastery Graph** | Separa evidência de reconhecimento, recall, listening e produção |
 | **Learning Validation** | Mede retenção 1d+/3d+/7d+, dependência de pistas, transferência, autonomia e recuperação de erros sem inferir causalidade |
+| **P9/P10 Pedagogy Gate** | Exige que as 36 unidades N4 preservem Study Blocks, compreensão conceitual, capabilities, retrieval, transfer, production, repair e provenance |
 | **Kanji Memory Lab 2.0** | Famílias visuais, contraste, sentido → forma, forma → leitura e escrita |
 | **Listening & Pronunciation Lab** | Mora, vogais longas, っ, ん, shadowing e autoavaliação |
 | **Survival Missions 2.0** | Cenários ramificados com reparo de conversa e objetivo observável |
@@ -188,6 +189,7 @@ Paleta principal:
 - [Japanese Learning System](docs/JAPANESE-LEARNING-SYSTEM.md)
 - [N5 Readiness Gate](docs/N5-READINESS.md)
 - [N4 Capability Contract](docs/N4-CAPABILITIES.md)
+- [P9/P10 Pedagogical Validation](docs/PEDAGOGICAL-VALIDATION.md)
 - [Learning Metrics](docs/LEARNING-METRICS.md)
 - [Learning Validation](docs/LEARNING-VALIDATION.md)
 - [Next Best Lesson Calibration](docs/NBL-CALIBRATION.md)
