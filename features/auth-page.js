@@ -6,5 +6,4 @@ function setAuthStatus(message=''){const el=document.getElementById('authStatus'
 async function renderAuthPage(){
  ensureAuthPage();setAuthStatus('');
  try{const session=await monCloudSession();if(session){await go('home',{replace:true});return}}catch{}
- document.getElementById('authEmail')?.focus({preventScroll:true});
 }
