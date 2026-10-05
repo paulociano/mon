@@ -12,7 +12,7 @@ create table if not exists public.mon_user_state (
 alter table public.mon_user_state add column if not exists revision bigint not null default 1;
 alter table public.mon_user_state enable row level security;
 revoke all on table public.mon_user_state from anon, authenticated;
-grant select, insert, update on table public.mon_user_state to authenticated;
+grant select, insert, update, delete on table public.mon_user_state to authenticated;
 
 create policy "mon users read own state"
 on public.mon_user_state for select to authenticated
@@ -26,5 +26,9 @@ create policy "mon users update own state"
 on public.mon_user_state for update to authenticated
 using ((select auth.uid()) = user_id)
 with check ((select auth.uid()) = user_id);
+
+create policy "mon users delete own state"
+on public.mon_user_state for delete to authenticated
+using ((select auth.uid()) = user_id);
 
 create index if not exists mon_user_state_updated_at_idx on public.mon_user_state(updated_at);

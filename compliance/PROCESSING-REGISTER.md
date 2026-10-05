@@ -1,0 +1,24 @@
+# MON — Registro Simplificado de Operações de Tratamento
+
+**Versão:** 0.1 — baseline para revisão jurídica
+
+| ID | Operação | Dados | Finalidade | Sistema | Terceiros | Base a validar | Retenção |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| P01 | persistência local | perfil/progresso | continuidade do estudo | browser | nenhum | execução do serviço | enquanto usuário mantiver |
+| P02 | autenticação | e-mail/user id | acesso à Conta MON | Supabase Auth | Supabase | execução do serviço | enquanto conta existir |
+| P03 | sync | perfil/learning_state | multi-device e recovery | Supabase DB | Supabase | execução do serviço | enquanto sync/conta |
+| P04 | adaptação pedagógica | histórico, erros, mastery, retenção | recomendar próxima atividade | browser | nenhum; Supabase apenas como storage quando sync | execução do serviço / legítimo interesse a avaliar | junto ao estado |
+| P05 | reconhecimento de voz | áudio em trânsito/transcrição | shadowing e pista textual | browser/SO + MON | fornecedor do browser/SO | ação solicitada pelo usuário; validar enquadramento | áudio não armazenado pelo MON; transcrição junto ao estado |
+| P06 | vídeo externo | metadados técnicos | apoio educacional | YouTube | Google/YouTube | validar conforme configuração | conforme terceiro |
+| P07 | segurança/incidente | metadados mínimos | proteger serviço e cumprir obrigações | infraestrutura a definir | fornecedores de infra | legítimo interesse/obrigação legal a validar | prazo definido por política |
+
+## Cobertura desconhecida
+
+Antes da produção ainda precisam ser confirmados:
+- controlador e canais;
+- região efetiva do Supabase;
+- termos/DPA e subprocessadores;
+- logs de hosting/CDN;
+- base legal final por operação;
+- política de idade;
+- mecanismo de exclusão completa da identidade.

@@ -79,11 +79,27 @@ async function importMonBackupFile(input){
   return false;
  }finally{if(input)input.value=''}
 }
+async function deleteMonCloudData(){
+ const client=typeof getMonSupabase==='function'?await getMonSupabase():null;
+ const session=typeof monCloudSession==='function'?await monCloudSession():null;
+ if(!client||!session)throw new Error('Entre na Conta MON para excluir dados da nuvem');
+ const confirmed=globalThis.confirm?.('Excluir permanentemente seu progresso sincronizado da nuvem? O progresso deste dispositivo será mantido.');
+ if(!confirmed)return false;
+ const {error}=await client.from('mon_user_state').delete().eq('user_id',session.user.id);
+ if(error)throw error;
+ const account=loadMonAccount();
+ saveMonAccount({...account,cloudRevision:0,lastSyncedAt:null,lastSyncStatus:'cloud-data-deleted'});
+ clearMonSyncDirty();
+ if(typeof toast==='function')toast('Dados sincronizados excluídos da nuvem');
+ if(typeof renderUserArea==='function')renderUserArea();
+ return true;
+}
 function ensureMonBackupImportControl(){
  if(document.getElementById('userBackupInput'))return;
  const actions=[...document.querySelectorAll('#user .user-actions')].at(-1);if(!actions)return;
- actions.insertAdjacentHTML('beforeend','<button class="user-secondary" type="button" data-mon-import>importar backup</button><input id="userBackupInput" type="file" accept="application/json,.json" hidden>');
+ actions.insertAdjacentHTML('beforeend','<button class="user-secondary" type="button" data-mon-import>importar backup</button><button class="user-secondary" type="button" data-mon-delete-cloud>Excluir dados da nuvem</button><a class="user-secondary" href="legal/PRIVACY-POLICY.md" target="_blank" rel="noopener">privacidade</a><a class="user-secondary" href="legal/TERMS-OF-USE.md" target="_blank" rel="noopener">termos</a><input id="userBackupInput" type="file" accept="application/json,.json" hidden>');
  actions.querySelector('[data-mon-import]')?.addEventListener('click',()=>document.getElementById('userBackupInput')?.click());
+ actions.querySelector('[data-mon-delete-cloud]')?.addEventListener('click',async e=>{const btn=e.currentTarget;btn.disabled=true;try{await deleteMonCloudData()}catch(err){if(typeof toast==='function')toast(err?.message||'Não foi possível excluir os dados da nuvem')}finally{btn.disabled=false}});
  document.getElementById('userBackupInput')?.addEventListener('change',e=>importMonBackupFile(e.currentTarget));
 }
 function exportMonBackup(){
