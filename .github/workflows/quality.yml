@@ -76,6 +76,8 @@ jobs:
         run: node scripts/test-grammar-catalog-pedagogy.mjs
       - name: Adaptive grammar remediation
         run: node scripts/test-grammar-remediation.mjs
+      - name: Grammar Notebook
+        run: node scripts/test-grammar-notebook.mjs
       - name: Japanese learning cycle
         run: node scripts/test-japanese-learning-cycle.mjs
       - name: Foundation lesson variety
