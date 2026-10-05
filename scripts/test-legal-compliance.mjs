@@ -71,3 +71,11 @@ for(const file of ['legal/privacy.html','legal/terms.html']){
 }
 const privacyControls=fs.readFileSync('features/account-privacy.js','utf8');
 for(const href of ['legal/privacy.html','legal/terms.html'])if(!privacyControls.includes(href))throw new Error('account legal link missing: '+href);
+
+const privacyPolicy=fs.readFileSync('legal/PRIVACY-POLICY.md','utf8');
+const terms=fs.readFileSync('legal/TERMS-OF-USE.md','utf8');
+const agePolicy=fs.readFileSync('legal/AGE-AND-CHILD-SAFETY.md','utf8');
+for(const source of [privacyPolicy,terms])if(!source.includes('Paulo Henrique Graciano'))throw new Error('controller name missing from published legal source');
+if(privacyPolicy.includes('[NOME/RAZÃO SOCIAL DO RESPONSÁVEL]')||terms.includes('[NOME/RAZÃO SOCIAL DO RESPONSÁVEL]'))throw new Error('controller placeholder must not remain');
+if(!agePolicy.includes('sem restrição etária'))throw new Error('age decision must be explicit');
+if(!agePolicy.includes('gate de salvaguardas para menores permanece aberto'))throw new Error('minor safeguards gate must remain explicit');

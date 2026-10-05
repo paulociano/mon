@@ -15,13 +15,13 @@
 ## Cobertura desconhecida
 
 Antes da produção ainda precisam ser confirmados:
-- controlador e canais;
+- CPF/CNPJ do controlador e canais de suporte/privacidade;
 - mecanismo contratual de transferência internacional aplicável ao Supabase sob a Resolução CD/ANPD nº 19/2024;
 - acompanhamento de mudanças na lista de subprocessadores do Supabase;
 - logs de hosting/CDN;
 - base legal final por operação;
-- política de idade;
-- mecanismo de exclusão completa da identidade.
+- salvaguardas e avaliação específica para menores sob a política sem restrição etária;
+- revisão jurídica final das operações e bases legais.
 
 
 ## Evidência de fornecedor atualizada

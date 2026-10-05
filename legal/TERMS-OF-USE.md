@@ -2,13 +2,15 @@
 
 **Versão:** 0.1 — baseline pré-produção  
 **Atualização:** 5 de outubro de 2026  
-**Status:** requer revisão jurídica e preenchimento dos dados do responsável antes do lançamento público.
-
-> Campos marcados como **[PREENCHER ANTES DO LANÇAMENTO]** são gates de produção e não devem permanecer na versão publicada.
+**Status:** requer revisão jurídica, complementação cadastral do responsável e definição dos canais de contato antes do lançamento público.
 
 ## 1. Quem oferece o MON
 
-O MON é um produto digital de aprendizagem de japonês operado por **[NOME/RAZÃO SOCIAL DO RESPONSÁVEL]**, CPF/CNPJ **[PREENCHER]**, com canal de contato **[E-MAIL DE SUPORTE]** e canal de privacidade **[E-MAIL DE PRIVACIDADE]**.
+O MON é um produto digital de aprendizagem de japonês operado por **Paulo Henrique Graciano**.
+
+CPF/CNPJ:  
+Suporte:  
+Privacidade:
 
 ## 2. Objeto
 
@@ -70,9 +72,9 @@ O tratamento de dados pessoais relacionado ao MON é descrito na Política de Pr
 
 ## 11. Crianças e adolescentes
 
-A política de idade do produto deve ser definida antes do lançamento público. Até essa decisão, a criação de contas por menores não deve ser promovida.
+O MON adota política **sem restrição etária** e admite a possibilidade de uso por crianças e adolescentes.
 
-Se o MON for disponibilizado a crianças ou adolescentes ou caracterizado como serviço de acesso provável por eles, a operação deverá observar as salvaguardas aplicáveis da legislação brasileira, inclusive proteção por padrão, informação adequada à idade e controles adicionais documentados no gate de menores.
+Essa decisão exige salvaguardas adicionais antes da abertura pública definitiva. O produto deve concluir a avaliação específica para menores, incluindo proteção por padrão, informação adequada à idade, análise do perfilamento/adaptação pedagógica e controles adicionais documentados no gate de menores.
 
 ## 12. Suspensão e encerramento
 
@@ -94,5 +96,5 @@ A definição de foro e qualificação completa do fornecedor dependem da identi
 
 ## 15. Contato
 
-Suporte: **[E-MAIL DE SUPORTE]**  
-Privacidade: **[E-MAIL DE PRIVACIDADE]**
+Suporte:  
+Privacidade:
