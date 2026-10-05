@@ -41,3 +41,15 @@
 .mission-complete{max-width:760px;margin:0 auto;padding:34px}.mission-complete h3{font-size:32px!important}.mission-complete p{font-size:11px}
 @media(max-width:700px){#missionRunner{margin-top:20px}.mission-run{padding:20px 16px}.mission-run-head{grid-template-columns:1fr}.mission-npc,.mission-choices,.mission-feedback,.mission-repair-note,.mission-free{width:92%;max-width:none}.mission-npc{margin-right:auto;padding:18px;border-radius:20px 20px 20px 7px}.mission-npc>b{font-size:25px}.mission-choices,.mission-feedback,.mission-repair-note,.mission-free{margin-left:auto}.mission-choices button{border-radius:18px 18px 7px 18px}.mission-choice-title{text-align:right}}
 @media(prefers-reduced-motion:reduce){.mission-choices button{transition:none}.mission-choices button:hover{transform:none}}
+
+
+/* P8.4 · mission feedback motion */
+@media(prefers-reduced-motion:no-preference){
+ .mission-choices button.correct{animation:missionSettle .26s ease both}
+ .mission-choices button.wrong{animation:missionNudge .24s ease both}
+ .mission-complete .mission-seal{animation:missionSeal .38s cubic-bezier(.2,.8,.2,1) both}
+}
+@keyframes missionSettle{0%{transform:scale(.985)}60%{transform:scale(1.01)}100%{transform:none}}
+@keyframes missionNudge{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@keyframes missionSeal{0%{opacity:.65;transform:scale(.88) rotate(-3deg)}75%{transform:scale(1.06) rotate(1deg)}100%{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.mission-choices button.correct,.mission-choices button.wrong,.mission-complete .mission-seal{animation:none!important}}
