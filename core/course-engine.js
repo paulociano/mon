@@ -52,7 +52,7 @@ function optimizeExerciseSequence(exercises=[],limit=10){
 function compilePackExercise(unit,template,index){
   const vocabIds=unit.vocabulary||[],vocabId=vocabIds[index%Math.max(1,vocabIds.length)],v=vocabularyCatalog[vocabId];
   const scenario=(unit.scenarios||[])[index%Math.max(1,(unit.scenarios||[]).length)];
-  if(template==='meaning'&&v)return {type:'choice',prompt:`O que “${v.jp}” significa?`,jp:v.jp,options:engineShuffledOptions(v.pt,catalogDistractors(vocabId,'pt')),answer:v.pt,why:`${v.jp} · ${v.reading} · ${v.pt}`,_reviewType:'vocabulary',_reviewKey:vocabId};
+  if(template==='meaning'&&v)return {type:'choice',prompt:`O que “${v.jp}” significa?`,jp:v.jp,reading:v.reading,options:engineShuffledOptions(v.pt,catalogDistractors(vocabId,'pt')),answer:v.pt,why:`${v.jp} · ${v.reading} · ${v.pt}`,_reviewType:'vocabulary',_reviewKey:vocabId};
   if(template==='reverseMeaning'&&v)return {type:'choice',prompt:`Como dizer “${v.pt}” neste bloco?`,options:engineShuffledOptions(v.jp,catalogDistractors(vocabId,'jp')),answer:v.jp,why:`${v.pt} → ${v.jp} · ${v.reading}`,_reviewType:'vocabulary',_reviewKey:vocabId};
   if(template==='reading'&&v)return {type:'choice',prompt:`Como se lê ${v.jp}?`,jp:v.jp,options:engineShuffledOptions(v.reading,catalogDistractors(vocabId,'reading')),answer:v.reading,why:`${v.jp} → ${v.reading}`,_reviewType:'vocabulary',_reviewKey:vocabId};
   if(template==='listenMeaning'&&v)return {type:'listen',prompt:'Ouça. Qual é o sentido?',audio:v.jp,options:engineShuffledOptions(v.pt,catalogDistractors(vocabId,'pt')),answer:v.pt,why:`${v.jp} · ${v.reading} · ${v.pt}`,_reviewType:'vocabulary',_reviewKey:vocabId};

@@ -30,6 +30,7 @@ const LE='./core/learning-evidence.js';
 const LEARNING_RUNTIME_SCRIPTS=[
  './data/kanji.js',
  './data/kana.js',
+ './core/reading-support.js',
  './data/experiences.js',
  './data/foundation.js',
  './data/session.js',
@@ -76,7 +77,7 @@ async function ensureFeatureRuntime(name){
  if(featureRuntimePromises[name])return featureRuntimePromises[name];
  const started=typeof perfStart==='function'?perfStart('feature:'+name):null;
  const scripts=FEATURE_RUNTIME_SCRIPTS[name]||[];
- featureRuntimePromises[name]=(async()=>{for(const href of FEATURE_RUNTIME_STYLES[name]||[])await loadRuntimeStyle(href);for(const src of scripts)await loadRuntimeScript(src);if(started!==null&&typeof perfEnd==='function')perfEnd('feature:'+name,started)})().catch(err=>{delete featureRuntimePromises[name];throw err});
+ featureRuntimePromises[name]=(async()=>{for(const href of FEATURE_RUNTIME_STYLES[name]||[])await loadRuntimeStyle(href);if(name==='foundation'||name==='kanji')await loadRuntimeScript('./core/reading-support.js');for(const src of scripts)await loadRuntimeScript(src);if(started!==null&&typeof perfEnd==='function')perfEnd('feature:'+name,started)})().catch(err=>{delete featureRuntimePromises[name];throw err});
  return featureRuntimePromises[name];
 }
 let learningRuntimePromise=null;

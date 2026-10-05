@@ -10,18 +10,18 @@ function renderQuickExercise(){
  const methodLabel=e.type==='study'?' · estudar':e.method?` · ${({discover:'descobrir',recall:'recuperar',transfer:'transferir',produce:'produzir'}[e.method]||e.method)}`:'';
  setQuickFeedback(e.method?'Gate Loop'+methodLabel:'Escolha uma resposta.');
  let h=`<span class="quick-kicker">${quickRun.pack.title} · ${quickRun.step+1}/${total}${methodLabel}</span>`;
- if(e.type==='study'){setQuickFeedback('Estude primeiro.',' A prática começa depois desta explicação.');h+=`<section class="study-card"><h2 class="quick-question">${e.title}</h2><b class="study-model">${e.mentalModel}</b><p>${e.explanation}</p><div class="study-examples">${e.examples.map(x=>`<article><strong lang="ja">${x.jp}</strong><span>${x.pt}</span><small>${x.note}</small></article>`).join('')}</div><p class="study-contrast">${e.contrast}</p></section>`;main.innerHTML=h;document.getElementById('quickEnergy').textContent=state.energy;btn.disabled=false;btn.textContent='COMEÇAR A PRÁTICA';btn.classList.add('continue');btn.onclick=quickNext;return}
+ if(e.type==='study'){setQuickFeedback('Estude primeiro.',' A prática começa depois desta explicação.');h+=`<section class="study-card"><h2 class="quick-question">${e.title}</h2><b class="study-model">${e.mentalModel}</b><p>${e.explanation}</p><div class="study-examples">${e.examples.map(x=>`<article><strong>${typeof renderJapaneseReading==='function'?renderJapaneseReading(x.jp,x.reading||''):x.jp}</strong><span>${x.pt}</span><small>${x.note}</small></article>`).join('')}</div><p class="study-contrast">${e.contrast}</p></section>`;main.innerHTML=h;document.getElementById('quickEnergy').textContent=state.energy;btn.disabled=false;btn.textContent='COMEÇAR A PRÁTICA';btn.classList.add('continue');btn.onclick=quickNext;return}
  if(e._story){
    h+=`<aside class="story-memory"><div class="story-memory-top"><span>${e._story.arc}</span><b>${e._story.place}</b></div><div class="story-memory-character"><strong>${e._story.character}</strong><small>${e._story.role}</small></div><p>${e._story.scenePt}</p><em lang="ja">${e._story.sceneJp}</em><div class="story-memory-tags">${(e._story.reuses||[]).map(x=>`<span>${x}</span>`).join('')}</div></aside>`;
  }
  h+=`<h2 class="quick-question">${e.prompt}</h2>`;
  if(e.type==='discovery'&&e.examples){
-   h+=`<div class="method-examples">${e.examples.map(x=>`<article><b>${x.jp}</b><span>${x.pt}</span></article>`).join('')}</div>`;
+   h+=`<div class="method-examples">${e.examples.map(x=>`<article><b>${typeof renderJapaneseReading==='function'?renderJapaneseReading(x.jp,x.reading||''):x.jp}</b><span>${x.pt}</span></article>`).join('')}</div>`;
    h+=quickOptions(e.options);
  }else if(e.type==='minimalPair'){
    h+=`<button class="quick-listen contrast" onclick="speak('${e.audio.replaceAll("'","\\'")}')">▶ ouvir contraste</button>${quickOptions(e.options)}`;
  }else{
-   if(e.jp)h+=`<div class="quick-jp">${e.jp}</div>`;
+   if(e.jp)h+=`<div class="quick-jp">${e.type==='reading'||typeof renderJapaneseReading!=='function'?e.jp:renderJapaneseReading(e.jp,e.reading||'')}</div>`;
    if(e.type==='listen'){h+=`<button class="quick-listen" onclick="speak('${e.audio.replaceAll("'","\\'")}')">▶</button>${quickOptions(e.options)}`}
    else if(e.type==='choice'){h+=quickOptions(e.options)}
    else if(e.type==='wordbank'){h+=renderGuidedWordbank(e)}
