@@ -489,3 +489,15 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 .onboarding-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
 @media (max-width:680px){.onboarding-card{padding:25px}}
 
+
+
+/* Adaptive Japanese reading support */
+.mon-reading{ruby-position:over;ruby-align:center;white-space:nowrap}
+.mon-reading rt{font-family:var(--ui);font-size:.34em;font-weight:750;line-height:1.05;letter-spacing:.04em;color:#d7b56d;text-transform:lowercase;transition:opacity .18s ease}
+.mon-reading.romaji-auto-faded rt{opacity:.28}
+.mon-reading.romaji-auto-hidden rt,.mon-reading.romaji-hide rt{opacity:0}
+.mon-reading.romaji-auto-hidden:hover rt,.mon-reading.romaji-auto-hidden:focus-within rt{opacity:.72}
+.foundation-kana .mon-reading rt{font-size:.38em}
+.quick-jp .mon-reading rt,.study-examples .mon-reading rt,.method-examples .mon-reading rt{color:#e8bd77}
+.ka-word .mon-reading rt,.ka-examples .mon-reading rt,.ka-challenge .mon-reading rt{color:#d7b56d}
+@media(prefers-reduced-motion:reduce){.mon-reading rt{transition:none}}
