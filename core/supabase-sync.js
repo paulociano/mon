@@ -18,22 +18,6 @@ async function getMonSupabase(){
  })().finally(()=>monSupabaseClientPromise=null);
 }
 async function monCloudSession(){const client=await getMonSupabase();if(!client)return null;const {data}=await client.auth.getSession();return data.session||null}
-async function monCloudSignUp(email,password){
- const client=await getMonSupabase();if(!client)throw new Error('Nuvem MON ainda não configurada');
- const redirectTo=location.href.split('#')[0];
- const {data,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:redirectTo}});
- if(error)throw error;return data;
-}
-async function monCloudPasswordSignIn(email,password){
- const client=await getMonSupabase();if(!client)throw new Error('Nuvem MON ainda não configurada');
- const {data,error}=await client.auth.signInWithPassword({email,password});
- if(error)throw error;return data;
-}
-async function monCloudSetPassword(password){
- const client=await getMonSupabase();if(!client)throw new Error('Nuvem MON ainda não configurada');
- const {data,error}=await client.auth.updateUser({password});
- if(error)throw error;return data;
-}
 async function monCloudSignOut(){const client=await getMonSupabase();if(!client)return;const {error}=await client.auth.signOut();if(error)throw error}
 function monSyncConflict(message='O progresso mudou em outro dispositivo'){const e=new Error(message);e.code='MON_SYNC_CONFLICT';return e}
 function monCloudRow(session,payload,revision){
