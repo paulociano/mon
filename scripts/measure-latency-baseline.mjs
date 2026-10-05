@@ -7,7 +7,7 @@ const page=await browser.newPage({viewport:{width:1280,height:900}});
 
 try{
  await page.addInitScript(()=>{localStorage.setItem('mon-onboarded','1');localStorage.removeItem('mon_perf_v1')});
- await page.goto(base+'?debug=1',{waitUntil:'networkidle'});
+ await page.goto(base+'?view=home&debug=1',{waitUntil:'networkidle'});
  await page.waitForSelector('#home.active',{state:'visible'});
 
  for(let i=0;i<6;i++){
