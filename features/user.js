@@ -9,3 +9,16 @@ function renderUserArea(){
 }
 function saveUserArea(){const name=(document.getElementById('userNameInput')?.value||'Estudante MON').trim().slice(0,32)||'Estudante MON',dailyGoal=Number(document.getElementById('userGoalInput')?.value||20),studyMode=document.getElementById('userModeInput')?.value||'equilibrado';try{saveLocalProfile({name,dailyGoal,studyMode});renderUserArea();toast('Preferências salvas neste dispositivo')}catch{toast('Não foi possível salvar suas preferências. Tente novamente.')}}
 
+
+
+let monOtpCooldownUntil=0;
+async function connectMonCloud(){
+ const email=document.getElementById('userCloudEmail')?.value.trim(),now=Date.now();
+ if(!email){toast('Digite seu e-mail');return}
+ if(now<monOtpCooldownUntil){toast('Aguarde antes de pedir outro link');return}
+ try{monOtpCooldownUntil=now+60000;await monCloudSignIn(email);toast('Link enviado ao seu e-mail')}
+ catch(e){
+  if(e?.status===429||/rate|seconds|60/i.test(e?.message||'')){monOtpCooldownUntil=Date.now()+60000;toast('Muitos pedidos. Aguarde 60 segundos.');return}
+  monOtpCooldownUntil=0;toast(e.message)
+ }
+}
