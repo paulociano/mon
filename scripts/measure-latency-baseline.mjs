@@ -20,7 +20,10 @@ try{
   const start=perfStart();await go('lesson');renderQuickExercise();perfEnd('lesson:interactive',start,{mode:'baseline'});
   await go('home');
  });
- await page.waitForTimeout(150);
+ await page.waitForFunction(()=>{
+  const snapshot=performanceSnapshot();
+  return ['view:progress','view:home','lesson:interactive'].every(name=>snapshot[name]?.samples>=1);
+ },null,{timeout:2500});
  const snapshot=await page.evaluate(()=>performanceSnapshot());
 
  for(const name of ['view:progress','view:home','lesson:interactive']){
