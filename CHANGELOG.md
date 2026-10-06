@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.2 — 2026-10-06
+
+Security hardening da camada de estilos do MON.
+
+### Security
+- remove `'unsafe-inline'` de `style-src`;
+- elimina atributos `style=""` do HTML e templates runtime;
+- substitui mutações diretas `element.style.*` por uma ponte CSSOM com propriedades e valores validados;
+- adiciona atributos declarativos `data-mon-width` e `data-mon-p` para métricas visuais geradas dinamicamente;
+- adiciona gate de CI que bloqueia regressões de estilos inline.
+
+### PWA
+- service-worker cache atualizado para `v42` para impedir mistura entre shells com políticas CSP diferentes.
+
+### Known limitations
+- Supabase JS continua vindo de jsDelivr com versão exata e CSP allowlist;
+- PNG 192/512 e Apple touch icon ainda não estão versionados;
+- GitHub Pages ainda não depende administrativamente do Quality Gate.
+
 ## 0.1.1 — 2026-10-05
 
 Security hardening da camada de interação do MON.
