@@ -14,7 +14,7 @@ function renderJournal(){
   }
   const arcCards=model.arcs.map(a=>`<article class="journal-arc ${a.resolved===a.total&&a.total?'complete':''}">
     <div class="journal-arc-top"><span>${a.title}</span><b>${a.resolved}/${a.total}</b></div>
-    <p>${a.promise}</p><div class="journal-progress" aria-label="${a.pct}% resolvido"><i style="width:${a.pct}%"></i></div>
+    <p>${a.promise}</p><div class="journal-progress" aria-label="${a.pct}% resolvido"><i data-mon-width="${a.pct}%"></i></div>
   </article>`).join('');
   const chars=model.characters.map(c=>`<article class="journal-person">
     <div class="journal-avatar" aria-hidden="true">${c.name?.slice(0,1)||'人'}</div>

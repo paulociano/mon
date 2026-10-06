@@ -30,6 +30,8 @@ jobs:
         run: node scripts/test-repository-quality.mjs
       - name: CSP-safe UI actions
         run: node scripts/test-csp-actions.mjs
+      - name: CSP-safe styles
+        run: node scripts/test-csp-styles.mjs
       - name: Release identity and runtime health
         run: node scripts/test-release-runtime-health.mjs
       - name: Legal and compliance baseline
