@@ -1,11 +1,10 @@
 // MON Supabase adapter. Loaded only from the user area.
 let monSupabaseClient=null,monSupabaseClientPromise=null;
-const MON_SUPABASE_SDK_URL='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2';
 function monCloudConfig(){return globalThis.MON_CLOUD_CONFIG||{}}
 function monCloudConfigured(){const c=monCloudConfig();return /^https:\/\/.+\.supabase\.co$/.test(c.url||'')&&!!c.publishableKey}
 async function ensureSupabaseSdk(){
  if(globalThis.supabase?.createClient)return globalThis.supabase;
- await loadRuntimeScript(MON_SUPABASE_SDK_URL);
+ await loadRuntimeScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2');
  return globalThis.supabase;
 }
 async function getMonSupabase(){
