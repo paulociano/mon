@@ -3,7 +3,32 @@
 
 const SHELL_FOUNDATION_TOTAL=24;
 const SHELL_KANJI_COUNT=26;
-const shellFoundationOutline = [{"n":1,"title":"Vogais & mora","desc":"a i u e o estáveis, ritmo curto e escuta antes do romaji","symbol":"あ"},{"n":2,"title":"K + S","desc":"か行・さ行, incluindo し e leitura de palavras mínimas","symbol":"し"},{"n":3,"title":"T + N","desc":"た行・な行, com atenção a ち e つ","symbol":"つ"},{"n":4,"title":"H + M","desc":"は行・ま行, incluindo ふ e う com lábios relaxados","symbol":"ふ"},{"n":5,"title":"Y + R + W + ん","desc":"fechar hiragana básico e treinar o r japonês curto","symbol":"ら"},{"n":6,"title":"Dakuten & handakuten","desc":"が・ざ・だ・ば・ぱ e contrastes de sonoridade","symbol":"が"},{"n":7,"title":"Yōon + pequeno っ","desc":"きゃ・しゅ・ちょ e pausa consonantal","symbol":"きょ"},{"n":8,"title":"Katakana A–S","desc":"ア〜ソ em nomes, comida, marcas e tecnologia","symbol":"ア"},{"n":9,"title":"Katakana T–H","desc":"タ〜ホ e contraste シ/ツ","symbol":"ツ"},{"n":10,"title":"Katakana M–N","desc":"マ〜ン e contraste ソ/ン","symbol":"ン"},{"n":11,"title":"Vogal longa & ー","desc":"duração como significado e barra longa no katakana","symbol":"ー"},{"n":12,"title":"Checkpoint de escrita","desc":"leitura mista, ditado curto e retirada forte do romaji","symbol":"字"},{"n":13,"title":"A は B です","desc":"tópico, identificação e pergunta com か","symbol":"は"},{"n":14,"title":"は・が・を","desc":"tópico, foco/sujeito e objeto sem tradução fixa","symbol":"を"},{"n":15,"title":"に・で・へ","desc":"destino, tempo, existência, lugar da ação e direção","symbol":"に"},{"n":16,"title":"の・と・も・か","desc":"relação, companhia, também e perguntas","symbol":"の"},{"n":17,"title":"Verbos ます","desc":"ação polida, grupos verbais e predicado no fim","symbol":"ます"},{"n":18,"title":"Negativo & passado","desc":"ません・ました・ませんでした com tempo explícito","symbol":"た"},{"n":19,"title":"Forma て & pedidos","desc":"ligar ações e pedir com 〜てください","symbol":"て"},{"n":20,"title":"Adjetivos い / な","desc":"descrever sem gênero e conjugar descrição","symbol":"い"},{"n":21,"title":"あります / います","desc":"existência, localização e diferença animado/inanimado","symbol":"ある"},{"n":22,"title":"Números, horas & contadores","desc":"quantidade, preços, horários e classificadores","symbol":"時"},{"n":23,"title":"Forma simples & motivo","desc":"entrada segura em formas simples, から e けど","symbol":"から"},{"n":24,"title":"Checkpoint sobrevivência","desc":"ler, ouvir, montar e responder sem depender do romaji","symbol":"門"}];
+const shellFoundationOutline = [
+{"n":1,"title":"Vogais & mora","desc":"ouvir a i u e o, sentir o ritmo e entender que japonês é organizado por moras","symbol":"あ"},
+{"n":2,"title":"Hiragana K + S","desc":"ler pequenas famílias, comparar som e forma e começar a abandonar a soletração em português","symbol":"し"},
+{"n":3,"title":"Hiragana T + N","desc":"ampliar a leitura com atenção a ち e つ, sem exigir palavras longas","symbol":"つ"},
+{"n":4,"title":"Hiragana H + M","desc":"automatizar mais duas famílias e treinar ふ e う com articulação natural","symbol":"ふ"},
+{"n":5,"title":"Hiragana Y + R + W + ん","desc":"fechar o mapa básico e ler palavras curtas sem converter cada símbolo para romaji","symbol":"ら"},
+{"n":6,"title":"Dakuten & handakuten","desc":"entender como marcas transformam sons já conhecidos em vez de decorar outro alfabeto","symbol":"が"},
+{"n":7,"title":"Yōon + pequeno っ","desc":"combinar sons, perceber pausa consonantal e preservar o ritmo por mora","symbol":"きょ"},
+{"n":8,"title":"Katakana A–S","desc":"reconhecer que os sons são familiares e aprender a nova forma gráfica em palavras reais","symbol":"ア"},
+{"n":9,"title":"Katakana T–H","desc":"continuar a leitura e comparar pares visuais como シ/ツ","symbol":"ツ"},
+{"n":10,"title":"Katakana M–N","desc":"fechar o mapa básico e comparar ソ/ン em nomes, lojas e objetos comuns","symbol":"ン"},
+{"n":11,"title":"Duração & vogal longa","desc":"entender que duração muda palavras e praticar ー sem tratar ritmo como detalhe","symbol":"ー"},
+{"n":12,"title":"Checkpoint de leitura kana","desc":"ler palavras e expressões curtas em hiragana/katakana com romaji apenas como socorro","symbol":"字"},
+{"n":13,"title":"Como uma frase japonesa funciona","desc":"entender blocos, predicado no fim, omissão de sujeito e o papel das partículas antes de decorar regras","symbol":"文"},
+{"n":14,"title":"Tópico com は","desc":"separar 'sobre o que falamos' da informação dita sobre esse tópico","symbol":"は"},
+{"n":15,"title":"Identificar e perguntar","desc":"usar です, か, これ/それ/あれ para construir e compreender frases nominais simples","symbol":"か"},
+{"n":16,"title":"Relacionar nomes com の e も","desc":"ligar substantivos e adicionar 'também' antes de empilhar partículas mais abstratas","symbol":"の"},
+{"n":17,"title":"Verbo no fim + objeto を","desc":"entender a arquitetura N を Vます e produzir ações simples com um único papel novo","symbol":"を"},
+{"n":18,"title":"Lugar, destino e tempo","desc":"distinguir に, で e へ pela função do lugar em exemplos contrastivos","symbol":"に"},
+{"n":19,"title":"Negativo & passado em ます","desc":"mudar tempo e polaridade pelo final do verbo sem reconstruir a frase inteira","symbol":"た"},
+{"n":20,"title":"Adjetivos い / な","desc":"descrever coisas e lugares entendendo os dois comportamentos básicos, sem concordância de gênero","symbol":"い"},
+{"n":21,"title":"Existência: あります / います","desc":"introduzir が dentro de um padrão concreto de existência antes de discutir foco de modo abstrato","symbol":"が"},
+{"n":22,"title":"Números, horas & contadores","desc":"usar quantidade em preço, horário e pessoas com os contadores mais úteis","symbol":"時"},
+{"n":23,"title":"Forma て para pedidos","desc":"aprender a forma て primeiro como ponte funcional para 〜てください, sem abrir todas as conjugações de uma vez","symbol":"て"},
+{"n":24,"title":"Checkpoint de autonomia inicial","desc":"integrar leitura, frases básicas, pedidos e reparo de conversa sem depender de romaji","symbol":"門"}
+];
 const shellMissionOutline = [
  {symbol:'駅',title:'Chegar à estação certa',desc:'perguntar direção, reconhecer saída e destino',level:'primeiras 24h'},
  {symbol:'店',title:'Comprar no konbini',desc:'preço, saco, pagamento e perguntas rápidas',level:'dia 1'},
