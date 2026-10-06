@@ -508,3 +508,9 @@ button,.nav-btn,.path-node,.quick-option,.word-token,.match-card,.practice-tile{
 .grammar-drawer-meaning{font-size:10px;color:#98a3af;line-height:1.7}
 .quick-empty{color:#607083;font-size:9px}
 .quick-result .quick-check.auto-width{width:auto}
+
+.session-blurred-jp{font-size:30px;filter:blur(8px);opacity:.18}
+.session-reading-jp{font-size:38px}
+.session-speaking-jp{font-size:31px}
+.session-target-jp{font-family:var(--jp);font-size:18px;color:#fff}
+.runtime-hidden{display:none}
