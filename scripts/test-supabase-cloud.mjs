@@ -20,6 +20,8 @@ assert.ok(sql.includes('enable row level security'),'cloud state table must enab
 assert.ok(sql.includes('revision bigint not null default 1'),'cloud state needs optimistic revision');
 assert.ok(adapter.includes(".eq('revision',Number(expectedRevision))"),'cloud updates must compare expected revision');
 assert.ok(!adapter.includes('.upsert('),'multi-device writes must not use blind upsert');
+assert.ok(!adapter.includes("updated_at:new Date().toISOString()"),'server updated_at must not be controlled by the browser');
+for(const token of ['mon_set_updated_at','before update on public.mon_user_state','new.updated_at = now()'])assert.ok(sql.includes(token),'server-owned updated_at contract missing '+token);
 for(const token of ['auth.uid()) = user_id','for select to authenticated','for insert to authenticated','for update to authenticated'])assert.ok(sql.includes(token),'missing RLS contract '+token);
 assert.ok(sql.includes('revoke all on table public.mon_user_state from anon, authenticated'),'table grants must be least privilege before authenticated grants');
 assert.ok(fs.readFileSync('features/user.js','utf8').includes('renderCloudAccountPanel'),'user area must render cloud account state');
