@@ -296,9 +296,9 @@ function ensureDrawingCanvases(){
  if(drawCanvas&&!drawCtx)drawCtx=setupCanvas(drawCanvas);
  if(freeCanvas&&!freeCtx)freeCtx=setupCanvas(freeCanvas);
  const clear=document.getElementById('clearCanvas'),freeClear=document.getElementById('freeClear'),guide=document.getElementById('toggleGuide');
- if(clear&&!clear.dataset.bound){clear.dataset.bound='1';clear.data-mon-command=()=>clearDraw(drawCtx,drawCanvas)}
- if(freeClear&&!freeClear.dataset.bound){freeClear.dataset.bound='1';freeClear.data-mon-command=()=>clearDraw(freeCtx,freeCanvas)}
- if(guide&&!guide.dataset.bound){guide.dataset.bound='1';guide.data-mon-command=e=>{document.getElementById('ghostKanji').classList.toggle('hidden');e.target.textContent=document.getElementById('ghostKanji').classList.contains('hidden')?'mostrar guia':'ocultar guia'}}
+ if(clear&&!clear.dataset.bound){clear.dataset.bound='1';clear.onclick=()=>clearDraw(drawCtx,drawCanvas)}
+ if(freeClear&&!freeClear.dataset.bound){freeClear.dataset.bound='1';freeClear.onclick=()=>clearDraw(freeCtx,freeCanvas)}
+ if(guide&&!guide.dataset.bound){guide.dataset.bound='1';guide.onclick=e=>{document.getElementById('ghostKanji').classList.toggle('hidden');e.target.textContent=document.getElementById('ghostKanji').classList.contains('hidden')?'mostrar guia':'ocultar guia'}}
 }
 const globalSearch=document.getElementById('globalSearch');
 if(globalSearch){globalSearch.addEventListener('keydown',async e=>{if(e.key==='Enter'&&e.target.value.trim()){await go('kanji');const q=e.target.value.trim();const ks=document.getElementById('kanjiSearch');ks.value=q;renderKanjiList('all',q);setTimeout(()=>ks.focus(),220)}})}
@@ -352,8 +352,8 @@ function renderAdaptiveHome(){
  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
  set('homeAdaptiveEyebrow',d.eyebrow);set('homeAdaptiveTitle',d.title);set('homeAdaptiveCopy',d.copy);set('homeAdaptiveSignal',d.signal);
  const primary=document.getElementById('homeAdaptivePrimary'),secondary=document.getElementById('homeAdaptiveSecondary');
- if(primary){primary.textContent=d.cta;primary.data-mon-command=()=>runAdaptiveHomeAction(d.action)}
- if(secondary){secondary.textContent='por que esta sessão?';secondary.data-mon-command=toggleTodayReason}
+ if(primary){primary.textContent=d.cta;primary.onclick=()=>runAdaptiveHomeAction(d.action)}
+ if(secondary){secondary.textContent='por que esta sessão?';secondary.onclick=toggleTodayReason}
  const reasonTitle=document.getElementById('todayReasonTitle'),reasonCopy=document.getElementById('todayReasonCopy');
  if(reasonTitle)reasonTitle.textContent=d.title;
  if(reasonCopy)reasonCopy.textContent=d.copy+' Sinal principal: '+d.signal+'.';
