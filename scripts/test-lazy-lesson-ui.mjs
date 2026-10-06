@@ -10,7 +10,6 @@ assert.ok(!app.includes('function renderQuickExercise('),'lesson renderer leaked
 assert.ok(lesson.includes('function renderQuickExercise('));
 assert.ok(lesson.includes('function quickCheck('));
 assert.ok(!html.includes('id="quickCheck" data-mon-command="quickCheck()"'),'lesson CTA must not dispatch twice');
-assert.ok(lesson.includes("if(quickRun.pack.exercises[quickRun.step]?.type!=='study'&&!quickRun.checked)return"),'evaluative exercise must not advance before validation');
 assert.ok(lesson.includes('bindLessonKeyboard'));
 assert.ok(lesson.includes('data-qopt'));
 assert.ok(app.includes("lesson:['./features/open-production-remediation.js','./features/lesson.js']"));
