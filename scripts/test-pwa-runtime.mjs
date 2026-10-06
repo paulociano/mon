@@ -23,7 +23,7 @@ for(const lazy of ['./data/content-packs.js','./features/session.js','./features
 }
 const installBlock=sw.match(/self\.addEventListener\('install'[\s\S]*?\n}\);/)?.[0]||'';
 assert.ok(installBlock.includes("if(CRITICAL_SHELL_UPGRADE)await self.skipWaiting()"),'controlled install hook must remain available');
-assert.ok(sw.includes("const CACHE_VERSION='v40'"),'release runtime must use the current MON cache version');
+assert.ok(sw.includes("const CACHE_VERSION='v41'"),'release runtime must use the current MON cache version');
 assert.ok(sw.includes('const CRITICAL_SHELL_UPGRADE=false'),'updates must stay user-controlled after the v37 recovery');
 assert.ok(!sw.includes('client.navigate('),'service worker activation must not trigger navigation reload loops');
 assert.ok(sw.includes("event.data?.type==='SKIP_WAITING'"),'service worker needs explicit update activation message');
@@ -36,7 +36,7 @@ for(const token of ['showMonUpdate','applyMonUpdate','watchMonUpdate','reg.waiti
   assert.ok(app.includes(token),'missing controlled PWA update contract '+token);
 }
 assert.ok(html.includes('id="updateBanner"'),'update availability UI missing');
-assert.ok(html.includes('onclick="applyMonUpdate()"'),'update action missing');
+assert.ok(html.includes('data-mon-command="applyMonUpdate()"'),'CSP-safe update action missing');
 console.log('MON PWA shell and update contracts passed');
 assert.ok(app.includes("monUpdateWorker?.state==='installed'"),'update action must ignore stale non-waiting worker references');
 assert.ok(app.includes('reg?.waiting'),'update action must resolve the current waiting worker');

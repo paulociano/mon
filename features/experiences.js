@@ -7,7 +7,7 @@ const initialChapter=document.getElementById('chapterContent').innerHTML;
 function adaptReadingChapter(){const host=document.getElementById('chapterContent');if(host&&typeof adaptExistingJapaneseRuby==='function')adaptExistingJapaneseRuby(host)}
 document.querySelectorAll('[data-book]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-book]').forEach(b=>b.classList.toggle('active',b===btn));const i=Number(btn.dataset.book);document.getElementById('chapterContent').innerHTML=i===0?initialChapter:bookData[i];adaptReadingChapter();if(i===0){const t=document.getElementById('toggleTranslation');if(t)t.onclick=toggleReadingTranslation}}));
 function toggleReadingTranslation(e){const p=document.getElementById('readingTranslation');if(!p)return;const show=p.style.display==='none';p.style.display=show?'block':'none';e.target.textContent=show?'ocultar tradução':'mostrar tradução'}
-function renderKana(type='hira'){document.getElementById('kanaGrid').innerHTML=kanaSets[type].map(k=>`<button class="kana-key" onclick="speak('${k[0]}')"><b>${renderJapaneseReading(k[0],k[0],{romaji:k[1]})}</b></button>`).join('')}
+function renderKana(type='hira'){document.getElementById('kanaGrid').innerHTML=kanaSets[type].map(k=>`<button class="kana-key" data-mon-command="speak('${k[0]}')"><b>${renderJapaneseReading(k[0],k[0],{romaji:k[1]})}</b></button>`).join('')}
 document.querySelectorAll('[data-kana]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-kana]').forEach(x=>x.classList.toggle('active',x===b));renderKana(b.dataset.kana)}));
 renderKana();adaptReadingChapter();
 
@@ -17,11 +17,11 @@ document.getElementById('micBtn').onclick=()=>{const SR=window.SpeechRecognition
 
 function hydrateMissionGrid(){
  if(hydratedViews.has('missions'))return;
- const grid=document.getElementById('missionGrid');if(grid)grid.innerHTML=missions.map((m,i)=>`<button class="mission mission-${i}" onclick="missionOpen(${i})"><div class="mission-art"></div><div class="mission-body"><div class="symbol">${m.symbol}</div><b>${m.title}</b><small>${m.desc}</small></div><span class="level">${m.level}</span></button>`).join('');
+ const grid=document.getElementById('missionGrid');if(grid)grid.innerHTML=missions.map((m,i)=>`<button class="mission mission-${i}" data-mon-command="missionOpen(${i})"><div class="mission-art"></div><div class="mission-body"><div class="symbol">${m.symbol}</div><b>${m.title}</b><small>${m.desc}</small></div><span class="level">${m.level}</span></button>`).join('');
  hydratedViews.add('missions');
 }
 function hydrateSurvivalPhrases(){
  if(hydratedViews.has('speaking'))return;
- const wrap=document.getElementById('survivalPhrases');if(wrap)wrap.innerHTML=phrases.map(p=>`<div class="phrase"><b>${renderJapaneseReading(p[0],'',{romaji:p[1]})}</b><span>${p[2]}</span><button class="audio-btn" style="margin-top:9px" onclick="speak('${p[0].replaceAll("'","\\'")}')">▶ ouvir</button></div>`).join('');
+ const wrap=document.getElementById('survivalPhrases');if(wrap)wrap.innerHTML=phrases.map(p=>`<div class="phrase"><b>${renderJapaneseReading(p[0],'',{romaji:p[1]})}</b><span>${p[2]}</span><button class="audio-btn" style="margin-top:9px" data-mon-command="speak('${p[0].replaceAll("'","\\'")}')">▶ ouvir</button></div>`).join('');
  hydratedViews.add('speaking');
 }

@@ -8,7 +8,7 @@ const css=fs.readFileSync('features/videos.css','utf8');
 assert.ok(app.includes("videos:['./features/videos.js']"));
 assert.ok(app.includes("videos:['./features/videos.css']"));
 assert.ok(html.includes('data-view="videos"'));
-assert.ok(html.includes('data-icon="映" onclick="go(\'videos\')"'),'Video Library should be discoverable from Practice Hub');
+assert.ok(html.includes('data-icon="映" data-mon-command="go(\'videos\')"'),'Video Library should be discoverable from Practice Hub');
 assert.ok(html.includes('id="videoRecommendation"'),'adaptive video recommendation surface missing');
 assert.ok(html.includes('id="videoPracticeButton"'),'video follow-through action missing');
 assert.ok(html.includes('id="videoGrid"'));

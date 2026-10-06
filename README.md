@@ -13,7 +13,7 @@
 
 # MON 門 Japanese OS
 
-O **MON** é uma aplicação web/PWA para aprender japonês desde o zero absoluto até situações reais do cotidiano. **Release atual: 0.1.0 (pre-1.0).** Em vez de organizar o estudo apenas como listas de palavras ou exercícios repetidos, o produto combina **Fundação Zero, SRS, Mastery Graph, narrativa recorrente, prática adaptativa, Kanji Memory Lab, listening, fala, missões de sobrevivência e validação longitudinal da aprendizagem**.
+O **MON** é uma aplicação web/PWA para aprender japonês desde o zero absoluto até situações reais do cotidiano. **Release atual: 0.1.1 (pre-1.0).** Em vez de organizar o estudo apenas como listas de palavras ou exercícios repetidos, o produto combina **Fundação Zero, SRS, Mastery Graph, narrativa recorrente, prática adaptativa, Kanji Memory Lab, listening, fala, missões de sobrevivência e validação longitudinal da aprendizagem**.
 
 O sistema adapta a próxima sessão usando evidências reais do aluno, acompanha retenção e transferência ao longo do tempo e preserva uma arquitetura local-first, offline e orientada a performance. O motor de sincronização multi-device já está implementado com revisão otimista e conflitos explícitos; a ativação cloud depende da configuração do Supabase no ambiente publicado.
 

@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.1.1 — 2026-10-05
+
+Security hardening da camada de interação do MON.
+
+### Security
+- remove `'unsafe-inline'` de `script-src`;
+- migra handlers HTML inline para comandos declarativos `data-mon-*`;
+- executa somente ações presentes em allowlist explícita;
+- mantém `eval` e `new Function` proibidos;
+- move o bootstrap de runtime health para script externo same-origin.
+
+### PWA
+- service-worker cache atualizado para `v41` para evitar shell/dispatcher incompatíveis em instalações existentes.
+
+### Known limitations
+- `style-src` ainda usa `'unsafe-inline'` enquanto estilos inline e mutações CSSOM antigas são migrados;
+- Supabase JS continua vindo de jsDelivr com versão exata e CSP allowlist;
+- PNG 192/512 e Apple touch icon ainda não estão versionados;
+- GitHub Pages ainda não depende administrativamente do Quality Gate.
+
 ## 0.1.0 — 2026-10-05
 
 Primeira release formalmente identificada do MON.

@@ -23,13 +23,13 @@ function recommendedVideo(s=state){
 }
 function renderVideoRecommendation(){
  const host=document.getElementById('videoRecommendation');if(!host)return;const r=recommendedVideo(),v=r.video;
- host.innerHTML=`<div><span class="eyebrow">recomendado pelo seu progresso · ${v.level}</span><h3>${r.followThrough?'Agora retire o apoio.':v.title}</h3><p>${r.reason}</p></div><button class="primary" onclick="${r.followThrough?`startVideoPractice('${v.id}')`:`openVideo('${v.id}')` }">${r.followThrough?'praticar sem vídeo →':'assistir apoio →'}</button>`;
+ host.innerHTML=`<div><span class="eyebrow">recomendado pelo seu progresso · ${v.level}</span><h3>${r.followThrough?'Agora retire o apoio.':v.title}</h3><p>${r.reason}</p></div><button class="primary" data-mon-command="${r.followThrough?`startVideoPractice('${v.id}')`:`openVideo('${v.id}')` }">${r.followThrough?'praticar sem vídeo →':'assistir apoio →'}</button>`;
 }
 
 function renderVideos(){
  const host=document.getElementById('videoGrid');if(!host)return;
  const rows=videoFilter==='all'?MON_VIDEOS:MON_VIDEOS.filter(v=>v.cat===videoFilter);
- host.innerHTML=rows.map(v=>`<button class="video-card" onclick="openVideo('${v.id}')" aria-label="Assistir ${v.title}">
+ host.innerHTML=rows.map(v=>`<button class="video-card" data-mon-command="openVideo('${v.id}')" aria-label="Assistir ${v.title}">
    <div class="video-thumb"><span class="video-poster" aria-hidden="true">${v.jp}</span><span class="video-play">▶</span><em>${v.jp}</em></div>
    <div class="video-body"><div class="video-meta"><span>${v.tag} · ${v.level}</span><small>externo · internet</small></div><h3>${v.title}</h3><p>${v.desc}</p><strong>${v.source}</strong></div>
  </button>`).join('');
