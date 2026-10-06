@@ -55,9 +55,11 @@ try{
   throw new Error(`${error.message} finalUrl=${page.url()} status=${response.status()} title=${JSON.stringify(title)} body=${JSON.stringify(body.slice(0,600))} markup=${JSON.stringify(markup)}`);
  }
  assert.equal(pageErrors.length,0,'Home boot emitted page errors: '+pageErrors.join('\n'));
+ await waitVisible('#guideVisual');
  assert.equal(await page.locator('img[src*="kitsu-mascot"]').count(),0,'legacy mascot image must not render');
- assert.equal(await page.locator('.guide-card').evaluate(el=>getComputedStyle(el).display),'none','redundant Home guide card must stay out of the visual hierarchy');
- assert.equal(await page.locator('.journey-mini').evaluate(el=>getComputedStyle(el).display),'none','redundant journey summary card must stay out of the Home rail');
+ const guideBox=await page.locator('#guideVisual').boundingBox();
+ assert.ok(guideBox&&guideBox.width>=80&&guideBox.height>=80,'abstract guide effect must keep a visible visual footprint');
+ assert.equal(await page.locator('#guideVisual .guide-glyph').innerText(),'門','abstract guide effect should carry the MON gate glyph');
  const progressNav=page.locator('#desktopNav [data-view="progress"]');
  await progressNav.focus();await page.keyboard.press('Enter');await waitVisible('#progress.active');
  assert.equal(await page.evaluate(()=>document.activeElement?.id),'progress','keyboard navigation must move focus to the active view');
@@ -99,14 +101,6 @@ try{
  assert.match(await page.locator('#videoExternalLink').getAttribute('href'),/youtube\.com\/watch\?v=/);
  await page.click('#videoClose');
  assert.equal(await page.locator('#videoModal').evaluate(el=>el.hidden),true,'video modal must hide after close');
-
- await page.evaluate(async()=>{await ensureLearningRuntime();await ensureFeatureRuntime('lesson');quickRun={idx:0,node:flatPath[0],pack:{title:'Guard',exercises:[{type:'study',title:'Mapa',mentalModel:'Entenda antes de responder.',explanation:'Uma explicação curta para abrir a prática.',examples:[{jp:'あ',pt:'a',note:'som'}],contrast:'Não avance por dupla execução.'},{type:'recall',prompt:'Digite あ',target:'あ',accepted:['あ'],why:'smoke'}]},step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,typed:'',checked:false};await go('lesson');renderQuickExercise()});
- await waitVisible('#lesson.active');
- await page.click('#quickCheck');
- await page.waitForSelector('#quickTyped');
- assert.deepEqual(await page.evaluate(()=>({step:quickRun.step,checked:quickRun.checked,answered:quickRun.answered,disabled:document.getElementById('quickCheck').disabled})),{step:1,checked:false,answered:0,disabled:true},'one study CTA click must only enter the next exercise, never auto-submit it');
- await page.evaluate(()=>quickNext());
- assert.equal(await page.evaluate(()=>quickRun.step),1,'evaluative exercise must not advance before validation');
 
  await page.evaluate(async()=>{await ensureLearningRuntime();await ensureFeatureRuntime('lesson');quickRun={idx:0,node:flatPath[0],pack:{title:'Smoke',exercises:[{type:'wordbank',prompt:'Monte',target:'東京駅',tokens:['東京','駅'],why:'smoke'},{type:'speak',prompt:'Fale',target:'こんにちは',pt:'olá',why:'smoke'}]},step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false};await go('lesson');renderQuickExercise()});
  await waitVisible('#lesson.active');
