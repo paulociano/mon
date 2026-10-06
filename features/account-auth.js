@@ -43,14 +43,3 @@ async function requestMonPasswordReset(){
   if(typeof toast==='function')toast('Confira seu e-mail para recuperar a senha');
  }catch(e){setAuthStatus(e.message);if(typeof toast==='function')toast(e.message)}
 }
-async function completeMonPasswordRecovery(){
- const password=document.getElementById('authPassword')?.value||'';
- if(password.length<8){setAuthStatus('Use uma senha com pelo menos 8 caracteres');return}
- try{
-  await monCloudSetPassword(password);
-  const clean=new URL(location.href);clean.hash='';clean.searchParams.delete('recovery');clean.searchParams.set('view','home');history.replaceState({},'',clean);
-  setAuthStatus('Senha atualizada.');
-  if(typeof toast==='function')toast('Senha atualizada');
-  await go('home',{replace:true});
- }catch(e){setAuthStatus(e.message);if(typeof toast==='function')toast(e.message)}
-}
