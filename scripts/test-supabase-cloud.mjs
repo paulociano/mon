@@ -3,12 +3,13 @@ const adapter=fs.readFileSync('core/supabase-sync.js','utf8'),config=fs.readFile
 for(const token of ['monCloudConfigured','getMonSupabase','monCloudSignOut','monCloudPush','monCloudPull','monSyncConflict'])assert.ok(adapter.includes(token),'missing Supabase adapter '+token);
 assert.ok(adapter.includes('persistSession:true'),'browser auth session must persist');
 assert.ok(adapter.includes("const MON_SUPABASE_SDK_URL='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2'"),'Supabase runtime dependency must be pinned to an exact version');
-const authAdapter=fs.readFileSync('features/account-auth.js','utf8');
+const authAdapter=fs.readFileSync('features/account-auth.js','utf8'),authPage=fs.readFileSync('features/auth-page.js','utf8');
 assert.ok(authAdapter.includes('signUp({email,password'),'Conta MON must support email/password signup');
 assert.ok(authAdapter.includes('signInWithPassword({email,password}'),'Conta MON must support direct email/password login');
 assert.ok(authAdapter.includes('updateUser({password})'),'connected users must be able to set a password');
 assert.ok(authAdapter.includes('resetPasswordForEmail(email,{redirectTo:'),'Conta MON must support password recovery by email');
-assert.ok(authAdapter.includes('completeMonPasswordRecovery'),'password recovery must finish by updating the authenticated user');
+assert.ok(authPage.includes('completeMonPasswordRecovery'),'password recovery UI must expose completion action');
+assert.ok(authPage.includes('monCloudSetPassword(password)'),'password recovery must finish by updating the authenticated user');
 assert.ok(!adapter.includes('signInWithOtp')&&!authAdapter.includes('signInWithOtp'),'magic link must not remain the primary MON login flow');
 assert.ok(!config.toLowerCase().includes('service_role'),'service role key must never appear in browser config');
 assert.ok(config.includes('mon-supabase-publishable-key'),'browser config must support deploy-time publishable-key injection');
