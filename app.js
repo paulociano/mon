@@ -497,4 +497,3 @@ if(foundationNav)foundationNav.addEventListener('pointerover',()=>ensureFeatureR
 const pathWarm=document.getElementById('learningPath');
 if(pathWarm)pathWarm.addEventListener('pointerover',e=>{if(e.target.closest('.path-node.current'))ensureLearningRuntime().catch(()=>{})},{passive:true});
 if(localStorage.getItem('mon-cloud-linked')||location.search.includes('code='))setTimeout(()=>ensureAccountRuntime().then(monCloudBootstrap),500);
-addEventListener('load',()=>setTimeout(()=>loadRuntimeScript('./core/runtime-health.js'),0),{once:true});
