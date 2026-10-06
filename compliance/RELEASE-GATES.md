@@ -4,6 +4,7 @@ A Conta MON não deve ser aberta ao público enquanto qualquer gate P0 permanece
 
 ## P0
 
+- [ ] proteger `main`, exigir os Quality Gate checks antes do merge e migrar GitHub Pages de branch publishing para GitHub Actions com deploy dependente de validação;
 - [x] identificar nominalmente o controlador: Paulo Henrique Graciano;
 - [ ] complementar CPF/CNPJ do controlador, conforme aplicável;
 - [ ] definir e testar e-mail de suporte (mantido em branco por decisão atual);
@@ -30,11 +31,22 @@ A Conta MON não deve ser aberta ao público enquanto qualquer gate P0 permanece
 
 ## P1
 
-- [ ] validar necessidade de jsDelivr em runtime ou empacotar SDK;
+- [x] implementar recuperação de senha por e-mail com redirect de recovery e troca autenticada de senha;
+- [x] adicionar CSP baseline limitando scripts, conexões, frames, workers e objetos aos origins necessários;
+- [x] tornar `updated_at` de `mon_user_state` autoritativo no servidor via trigger;
+- [ ] habilitar Supabase Leaked Password Protection e repetir o security advisor;
+- [ ] remover jsDelivr do runtime por self-host/bundle do SDK; até lá, manter versão exata + CSP allowlist;
 - [x] revisar e endurecer thumbnails/player do YouTube: sem thumbnail remoto pré-clique, `youtube-nocookie`, sem autoplay;
-- [ ] definir procedimento operacional de incidentes e owner;
-- [ ] definir prazos concretos de logs/backups;
-- [ ] testar fluxo de exportação + exclusão cloud ponta a ponta.
+- [x] definir procedimento operacional de incidentes e owner em `docs/INCIDENT-RESPONSE.md`;
+- [x] definir retenção dos diagnostics locais do MON: 7 dias / 50 eventos, sem telemetria remota;
+- [ ] confirmar e documentar prazos de logs/backups geridos por GitHub/Supabase;
+- [ ] testar fluxo de exportação + exclusão cloud ponta a ponta;
+- [x] estabelecer release identity `0.1.1`, changelog e coerência com cache do Service Worker;
+- [x] adicionar runtime health local, privacy-first e sem persistência de erro bruto;
+- [x] separar ícone PWA regular e maskable em assets distintos;
+- [ ] adicionar PNG 192/512 e Apple touch icon;
+- [x] remover `unsafe-inline` de `script-src`, migrando handlers inline para ações declarativas allowlisted;
+- [ ] remover `unsafe-inline` restante de `style-src` após migrar estilos inline e mutações de estilo.
 
 ## Critério
 

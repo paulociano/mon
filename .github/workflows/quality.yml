@@ -28,6 +28,12 @@ jobs:
           find . -type f \( -name "*.js" -o -name "*.mjs" \) -not -path "./.git/*" -not -path "./node_modules/*" -print0 | xargs -0 -n1 node --check
       - name: Repository quality and security
         run: node scripts/test-repository-quality.mjs
+      - name: CSP-safe UI actions
+        run: node scripts/test-csp-actions.mjs
+      - name: CSP-safe styles
+        run: node scripts/test-csp-styles.mjs
+      - name: Release identity and runtime health
+        run: node scripts/test-release-runtime-health.mjs
       - name: Legal and compliance baseline
         run: node scripts/test-legal-compliance.mjs
       - name: Accessibility contracts
@@ -195,6 +201,8 @@ jobs:
           exit 1
       - name: Browser smoke
         run: node scripts/test-browser-smoke.mjs
+      - name: Beginner first-win onboarding
+        run: node scripts/test-beginner-first-win.mjs
       - name: Reliability and accessibility browser checks
         run: node scripts/test-reliability-browser.mjs
       - name: Latency baseline
@@ -205,6 +213,8 @@ jobs:
         run: node scripts/test-responsive-smoke.mjs
       - name: P8 secondary responsive smoke
         run: node scripts/test-p8-secondary-responsive.mjs
+      - name: P8 visual QA evidence
+        run: node scripts/test-p8-visual-qa.mjs
       - name: Offline PWA smoke
         run: node scripts/test-offline-smoke.mjs
       - name: Preserve browser evidence

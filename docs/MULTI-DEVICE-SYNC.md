@@ -76,14 +76,23 @@ Isso evita reutilizar metadata de sync de uma conta diferente.
 
 ## Auth
 
-A implementação usa magic link / OTP por e-mail via Supabase Auth.
+A implementação usa e-mail + senha via Supabase Auth.
+
+Fluxos suportados:
+
+- cadastro com confirmação de e-mail;
+- login direto com e-mail + senha;
+- alteração de senha para sessão autenticada;
+- recuperação de senha por e-mail com `resetPasswordForEmail`;
+- retorno do link de recovery para uma sessão válida;
+- definição da nova senha com `updateUser`.
 
 Sessão:
 
 - persiste no navegador;
 - usa auto refresh;
 - usa `detectSessionInUrl`;
-- pode retomar sync após retorno do link de acesso.
+- pode retomar sync após confirmação de cadastro ou recuperação de senha.
 
 ## Segurança
 
@@ -93,14 +102,13 @@ A aplicação web aceita apenas URL pública do projeto e publishable key. Nunca
 
 ## Ativação do backend
 
-O código cliente está implementado, mas o ambiente publicado só fica conectado quando:
+O ambiente publicado resolve configuração browser-safe nesta ordem:
 
-1. `supabase/schema.sql` for aplicado ao projeto Supabase;
-2. `config/cloud.js` receber:
-   - URL pública do projeto;
-   - publishable key.
+1. `globalThis.MON_CLOUD_RUNTIME_CONFIG`;
+2. meta tag de deploy `mon-supabase-publishable-key`;
+3. Edge Function pública `public-config`.
 
-Esses valores são públicos por natureza no browser. Credenciais privilegiadas não pertencem ao repositório.
+A URL pública do projeto fica em `config/cloud.js`. A publishable key é material público de cliente e pode ser entregue ao browser somente com RLS e grants mínimos protegendo os dados. Secret key e service role nunca pertencem ao frontend ou ao repositório.
 
 ## Quality Gate
 
@@ -121,4 +129,7 @@ O CI valida:
 - troca de identidade;
 - rollback de revisão;
 - snapshot remoto do último conflito;
-- dirty marker do save local.
+- dirty marker do save local;
+- cadastro/login por senha;
+- presença do fluxo de recuperação de senha;
+- configuração pública sem material privilegiado.

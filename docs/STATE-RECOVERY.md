@@ -4,7 +4,7 @@
 
 ## Schema atual
 
-- `MON_SAVE_VERSION = 2`
+- `MON_SAVE_VERSION = 3`
 - migrations são aplicadas sequencialmente em `core/state.js`
 - versões futuras são rejeitadas
 - saves sem versão entram pelo caminho legado e são migrados passo a passo
@@ -19,6 +19,15 @@ A primeira migration explícita formaliza o histórico de Learning Evidence:
 - grava o save original v1 em `mon-state-backup` antes de persistir o v2.
 
 O backup pré-migration é a cópia last-known-good e não deve ser apagado antes que o estado migrado seja validado.
+
+## Migration v2 → v3
+
+A migration v3 normaliza a política de Energia para o baseline atual:
+
+- eleva `energy` para pelo menos 30;
+- eleva `maxEnergy` para pelo menos 30;
+- preserva o restante do save;
+- passa pelo mesmo backup pré-migration antes da substituição do estado ativo.
 
 ## Recovery local
 
@@ -67,7 +76,7 @@ O Quality Gate cobre:
 
 - clean/default state;
 - save legado sem versão;
-- v1 → v2;
+- v1 → v2 → v3;
 - preservação do backup pré-migration;
 - versão futura;
 - estado primário corrompido;

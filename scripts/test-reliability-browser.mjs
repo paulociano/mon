@@ -26,7 +26,7 @@ try{
  await page.evaluate(async()=>{await go('user');await renderCloudAccountPanel();setMonUserAuthState(true)});
  await page.waitForSelector('#user.active');
  await page.fill('#userNameInput','Teste de rotina');
- await page.click('button[onclick="saveUserArea()"]');
+ await page.click('button[data-mon-command="saveUserArea()"]');
  await page.evaluate(async()=>{await renderCloudAccountPanel();setMonUserAuthState(true)});
  assert.equal(await page.locator('#userNameHero').innerText(),'Teste de rotina');
  assert.ok(await page.locator('#userAccountBadge').isVisible(),'sync status must remain visible on mobile');

@@ -245,19 +245,20 @@ Além dos budgets de bytes:
 
 Definir budgets de latência somente depois de coletar baseline real em navegadores/dispositivos representativos.
 
-### 11. UI/UX de alta fidelidade — primeira fatia P8 implementada ✅
+### 11. UI/UX de alta fidelidade — P8.2 Core Experience em andamento ✅
 **Pode avançar em paralelo, sem quebrar os gates.**
 
-**Fatia atual:** Home, Lesson e Practice receberam refinamento responsivo; a Fundação Zero ganhou variação determinística entre lições iniciais, introduções visuais de bloco e um atlas persistente de referência; energia inicial sobe para 30 e passa a ser consumida apenas em erros. Japan Journal, Survival Missions, Listening/Pronunciation e Kanji Atlas também receberam uma segunda leva responsiva com touch targets, hierarquia e estados de interação mais robustos. O Quality Gate cobre esses comportamentos em desktop, tablet e mobile.
+**P8.1:** Home, Lesson e Practice receberam refinamento responsivo; a Fundação Zero ganhou variação determinística entre lições iniciais, introduções visuais de bloco e um atlas persistente de referência. Japan Journal, Survival Missions, Listening/Pronunciation e Kanji Atlas também receberam uma segunda leva responsiva.
 
-Superfícies prioritárias:
-1. Home adaptativa;
-2. Lesson UI;
-3. Practice Hub;
-4. Japan Journal;
-5. Mission UI;
-6. Listening Lab;
-7. Kanji Lab.
+**P8.2 · Core Experience:** consolida a linguagem visual em torno de uma tese de “portal editorial, não dashboard”: Home com uma ação dominante e rail secundário mais silencioso; Jornada como timeline contínua de capacidades; Lesson com maior foco tipográfico, menos ruído e controles mais confortáveis em desktop e mobile.
+
+**P8.3 · Practice, Progress & Missions:** o Practice Hub passa a priorizar decisão e reparo, o Progresso vira um mapa hierárquico de capacidades e evidências, e a Mission UI assume linguagem visual de conversa, com interlocutor e respostas ocupando lados distintos da cena.
+
+**P8.4 · Explore, system states & semantic motion:** Explorar deixa de ser uma grade homogênea e passa a organizar recursos por território e importância; estados de carregamento/atualização recebem tratamento visual mais consistente; motion é limitado a orientação, feedback e progresso, com fallback explícito para reduced motion.
+
+**P8.5 · Labs & feedback states:** Listening/Pronunciation e Kanji recebem a mesma hierarquia editorial das superfícies centrais. Estados de sucesso e erro deixam de depender apenas de texto e ganham sinal visual explícito, sem transformar correspondência de voz em avaliação fonética.
+
+**Status da P8:** linguagem visual principal concluída. Próxima etapa é validação visual publicada em dispositivos reais e correções residuais, não outro redesign amplo.
 
 Regras:
 - uma ação principal por superfície;
@@ -268,6 +269,20 @@ Regras:
 - touch targets adequados;
 - mobile-first para estudo rápido;
 - animação ambiente discreta.
+
+### 11.2 Primeiro uso · primeira vitória em ~10 minutos ✅
+**Status:** implementado e protegido por browser gate.
+
+O onboarding para zero absoluto prova valor antes de apresentar o sistema inteiro. A entrada principal leva diretamente a uma sessão curta com quatro movimentos: ouvir → reconhecer → entender em contexto → falar. Escrita, métricas e detalhes de método aparecem depois da primeira experiência.
+
+**Critério de aceite:** quem escolhe “começando do zero” entra diretamente em uma sessão de no máximo 10 minutos, sem precisar navegar pela Home ou compreender Mastery Graph, XP, trilha, score ou ferramentas antes de aprender algo.
+
+### 11.3 Retorno inicial · provar que algo ficou
+**Status:** em implementação.
+
+Depois da primeira sessão, a Home deve reconhecer que o aluno ainda está formando hábito e confiança. Em vez de usar linguagem de dashboard, o retorno prioriza uma pergunta simples: “o que ficou?”. A segunda sessão retoma som e kana antes de acrescentar novidade.
+
+**Critério de aceite:** enquanto houver exatamente uma sessão da Fundação concluída, a Home apresenta uma ação dominante de recuperação e o CTA continua diretamente na sessão 2.
 
 ### 12. Robustez antes de escala
 - migração/versionamento de estado local ✅;

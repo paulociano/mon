@@ -40,8 +40,8 @@ function guidedMissionBuild(sp){
 }
 function renderGuidedWordbank(e){
  const cue=e.cue?`<div class="wordbank-cue"><span>intenção</span><strong>${e.cue}</strong></div>`:'';
- const bank=`<div class="word-built" id="wordBuilt"><span class="wordbank-empty">comece pelo bloco que carrega a ideia principal</span></div><div class="word-bank" id="wordBank">${shuffleArray(e.tokens.map((t,i)=>({t,i}))).map(x=>`<button class="word-token" data-wb="${x.i}" onclick="wordTap(${x.i},this)">${x.t}</button>`).join('')}</div>`;
- const hint=e.hint?'<button class="method-reveal wordbank-hint-button" onclick="quickWordbankHint()">preciso de uma pista</button><div id="wordbankHint" class="wordbank-hint"></div>':'';
+ const bank=`<div class="word-built" id="wordBuilt"><span class="wordbank-empty">comece pelo bloco que carrega a ideia principal</span></div><div class="word-bank" id="wordBank">${shuffleArray(e.tokens.map((t,i)=>({t,i}))).map(x=>`<button class="word-token" data-wb="${x.i}" data-mon-command="wordTap(${x.i},this)">${x.t}</button>`).join('')}</div>`;
+ const hint=e.hint?'<button class="method-reveal wordbank-hint-button" data-mon-command="quickWordbankHint()">preciso de uma pista</button><div id="wordbankHint" class="wordbank-hint"></div>':'';
  return cue+bank+hint;
 }
 function quickWordbankHint(){
