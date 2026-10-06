@@ -12,7 +12,7 @@ assert.equal(pkg.version,release.version,'package and release identity must matc
 assert.equal(lock.version,release.version,'lockfile release identity must match');
 assert.equal(lock.packages[''].version,release.version,'lockfile root package version must match');
 assert.ok(html.includes(`name="mon-release" content="${release.version}"`),'HTML must expose release identity');
-assert.ok(sw.includes("const CACHE_VERSION='v40'"),'release must bump service-worker cache identity');
+assert.ok(sw.includes("const CACHE_VERSION='v41'"),'release must bump service-worker cache identity');
 for(const asset of ["'./release.json'","'./core/runtime-health.js'"])assert.ok(sw.includes(asset),'release diagnostics asset missing from PWA shell '+asset);
 assert.ok(html.includes('addEventListener("load"'),'runtime health must initialize after window load');
 assert.ok(html.includes('s.src="./core/runtime-health.js"'),'runtime health loader must target the local diagnostic module');
