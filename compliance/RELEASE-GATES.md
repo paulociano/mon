@@ -37,9 +37,15 @@ A Conta MON não deve ser aberta ao público enquanto qualquer gate P0 permanece
 - [ ] habilitar Supabase Leaked Password Protection e repetir o security advisor;
 - [ ] remover jsDelivr do runtime por self-host/bundle do SDK; até lá, manter versão exata + CSP allowlist;
 - [x] revisar e endurecer thumbnails/player do YouTube: sem thumbnail remoto pré-clique, `youtube-nocookie`, sem autoplay;
-- [ ] definir procedimento operacional de incidentes e owner;
-- [ ] definir prazos concretos de logs/backups;
-- [ ] testar fluxo de exportação + exclusão cloud ponta a ponta.
+- [x] definir procedimento operacional de incidentes e owner em `docs/INCIDENT-RESPONSE.md`;
+- [x] definir retenção dos diagnostics locais do MON: 7 dias / 50 eventos, sem telemetria remota;
+- [ ] confirmar e documentar prazos de logs/backups geridos por GitHub/Supabase;
+- [ ] testar fluxo de exportação + exclusão cloud ponta a ponta;
+- [x] estabelecer release identity `0.1.0`, changelog e coerência com cache do Service Worker;
+- [x] adicionar runtime health local, privacy-first e sem persistência de erro bruto;
+- [x] separar ícone PWA regular e maskable em assets distintos;
+- [ ] adicionar PNG 192/512 e Apple touch icon;
+- [ ] remover `unsafe-inline` da CSP após migrar handlers/styles inline para módulos e classes.
 
 ## Critério
 
