@@ -102,6 +102,13 @@ try{
  await page.click('#videoClose');
  assert.equal(await page.locator('#videoModal').evaluate(el=>el.hidden),true,'video modal must hide after close');
 
+ await page.evaluate(async()=>{await ensureLearningRuntime();await ensureFeatureRuntime('lesson');quickRun={idx:0,node:flatPath[0],pack:{title:'Guard',exercises:[{type:'study',title:'Mapa',mentalModel:'Entenda.',explanation:'Estude antes.',examples:[{jp:'あ',pt:'a',note:'som'}],contrast:'Uma etapa por clique.'},{type:'recall',prompt:'Digite あ',target:'あ',accepted:['あ'],why:'smoke'}]},step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,typed:'',checked:false};await go('lesson');renderQuickExercise()});
+ await waitVisible('#lesson.active');
+ await page.click('#quickCheck');
+ await page.waitForSelector('#quickTyped');
+ assert.equal(await page.evaluate(()=>quickRun.step),1,'one study CTA click must advance exactly one exercise');
+ assert.equal(await page.locator('#quickCheck').isDisabled(),true,'next evaluative exercise must wait for an answer');
+
  await page.evaluate(async()=>{await ensureLearningRuntime();await ensureFeatureRuntime('lesson');quickRun={idx:0,node:flatPath[0],pack:{title:'Smoke',exercises:[{type:'wordbank',prompt:'Monte',target:'東京駅',tokens:['東京','駅'],why:'smoke'},{type:'speak',prompt:'Fale',target:'こんにちは',pt:'olá',why:'smoke'}]},step:0,correct:0,answered:0,streak:0,xp:0,selected:null,built:[],matches:[],matchPick:null,checked:false};await go('lesson');renderQuickExercise()});
  await waitVisible('#lesson.active');
  await page.waitForSelector('#wordBank .word-token');
