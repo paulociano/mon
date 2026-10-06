@@ -9,13 +9,17 @@ async function monCloudRequestPasswordReset(email){
  const {data,error}=await client.auth.resetPasswordForEmail(email,{redirectTo:redirectTo.toString()});
  if(error)throw error;return data
 }
+function monAuthFieldValue(...ids){
+ for(const id of ids){const value=document.getElementById(id)?.value||'';if(value.trim())return value}
+ return '';
+}
 function monAuthEmail(){
- const email=(document.getElementById('authEmail')||document.getElementById('userCloudEmail'))?.value.trim()||'';
+ const email=monAuthFieldValue('authEmail','userCloudEmail').trim();
  if(!email)throw new Error('Digite seu e-mail');
  return email;
 }
 function monAuthCredentials(){
- const email=monAuthEmail(),password=(document.getElementById('authPassword')||document.getElementById('userCloudPassword'))?.value||'';
+ const email=monAuthEmail(),password=monAuthFieldValue('authPassword','userCloudPassword');
  if(password.length<8)throw new Error('Use uma senha com pelo menos 8 caracteres');
  return {email,password};
 }
