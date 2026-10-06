@@ -9,7 +9,7 @@ function renderJournal(){
   const model=narrativeJournalModel(),s=model.summary;
   const resolvedSet=new Set(model.episodes.filter(x=>x.progress.resolved).map(x=>x.id));
   if(!s.episodes){
-    host.innerHTML=`<section class="journal-empty"><div class="journal-seal">記</div><span class="eyebrow">Diário no Japão</span><h2>Sua história começa quando o japonês deixa de ser exercício.</h2><p>Ao chegar às situações N5, personagens e lugares começam a reaparecer. O MON registra encontros, retornos e situações que você conseguiu resolver com evidência de domínio.</p><button class="primary" onclick="go('home')">voltar à trilha →</button></section>`;
+    host.innerHTML=`<section class="journal-empty"><div class="journal-seal">記</div><span class="eyebrow">Diário no Japão</span><h2>Sua história começa quando o japonês deixa de ser exercício.</h2><p>Ao chegar às situações N5, personagens e lugares começam a reaparecer. O MON registra encontros, retornos e situações que você conseguiu resolver com evidência de domínio.</p><button class="primary" data-mon-command="go('home')">voltar à trilha →</button></section>`;
     return;
   }
   const arcCards=model.arcs.map(a=>`<article class="journal-arc ${a.resolved===a.total&&a.total?'complete':''}">
@@ -31,7 +31,7 @@ function renderJournal(){
         <p>${ep?.scenePt||''}</p>
         <blockquote lang="ja">${ep?.sceneJp||''}</blockquote>
         <div class="journal-entry-meta"><span>melhor precisão · ${p.bestAccuracy||0}%</span><span>${p.attempts||1} tentativa${p.attempts===1?'':'s'}</span>${callback?'<span class="callback">↺ eco recuperado</span>':''}</div>
-        <div class="journal-entry-actions"><button onclick="speak('${(ep?.target||'').replaceAll("'","\\'")}')">▶ ouvir resposta-alvo</button><button onclick="go('home')">voltar à trilha</button></div>
+        <div class="journal-entry-actions"><button data-mon-command="speak('${(ep?.target||'').replaceAll("'","\\'")}')">▶ ouvir resposta-alvo</button><button data-mon-command="go('home')">voltar à trilha</button></div>
       </div>
     </article>`;
   }).join('');
