@@ -2,6 +2,7 @@ import fs from 'node:fs';
 
 const required=[
  'docs/PRODUCTION-RELEASE.md',
+ 'docs/INCIDENT-RESPONSE.md',
  'scripts/check-public-release-readiness.mjs',
  '.github/workflows/public-release-readiness.yml',
  'LICENSE',
