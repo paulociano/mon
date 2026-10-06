@@ -9,6 +9,8 @@ const html=fs.readFileSync('index.html','utf8');
 assert.ok(!app.includes('function renderQuickExercise('),'lesson renderer leaked into shell');
 assert.ok(lesson.includes('function renderQuickExercise('));
 assert.ok(lesson.includes('function quickCheck('));
+assert.ok(lesson.includes("btn.removeAttribute('data-mon-command')"),'lesson CTA must not dispatch both onclick and the global command router');
+assert.ok(lesson.includes("if(current?.type!=='study'&&!quickRun.checked)return"),'evaluative exercises must not advance before validation');
 assert.ok(lesson.includes('bindLessonKeyboard'));
 assert.ok(lesson.includes('data-qopt'));
 assert.ok(app.includes("lesson:['./features/open-production-remediation.js','./features/lesson.js']"));

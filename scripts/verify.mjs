@@ -66,7 +66,7 @@ for(const id of requiredIds){
 }
 
 console.log('MON static verification passed');
-for(const asset of ['./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp']){if(!sw.includes(`'${asset}'`))throw new Error('PWA cache missing visual asset '+asset)}
+for(const asset of ['./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp']){if(sw.includes(`'${asset}'`))throw new Error('PWA cache must not precache removed decorative background '+asset)}
 for(const cls of ['unit-progress','unit-status','node-halo','rail-card-label','home-reveal']){if(!css.includes('.'+cls)&&!html.includes('class="'+cls))throw new Error('Missing home polish contract '+cls)}
 if(!app.includes('queueHomePolish'))throw new Error('Missing progressive home reveal runtime')
 if(!app.includes('aria-current="step"'))throw new Error('Current path step lacks aria-current')
