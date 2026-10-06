@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 const size=p=>fs.statSync(p).size;
 const kb=n=>Math.round(n/1024*10)/10;
 
-const eagerScripts=['data/course-content.js','core/state.js','core/review-scheduler.js','core/performance.js','core/home-coach.js','app.js'];
+const eagerScripts=['core/runtime-health.js','data/course-content.js','core/state.js','core/review-scheduler.js','core/performance.js','core/home-coach.js','app.js'];
 const dataScripts=['data/kanji.js','data/kana.js','data/foundation.js','data/session.js','data/experiences.js','data/curriculum.js','data/narrative.js','data/pronunciation.js','data/kanji-memory.js','data/missions-v2.js','data/missions-dialogues.js'];
 const narrativeDataScripts=['data/narrative.js'];
 const foundationLessonScripts=['data/session.js'];
