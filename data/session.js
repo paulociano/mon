@@ -33,7 +33,7 @@ const foundationStudyNotes={
   24:{title:'Autonomia inicial · combinar sem adivinhar',mentalModel:'Você não precisa saber “muito japonês”; precisa saber o que já aprendeu, reconhecer limites e reparar a conversa quando necessário.',explanation:'O checkpoint integra leitura de kana, arquitetura da frase, partículas já estudadas, verbo polido, descrição, existência, quantidade e pedido. Se faltar compreensão, use um bloco de reparo. O objetivo é resolver uma situação com base consciente, não passar em cartões por reconhecimento.',examples:[{jp:'日本語がまだよく分かりません。',pt:'Ainda não entendo bem japonês.',note:'Você consegue nomear a própria limitação.'},{jp:'もう一度お願いします。',pt:'Mais uma vez, por favor.',note:'Reparo mantém a interação viva.'},{jp:'ゆっくりお願いします。',pt:'Mais devagar, por favor.',note:'Uma estratégia curta pode ser mais útil que uma frase longa.'}],contrast:'Não avance porque concluiu 24 sessões. Avance quando consegue explicar os mecanismos básicos e transferi-los para exemplos novos.',realWorldUse:'Primeiras missões de estação, compra, localização e atendimento.'}
 };
 
-function foundationStudyBlock(day)function foundationStudyBlock(day){
+function foundationStudyBlock(day){
   const p=foundationSessionPlans[day-1],note=foundationStudyNotes[day];
   if(!p)return null;
   const base=note||{
