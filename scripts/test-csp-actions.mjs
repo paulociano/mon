@@ -37,4 +37,10 @@ for(const token of ['data-mon-command','data-mon-input-command','ACTIONS=new Set
 assert.ok(!runtime.includes('eval('),'dispatcher must not use eval');
 assert.ok(!runtime.includes('new Function'),'dispatcher must not use new Function');
 
+const app=fs.readFileSync('app.js','utf8');
+assert.ok(app.includes("ensureAccountRuntime().then(()=>monCloudBootstrap())"),'cloud bootstrap must resolve only after lazy account runtime loads');
+for(const action of ['startMasteryRepair','claimPathChest','startQuickLesson']){
+ assert.ok(runtime.includes(action),`CSP dispatcher allowlist missing dynamic path action ${action}`);
+}
+
 console.log('MON CSP script and declarative UI action contracts passed');
