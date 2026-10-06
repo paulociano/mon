@@ -26,6 +26,15 @@ for(let i=0;i<5;i++)vm.runInContext("recordMasteryEvidence({_reviewType:'vocabul
 const doko=vm.runInContext("conceptMastery('vocabulary:doko')",ctx);
 assert.ok(doko>50,'repeated clean retrieval should build concept mastery');
 
+for(let i=0;i<3;i++)vm.runInContext("recordReadingMasteryEvidence(true,{hintUsed:false})",ctx);
+const readingStrong=vm.runInContext("readingMasterySnapshot()",ctx);
+assert.equal(readingStrong.attempts,3);
+assert.ok(readingStrong.score>=55,'clean blind reading should raise autonomy');
+vm.runInContext("recordReadingMasteryEvidence(false,{hintUsed:false})",ctx);
+vm.runInContext("recordReadingMasteryEvidence(false,{hintUsed:false})",ctx);
+const readingAfterErrors=vm.runInContext("readingMasterySnapshot()",ctx);
+assert.ok(readingAfterErrors.score<readingStrong.score,'recurrent reading errors should lower autonomy and allow support to return');
+
 const status=vm.runInContext("unitMasteryStatus(coursePacks.N5.units[0])",ctx);
 assert.ok(['exposed','reinforcing','mastered'].includes(status.status));
 assert.ok(status.coverage>=0&&status.coverage<=100);

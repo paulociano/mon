@@ -43,6 +43,23 @@ function recordMasteryEvidence(exercise={},ok=false,meta={}){
 function masteryScore(concept,dimension){
   return masteryCell(concept,dimension)?.score||0;
 }
+function readingMasterySnapshot(stateLike=state){
+  const cell=stateLike?.masteryEvidence?.['reading:global']?.recall||null;
+  const attempts=Number(cell?.attempts||0),score=Number(cell?.score||0);
+  const stage=attempts<3?'calibrating':score>=80?'independent':score>=55?'furigana':'romaji';
+  return {attempts,score,successes:Number(cell?.successes||0),hints:Number(cell?.hints||0),stage,lastAt:cell?.lastAt||null};
+}
+function recordReadingMasteryEvidence(ok=false,meta={}){
+  state.masteryEvidence=state.masteryEvidence||{};
+  const concept='reading:global',dimension='recall',now=Date.now(),conceptState=state.masteryEvidence[concept]||{};
+  const old=conceptState[dimension]||{attempts:0,successes:0,hints:0,score:35};
+  const clean=ok&&!meta.hintUsed,observation=clean?100:ok?72:0,alpha=old.attempts<2?.42:.28;
+  const score=Math.round(old.score*(1-alpha)+observation*alpha);
+  conceptState[dimension]={attempts:old.attempts+1,successes:old.successes+(ok?1:0),hints:old.hints+(meta.hintUsed?1:0),score,lastAt:now};
+  state.masteryEvidence[concept]=conceptState;
+  if(typeof recordLearningEvidence==='function')recordLearningEvidence({source:'reading_mastery',kind:'attempt',concept,dimension,method:'reading',ok,hintUsed:!!meta.hintUsed,spacingMs:old.lastAt?now-old.lastAt:null,context:'reading',at:now});
+  return readingMasterySnapshot(state);
+}
 function conceptMastery(concept){
   const cells=state.masteryEvidence?.[concept]||{},dims=masteryDimensionsForConcept(concept);
   const observed=dims.map(d=>cells[d]?.score).filter(x=>Number.isFinite(x));if(!observed.length)return 0;
