@@ -1,5 +1,5 @@
 const CACHE_PREFIX='mon-japanese-os-';
-const CACHE_VERSION='v42';
+const CACHE_VERSION='v43';
 const CRITICAL_SHELL_UPGRADE=false;
 const CACHE=CACHE_PREFIX+CACHE_VERSION;
 const CORE=['./','./index.html','./styles.css','./data/course-content.js','./core/state.js','./core/review-scheduler.js','./core/performance.js','./core/home-coach.js','./app.js','./manifest.json','./release.json','./core/runtime-health.js','./icon.svg','./icon-maskable.svg','./assets/brand/mon-mark.svg','./assets/brand/mon-lockup.svg','./assets/scene/mon-home-banner.webp','./assets/scene/mon-sidebar-bg.webp'];
@@ -33,13 +33,19 @@ async function cachePut(request,response){
 async function networkFirstNavigation(event){
   try{
     const preload=await event.preloadResponse;
-    const response=preload?.ok?preload:await fetch(event.request);
+    const response=preload?.ok?preload:await fetch(event.request,{cache:'no-cache'});
     if(!response?.ok)throw new Error('navigation response not ok');
-    return cachePut(event.request,response);
+    const cache=await caches.open(CACHE);
+    await cache.put('./index.html',response.clone());
+    return response;
   }catch{
     const shell=(await caches.match('./index.html'))||(await caches.match('./'));
     if(shell)return shell;
-    try{return await fetch('./index.html',{cache:'no-cache'})}catch{return new Response('MON offline shell unavailable',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}})}
+    try{
+      const response=await fetch('./index.html',{cache:'no-cache'});
+      if(response?.ok)return response;
+    }catch{}
+    return new Response('MON offline shell unavailable',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
   }
 }
 async function networkFirstAsset(event){

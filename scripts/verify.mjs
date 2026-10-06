@@ -73,7 +73,7 @@ if(!app.includes('aria-current="step"'))throw new Error('Current path step lacks
 if(html.includes('rel="preload"')&&html.includes('mon-home-banner.webp'))throw new Error('Home hero must not be preloaded globally outside Home route intent')
 if(!app.includes('function speak(text,rate=.86)'))throw new Error('Shared speak helper missing from shell runtime')
 if(!app.includes('function shuffleArray(a)'))throw new Error('Shared shuffle helper missing from shell runtime')
-if(!sw.includes("preload?.ok?preload:await fetch(event.request)"))throw new Error('Navigation preload must reject error responses')
+if(!sw.includes("preload?.ok?preload:await fetch(event.request,{cache:'no-cache'})"))throw new Error('Navigation preload must reject error responses and bypass stale HTTP navigation cache')
 if(!app.includes('ensureLearningRuntime'))throw new Error('Missing lazy learning runtime loader')
 if(!app.includes("const N5='./data/content-packs-n5.js'")||!['N4A','N4B','N4C','N4D'].every(k=>app.includes(k+':[')))throw new Error('Level-specific content pack router missing')
 if(!app.includes('ensureContentPack(level'))throw new Error('Content pack loader seam missing')
