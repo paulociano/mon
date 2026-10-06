@@ -83,7 +83,7 @@ async function renderCloudAccountPanel(){
   const session=await monCloudSession();
   if(!session){
    setMonUserAuthState(false);
-   panel.innerHTML='<b>Conta MON</b><br><label class="user-field"><span>E-mail</span><input id="userCloudEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><label class="user-field"><span>Senha</span><input id="userCloudPassword" type="password" autocomplete="current-password" minlength="8" placeholder="mínimo 8 caracteres"></label><div class="user-actions"><button class="user-save" onclick="signInMonCloud()">entrar</button><button class="user-secondary" onclick="signUpMonCloud()">criar conta</button><button class="user-secondary" onclick="requestMonPasswordReset()">esqueci minha senha</button></div><div class="user-data-note">No primeiro cadastro, confirme seu e-mail. Depois, o login é direto com e-mail e senha.</div>';
+   panel.innerHTML='<b>Conta MON</b><br><label class="user-field"><span>E-mail</span><input id="userCloudEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com"></label><label class="user-field"><span>Senha</span><input id="userCloudPassword" type="password" autocomplete="current-password" minlength="8" placeholder="mínimo 8 caracteres"></label><div class="user-actions"><button class="user-save" onclick="signInMonCloud()">entrar</button><button class="user-secondary" onclick="signUpMonCloud()">criar conta</button></div><div class="user-data-note">No primeiro cadastro, confirme seu e-mail. Depois, o login é direto com e-mail e senha.</div>';
    return;
   }
   setMonUserAuthState(true);
