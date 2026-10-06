@@ -3,43 +3,21 @@ function authPageMarkup(){
 }
 function ensureAuthPage(){let view=document.getElementById('auth');if(view)return view;document.querySelector('.content')?.insertAdjacentHTML('afterbegin',authPageMarkup());return document.getElementById('auth')}
 function setAuthStatus(message=''){const el=document.getElementById('authStatus');if(el)el.textContent=message}
-function monPasswordRecoveryRequested(){
- const query=new URLSearchParams(location.search);
- return query.get('recovery')==='1'||location.hash.includes('type=recovery');
-}
+function monPasswordRecoveryRequested(){return new URLSearchParams(location.search).get('recovery')==='1'||location.hash.includes('type=recovery')}
 function renderMonPasswordRecovery(){
- const card=document.querySelector('#auth .auth-card');
- if(!card)return;
- const heading=card.querySelector('h1'),copy=heading?.nextElementSibling;
- if(heading)heading.textContent='Defina uma nova senha.';
- if(copy)copy.textContent='O link de recuperação foi validado. Escolha uma nova senha para sua Conta MON.';
- const email=document.getElementById('authEmail')?.closest('label');if(email)email.hidden=true;
- const password=document.getElementById('authPassword');
- if(password){password.value='';password.autocomplete='new-password';password.placeholder='nova senha · mínimo 8 caracteres';const label=password.closest('label')?.querySelector('span');if(label)label.textContent='Nova senha'}
- const actions=card.querySelector('.auth-actions');
- if(actions)actions.innerHTML='<button class="auth-primary" type="button" onclick="completeMonPasswordRecovery()">salvar nova senha</button>';
- setAuthStatus('Crie uma nova senha com pelo menos 8 caracteres.');
+ const card=document.querySelector('#auth .auth-card'),password=document.getElementById('authPassword');if(!card)return;
+ card.querySelector('h1').textContent='Defina uma nova senha.';card.querySelector('h1').nextElementSibling.textContent='O link foi validado. Escolha uma nova senha.';
+ document.getElementById('authEmail')?.closest('label')?.setAttribute('hidden','');
+ if(password){password.value='';password.autocomplete='new-password';password.placeholder='nova senha · mínimo 8 caracteres';password.closest('label').querySelector('span').textContent='Nova senha'}
+ card.querySelector('.auth-actions').innerHTML='<button class="auth-primary" type="button" onclick="completeMonPasswordRecovery()">salvar nova senha</button>';setAuthStatus('Crie uma nova senha com pelo menos 8 caracteres.')
 }
 async function renderAuthPage(){
  ensureAuthPage();setAuthStatus('');
- try{
-  const session=await monCloudSession();
-  if(monPasswordRecoveryRequested()){
-   if(session){renderMonPasswordRecovery();return}
-   setAuthStatus('Não foi possível validar este link de recuperação. Solicite um novo e-mail.');
-   return;
-  }
-  if(session){await go('home',{replace:true});return}
- }catch{if(monPasswordRecoveryRequested())setAuthStatus('Não foi possível validar este link de recuperação. Solicite um novo e-mail.')}
+ try{const session=await monCloudSession();if(monPasswordRecoveryRequested()){if(session)return renderMonPasswordRecovery();setAuthStatus('Link de recuperação inválido ou expirado.');return}if(session)return go('home',{replace:true})}
+ catch{if(monPasswordRecoveryRequested())setAuthStatus('Link de recuperação inválido ou expirado.')}
 }
-
 async function completeMonPasswordRecovery(){
- const password=document.getElementById('authPassword')?.value||'';
- if(password.length<8){setAuthStatus('Use uma senha com pelo menos 8 caracteres');return}
- try{
-  await monCloudSetPassword(password);
-  const clean=new URL(location.href);clean.hash='';clean.searchParams.delete('recovery');clean.searchParams.set('view','home');history.replaceState({},'',clean);
-  setAuthStatus('Senha atualizada.');if(typeof toast==='function')toast('Senha atualizada');
-  await go('home',{replace:true});
- }catch(e){setAuthStatus(e.message);if(typeof toast==='function')toast(e.message)}
+ const password=document.getElementById('authPassword')?.value||'';if(password.length<8)return setAuthStatus('Use uma senha com pelo menos 8 caracteres');
+ try{await monCloudSetPassword(password);const clean=new URL(location.href);clean.hash='';clean.searchParams.delete('recovery');clean.searchParams.set('view','home');history.replaceState({},'',clean);toast('Senha atualizada');await go('home',{replace:true})}
+ catch(e){setAuthStatus(e.message);toast(e.message)}
 }
