@@ -30,12 +30,12 @@ try{
   }));
   assert.equal(firstRun.mode,'foundation');
   assert.equal(firstRun.firstWin,true);
-  assert.equal(firstRun.count,4,'first win must stay short');
-  assert.deepEqual(firstRun.types,['audio','choice','reading','speaking'],'first win must preserve sound → recognition → context → speech');
+  assert.equal(firstRun.count,5,'first win must include one non-evaluated teaching step before practice');
+  assert.deepEqual(firstRun.types,['study','audio','choice','reading','speaking'],'first win must teach → sound → recognition → context → speech');
   assert.ok(firstRun.minutes<=10,'first win should fit the promised ten-minute window: '+JSON.stringify(firstRun));
   assert.equal(firstRun.types.includes('writing'),false,'writing should wait until after the first win');
   assert.match(await page.locator('.session-card').innerText(),/Primeira vitória/i);
-  assert.match(await page.locator('.session-card').innerText(),/quatro coisas/i);
+  assert.match(await page.locator('.session-card').innerText(),/entender o que está ouvindo/i);
 
   await page.evaluate(async()=>{
     state.foundationSessions=1;

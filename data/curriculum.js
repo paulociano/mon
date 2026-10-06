@@ -1,12 +1,12 @@
 // MON curriculum roadmap · loaded only in academic roadmap view
 const curriculumData=[
  {level:'N5',title:'Sobrevivência prática',range:'dias 1–30',promise:'Resolver necessidades básicas e rotinas iniciais sem depender do inglês.',kanji:100,grammar:28,missions:12,units:[
-  {days:'1–5',title:'Desembarque',desc:'Kana essencial, apresentação, estação, saída e pedidos de repetição.',kanji:'駅',meta:['25 kanji','5 padrões','estação']},
-  {days:'6–10',title:'Comer & comprar',desc:'Preço, quantidade, konbini, restaurante, pagamento e preferências.',kanji:'食',meta:['20 kanji','6 padrões','lojas']},
-  {days:'11–15',title:'Casa & bairro',desc:'Endereço, correio, lixo, mercado, vizinhança e localização.',kanji:'住',meta:['15 kanji','4 padrões','moradia']},
-  {days:'16–20',title:'Tempo & agenda',desc:'Horas, datas, compromissos, clima e combinações rápidas.',kanji:'時',meta:['15 kanji','5 padrões','rotina']},
-  {days:'21–25',title:'Trabalho básico',desc:'Apresentar-se, confirmar instruções e pedir ajuda sem travar.',kanji:'働',meta:['15 kanji','5 padrões','trabalho']},
-  {days:'26–30',title:'Autonomia inicial',desc:'Misturar tudo em leitura, fala e missões sem roteiro fechado.',kanji:'話',meta:['10 kanji','3 padrões','integração']}
+  {days:'1–5',title:'Ouvir e decodificar',desc:'Mora, vogais e hiragana por famílias. O objetivo é enxergar som e escrita como um sistema, não memorizar frases prontas.',kanji:'あ',meta:['0 kanji obrigatórios','som + hiragana','base absoluta']},
+  {days:'6–10',title:'Completar os kana',desc:'Sons derivados, combinações e katakana em pequenos blocos, sempre com leitura guiada antes da cobrança.',kanji:'ア',meta:['0 kanji obrigatórios','hiragana + katakana','leitura guiada']},
+  {days:'11–15',title:'Da escrita para a frase',desc:'Duração, leitura mista e arquitetura da frase japonesa: blocos, tópico, です e perguntas simples.',kanji:'文',meta:['kanji apenas contextual','estrutura da frase','PT como ponte']},
+  {days:'16–20',title:'Construir sentido',desc:'Relação entre nomes, verbo no fim, を, に/で/へ, negativo, passado e descrição, uma função por vez.',kanji:'行',meta:['poucos kanji contextuais','partículas graduais','verbo e descrição']},
+  {days:'21–25',title:'Resolver necessidades básicas',desc:'Existência, números, horários, pedidos com forma て e reparo de conversa antes das primeiras missões abertas.',kanji:'時',meta:['kanji funcionais','pedido + reparo','integração']},
+  {days:'26–30',title:'Primeiras missões com base',desc:'Aplicar o que já foi explicado em estação, compra, localização e interação curta, com apoio decrescente e revisão dos pontos frágeis.',kanji:'駅',meta:['missões só após base','transferência','autonomia inicial']}
  ]},
  {level:'N4',title:'Ponte & Autonomia',range:'ponte 31–54 · N4 55–90',promise:'Consolidar a base N5 e depois lidar com trabalho, serviços, leitura e conversas abertas com menos preparação.',kanji:350,grammar:72,missions:24,units:[
   {days:'31–40',title:'Ponte · vida diária e interação',desc:'Saúde, reparo de conversa, rotina, convites, preferências e descrição funcional.',kanji:'橋',meta:['consolidação N5','fala curta','rotina']},
