@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 
 const required=[
+ 'docs/PRODUCTION-RELEASE.md',
+ 'scripts/check-public-release-readiness.mjs',
+ '.github/workflows/public-release-readiness.yml',
  'LICENSE',
  'legal/TERMS-OF-USE.md',
  'legal/PRIVACY-POLICY.md',
@@ -85,3 +88,11 @@ const minorReview=fs.readFileSync('compliance/MINOR-SAFETY-REVIEW.md','utf8');
 for(const token of ['Baseline técnico protetivo','sem restrição etária','Conformidade jurídica para menores: aberta'])if(!minorReview.includes(token))throw new Error('minor-safety review missing '+token);
 for(const forbidden of ['type="date"','name="birth','navigator.geolocation'])if(authPage.includes(forbidden))throw new Error('auth surface must not collect age/location: '+forbidden);
 if(!authPage.includes('criança ou adolescente'))throw new Error('auth surface needs plain-language minor guidance');
+
+const releaseWorkflow=fs.readFileSync('.github/workflows/public-release-readiness.yml','utf8');
+if(!releaseWorkflow.includes('node scripts/check-public-release-readiness.mjs'))throw new Error('public release readiness workflow must execute the P0 gate');
+const releaseCheck=fs.readFileSync('scripts/check-public-release-readiness.mjs','utf8');
+for(const token of ['## P0','PUBLIC RELEASE BLOCKED','process.exit(1)'])if(!releaseCheck.includes(token))throw new Error('public release checker missing '+token);
+const authActions=fs.readFileSync('features/account-auth.js','utf8');
+const authPageSource=fs.readFileSync('features/auth-page.js','utf8');
+for(const token of ['resetPasswordForEmail','requestMonPasswordReset','completeMonPasswordRecovery'])if(!(authActions+authPageSource).includes(token))throw new Error('password recovery contract missing '+token);

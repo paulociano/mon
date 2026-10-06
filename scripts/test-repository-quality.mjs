@@ -16,6 +16,10 @@ assert.match(html,/<html\s+lang=["'][^"']+["']/i,'document language is required'
 assert.match(html,/<meta\s+name=["']viewport["'][^>]+>/i,'viewport metadata is required');
 assert.match(html,/<meta\s+name=["']description["'][^>]+content=["'][^"']+["']/i,'meta description is required');
 assert.match(html,/<title>[^<]+<\/title>/i,'non-empty title is required');
+assert.match(html,/http-equiv=["']Content-Security-Policy["']/i,'CSP baseline is required');
+for(const directive of ["object-src 'none'","base-uri 'self'","form-action 'self'","connect-src 'self' https://gpmobddlexssivfxzzjw.supabase.co","frame-src https://www.youtube-nocookie.com"]){
+  assert.ok(html.includes(directive),'CSP missing directive: '+directive);
+}
 
 for(const tag of [...html.matchAll(/<img\b[^>]*>/gi)].map(m=>m[0])){
   assert.match(tag,/\balt=["'][^"']*["']/i,`image missing alt attribute: ${tag.slice(0,120)}`);

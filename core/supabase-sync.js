@@ -21,7 +21,7 @@ async function monCloudSession(){const client=await getMonSupabase();if(!client)
 async function monCloudSignOut(){const client=await getMonSupabase();if(!client)return;const {error}=await client.auth.signOut();if(error)throw error}
 function monSyncConflict(message='O progresso mudou em outro dispositivo'){const e=new Error(message);e.code='MON_SYNC_CONFLICT';return e}
 function monCloudRow(session,payload,revision){
- return {user_id:session.user.id,sync_version:payload.syncVersion,profile:payload.profile,learning_state:payload.learningState,client_updated_at:payload.updatedAt,updated_at:new Date().toISOString(),revision};
+ return {user_id:session.user.id,sync_version:payload.syncVersion,profile:payload.profile,learning_state:payload.learningState,client_updated_at:payload.updatedAt,revision};
 }
 async function monCloudPull(){
  const client=await getMonSupabase(),session=await monCloudSession();

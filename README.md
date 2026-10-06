@@ -196,6 +196,7 @@ Paleta principal:
 - [State Recovery & Backup](docs/STATE-RECOVERY.md)
 - [Multi-device Sync](docs/MULTI-DEVICE-SYNC.md)
 - [PWA Runtime Resilience](docs/PWA-RUNTIME.md)
+- [Production Release Contract](docs/PRODUCTION-RELEASE.md)
 - [Accessibility & Microphone Policy](docs/ACCESSIBILITY-MICROPHONE.md)
 - [Typography System](docs/TYPOGRAPHY.md)
 - [Latency Observability](docs/LATENCY-OBSERVABILITY.md)
