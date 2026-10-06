@@ -28,7 +28,7 @@ assert.ok(scriptSrc,'script-src directive is required');
 assert.ok(!scriptSrc.includes("'unsafe-inline'"),'script-src must not allow unsafe-inline');
 assert.ok(scriptSrc.includes("'self'"),'script-src must allow same-origin application scripts');
 assert.ok(!/<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/i.test(html),'inline script block remains in index.html');
-assert.ok(html.includes('src="./core/runtime-health.js" async'),'CSP-safe runtime dispatcher must load as an external script');
+assert.ok(html.includes('<script src="./core/runtime-health.js"></script><script src="./app.js"></script>'),'CSP-safe runtime dispatcher must load before app.js');
 
 const runtime=fs.readFileSync('core/runtime-health.js','utf8');
 for(const token of ['data-mon-command','data-mon-input-command','ACTIONS=new Set','blocked MON action']){
