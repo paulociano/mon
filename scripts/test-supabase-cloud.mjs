@@ -2,7 +2,7 @@ import fs from 'node:fs';import assert from 'node:assert/strict';
 const adapter=fs.readFileSync('core/supabase-sync.js','utf8'),config=fs.readFileSync('config/cloud.js','utf8'),sql=fs.readFileSync('supabase/schema.sql','utf8'),app=fs.readFileSync('app.js','utf8');
 for(const token of ['monCloudConfigured','getMonSupabase','monCloudSignOut','monCloudPush','monCloudPull','monSyncConflict'])assert.ok(adapter.includes(token),'missing Supabase adapter '+token);
 assert.ok(adapter.includes('persistSession:true'),'browser auth session must persist');
-assert.ok(adapter.includes("const MON_SUPABASE_SDK_URL='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2'"),'Supabase runtime dependency must be pinned to an exact version');
+assert.ok(adapter.includes("loadRuntimeScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2')"),'Supabase runtime dependency must be pinned to an exact version');
 const authAdapter=fs.readFileSync('features/account-auth.js','utf8'),authPage=fs.readFileSync('features/auth-page.js','utf8');
 assert.ok(authAdapter.includes('signUp({email,password'),'Conta MON must support email/password signup');
 assert.ok(authAdapter.includes('signInWithPassword({email,password}'),'Conta MON must support direct email/password login');
