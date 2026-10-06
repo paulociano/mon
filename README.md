@@ -38,7 +38,7 @@ A interface segue uma identidade japonesa contemporânea: sumi/indigo, shu vermi
 | **Adaptive Reading Support** | Usa romaji, furigana ou nenhum apoio conforme a fase e a evidência de autonomia de leitura; erros podem fazer o suporte reaparecer |
 | **Kanji Memory Lab 2.0** | Famílias visuais, contraste, sentido → forma, forma → leitura e escrita |
 | **Listening & Pronunciation Lab** | Mora, vogais longas, っ, ん, shadowing e autoavaliação |
-| **Survival Missions 3.0** | Cenários ramificados, autonomia funcional, reparo de conversa e objetivo observável |
+| **Survival Missions 2.0** | Cenários ramificados com reparo de conversa e objetivo observável |
 | **Diário no Japão** | Registra personagens, lugares, callbacks e situações resolvidas |
 | **Conta & Sync** | Estado versionado, revisão otimista, dirty tracking e resolução explícita de conflitos entre dispositivos |
 | **Vídeos** | Biblioteca de apoio visual lazy, com player externo somente no clique |
@@ -85,7 +85,7 @@ Algumas fronteiras importantes:
 - `data/narrative.js` + `core/narrative-state.js` — memória narrativa;
 - `features/pronunciation.js` — Listening & Pronunciation Lab;
 - `features/kanji-memory.js` — Kanji Memory Lab 2.0;
-- `features/missions-v2.js` — Survival Missions 3.0.
+- `features/missions-v2.js` — Survival Missions 2.0.
 
 ## Adaptação por evidência
 
