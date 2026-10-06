@@ -5,6 +5,7 @@ const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
 const lock=JSON.parse(fs.readFileSync('package-lock.json','utf8'));
 const release=JSON.parse(fs.readFileSync('release.json','utf8'));
 const html=fs.readFileSync('index.html','utf8');
+const app=fs.readFileSync('app.js','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 const health=fs.readFileSync('core/runtime-health.js','utf8');
 
@@ -14,7 +15,8 @@ assert.equal(lock.packages[''].version,release.version,'lockfile root package ve
 assert.ok(html.includes(`name="mon-release" content="${release.version}"`),'HTML must expose release identity');
 assert.ok(sw.includes("const CACHE_VERSION='v40'"),'release must bump service-worker cache identity');
 for(const asset of ["'./release.json'","'./core/runtime-health.js'"])assert.ok(sw.includes(asset),'release diagnostics asset missing from PWA shell '+asset);
-assert.ok(html.includes('<script src="./core/runtime-health.js"></script>'),'runtime health bootstrap must load before app runtime');
+assert.ok(app.includes("loadRuntimeScript('./core/runtime-health.js')"),'runtime health must initialize after critical boot');
+assert.ok(!html.includes('<script src="./core/runtime-health.js"></script>'),'runtime health must stay off the critical HTML boot path');
 
 for(const token of ["MAX_AGE=7*24*60*60*1000","MAX_EVENTS=50","js-error","resource-error","promise-rejection","MON_RUNTIME_HEALTH"])assert.ok(health.includes(token),'runtime health contract missing '+token);
 for(const forbidden of ['event.message','event.reason','event.filename','event.error','stack'])assert.ok(!health.includes(forbidden),'runtime health must not persist raw error details: '+forbidden);
