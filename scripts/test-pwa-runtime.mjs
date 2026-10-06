@@ -36,7 +36,7 @@ for(const token of ['showMonUpdate','applyMonUpdate','watchMonUpdate','reg.waiti
   assert.ok(app.includes(token),'missing controlled PWA update contract '+token);
 }
 assert.ok(html.includes('id="updateBanner"'),'update availability UI missing');
-assert.ok(html.includes('onclick="applyMonUpdate()"'),'update action missing');
+assert.ok(html.includes('data-mon-command="applyMonUpdate()"'),'CSP-safe update action missing');
 console.log('MON PWA shell and update contracts passed');
 assert.ok(app.includes("monUpdateWorker?.state==='installed'"),'update action must ignore stale non-waiting worker references');
 assert.ok(app.includes('reg?.waiting'),'update action must resolve the current waiting worker');
