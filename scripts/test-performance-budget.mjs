@@ -75,9 +75,11 @@ const learningValidationJs=learningValidationScripts.reduce((n,p)=>n+size(p),0);
 const n4CapabilityJs=n4CapabilityScripts.reduce((n,p)=>n+size(p),0);
 const n4BaseJs=n4BaseScripts.reduce((n,p)=>n+size(p),0),n4SocialJs=n4SocialScripts.reduce((n,p)=>n+size(p),0),n4UrbanJs=n4UrbanScripts.reduce((n,p)=>n+size(p),0),n4ConversationJs=n4ConversationScripts.reduce((n,p)=>n+size(p),0);
 const n4ExtensionJs=n4ExtensionScripts.reduce((n,p)=>n+size(p),0);
+const runtimeHealthJs=size('core/runtime-health.js');
 const authCss=size('features/auth.css'),css=size('styles.css'),journeyCss=size('features/journey.css'),featureCss=size('features/foundation.css'),lessonCss=size('features/lesson.css'),beginnerScaffoldingCss=size('features/beginner-scaffolding.css'),practiceCss=size('features/practice.css'),grammarNotebookCss=size('features/grammar-notebook.css'),journalCss=size('features/journal.css'),videoCss=size('features/videos.css'),pronunciationCss=size('features/pronunciation.css'),kanjiMemoryCss=size('features/kanji-memory.css'),missionsV2Css=size('features/missions-v2.css'),html=size('index.html');
 const hero=size('assets/scene/mon-home-banner.webp'),side=size('assets/scene/mon-sidebar-bg.webp');
 
+assert.ok(runtimeHealthJs<=8*1024,`post-load runtime health/UI dispatcher budget exceeded: ${kb(runtimeHealthJs)} KB`);
 assert.ok(eagerJs<=72*1024,`eager JS budget exceeded: ${kb(eagerJs)} KB`);
 assert.ok(dataJs<=127*1024,`total lazy dataset budget exceeded: ${kb(dataJs)} KB`);
 assert.ok(foundationLessonJs<=36*1024,`Foundation lesson data budget exceeded: ${kb(foundationLessonJs)} KB`);
