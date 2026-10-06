@@ -82,7 +82,25 @@ Toda unidade estruturada N5/N4 deve produzir um `japaneseLearningContract` com:
 - `practice`: understand → notice → retrieve → transfer → produce;
 - `sources`: provenance metodológica.
 
-A Fundação Zero usa o mesmo princípio. Dias 1–12 ensinam forma + som + expressão funcional antes do teste; dias 13–24 acrescentam gramática explícita.
+A Fundação Zero usa o mesmo princípio, mas com uma regra adicional: **um brasileiro no zero absoluto não é tratado como um aluno A1 que apenas desconhece vocabulário**. Antes de missões abertas, o MON precisa construir o próprio modelo mental da língua.
+
+### Fundação Zero · sequência para iniciante absoluto
+
+A entrada é dividida em quatro fases cumulativas:
+
+1. **Som e escrita · dias 1–12** — mora, vogais, hiragana, sons derivados, katakana e duração. Romaji é ponte temporária, nunca camada permanente.
+2. **Como o japonês constrói sentido · dias 13–16** — blocos de sentido, predicado no fim, tópico com は, identificação/pergunta com です・か e relações nominais com の・も.
+3. **Ação, lugar e descrição · dias 17–21** — primeiro N を Vます; depois に・で・へ; só então negativo/passado, adjetivos e o padrão de existência com が.
+4. **Integração funcional · dias 22–24** — números/contadores, forma て limitada inicialmente a pedidos e checkpoint de autonomia com estratégias de reparo.
+
+Regras para o zero absoluto:
+- não apresentar várias partículas concorrentes na mesma primeira explicação;
+- não usar missão ou roleplay para descobrir uma regra ainda não explicada;
+- toda estrutura nova recebe modelo mental, explicação em português, exemplos trabalhados e um contraste de erro provável;
+- português funciona como ponte conceitual, sem forçar tradução palavra por palavra;
+- forma て, は × が e outras áreas de alta carga entram primeiro em um uso concreto e só depois são generalizadas;
+- kanji nos primeiros dias é opcional e contextual; não existe meta de dezenas de kanji antes de a escrita fonética e a frase básica estarem compreendidas;
+- conclusão de atividades não autoriza progressão se o aluno ainda não consegue explicar o mecanismo e aplicá-lo em exemplo novo.
 
 ## Introduções de bloco e atlas de referência
 
