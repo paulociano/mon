@@ -1,50 +1,11 @@
-const FUNCTIONAL_MASTERY_META=[ ['repair','Reparar','manter a interação quando algo quebra'],
- ['confirm','Confirmar','checar horário, condição e entendimento'],
- ['explain','Explicar','dar contexto, causa e motivo'],
- ['negotiate','Negociar','propor alternativa, restrição ou decisão'],
- ['summarize','Resumir','devolver o ponto principal e próximo passo']];function functionalMasteryCards(){
- return FUNCTIONAL_MASTERY_META.map(([id,name,desc])=>{const x=state.functionalMastery?.[id],score=Number(x?.score||0),attempts=Number(x?.attempts||0);return{id,name,desc,score:attempts?score:0,attempts}})
-}
-function renderFunctionalMastery(){
- const grid=document.getElementById('progressEvidenceGrid');if(!grid)return;
- grid.querySelectorAll('[data-functional-mastery]').forEach(x=>x.remove());
- const cards=functionalMasteryCards();
- grid.insertAdjacentHTML('beforeend',cards.map(x=>`<article class="progress-evidence" data-functional-mastery="${x.id}"><span>Função · ${x.name}</span><b>${x.attempts?x.score+'%':'—'}</b><small>${x.desc}</small><i><em data-mon-width="${x.score}%"></em></i></article>`).join(''));
-}const renderProgressHubBase=renderProgressHub;
-renderProgressHub=function(){renderProgressHubBase();renderFunctionalMastery()};
-function renderLearningEvidence(){
- const grid=document.getElementById('progressEvidenceGrid');if(!grid)return;
- grid.querySelectorAll('[data-learning-evidence]').forEach(x=>x.remove());
- if(typeof learningMetricsSnapshot!=='function')return;
- const s=learningMetricsSnapshot(state),fmt=x=>x.value===null?'—':x.value+(x.unit==='%'?'%':'');
- const status={empty:'sem dados',early:'amostra inicial',stale:'dados antigos',ready:'evidência suficiente'};
- grid.insertAdjacentHTML('beforeend',s.metrics.map(x=>`<article class="progress-evidence" data-learning-evidence="${x.id}"><span>Métrica · ${x.label}</span><b>${fmt(x)}</b><small>${x.samples} obs · ${status[x.status]||x.status}</small><i><em data-mon-width="${x.unit==='%'?(x.value||0):Math.min(100,x.samples*10)}%"></em></i></article>`).join(''));
-}const renderProgressHubFunctional=renderProgressHub;
-renderProgressHub=function(){renderProgressHubFunctional();renderLearningEvidence()};
-function validationDeltaText(metric,lower=false){
- const t=metric?.trend;if(!t||t.status!=='directional'||t.delta===null)return 'sem tendência';
- const good=lower?t.delta<0:t.delta>0,bad=lower?t.delta>0:t.delta<0;
- const arrow=t.delta>0?'↑':t.delta<0?'↓':'→';return `${arrow} ${Math.abs(t.delta)} pp · ${good?'melhorando':bad?'piorando':'estável'}`;
-}
-function renderLearningValidation(){
- const grid=document.getElementById('progressEvidenceGrid');if(!grid||typeof learningValidationReport!=='function')return;
- grid.querySelectorAll('[data-learning-validation]').forEach(x=>x.remove());
- const r=learningValidationReport(state);
- const cards=[...r.retention.map(x=>({id:'ret-'+x.id,label:'Retenção '+x.label,value:x.value,samples:x.samples,note:x.status})),
-  {id:'hints',label:'Pistas',value:r.hintDependence.value,samples:r.hintDependence.samples,note:validationDeltaText(r.hintDependence,true)},
-  {id:'transfer-trend',label:'Transferência',value:r.transfer.value,samples:r.transfer.samples,note:validationDeltaText(r.transfer)},
-  {id:'autonomy-trend',label:'Autonomia',value:r.autonomy.value,samples:r.autonomy.samples,note:validationDeltaText(r.autonomy)},
-  {id:'recurrent-errors',label:'Erros',value:r.recurrentErrors.value,samples:r.recurrentErrors.samples,note:validationDeltaText(r.recurrentErrors,true)} ];grid.insertAdjacentHTML('beforeend',cards.map(x=>`<article class="progress-evidence" data-learning-validation="${x.id}"><span>Validação · ${x.label}</span><b>${x.value===null?'—':x.value+'%'}</b><small>${x.samples} observações · ${x.note}</small><i><em data-mon-width="${x.value||0}%"></em></i></article>`).join(''));
-}const renderProgressHubMetrics=renderProgressHub;
-renderProgressHub=function(){renderProgressHubMetrics();renderLearningValidation()};
-
-
-function renderReadingMastery(){
- const grid=document.getElementById('progressEvidenceGrid');if(!grid)return;
- grid.querySelectorAll('[data-reading-mastery]').forEach(x=>x.remove());
- const cell=state.masteryEvidence?.['reading:global']?.recall||null,attempts=Number(cell?.attempts||0),score=Number(cell?.score||0);
- const stage=attempts<3?'calibrando':score>=80?'sem apoio':score>=55?'furigana':'romaji';
- grid.insertAdjacentHTML('beforeend',`<article class="progress-evidence" data-reading-mastery="global"><span>Leitura · autonomia</span><b>${attempts?score+'%':'—'}</b><small>${attempts} leituras sem pista · apoio atual: ${stage}</small><i><em data-mon-width="${attempts?score:0}%"></em></i></article>`);
-}
-const renderProgressHubReading=renderProgressHub;
-renderProgressHub=function(){renderProgressHubReading();renderReadingMastery()};
+const FUNCTIONAL_MASTERY_META=[['repair','Reparar','manter a interação quando algo quebra'],['confirm','Confirmar','checar horário, condição e entendimento'],['explain','Explicar','dar contexto, causa e motivo'],['negotiate','Negociar','propor alternativa, restrição ou decisão'],['summarize','Resumir','devolver o ponto principal e próximo passo']];
+function pc(a,i,l,v,n,w){return `<article class="progress-evidence" ${a}="${i}"><span>${l}</span><b>${v}</b><small>${n}</small><i><em data-mon-width="${w}%"></em></i></article>`}
+function renderFunctionalMastery(){const g=document.getElementById('progressEvidenceGrid');if(!g)return;g.querySelectorAll('[data-functional-mastery]').forEach(x=>x.remove());g.insertAdjacentHTML('beforeend',FUNCTIONAL_MASTERY_META.map(([i,n,d])=>{const x=state.functionalMastery?.[i],s=Number(x?.score||0),a=Number(x?.attempts||0);return pc('data-functional-mastery',i,'Função · '+n,a?s+'%':'—',d,a?s:0)}).join(''))}
+const renderProgressHubBase=renderProgressHub;renderProgressHub=function(){renderProgressHubBase();renderFunctionalMastery()};
+function renderLearningEvidence(){const g=document.getElementById('progressEvidenceGrid');if(!g)return;g.querySelectorAll('[data-learning-evidence]').forEach(x=>x.remove());if(typeof learningMetricsSnapshot!=='function')return;const s=learningMetricsSnapshot(state),st={empty:'sem dados',early:'amostra inicial',stale:'dados antigos',ready:'evidência suficiente'};g.insertAdjacentHTML('beforeend',s.metrics.map(x=>pc('data-learning-evidence',x.id,'Métrica · '+x.label,x.value===null?'—':x.value+(x.unit==='%'?'%':''),x.samples+' obs · '+(st[x.status]||x.status),x.unit==='%'?(x.value||0):Math.min(100,x.samples*10))).join(''))}
+const renderProgressHubFunctional=renderProgressHub;renderProgressHub=function(){renderProgressHubFunctional();renderLearningEvidence()};
+function validationDeltaText(m,l=false){const t=m?.trend;if(!t||t.status!=='directional'||t.delta===null)return 'sem tendência';const g=l?t.delta<0:t.delta>0,b=l?t.delta>0:t.delta<0,a=t.delta>0?'↑':t.delta<0?'↓':'→';return `${a} ${Math.abs(t.delta)} pp · ${g?'melhorando':b?'piorando':'estável'}`}
+function renderLearningValidation(){const g=document.getElementById('progressEvidenceGrid');if(!g||typeof learningValidationReport!=='function')return;g.querySelectorAll('[data-learning-validation]').forEach(x=>x.remove());const r=learningValidationReport(state),c=[...r.retention.map(x=>({id:'ret-'+x.id,label:'Retenção '+x.label,value:x.value,samples:x.samples,note:x.status})),{id:'hints',label:'Pistas',value:r.hintDependence.value,samples:r.hintDependence.samples,note:validationDeltaText(r.hintDependence,true)},{id:'transfer-trend',label:'Transferência',value:r.transfer.value,samples:r.transfer.samples,note:validationDeltaText(r.transfer)},{id:'autonomy-trend',label:'Autonomia',value:r.autonomy.value,samples:r.autonomy.samples,note:validationDeltaText(r.autonomy)},{id:'recurrent-errors',label:'Erros',value:r.recurrentErrors.value,samples:r.recurrentErrors.samples,note:validationDeltaText(r.recurrentErrors,true)}];g.insertAdjacentHTML('beforeend',c.map(x=>pc('data-learning-validation',x.id,'Validação · '+x.label,x.value===null?'—':x.value+'%',x.samples+' observações · '+x.note,x.value||0)).join(''))}
+const renderProgressHubMetrics=renderProgressHub;renderProgressHub=function(){renderProgressHubMetrics();renderLearningValidation()};
+function renderReadingMastery(){const g=document.getElementById('progressEvidenceGrid');if(!g)return;g.querySelectorAll('[data-reading-mastery]').forEach(x=>x.remove());const c=state.masteryEvidence?.['reading:global']?.recall,a=Number(c?.attempts||0),s=Number(c?.score||0),t=a<3?'calibrando':s>=80?'sem apoio':s>=55?'furigana':'romaji';g.insertAdjacentHTML('beforeend',pc('data-reading-mastery','global','Leitura · autonomia',a?s+'%':'—',a+' leituras sem pista · apoio atual: '+t,a?s:0))}
+const renderProgressHubReading=renderProgressHub;renderProgressHub=function(){renderProgressHubReading();renderReadingMastery()};
