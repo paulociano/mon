@@ -35,7 +35,7 @@ try{
   assert.ok(firstRun.minutes<=10,'first win should fit the promised ten-minute window: '+JSON.stringify(firstRun));
   assert.equal(firstRun.types.includes('writing'),false,'writing should wait until after the first win');
   assert.match(await page.locator('.session-card').innerText(),/Primeira vitória/i);
-  assert.match(await page.locator('.session-card').innerText(),/quatro coisas/i);
+  assert.match(await page.locator('.session-card').innerText(),/entender o que está ouvindo/i);
 
   await page.evaluate(async()=>{
     state.foundationSessions=1;
