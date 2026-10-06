@@ -17,4 +17,65 @@ addEventListener('error',event=>record(event instanceof ErrorEvent?'js-error':'r
 addEventListener('unhandledrejection',()=>record('promise-rejection'));
 globalThis.MON_RUNTIME_HEALTH=Object.freeze({record,summary,clear:()=>{try{localStorage.removeItem(KEY)}catch{}}});
 write(read().filter(e=>Number(e.at)>=Date.now()-MAX_AGE).slice(-MAX_EVENTS));
+
+const ACTIONS=new Set(`addSentenceToken answerConfusion answerKanaQuiz answerKanjiContrast answerKanjiMeaning answerKanjiReading answerMissionV2 answerSoundQuiz applyDiagnosticScore applyMonUpdate beginSession buyItem checkSentencePuzzle clearSessionCanvas closeGrammarDrawer completeKanjiStudy completeMonPasswordRecovery disconnectMonCloud exitQuickLesson exportMonBackup finishOnboarding finishSpeaking finishWriting foundationSpeak go gradeKanji matchTap missionFreeSpeech missionOpen missionShowChoices newConfusionQuestion newKanaQuiz nextSentencePuzzle nextSessionStep nextShadow openFoundationUnit openGrammarDrawer openVideo playSoundQuiz practiceConfusion previewFoundationKana pronRecord pronSpeak quickCheck quickOpenSpeech quickRevealModel quickRoleplayAttempt quickSelect quickShadow quickSpeech quickTypedInput quickWordbankHint ratePron removeSentenceToken renderConjugation renderKanjiAtlas renderKanjiFocus renderMissionV2 requestMonPasswordReset resetMissionV2 resetSentencePuzzle resolveMonCloudConflict revealWriting runJourneyPrimary saveUserArea selectConjugation selectKanji sessionChoose sessionSpeech setGrammarNotebookFilter setGrammarNotebookQuery setKanaQuizDirection setKanjiLabMode setKanjiStudyStep setMonCloudPassword setPronTrack setVideoFilter showGrammarSelfCheck showProfileSummary signInMonCloud signUpMonCloud speak speakCurrentKana speakSentenceAnswer startDiagnostic startFoundationSession startGrammarNotebookReview startKanjiContrast startKanjiStudy startMissionV2 startMistakePractice startSession startSmartReview startVideoPractice syncMonNow toast toggleKanjiLibrary toggleRomajiMode wordTap wordUntap`.split(' '));
+function splitTop(value,sep){
+ const out=[];let part='',quote='',escape=false,depth=0;
+ for(const ch of String(value||'')){
+  if(escape){part+=ch;escape=false;continue}
+  if(quote){part+=ch;if(ch==='\\')escape=true;else if(ch===quote)quote='';continue}
+  if(ch==="'"||ch==='"'){quote=ch;part+=ch;continue}
+  if(ch==='('||ch==='['||ch==='{')depth++;
+  else if(ch===')'||ch===']'||ch==='}')depth=Math.max(0,depth-1);
+  if(ch===sep&&depth===0){if(part.trim())out.push(part.trim());part='';continue}
+  part+=ch;
+ }
+ if(part.trim())out.push(part.trim());
+ return out;
+}
+function unquote(token){
+ const q=token[0],body=token.slice(1,-1);
+ return body.replace(/\\(['"\\nrt])/g,(_,x)=>x==='n'?'\n':x==='r'?'\r':x==='t'?'\t':x);
+}
+function arg(token,ctx){
+ const t=token.trim();
+ if(t==='this')return ctx.el;
+ if(t==='event')return ctx.event;
+ if(t==='this.value')return ctx.el?.value;
+ if(t==='null')return null;
+ if(t==='true')return true;
+ if(t==='false')return false;
+ if(/^[-+]?\d+(?:\.\d+)?$/.test(t))return Number(t);
+ if((t.startsWith("'")&&t.endsWith("'"))||(t.startsWith('"')&&t.endsWith('"')))return unquote(t);
+ throw new Error('unsupported MON action argument');
+}
+function invoke(expr,ctx){
+ const m=expr.match(/^([A-Za-z_$][\w$]*)\((.*)\)$/s);
+ if(!m||!ACTIONS.has(m[1]))throw new Error('blocked MON action');
+ const fn=globalThis[m[1]];
+ if(typeof fn!=='function')throw new Error('MON action unavailable: '+m[1]);
+ const args=m[2].trim()?splitTop(m[2],',').map(x=>arg(x,ctx)):[];
+ return fn(...args);
+}
+function run(command,ctx){
+ for(const stmt of splitTop(command,';')){
+  if(stmt==='return false'){ctx.event.preventDefault();continue}
+  if(stmt==='event.stopPropagation()'){ctx.event.stopPropagation();continue}
+  const conditional=stmt.match(/^if\(event\.target===this\)(.+)$/s);
+  if(conditional){if(ctx.event.target===ctx.el)invoke(conditional[1],ctx);continue}
+  const scroll=stmt.match(/^document\.getElementById\((['"])([^'"]+)\1\)\?\.scrollIntoView\(\)$/);
+  if(scroll){document.getElementById(scroll[2])?.scrollIntoView();continue}
+  invoke(stmt,ctx);
+ }
+}
+document.addEventListener('click',event=>{
+ const el=event.target.closest?.('[data-mon-command]');
+ if(!el)return;
+ try{run(el.dataset.monCommand,{event,el})}catch(err){record('ui-action-error');console.error('MON UI action blocked',err)}
+});
+document.addEventListener('input',event=>{
+ const el=event.target.closest?.('[data-mon-input-command]');
+ if(!el)return;
+ try{run(el.dataset.monInputCommand,{event,el})}catch(err){record('ui-action-error');console.error('MON input action blocked',err)}
+});
 })();
