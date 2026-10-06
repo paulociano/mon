@@ -9,7 +9,7 @@ function renderFunctionalMastery(){
  const grid=document.getElementById('progressEvidenceGrid');if(!grid)return;
  grid.querySelectorAll('[data-functional-mastery]').forEach(x=>x.remove());
  const cards=functionalMasteryCards();
- grid.insertAdjacentHTML('beforeend',cards.map(x=>`<article class="progress-evidence" data-functional-mastery="${x.id}"><span>Função · ${x.name}</span><b>${x.attempts?x.score+'%':'—'}</b><small>${x.desc}</small><i><em style="width:${x.score}%"></em></i></article>`).join(''));
+ grid.insertAdjacentHTML('beforeend',cards.map(x=>`<article class="progress-evidence" data-functional-mastery="${x.id}"><span>Função · ${x.name}</span><b>${x.attempts?x.score+'%':'—'}</b><small>${x.desc}</small><i><em data-mon-width="${x.score}%"></em></i></article>`).join(''));
 }const renderProgressHubBase=renderProgressHub;
 renderProgressHub=function(){renderProgressHubBase();renderFunctionalMastery()};
 function renderLearningEvidence(){
@@ -18,7 +18,7 @@ function renderLearningEvidence(){
  if(typeof learningMetricsSnapshot!=='function')return;
  const s=learningMetricsSnapshot(state),fmt=x=>x.value===null?'—':x.value+(x.unit==='%'?'%':'');
  const status={empty:'sem dados',early:'amostra inicial',stale:'dados antigos',ready:'evidência suficiente'};
- grid.insertAdjacentHTML('beforeend',s.metrics.map(x=>`<article class="progress-evidence" data-learning-evidence="${x.id}"><span>Métrica · ${x.label}</span><b>${fmt(x)}</b><small>${x.samples} obs · ${status[x.status]||x.status}</small><i><em style="width:${x.unit==='%'?(x.value||0):Math.min(100,x.samples*10)}%"></em></i></article>`).join(''));
+ grid.insertAdjacentHTML('beforeend',s.metrics.map(x=>`<article class="progress-evidence" data-learning-evidence="${x.id}"><span>Métrica · ${x.label}</span><b>${fmt(x)}</b><small>${x.samples} obs · ${status[x.status]||x.status}</small><i><em data-mon-width="${x.unit==='%'?(x.value||0):Math.min(100,x.samples*10)}%"></em></i></article>`).join(''));
 }const renderProgressHubFunctional=renderProgressHub;
 renderProgressHub=function(){renderProgressHubFunctional();renderLearningEvidence()};
 function validationDeltaText(metric,lower=false){
@@ -34,6 +34,6 @@ function renderLearningValidation(){
   {id:'hints',label:'Pistas',value:r.hintDependence.value,samples:r.hintDependence.samples,note:validationDeltaText(r.hintDependence,true)},
   {id:'transfer-trend',label:'Transferência',value:r.transfer.value,samples:r.transfer.samples,note:validationDeltaText(r.transfer)},
   {id:'autonomy-trend',label:'Autonomia',value:r.autonomy.value,samples:r.autonomy.samples,note:validationDeltaText(r.autonomy)},
-  {id:'recurrent-errors',label:'Erros',value:r.recurrentErrors.value,samples:r.recurrentErrors.samples,note:validationDeltaText(r.recurrentErrors,true)} ];grid.insertAdjacentHTML('beforeend',cards.map(x=>`<article class="progress-evidence" data-learning-validation="${x.id}"><span>Validação · ${x.label}</span><b>${x.value===null?'—':x.value+'%'}</b><small>${x.samples} observações · ${x.note}</small><i><em style="width:${x.value||0}%"></em></i></article>`).join(''));
+  {id:'recurrent-errors',label:'Erros',value:r.recurrentErrors.value,samples:r.recurrentErrors.samples,note:validationDeltaText(r.recurrentErrors,true)} ];grid.insertAdjacentHTML('beforeend',cards.map(x=>`<article class="progress-evidence" data-learning-validation="${x.id}"><span>Validação · ${x.label}</span><b>${x.value===null?'—':x.value+'%'}</b><small>${x.samples} observações · ${x.note}</small><i><em data-mon-width="${x.value||0}%"></em></i></article>`).join(''));
 }const renderProgressHubMetrics=renderProgressHub;
 renderProgressHub=function(){renderProgressHubMetrics();renderLearningValidation()};
