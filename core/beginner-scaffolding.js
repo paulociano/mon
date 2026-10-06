@@ -1,19 +1,24 @@
 // MON beginner reconstruction scaffolding · loaded with the learning runtime.
 const FOUNDATION_BUILD_BLOCKS={
- 13:'わたし|は|パウロ|です',14:'みず|を|のみます',15:'しちじ|に|えき|へ|いきます',
- 16:'ともだち|と|いきます',17:'ここ|で|たべます',18:'きのう|えき|に|いきました',
- 19:'ちょっと|まって|ください',20:'この|みせ|は|やすい|です',
+ 13:'わたし|は|パウロ|です',14:'わたし|は|パウロ|です',15:'これ|は|なん|ですか',
+ 16:'これ|は|わたし|の|ほん|です',17:'みず|を|のみます',18:'しちじ|に|えき|へ|いきます',
+ 19:'きのう|えき|に|いきました',20:'この|みせ|は|やすい|です',
  21:'えき|の|まえ|に|みせ|が|あります',22:'いま|なんじ|ですか',
- 23:'いそがしい|から|いきません',
+ 23:'ちょっと|まって|ください',
  24:'にほんご|が|まだ|よく|わかりません|ゆっくり|おねがいします'
 };
 const FOUNDATION_BUILD_HINTS={
- 13:'tópico → は → identificação → です',14:'objeto → を → ação polida',
- 15:'hora → に → destino → へ → ação',16:'companhia → と → ação polida',
- 17:'lugar da ação → で → ação polida',18:'tempo → destino → に → ação no passado',
- 19:'ちょっと + ação em forma て + ください',20:'este/esta → lugar → は → qualidade → です',
- 21:'referência → の → posição → に → coisa → が → existência',
- 22:'agora → que horas → ですか',23:'razão → から → resultado negativo',
+ 13:'encontre os blocos → localize a partícula → observe o predicado no fim',
+ 14:'tópico → は → informação sobre o tópico → です',
+ 15:'coisa apontada → は → informação desconhecida → ですか',
+ 16:'tópico → は → pessoa → の → objeto → です',
+ 17:'objeto → を → ação polida no fim',
+ 18:'hora → に → direção/destino → へ → ação',
+ 19:'tempo → destino → に → ação no passado',
+ 20:'este/esta → lugar → は → qualidade → です',
+ 21:'lugar de existência → に → coisa apresentada → が → あります',
+ 22:'agora → que horas → ですか',
+ 23:'ちょっと + ação em forma て + ください',
  24:'japonês → が → ainda → bem → não entender; depois peça fala mais lenta'
 };
 function semanticSentenceBuildTokens(text){
