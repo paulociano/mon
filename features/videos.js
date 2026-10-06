@@ -23,13 +23,13 @@ function recommendedVideo(s=state){
 }
 function renderVideoRecommendation(){
  const host=document.getElementById('videoRecommendation');if(!host)return;const r=recommendedVideo(),v=r.video;
- host.innerHTML=`<div><span class="eyebrow">recomendado pelo seu progresso · ${v.level}</span><h3>${r.followThrough?'Agora retire o apoio.':v.title}</h3><p>${r.reason}</p></div><button class="primary" onclick="${r.followThrough?`startVideoPractice('${v.id}')`:`openVideo('${v.id}')` }">${r.followThrough?'praticar sem vídeo →':'assistir apoio →'}</button>`;
+ host.innerHTML=`<div><span class="eyebrow">recomendado pelo seu progresso · ${v.level}</span><h3>${r.followThrough?'Agora retire o apoio.':v.title}</h3><p>${r.reason}</p></div><button class="primary" data-mon-command="${r.followThrough?`startVideoPractice('${v.id}')`:`openVideo('${v.id}')` }">${r.followThrough?'praticar sem vídeo →':'assistir apoio →'}</button>`;
 }
 
 function renderVideos(){
  const host=document.getElementById('videoGrid');if(!host)return;
  const rows=videoFilter==='all'?MON_VIDEOS:MON_VIDEOS.filter(v=>v.cat===videoFilter);
- host.innerHTML=rows.map(v=>`<button class="video-card" onclick="openVideo('${v.id}')" aria-label="Assistir ${v.title}">
+ host.innerHTML=rows.map(v=>`<button class="video-card" data-mon-command="openVideo('${v.id}')" aria-label="Assistir ${v.title}">
    <div class="video-thumb"><span class="video-poster" aria-hidden="true">${v.jp}</span><span class="video-play">▶</span><em>${v.jp}</em></div>
    <div class="video-body"><div class="video-meta"><span>${v.tag} · ${v.level}</span><small>externo · internet</small></div><h3>${v.title}</h3><p>${v.desc}</p><strong>${v.source}</strong></div>
  </button>`).join('');
@@ -41,7 +41,7 @@ function openVideo(id){
  vs.opened[id]=(vs.opened[id]||0)+1;vs.last={id,at:Date.now()};save();renderVideoRecommendation();
  document.getElementById('videoModalTitle').textContent=v.title;document.getElementById('videoModalCopy').textContent=v.desc;
  if(external)external.href='https://www.youtube.com/watch?v='+encodeURIComponent(v.yt);
- if(practice){practice.textContent=(v.cat==='listen'||v.cat==='speak')?'praticar sem vídeo →':'aplicar sem vídeo →';practice.onclick=()=>startVideoPractice(id)}
+ if(practice){practice.textContent=(v.cat==='listen'||v.cat==='speak')?'praticar sem vídeo →':'aplicar sem vídeo →';practice.data-mon-command=()=>startVideoPractice(id)}
  stage.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${v.yt}?autoplay=0&rel=0" title="${v.title}" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
  modal.hidden=false;modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('video-open');document.getElementById('videoClose')?.focus();
 }
