@@ -8,12 +8,14 @@ const manifest=JSON.parse(fs.readFileSync('manifest.json','utf8'));
 assert.equal(manifest.id,'./','PWA manifest must declare a stable app id');
 assert.equal(manifest.scope,'./','PWA manifest must declare its scope explicitly');
 assert.equal(manifest.lang,'pt-BR','PWA manifest should declare the primary UI language');
+assert.ok(manifest.icons.some(i=>i.src==='./icon.svg'&&i.purpose==='any'),'regular PWA icon must use purpose any');
+assert.ok(manifest.icons.some(i=>i.src==='./icon-maskable.svg'&&i.purpose==='maskable'),'PWA must provide a dedicated maskable icon');
 
 const coreMatch=sw.match(/const CORE=\[(.*?)\];/s);
 assert.ok(coreMatch,'service worker CORE shell missing');
 const core=coreMatch[1];
 for(const match of core.matchAll(/'([^']+)'/g)){const file=match[1];if(file!=='./')assert.ok(fs.existsSync(file),'precache asset missing: '+file)}
-for(const asset of ['./','./index.html','./styles.css','./release.json','./core/runtime-health.js','./data/course-content.js','./core/state.js','./app.js']){
+for(const asset of ['./','./index.html','./styles.css','./release.json','./core/runtime-health.js','./icon-maskable.svg','./data/course-content.js','./core/state.js','./app.js']){
   assert.ok(core.includes(`'${asset}'`),'critical shell asset missing '+asset);
 }
 for(const lazy of ['./data/content-packs.js','./features/session.js','./features/videos.js','./data/kanji.js']){
