@@ -5,7 +5,6 @@ const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
 const lock=JSON.parse(fs.readFileSync('package-lock.json','utf8'));
 const release=JSON.parse(fs.readFileSync('release.json','utf8'));
 const html=fs.readFileSync('index.html','utf8');
-const app=fs.readFileSync('app.js','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 const health=fs.readFileSync('core/runtime-health.js','utf8');
 
@@ -15,7 +14,8 @@ assert.equal(lock.packages[''].version,release.version,'lockfile root package ve
 assert.ok(html.includes(`name="mon-release" content="${release.version}"`),'HTML must expose release identity');
 assert.ok(sw.includes("const CACHE_VERSION='v40'"),'release must bump service-worker cache identity');
 for(const asset of ["'./release.json'","'./core/runtime-health.js'"])assert.ok(sw.includes(asset),'release diagnostics asset missing from PWA shell '+asset);
-assert.ok(app.includes("loadRuntimeScript('./core/runtime-health.js')"),'runtime health must initialize after critical boot');
+assert.ok(html.includes('addEventListener("load"'),'runtime health must initialize after window load');
+assert.ok(html.includes('s.src="./core/runtime-health.js"'),'runtime health loader must target the local diagnostic module');
 assert.ok(!html.includes('<script src="./core/runtime-health.js"></script>'),'runtime health must stay off the critical HTML boot path');
 
 for(const token of ["MAX_AGE=7*24*60*60*1000","MAX_EVENTS=50","js-error","resource-error","promise-rejection","MON_RUNTIME_HEALTH"])assert.ok(health.includes(token),'runtime health contract missing '+token);
