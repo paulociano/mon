@@ -467,7 +467,7 @@ function watchMonUpdate(reg){
 }
 if('serviceWorker' in navigator){
  navigator.serviceWorker.addEventListener('controllerchange',()=>{const banner=document.getElementById('updateBanner');if(banner)banner.hidden=true;if(monReloadForUpdate)window.location.reload()});
- window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(watchMonUpdate).catch(()=>{}));
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>{watchMonUpdate(reg);reg.update().catch(()=>{})}).catch(()=>{}));
 }
 async function finishOnboarding(mode){
  localStorage.setItem('mon-onboarded','1');
