@@ -496,4 +496,4 @@ const foundationNav=document.querySelector('[data-view="foundation"]');
 if(foundationNav)foundationNav.addEventListener('pointerover',()=>ensureFeatureRuntime('foundation').catch(()=>{}),{passive:true,once:true});
 const pathWarm=document.getElementById('learningPath');
 if(pathWarm)pathWarm.addEventListener('pointerover',e=>{if(e.target.closest('.path-node.current'))ensureLearningRuntime().catch(()=>{})},{passive:true});
-if(localStorage.getItem('mon-cloud-linked')||location.search.includes('code='))setTimeout(()=>ensureAccountRuntime().then(monCloudBootstrap),500);
+if(localStorage.getItem('mon-cloud-linked')||location.search.includes('code='))setTimeout(()=>ensureAccountRuntime().then(()=>monCloudBootstrap()),500);
