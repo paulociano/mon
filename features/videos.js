@@ -41,7 +41,7 @@ function openVideo(id){
  vs.opened[id]=(vs.opened[id]||0)+1;vs.last={id,at:Date.now()};save();renderVideoRecommendation();
  document.getElementById('videoModalTitle').textContent=v.title;document.getElementById('videoModalCopy').textContent=v.desc;
  if(external)external.href='https://www.youtube.com/watch?v='+encodeURIComponent(v.yt);
- if(practice){practice.textContent=(v.cat==='listen'||v.cat==='speak')?'praticar sem vídeo →':'aplicar sem vídeo →';practice.data-mon-command=()=>startVideoPractice(id)}
+ if(practice){practice.textContent=(v.cat==='listen'||v.cat==='speak')?'praticar sem vídeo →':'aplicar sem vídeo →';practice.onclick=()=>startVideoPractice(id)}
  stage.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${v.yt}?autoplay=0&rel=0" title="${v.title}" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
  modal.hidden=false;modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.classList.add('video-open');document.getElementById('videoClose')?.focus();
 }
