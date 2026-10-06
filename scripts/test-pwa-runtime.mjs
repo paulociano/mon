@@ -4,6 +4,10 @@ import assert from 'node:assert/strict';
 const sw=fs.readFileSync('sw.js','utf8');
 const app=fs.readFileSync('app.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
+const manifest=JSON.parse(fs.readFileSync('manifest.json','utf8'));
+assert.equal(manifest.id,'./','PWA manifest must declare a stable app id');
+assert.equal(manifest.scope,'./','PWA manifest must declare its scope explicitly');
+assert.equal(manifest.lang,'pt-BR','PWA manifest should declare the primary UI language');
 
 const coreMatch=sw.match(/const CORE=\[(.*?)\];/s);
 assert.ok(coreMatch,'service worker CORE shell missing');
