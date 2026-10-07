@@ -39,8 +39,12 @@ assert.ok(!runtime.includes('new Function'),'dispatcher must not use new Functio
 
 const app=fs.readFileSync('app.js','utf8');
 assert.ok(app.includes("ensureAccountRuntime().then(()=>monCloudBootstrap())"),'cloud bootstrap must resolve only after lazy account runtime loads');
-for(const action of ['startMasteryRepair','claimPathChest','startQuickLesson']){
+for(const action of ['startMasteryRepair','claimPathChest','startQuickLesson','finishQuickLesson']){
  assert.ok(runtime.includes(action),`CSP dispatcher allowlist missing dynamic path action ${action}`);
 }
+
+const lesson=fs.readFileSync('features/lesson.js','utf8');
+assert.ok(lesson.includes("finishQuickLesson('${practice||outOfEnergy?'practice':'home'}')"),'lesson completion must route through an allowlisted action');
+assert.ok(!lesson.includes("data-mon-command=\"${target}\"`) || !lesson.includes("quickRun=null;go("),'lesson result command must not embed blocked assignment statements');
 
 console.log('MON CSP script and declarative UI action contracts passed');
