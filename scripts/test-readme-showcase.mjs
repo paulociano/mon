@@ -9,6 +9,6 @@ for(const p of ['assets/readme/mon-summary.svg','assets/readme/mon-features.svg'
  assert.ok(svg.includes('role="img"'));
  assert.ok(readme.includes(p),p+' not referenced by README');
 }
-for(const label of ['Home Coach','Next Best Lesson Engine','Kanji Memory Lab 2.0','Listening & Pronunciation Lab','Survival Missions 2.0','Diário no Japão','Performance Lab'])assert.ok(readme.includes(label),label+' missing from README');
+for(const label of ['Orientação da Home','Motor de Próxima Lição','Memória de Kanji · 字','Escuta e Pronúncia · 聴','Missões Reais · 旅','Diário no Japão','Laboratório de Desempenho'])assert.ok(readme.includes(label),label+' missing from README');
 assert.ok(readme.includes('docs/ROADMAP.md'));
 console.log('MON README showcase contracts passed');
