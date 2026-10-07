@@ -23,8 +23,8 @@ for(const lazy of ['./data/content-packs.js','./features/session.js','./features
 }
 const installBlock=sw.match(/self\.addEventListener\('install'[\s\S]*?\n}\);/)?.[0]||'';
 assert.ok(installBlock.includes("if(CRITICAL_SHELL_UPGRADE)await self.skipWaiting()"),'controlled install hook must remain available');
-assert.ok(sw.includes("const CACHE_VERSION='v43'"),'release runtime must use the current MON cache version');
-assert.ok(sw.includes('const CRITICAL_SHELL_UPGRADE=false'),'updates must stay user-controlled after the v37 recovery');
+assert.ok(sw.includes("const CACHE_VERSION='v44'"),'release runtime must use the current MON cache version');
+assert.ok(sw.includes('const CRITICAL_SHELL_UPGRADE=true'),'v44 recovery must activate immediately to replace stale dispatcher/runtime pairs');
 assert.ok(!sw.includes('client.navigate('),'service worker activation must not trigger navigation reload loops');
 assert.ok(sw.includes("event.data?.type==='SKIP_WAITING'"),'service worker needs explicit update activation message');
 assert.ok(sw.includes("const CACHE_PREFIX='mon-japanese-os-'"),'service worker cache namespace missing');
@@ -34,7 +34,7 @@ assert.ok(sw.includes("event.data?.type==='MON_SW_STATUS'"),'service worker stat
 assert.ok(sw.includes('staleWhileRevalidate(event)'),'runtime assets should still be cached on demand');
 assert.ok(sw.includes("await cache.put('./index.html',response.clone())"),'navigation responses must refresh the canonical shell cache instead of caching query-specific route URLs');
 assert.ok(sw.includes("fetch(event.request,{cache:'no-cache'})"),'navigations must bypass stale HTTP cache entries before falling back to the offline shell');
-for(const token of ['showMonUpdate','applyMonUpdate','watchMonUpdate','reg.waiting','updatefound','controllerchange',"updateViaCache:'none'",'reg.update()']){
+for(const token of ['showMonUpdate','applyMonUpdate','watchMonUpdate','reg.waiting','updatefound','controllerchange',"updateViaCache:'none'",'reg.update()',"mon-sw-recovery-v44",'sessionStorage.getItem(recoveryKey)']){
   assert.ok(app.includes(token),'missing controlled PWA update contract '+token);
 }
 assert.ok(html.includes('id="updateBanner"'),'update availability UI missing');
