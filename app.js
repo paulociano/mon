@@ -466,7 +466,7 @@ function watchMonUpdate(reg){
  });
 }
 if('serviceWorker' in navigator){
- navigator.serviceWorker.addEventListener('controllerchange',()=>{const banner=document.getElementById('updateBanner');if(banner)banner.hidden=true;if(monReloadForUpdate)window.location.reload()});
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{const banner=document.getElementById('updateBanner');if(banner)banner.hidden=true;const recoveryKey='mon-sw-recovery-v44';if(monReloadForUpdate||sessionStorage.getItem(recoveryKey)!=='1'){sessionStorage.setItem(recoveryKey,'1');window.location.reload()}});
  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>{watchMonUpdate(reg);reg.update().catch(()=>{})}).catch(()=>{}));
 }
 async function finishOnboarding(mode){
