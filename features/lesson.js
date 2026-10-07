@@ -1,4 +1,5 @@
 function exitQuickLesson(){quickRun=null;go('home')}
+function finishQuickLesson(destination='home'){quickRun=null;go(destination)}
 function setQuickFeedback(title,copy='',ok=null){const f=document.getElementById('quickFeedback');if(!f)return;f.innerHTML=`<b>${title}</b>${copy}`;if(ok===true)monStyle(f,'color','#79dca9');else if(ok===false)monStyle(f,'color','#ff7c89');else monStyle(f,'color','#8f9aaa')}
 function renderQuickExercise(){
 if(!quickRun)return;
@@ -115,7 +116,7 @@ const reinforcing=!outOfEnergy&&decision.action==='reinforce',main=document.getE
 const status=quickRun.pack?.unitId?state.unitMastery?.[quickRun.pack.unitId]:null;
 const title=reinforcing?'Atividade concluída. Domínio ainda em construção.':repair&&decision.action==='advance'?'Portão liberado.':practice?'Revisão inteligente concluída.':outOfEnergy?'Pare no ponto certo.':'一歩ずつ · mais um passo.';
 const copy=reinforcing?`Você terminou esta rodada, mas o grafo encontrou lacunas em competências críticas. O próximo toque abre um reforço curto e direcionado. Domínio observado: ${status?.score||0}%.`:repair&&decision.action==='advance'?'As arestas críticas atingiram evidência suficiente. O próximo nó da trilha foi liberado.':practice?'Você recuperou itens sem gastar Energia. A fila e o Mastery Graph foram atualizados.':outOfEnergy?'Sua energia acabou, mas erros e evidências ficaram salvos.':'O curso registrou memória, erros e domínio. O avanço agora considera evidência, não apenas conclusão.';
-const target=reinforcing?'startMasteryRepair('+quickRun.idx+')':`quickRun=null;go('${practice||outOfEnergy?'practice':'home'}')`;
+const target=reinforcing?'startMasteryRepair('+quickRun.idx+')':`finishQuickLesson('${practice||outOfEnergy?'practice':'home'}')`;
 const button=reinforcing?'fortalecer agora →':repair&&decision.action==='advance'?'seguir para o próximo nó →':practice?'voltar à prática':outOfEnergy?'ir para prática':'continuar trilha →';
 main.innerHTML=`<div class="quick-result ${reinforcing?'needs-mastery':''}"><div class="result-seal">${reinforcing?'復':repair&&decision.action==='advance'?'開':practice?'復':outOfEnergy?'⚡':'門'}</div><span class="quick-kicker">${reinforcing?'domínio incompleto':repair?'mastery repair':practice?'prática':'lição concluída'}</span><h2>${title}</h2><p>${copy}</p><div class="result-stats"><div><b>${acc}%</b><span>precisão</span></div><div><b>+${xp}</b><span>XP${!practice&&boost>1?' · 2×':''}</span></div><div><b>${status?.score??'—'}%</b><span>domínio da unidade</span></div></div><button class="quick-check continue auto-width" data-mon-command="${target}">${button}</button></div>`;
 monStyle(document.querySelector('.quick-bottom'),'display','none');setTimeout(()=>{const b=document.querySelector('.quick-bottom');if(b)monStyle(b,'display','flex')},50);document.getElementById('quickFeedback').innerHTML='';monStyle(document.getElementById('quickCheck'),'display','none');renderGameHome();
