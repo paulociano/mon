@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Aprenda japonês do zero à vida real.</strong><br>
-  Uma PWA de aprendizagem adaptativa pensada para brasileiros e precisa construir autonomia no Japão.
+  Uma PWA de aprendizagem adaptativa pensada para brasileiros que querem construir autonomia real em japonês.
 </p>
 
 <p align="center">
@@ -38,17 +38,17 @@ A interface segue uma identidade japonesa contemporânea: sumi/indigo, shu vermi
 | **Motor de Próxima Lição** | Monta a próxima sessão a partir de revisão, erros, domínio, narrativa e, quando há evidência suficiente, sinais longitudinais |
 | **Ciclo Diário Adaptativo** | Alterna ouvir, recuperar, aprender, aplicar, transferir e produzir |
 | **Revisão Espaçada + Caderno de Erros** | Agenda memória e reapresenta padrões que continuam falhando |
-| **Mapa de Domínio · 達** | Separa evidência de reconhecimento, recall, listening, transferência e produção e alimenta decisões adaptativas |
+| **Mapa de Domínio · 達** | Separa evidência de reconhecimento, recuperação, escuta, transferência e produção e alimenta decisões adaptativas |
 | **Validação da Aprendizagem** | Mede retenção 1d+/3d+/7d+, dependência de pistas, transferência, autonomia e recuperação de erros sem inferir causalidade |
-| **P9/P10 Pedagogy Gate** | Exige que as 36 unidades N4 preservem Study Blocks, compreensão conceitual, capabilities, retrieval, transfer, production, repair e provenance |
+| **Validação Pedagógica P9/P10** | Exige que as 36 unidades N4 preservem blocos de estudo, compreensão conceitual, capacidades, recuperação, transferência, produção, reparo e rastreabilidade |
 | **Leitura Adaptativa · 読** | Usa romaji, furigana ou nenhum apoio conforme a fase e a evidência de autonomia de leitura; erros podem fazer o suporte reaparecer |
 | **Memória de Kanji · 字** | Famílias visuais, contraste, sentido → forma, forma → leitura e escrita |
 | **Escuta e Pronúncia · 聴** | Mora, vogais longas, っ, ん, shadowing e autoavaliação |
 | **Missões Reais · 旅** | Cenários ramificados com reparo de conversa e objetivo observável |
 | **Diário no Japão** | Registra personagens, lugares, callbacks e situações resolvidas |
-| **Conta e Sincronização** | Estado versionado, revisão otimista, dirty tracking e resolução explícita de conflitos entre dispositivos |
-| **Vídeos** | Biblioteca de apoio visual lazy, com player externo somente no clique |
-| **PWA e uso sem internet** | Shell e features cacheados para uso resiliente |
+| **Conta e Sincronização** | Estado versionado, revisão otimista, rastreamento de alterações e resolução explícita de conflitos entre dispositivos |
+| **Vídeos** | Biblioteca de apoio visual lazy, com reprodutor externo somente no clique |
+| **PWA e uso sem internet** | Estrutura principal e recursos armazenados em cache para uso resiliente |
 | **Laboratório de Desempenho** | Diagnóstico local com p50/p95, long tasks, cache e tempo até lição interativa via `?debug=1` |
 
 ## Princípios pedagógicos
@@ -66,7 +66,7 @@ A interface segue uma identidade japonesa contemporânea: sumi/indigo, shu vermi
 
 ## Arquitetura
 
-O projeto usa uma arquitetura progressivamente modular e lazy:
+O projeto usa uma arquitetura progressivamente modular, com carregamento sob demanda:
 
 ```text
 index.html
@@ -77,31 +77,31 @@ index.html
 ├── config/               configuração pública opcional
 ├── supabase/             schema da camada cloud
 ├── assets/               marca, cenas e banners
-├── scripts/              contratos e budgets
+├── scripts/              contratos e limites de desempenho
 └── .github/workflows/    Quality Gate
 ```
 
 Algumas fronteiras importantes:
 
-- `core/home-coach.js` — próxima melhor ação da Home;
+- `core/home-coach.js` — próxima melhor ação da tela inicial;
 - `core/next-best-lesson.js` — receita adaptativa e calibração conservadora da próxima sessão;
 - `core/review-scheduler.js` — revisão espaçada;
 - `core/mastery-graph.js` — evidência de domínio e autonomia de leitura;
 - `core/reading-support.js` — romaji/furigana adaptativos com fallback conservador;
 - `data/narrative.js` + `core/narrative-state.js` — memória narrativa;
-- `features/pronunciation.js` — Listening & Pronunciation Lab;
-- `features/kanji-memory.js` — Kanji Memory Lab 2.0;
-- `features/missions-v2.js` — Survival Missions 2.0.
+- `features/pronunciation.js` — Escuta e Pronúncia;
+- `features/kanji-memory.js` — Memória de Kanji;
+- `features/missions-v2.js` — Missões Reais.
 
 ## Adaptação por evidência
 
-O Motor de Próxima Lição prioriza dívidas pedagógicas diretas antes de qualquer calibração longitudinal: remediation, revisões vencidas, gaps funcionais, erros abertos, fragilidade de domínio e narrativa pendente continuam tendo precedência.
+O Motor de Próxima Lição prioriza dívidas pedagógicas diretas antes de qualquer calibração longitudinal: reparos pedagógicos, revisões vencidas, lacunas funcionais, erros abertos, fragilidade de domínio e narrativa pendente continuam tendo precedência.
 
 A ajuda de leitura também segue uma política conservadora. Enquanto existem poucas observações, o MON usa a fase da Fundação como fallback. Depois de evidência suficiente em leituras sem pista, a progressão passa a responder ao Mapa de Domínio: **romaji → furigana → sem apoio**. Se erros recorrentes derrubarem a evidência de autonomia, o suporte pode reaparecer automaticamente.
 
 Sinais longitudinais só interferem quando existe amostra suficiente. Retenção 7d+ e transferência observada podem frear um avanço e puxar a sessão para `retrieve` ou `transfer`; outras métricas continuam observacionais quando ainda não existe base suficiente para transformá-las em política adaptativa.
 
-A camada de validação longitudinal acompanha retenção após 1d+, 3d+ e 7d+, tendências de hints, transferência, autonomia e recuperação de erros recorrentes. Esses sinais descrevem o estado observado do aluno e **não são tratados como prova causal da eficácia de uma feature**.
+A camada de validação longitudinal acompanha retenção após 1d+, 3d+ e 7d+, tendências de uso de pistas, transferência, autonomia e recuperação de erros recorrentes. Esses sinais descrevem o estado observado do aluno e **não são tratados como prova causal da eficácia de um recurso**.
 
 ## Estado local, conta e sincronização
 
@@ -109,13 +109,13 @@ O MON prioriza o progresso local. O estado versionado funciona sem conta e possu
 
 A camada entre dispositivos adiciona revisão otimista, comparação segura de versões, conflito explícito quando local e nuvem mudam, escolha entre usar este dispositivo ou usar a nuvem, cópia local antes de substituição e Row Level Security por usuário.
 
-O cliente de sync está implementado. Para ativá-lo em um ambiente publicado, é necessário aplicar `supabase/schema.sql` e configurar a URL pública e a publishable key em `config/cloud.js`. Credenciais privilegiadas não pertencem ao browser nem ao repositório.
+O cliente de sincronização está implementado. Para ativá-lo em um ambiente publicado, é necessário aplicar `supabase/schema.sql` e configurar a URL pública e a chave pública em `config/cloud.js`. Credenciais privilegiadas não pertencem ao navegador nem ao repositório.
 
 ## Performance
 
-A regra arquitetural é simples: **uma nova feature não deve automaticamente virar custo de boot**.
+A regra arquitetural é simples: **um novo recurso não deve automaticamente aumentar o custo de inicialização**.
 
-O projeto possui budgets separados para shell, datasets e features lazy. O Quality Gate falha se uma fronteira ultrapassar os limites definidos em `scripts/test-performance-budget.mjs`.
+O projeto possui limites separados para a estrutura principal, conjuntos de dados e módulos carregados sob demanda. O Quality Gate falha se uma fronteira ultrapassar os limites definidos em `scripts/test-performance-budget.mjs`.
 
 O `Laboratório de Desempenho` pode ser ativado localmente com:
 
