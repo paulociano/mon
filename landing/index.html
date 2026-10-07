@@ -9,7 +9,7 @@
   <meta property="og:description" content="Pare de colecionar lições. Construa autonomia real em japonês com um sistema que adapta o próximo passo ao que você realmente sabe.">
   <meta property="og:type" content="website">
   <title>MON 門 | Japonês do zero à vida real</title>
-  <link rel="icon" href="../assets/brand/mon-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%23081522%22/%3E%3Ctext x=%2232%22 y=%2245%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22%23F4E8D2%22%3E%E9%96%80%3C/text%3E%3C/svg%3E">
   <style>
     :root {
       --sumi: #081522;
@@ -93,7 +93,20 @@
       letter-spacing: .08em;
     }
 
-    .brand img { width: 34px; height: 34px; }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 34px;
+      border-radius: 10px;
+      color: var(--washi);
+      border: 1px solid rgba(244, 232, 210, .22);
+      font-family: "Noto Serif JP", "Yu Mincho", Georgia, serif;
+      font-size: 22px;
+      line-height: 1;
+      background: rgba(244, 232, 210, .04);
+    }
     .brand small {
       font-size: 10px;
       color: rgba(244, 232, 210, .58);
@@ -474,7 +487,20 @@
     }
 
     .final-inner { max-width: 870px; }
-    .final-mark { width: 78px; margin: 0 auto 24px; }
+    .final-mark {
+      width: 78px;
+      height: 78px;
+      margin: 0 auto 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 22px;
+      border: 1px solid rgba(244,232,210,.2);
+      background: rgba(244,232,210,.04);
+      color: var(--washi);
+      font-family: "Noto Serif JP", "Yu Mincho", Georgia, serif;
+      font-size: 50px;
+      line-height: 1;
+    }
     .final p { max-width: 650px; margin: 0 auto 30px; color: rgba(244,232,210,.68); font-size: 19px; }
     .final .hero-actions { justify-content: center; }
 
@@ -534,7 +560,7 @@
   <nav class="nav" aria-label="Navegação principal">
     <div class="nav-inner">
       <a class="brand" href="#top" aria-label="MON, início">
-        <img src="../assets/brand/mon-mark-reversed.svg" alt="">
+        <span class="brand-mark" aria-hidden="true">門</span>
         <span>MON <small>Japanese OS</small></span>
       </a>
       <div class="nav-links">
@@ -721,7 +747,7 @@
 
     <section class="section final">
       <div class="wrap final-inner reveal">
-        <img class="final-mark" src="../assets/brand/mon-mark-reversed.svg" alt="">
+        <div class="final-mark" aria-hidden="true">門</div>
         <div class="kicker">門を開く。</div>
         <h2>Abra o portão.</h2>
         <p>Comece do zero, avance por evidência e transforme japonês em uma habilidade que sobrevive fora da tela.</p>
