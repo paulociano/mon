@@ -15,7 +15,7 @@
 
 O **MON** é uma aplicação web/PWA para aprender japonês desde o zero absoluto até situações reais do cotidiano. **Release atual: 0.1.3 (pre-1.0).** Em vez de organizar o estudo apenas como listas de palavras ou exercícios repetidos, o produto combina **Base Essencial, revisão espaçada, Mapa de Domínio, leitura adaptativa com romaji/furigana, narrativa recorrente, prática adaptativa, memória de kanji, escuta, fala, missões reais e validação longitudinal da aprendizagem**.
 
-O sistema adapta a próxima sessão usando evidências reais do aluno, acompanha retenção e transferência ao longo do tempo e preserva uma arquitetura com progresso local, uso sem internet e foco em desempenho. O motor de sincronização multi-device já está implementado com revisão otimista e conflitos explícitos; a ativação cloud depende da configuração do Supabase no ambiente publicado.
+O sistema adapta a próxima sessão usando evidências reais do aluno, acompanha retenção e transferência ao longo do tempo e preserva uma arquitetura com progresso local, uso sem internet e foco em desempenho. O motor de sincronização entre dispositivos já está implementado com revisão otimista e conflitos explícitos; a sincronização em nuvem depende da configuração do Supabase no ambiente publicado.
 
 A interface segue uma identidade japonesa contemporânea: sumi/indigo, shu vermilion, washi, dourado, tipografia editorial, torii, sakura e padrões culturais tratados de forma discreta.
 
@@ -47,9 +47,9 @@ A interface segue uma identidade japonesa contemporânea: sumi/indigo, shu vermi
 | **Missões Reais · 旅** | Cenários ramificados com reparo de conversa e objetivo observável |
 | **Diário no Japão** | Registra personagens, lugares, callbacks e situações resolvidas |
 | **Conta e Sincronização** | Estado versionado, revisão otimista, rastreamento de alterações e resolução explícita de conflitos entre dispositivos |
-| **Vídeos** | Biblioteca de apoio visual lazy, com reprodutor externo somente no clique |
+| **Vídeos** | Biblioteca de apoio visual carregada sob demanda, com reprodutor externo somente no clique |
 | **PWA e uso sem internet** | Estrutura principal e recursos armazenados em cache para uso resiliente |
-| **Laboratório de Desempenho** | Diagnóstico local com p50/p95, long tasks, cache e tempo até lição interativa via `?debug=1` |
+| **Laboratório de Desempenho** | Diagnóstico local com p50/p95, tarefas longas, cache e tempo até lição interativa via `?debug=1` |
 
 ## Princípios pedagógicos
 
@@ -87,7 +87,7 @@ Algumas fronteiras importantes:
 - `core/next-best-lesson.js` — receita adaptativa e calibração conservadora da próxima sessão;
 - `core/review-scheduler.js` — revisão espaçada;
 - `core/mastery-graph.js` — evidência de domínio e autonomia de leitura;
-- `core/reading-support.js` — romaji/furigana adaptativos com fallback conservador;
+- `core/reading-support.js` — romaji/furigana adaptativos com alternativa conservadora;
 - `data/narrative.js` + `core/narrative-state.js` — memória narrativa;
 - `features/pronunciation.js` — Escuta e Pronúncia;
 - `features/kanji-memory.js` — Memória de Kanji;
@@ -107,9 +107,9 @@ A camada de validação longitudinal acompanha retenção após 1d+, 3d+ e 7d+, 
 
 O MON prioriza o progresso local. O estado versionado funciona sem conta e possui recuperação, cópia de segurança e migrações.
 
-A camada entre dispositivos adiciona revisão otimista, comparação segura de versões, conflito explícito quando local e nuvem mudam, escolha entre usar este dispositivo ou usar a nuvem, cópia local antes de substituição e Row Level Security por usuário.
+A camada entre dispositivos adiciona revisão otimista, comparação segura de versões, conflito explícito quando local e nuvem mudam, escolha entre usar este dispositivo ou usar a nuvem, cópia local antes de substituição e isolamento de dados por usuário (Row Level Security).
 
-O cliente de sincronização está implementado. Para ativá-lo em um ambiente publicado, é necessário aplicar `supabase/schema.sql` e configurar a URL pública e a chave pública em `config/cloud.js`. Credenciais privilegiadas não pertencem ao navegador nem ao repositório.
+O cliente de sincronização entre dispositivos está implementado. Para ativá-lo em um ambiente publicado, é necessário aplicar `supabase/schema.sql` e configurar a URL pública e a chave pública em `config/cloud.js`. Credenciais privilegiadas não pertencem ao navegador nem ao repositório.
 
 ## Performance
 
