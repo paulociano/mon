@@ -44,7 +44,8 @@ for(const action of ['startMasteryRepair','claimPathChest','startQuickLesson','f
 }
 
 const lesson=fs.readFileSync('features/lesson.js','utf8');
+assert.ok(lesson.includes("function finishQuickLesson(destination='home'){quickRun=null;go(destination)}"),'lesson completion action must clear the active lesson before routing');
 assert.ok(lesson.includes("finishQuickLesson('${practice||outOfEnergy?'practice':'home'}')"),'lesson completion must route through an allowlisted action');
-assert.ok(!lesson.includes("data-mon-command=\"${target}\"`) || !lesson.includes("quickRun=null;go("),'lesson result command must not embed blocked assignment statements');
+assert.ok(!lesson.includes("quickRun=null;go('${practice||outOfEnergy?'practice':'home'}')"),'lesson result must not generate blocked assignment statements');
 
 console.log('MON CSP script and declarative UI action contracts passed');
